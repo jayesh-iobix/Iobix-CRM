@@ -21,12 +21,15 @@ export default function Header() {
       try {
         const decodedToken = jwtDecode(token);
         sessionStorage.clear();
-        if (
-          decodedToken?.IsSuperAdmin === "1" ||
-          decodedToken?.IsAdmin === "1"
-        ) {
+        // if (
+        //   decodedToken?.IsSuperAdmin === "1" ||
+        //   decodedToken?.IsAdmin === "1"
+        // ) {
           navigate("/sign-in");
-        }
+        // }
+        // else(
+        //   navigate("sign-in")
+        // )
       } catch {
         alert("Token is not decoded");
       }
@@ -34,17 +37,17 @@ export default function Header() {
   };
 
   return (
-    <div className="bg-white h-16 px-4 flex items-center border-b border-gray-200 shadow-sm shadow-[#d0ecfc] justify-between">
+    <div className="bg-white h-16 px-4 flex items-center border-b m-2 rounded-full border-gray-200 shadow-sm shadow-[#d0ecfc] justify-between">
       <div className="relative">
-        <HiOutlineSearch
+        {/* <HiOutlineSearch
           fontSize={20}
           className="text-gray-400 absolute top-1/2 left-3 -translate-y-1/2"
         />
         <input
           type="text"
           placeholder="Search..."
-          className="text-sm focus:outline-none active:outline-none border border-gray-300 w-[24rem] h-10 pl-11 pr-4 rounded-sm"
-        />
+          className="text-sm focus:outline-none active:outline-none border border-gray-300  w-[24rem] h-10 pl-11 pr-4 rounded-full"
+        /> */}
       </div>
       <div className="flex items-center gap-2 mr-2">
         <Popover className="relative">

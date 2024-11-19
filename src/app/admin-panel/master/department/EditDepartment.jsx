@@ -5,26 +5,25 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { DepartmentService } from '../../../service/DepartmentService';
 
 const EditDepartment = () => {
-  const { id } = useParams(); // Assumes that the department ID is passed in the route parameters
-  const [departmentName, setDepartmentName] = useState("");
+  const {id} = useParams(); 
+  const [departmentName,setDepartmentName] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch the department data on component load
   useEffect(() => {
-    const fetchDepartment = async () => {
-      try {
-        const department = await DepartmentService.getById(id);
-        setDepartmentName(department.data.departmentName);
-      } catch (error) {
-        console.error("Failed to fetch department:", error);
-      }
-    };
-    fetchDepartment();
+    const fetchData = async () => {
+      //#region Fetch DepartmentList 
+      const department  = await DepartmentService.getByIdDepartments(id);
+      //console.log(department);
+      setDepartmentName(department.data.departmentName);
+      //#endregion Fetch DepartmentList
+    }
+    fetchData();
+
   }, [id]);
 
-  const validateForm = () => {
+    const validateForm = () => {
     const newErrors = {};
     if (!departmentName) newErrors.departmentName = 'Department Name is required';
     
@@ -38,20 +37,36 @@ const EditDepartment = () => {
     if (validateForm()) {
       setIsSubmitting(true);
 
-      const departmentData = { departmentName };
-
-      try {
-        // Call the update API to save changes
-        await DepartmentService.update(id, departmentData);
-        // console.log("Updated Data:", departmentData);
-        navigate('/master/department-list'); // Redirect to department list page after updating
-      } catch (error) {
-        console.error("Failed to update department:", error);
-      } finally {
+      // Simulate API call or form submission logic
+      setTimeout(() => {
+        setDepartmentName('');
         setIsSubmitting(false);
+      }, 1000); // Simulate a delay for submission
+    }
+    // Logic for form submission goes here
+    const departmentData = {
+      departmentName
+    };
+
+    console.log("Submitted Data:", departmentData);
+    if (validateForm()) {
+    try {
+      // setAdminId("3FA85F64-5717-4562-B3FC-2C963F66AFA6");
+      const response = await DepartmentService.updateDepartments(id,departmentData);
+      //debugger;
+      if(response.status === 1)
+      {
+        navigate('/master/department-list');
+        alert(response.message);
       }
+      // Reset the form
+      setDepartmentName('');
+    } catch (error) {
+      console.error('Error Editing department:', error);
+      alert('Failed to edit department.');
     }
   };
+}
 
   return (
     <>

@@ -1,27 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { DesignationService } from "../../../service/DesignationService";
 import { DepartmentService } from "../../../service/DepartmentService";
 
-const AddDesignation = () => {
+const EditDesignation = () => {
   
   const [departmentId, setDepartmentId] = useState("");
   const [designationName, setDesignationName] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const { id } = useParams();
   const [departmentList, setDepartmentList] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDepartmentData = async () => {
       //#region Fetch DepartmentList
       const departmentResult = await DepartmentService.getDepartments();
       setDepartmentList(departmentResult.data);
       //#endregion Fetch DepartmentList
     };
+
+    const fetchData = async () => {
+      //#region Fetch DepartmentList
+      const designation = await DesignationService.getByIdDesignation(id);
+      //console.log(department);
+      setDepartmentId(designation.data.departmentId);
+      setDesignationName(designation.data.designationName);
+      //#endregion Fetch DepartmentList
+    };
     fetchData();
+    fetchDepartmentData();
   }, []);
 
   const validateForm = () => {
@@ -52,22 +62,24 @@ const AddDesignation = () => {
     };
 
     console.log("Submitted Data:", designationData);
+
     if (validateForm()) {
       try {
         // setAdminId("3FA85F64-5717-4562-B3FC-2C963F66AFA6");
-        const response = await DesignationService.addDesignation(
+        const response = await DesignationService.updateDesignation(
+          id,
           designationData
         );
         if (response.status === 1) {
           navigate("/master/designation-list");
-          console.log("Department added successfully:", response);
           alert(response.message);
         }
         // Reset the form
-        setDesignationName("");
+        // setDesignationName('');
+        // setDepartmentId('');
       } catch (error) {
-        console.error("Error adding department:", error);
-        alert("Failed to add department.");
+        console.error("Error editing designation:", error);
+        alert("Failed to edit designation.");
       }
     }
   };
@@ -85,7 +97,7 @@ const AddDesignation = () => {
         </Link>
       </div>
 
-      <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-">
+      <section className="bg-white shadow-sm m-1 py-8 pt-">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
             <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
@@ -148,7 +160,7 @@ const AddDesignation = () => {
                 }`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Add"}
+                {isSubmitting ? "Submitting..." : "Edit"}
               </button>
             </div>
           </div>
@@ -158,4 +170,4 @@ const AddDesignation = () => {
   );
 };
 
-export default AddDesignation;
+export default EditDesignation;

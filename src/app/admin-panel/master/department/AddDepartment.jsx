@@ -5,15 +5,15 @@ import { DepartmentService } from '../../../service/DepartmentService';
 
 const AddDepartment = () => {
 
-  const [departmentName,setDepartmentName] = useState("");
+  const [departmentName, setDepartmentName] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-    const validateForm = () => {
+  const validateForm = () => {
     const newErrors = {};
     if (!departmentName) newErrors.departmentName = 'Department Name is required';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -26,34 +26,35 @@ const AddDepartment = () => {
 
       // Simulate API call or form submission logic
       setTimeout(() => {
-        // Reset form and errors after submission
         setDepartmentName('');
         setIsSubmitting(false);
       }, 1000); // Simulate a delay for submission
     }
     // Logic for form submission goes here
     const departmentData = {
-        departmentName
+      departmentName
     };
 
-    console.log("Submitted Data:", departmentData);
+    //console.log("Submitted Data:", departmentData);
 
-    try {
-      const response = await DepartmentService.addDepartment(departmentData);
-      if(response.status === 1) {
-        alert('Department added successfully!');
-        navigate('/master/department-list')
+    if (validateForm()) {
+      try {
+        const response = await DepartmentService.addDepartment(departmentData);
+        if (response.status === 1) {
+          navigate('/master/department-list');
+          console.log('Department added successfully:', response);
+          alert(response.message);
+        }
+        // Reset the form
+        setDepartmentName('');
+      } catch (error) {
+        console.error('Error adding department:', error);
+        alert('Failed to add department.');
       }
-    //   console.log('Department added successfully:', response);
-    //   alert('Department added successfully!');
-      // Reset the form
-      setDepartmentName('');
-    } catch (error) {
-      console.error('Error adding department:', error);
-      alert('Failed to add department.');
-    }
-
+    };
+    // setAdminId("3FA85F64-5717-4562-B3FC-2C963F66AFA6");
   };
+
   return (
     <>
       <div className="flex justify-between items-center my-3">
@@ -64,7 +65,7 @@ const AddDepartment = () => {
         </Link>
       </div>
 
-      <section className='bg-white shadow-sm m-1 py-8 pt-'>
+      <section className='bg-white rounded-lg  shadow-sm m-1 py-8 pt-'>
         <form onSubmit={handleSubmit} className='container'>
           <div className='-mx-4 px-10 mt- flex flex-wrap'>
             <div className='w-full mb-2 px-3 md:w-1/2 lg:w-1/2'>
