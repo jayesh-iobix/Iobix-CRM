@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 // import * as jwt_decode from "jwt-decode";
 import { Menu, Popover, Transition } from "@headlessui/react";
 import {
@@ -7,12 +7,18 @@ import {
   HiOutlineChatAlt,
 } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import classNames from "classnames";
+// import classNames from "classnames";
 import { BiUser } from "react-icons/bi";
 import { jwtDecode } from "jwt-decode";
+import classNames from "classnames";
 
 export default function Header() {
+
+  // const [userName, setuserName] = useState("");
   const navigate = useNavigate();
+
+  const role = sessionStorage.getItem("role");
+  const userName = sessionStorage.getItem("UserName");
 
   const handleLogout = () => {
     // debugger;
@@ -118,15 +124,15 @@ export default function Header() {
             </>
           )}
         </Popover>
-        <Menu as="div" className="relative">
-          <div>
-            <Menu.Button className="ml-2 bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-neutral-400">
-              <span className="sr-only">Open user menu</span>
+        <Menu as="div" className="relative border-l-[1px] border-gray-400">
+          <div className="flex">
+            <Menu.Button className="ml-3 bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-neutral-400">
+              <span className="sr-only">Open user menu</span>                   
               <div className="h-10 w-10 rounded-full bg-slate-100 bg-cover bg-no-repeat bg-center">
                 <BiUser className="h-10 w-10 rounded-full " />
-                <span className="sr-only">Marc Backes</span>
               </div>
             </Menu.Button>
+                <span className="mt-[10px] ml-3 text-black">{userName}</span>
           </div>
           <Transition
             as={Fragment}
@@ -140,15 +146,26 @@ export default function Header() {
             <Menu.Items className="origin-top-right z-10 absolute right-0 mt-2 w-48 rounded-sm shadow-md p-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
               <Menu.Item>
                 {({ active }) => (
+                  role === "admin" ?
                   <div
-                    onClick={() => navigate("/profile")}
-                    className={classNames(
-                      active && "bg-gray-100",
-                      "active:bg-gray-200 rounded-sm px-4 py-2 text-gray-700 cursor-pointer focus:bg-gray-200"
-                    )}
-                  >
-                    Your Profile
-                  </div>
+                  // onClick={() => navigate("/user/user-profile")}
+                  // onClick={() => navigate("/profile")}
+                  className={classNames(
+                    active && "bg-gray-100",
+                    "active:bg-gray-200 rounded-sm px-4 py-2 text-gray-700 cursor-pointer focus:bg-gray-200"
+                  )}
+                >
+                  Your Profile
+                </div>: <div
+                  onClick={() => navigate("/user/user-profile")}
+                  // onClick={() => navigate("/profile")}
+                  className={classNames(
+                    active && "bg-gray-100",
+                    "active:bg-gray-200 rounded-sm px-4 py-2 text-gray-700 cursor-pointer focus:bg-gray-200"
+                  )}
+                >
+                  Your Profile
+                </div>
                 )}
               </Menu.Item>
               <Menu.Item>

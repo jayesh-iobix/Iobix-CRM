@@ -1,3 +1,8 @@
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+
 .cell {
     display: inline-block;
     width: 49%;
@@ -11,6 +16,8 @@
     border-radius: 50%;
     background: rgba(203, 37, 156, 0.671);
     box-shadow: 4px -40px 60px 5px rgb(40, 37, 203) inset;
+    /* background: rgba(170, 164, 234, 0.671);
+    box-shadow: 4px -40px 60px 5px rgb(63, 85, 250) inset; */
 }
 
 .rotate-in-up-left {
@@ -63,6 +70,22 @@
     }
 }
 
+.border-active {
+  outline: none;
+}
+
+.border-active:focus {
+  border: 1px solid #a4d4f9;
+  /* ring: 2px;
+  ring-color: #BFDEFF; */
+  box-shadow: 0 0 0 2px #BFDEFF;
+}
+
+.border-active:active {
+  border: 1px solid #a4d4f9;
+  box-shadow: 0 0 0 2px #BFDEFF;
+}
+
   /* Center the loader in the screen */
 .loader-container {
     position: fixed;
@@ -97,4 +120,26 @@
       transform: translateX(0);
     }
   }
+  
+
+  /** Used to define container behavior: width, position: fixed etc... **/
+  /* .Toastify__toast-container--top-right {
+    width: 30px;
+  } */
+
+
+  /* .Toastify__toast {
+    font-size: 14px; 
+    max-width: 400px; 
+    padding: 10px 20px;
+    border-radius: 8px; 
+  }
+  
+  .Toastify__toast--success {
+    background-color: #28a745; 
+  }
+  
+  .Toastify__toast--error {
+    background-color: #dc3545;
+  } */
   

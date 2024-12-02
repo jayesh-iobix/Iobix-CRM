@@ -3,6 +3,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { DesignationService } from "../../../service/DesignationService";
 import { DepartmentService } from "../../../service/DepartmentService";
+import { toast } from "react-toastify";
 
 const AddDesignation = () => {
   
@@ -18,7 +19,8 @@ const AddDesignation = () => {
     const fetchData = async () => {
       //#region Fetch DepartmentList
       const departmentResult = await DepartmentService.getDepartments();
-      setDepartmentList(departmentResult.data);
+      const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
+      setDepartmentList(activeDepartments);
       //#endregion Fetch DepartmentList
     };
     fetchData();
@@ -61,7 +63,7 @@ const AddDesignation = () => {
         if (response.status === 1) {
           navigate("/master/designation-list");
           console.log("Department added successfully:", response);
-          alert(response.message);
+          toast.success(response.message); // Toast on success
         }
         // Reset the form
         setDesignationName("");
@@ -141,9 +143,10 @@ const AddDesignation = () => {
             </div>
 
             <div className="w-full flex px-3">
-              <button
+            <button
                 type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md ${
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300
+                  ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isSubmitting}

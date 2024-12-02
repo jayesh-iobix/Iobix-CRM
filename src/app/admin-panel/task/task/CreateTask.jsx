@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { EmployeeService } from "../../service/EmployeeService";
-import { TaskService } from "../../service/TaskService";
+import { EmployeeService } from "../../../service/EmployeeService";
+import { TaskService } from "../../../service/TaskService";
+import { DepartmentService } from "../../../service/DepartmentService";
+import { toast } from "react-toastify";
 
 const CreateTask = () => {
   const [taskName, setTaskName] = useState("");
@@ -13,7 +15,9 @@ const CreateTask = () => {
   const [taskExpectedCompletionDate, setTaskExpectedCompletionDate] = useState("");
   const [taskCompletionDate, settaskCompletionDate] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
   const [employeeList, setEmployeeList] = useState([]);
+  const [departmentList, setDepartmentList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -21,21 +25,34 @@ const CreateTask = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const employeeResult = await EmployeeService.getEmployees();
-        setEmployeeList(employeeResult.data);
+
+        const departmentResult = await DepartmentService.getDepartments();
+        const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
+        setDepartmentList(activeDepartments);
+
+        if(departmentId)
+          {
+               // Fetch Employee from department
+               const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
+               setEmployeeList(employeeResult.data);
+          }
+
       } catch (error) {
         console.error("Error fetching employee list:", error);
       }
     };
 
     fetchEmployees();
-  }, []);
+  }, [departmentId]);
 
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
     if (!taskPriority) newErrors.taskPriority = "Priority is required";
     if (!taskAssignTo) newErrors.taskAssignTo = "Assign To is required";
+    if (!taskType) newErrors.taskType = "Task Type is required";
+    if (!taskStartingDate) newErrors.taskStartingDate = "Task Starting Date is required";
+    // if (!taskExpectedCompletionDate) newErrors.taskExpectedCompletionDate = "Task ExpectedCompletion Date is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -51,8 +68,9 @@ const CreateTask = () => {
       taskPriority,
       taskType,
       taskStartingDate,
-      taskExpectedCompletionDate,
+      taskExpectedCompletionDate: taskExpectedCompletionDate === "" ? null: taskExpectedCompletionDate,
       taskDescription,
+      departmentId,
       taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate, // Convert empty string to null
     };
 
@@ -60,12 +78,12 @@ const CreateTask = () => {
     try {
       const response = await TaskService.addTask(taskData);
       if (response.status === 1) {
-        alert(response.message);
+        toast.success(response.message); // Toast on success
         navigate("/task/task-list");
       }
     } catch (error) {
       console.error("Error adding task:", error);
-      alert("Failed to add task.");
+      toast.error("Failed to add task.");
     } finally {
       setIsSubmitting(false);
     }
@@ -88,7 +106,7 @@ const CreateTask = () => {
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
             {/* Task Name */}
-            <div className="w-full mb-2 px-3 md:w-1/2">
+            <div className="w-full mb-2 px-3 md:w-1/3">
               <label className="block text-base font-medium">Task Name</label>
               <input
                 name="taskName"
@@ -101,8 +119,44 @@ const CreateTask = () => {
               {errors.taskName && <p className="text-red-500 text-xs">{errors.taskName}</p>}
             </div>
 
+             {/* Department Select */}
+             <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">
+                Department
+              </label>
+              <div className="relative z-20">
+                <select
+                  value={departmentId}
+                  onChange={(e) => setDepartmentId(e.target.value)}
+                  name="departmentId"
+                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2"
+                >
+                  <option value="" className="text-gray-400">
+                    --Select Department--
+                  </option>
+                  {departmentList.length > 0 ? (
+                    departmentList.map((departmentItem) => (
+                      <option
+                        key={departmentItem.departmentId}
+                        value={departmentItem.departmentId}
+                      >
+                        {departmentItem.departmentName}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No Department available
+                    </option>
+                  )}
+                </select>
+              </div>
+              {errors.department && (
+                <p className="text-red-500 text-xs">{errors.department}</p>
+              )}
+            </div>
+
             {/* Assign To */}
-            <div className="w-full mb-2 px-3 md:w-1/2">
+            <div className="w-full mb-2 px-3 md:w-1/3">
               <label className="block text-base font-medium">Assign To</label>
               <select
                 value={taskAssignTo}
@@ -112,7 +166,7 @@ const CreateTask = () => {
                 <option value="">--Select Employee--</option>
                 {employeeList.map((employee) => (
                   <option key={employee.employeeId} value={employee.employeeId}>
-                    {employee.name}
+                    {employee.firstName + ' ' + employee.lastName }
                   </option>
                 ))}
               </select>
@@ -133,6 +187,7 @@ const CreateTask = () => {
                 <option value="Temporary">Temporary</option>
                 <option value="Recurring">Recurring</option>
               </select>
+              {errors.taskType && <p className="text-red-500 text-xs">{errors.taskType}</p>}
             </div>
 
             {/* Priority */}
@@ -162,6 +217,7 @@ const CreateTask = () => {
                 onChange={(e) => setTaskStartingDate(e.target.value)}
                 className="w-full mb-2 rounded-md border py-[10px] px-4"
               />
+             {errors.taskStartingDate && <p className="text-red-500 text-xs">{errors.taskStartingDate}</p>}
             </div>
 
             {/* Expected Completion Date */}
@@ -173,6 +229,7 @@ const CreateTask = () => {
                 onChange={(e) => setTaskExpectedCompletionDate(e.target.value)}
                 className="w-full mb-2 rounded-md border py-[10px] px-4"
               />
+              {errors.taskExpectedCompletionDate && <p className="text-red-500 text-xs">{errors.taskExpectedCompletionDate}</p>}
             </div>
 
             {/* Task Description */}
@@ -189,7 +246,7 @@ const CreateTask = () => {
             <div className="w-full px-3">
               <button
                 type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md ${
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isSubmitting}

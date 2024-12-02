@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import { DepartmentService } from '../../../service/DepartmentService';
+import { toast } from 'react-toastify';
 
 const AddDepartment = () => {
 
@@ -43,7 +44,7 @@ const AddDepartment = () => {
         if (response.status === 1) {
           navigate('/master/department-list');
           console.log('Department added successfully:', response);
-          alert(response.message);
+          toast.success(response.message); // Toast on success
         }
         // Reset the form
         setDepartmentName('');
@@ -84,12 +85,15 @@ const AddDepartment = () => {
             </div>
 
             <div className='w-full flex px-3'>
-              <button
+            <button
                 type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300
+                  ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Submitting...' : 'Add'}
+                {isSubmitting ? "Submitting..." : "Add"}
               </button>
             </div>
           </div>

@@ -16,19 +16,24 @@ const AddEmployee = () => {
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch departments
         const departmentResult = await DepartmentService.getDepartments();
-        setDepartmentList(departmentResult.data);
+        const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
+
+        setDepartmentList(activeDepartments);
 
         if(formData.departmentId)
         {
             // Fetch designation from department
             const designationResult = await DesignationService.getDesignationByDepartment(formData.departmentId);
-            setDesignationList(designationResult.data);
+          //  const activeDesignation = designationResult.data.filter(designation => designation.isActive === true);
+
+             setDesignationList(designationResult.data);
 
              // Fetch Employee from department
              const employeeResult = await EmployeeService.getEmployeeByDepartment(formData.departmentId);
@@ -87,6 +92,7 @@ const AddEmployee = () => {
         const response = await EmployeeService.addEmployee(employeeData); // Call the service
         if(response.status === 1){
           alert(response.message);    
+          navigate('/employee-list')
         }
         
 

@@ -3,11 +3,13 @@ import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { DesignationService } from "../../../service/DesignationService";
 import { DepartmentService } from "../../../service/DepartmentService";
+import { toast } from "react-toastify";
 
 const EditDesignation = () => {
   
   const [departmentId, setDepartmentId] = useState("");
   const [designationName, setDesignationName] = useState("");
+  const [isActive, setIsActive] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { id } = useParams();
@@ -18,7 +20,9 @@ const EditDesignation = () => {
     const fetchDepartmentData = async () => {
       //#region Fetch DepartmentList
       const departmentResult = await DepartmentService.getDepartments();
-      setDepartmentList(departmentResult.data);
+      const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
+      setDepartmentList(activeDepartments);
+
       //#endregion Fetch DepartmentList
     };
 
@@ -28,6 +32,8 @@ const EditDesignation = () => {
       //console.log(department);
       setDepartmentId(designation.data.departmentId);
       setDesignationName(designation.data.designationName);
+      setIsActive(designation.data.isActive); // Assuming the designation object contains isActive
+
       //#endregion Fetch DepartmentList
     };
     fetchData();
@@ -59,6 +65,7 @@ const EditDesignation = () => {
     const designationData = {
       departmentId,
       designationName,
+      isActive
     };
 
     console.log("Submitted Data:", designationData);
@@ -72,7 +79,7 @@ const EditDesignation = () => {
         );
         if (response.status === 1) {
           navigate("/master/designation-list");
-          alert(response.message);
+          toast.success(response.message); // Toast on success
         }
         // Reset the form
         // setDesignationName('');
@@ -87,7 +94,7 @@ const EditDesignation = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Add Designation</h1>
+        <h1 className="font-semibold text-2xl">Edit Designation</h1>
         <Link
           to="/master/designation-list"
           className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
@@ -100,7 +107,7 @@ const EditDesignation = () => {
       <section className="bg-white shadow-sm m-1 py-8 pt-">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
-            <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
+            <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
                 Department
               </label>
@@ -136,7 +143,7 @@ const EditDesignation = () => {
               )}
             </div>
 
-            <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
+            <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
                 Designation Name
               </label>
@@ -152,15 +159,26 @@ const EditDesignation = () => {
               )}
             </div>
 
+            {/* Is Active Checkbox */}
+             <div className='w-full mt-3 mb-2 px-3 md:w-1/3 lg:w-1/3'>
+              <input
+                type="checkbox"
+                checked={isActive}
+                onChange={(e) => setIsActive(e.target.checked)}
+                className='w-5 mt-8 h-5'
+              />
+            </div>
+
             <div className="w-full flex px-3">
-              <button
+            <button
                 type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md ${
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300
+                  ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Edit"}
+                {isSubmitting ? "Submitting..." : "Update"}
               </button>
             </div>
           </div>

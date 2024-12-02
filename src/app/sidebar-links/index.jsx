@@ -20,15 +20,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
 		submenu: [
 		  { label: 'Department', path: '/master/department-list' },
 		  { label: 'Designation', path: '/master/designation-list'},
-		],
-	},
-	{
-		key: 'Task',
-		label: 'Task',
-		icon: <BiBox />,
-		submenu: [
-		  { label: 'TaskList', path: '/task/task-list' },
-		//   { label: 'Create Task', path: '/task/create-task'},
+		  { label: 'Employee Permission', path: '/master/employeepermission-list'},
 		],
 	},
 	{
@@ -37,20 +29,33 @@ export const DASHBOARD_SIDEBAR_LINKS = [
 		path: '/employee-list',
 		icon: <BsPeople />
 	},
+	{
+		key: 'task',
+		label: 'Task',
+		icon: <BiTask />,
+		submenu: [
+		  { label: 'Task List', path: '/task/task-list' },
+	    //   { label: 'Create Task', path: '/task/create-tas/k'},
+		],
+	},
 ]
 
 export const USER_DASHBOARD_SIDEBAR_LINKS = [
 	{
 		key: 'dashboard',
 		label: 'Dashboard',
-		path: '/',
+		path: '/user',
 		icon: <HiOutlineViewGrid />
 	},
 	{
 		key: 'task',
 		label: 'Task',
-		path: '/task',
-		icon: <BiTask />
+		// path: '/user/task-list',
+		icon: <BiTask />,
+		submenu: [
+			{ label: 'User Tasks', path: '/user/task-list' },
+		    { label: 'Assign Tasks', path: '/user/assign-task-list'},
+		  ],
 	},	
 ]
 

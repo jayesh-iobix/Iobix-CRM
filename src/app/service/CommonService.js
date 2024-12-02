@@ -40,4 +40,6 @@ export const CommonService = {
       throw error;
     }
   },
+
+  
 };

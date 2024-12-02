@@ -3,30 +3,28 @@ import React, { useState, useEffect } from 'react';
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { DepartmentService } from '../../../service/DepartmentService';
+import { toast } from 'react-toastify';
 
 const EditDepartment = () => {
-  const {id} = useParams(); 
-  const [departmentName,setDepartmentName] = useState("");
+  const { id } = useParams(); 
+  const [departmentName, setDepartmentName] = useState("");
+  const [isActive, setIsActive] = useState(""); // New state for checkbox
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
-      //#region Fetch DepartmentList 
-      const department  = await DepartmentService.getByIdDepartments(id);
-      //console.log(department);
+      const department = await DepartmentService.getByIdDepartments(id);
       setDepartmentName(department.data.departmentName);
-      //#endregion Fetch DepartmentList
-    }
+      setIsActive(department.data.isActive); // Assuming the department object contains isActive
+    };
     fetchData();
-
   }, [id]);
 
-    const validateForm = () => {
+  const validateForm = () => {
     const newErrors = {};
     if (!departmentName) newErrors.departmentName = 'Department Name is required';
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -37,36 +35,26 @@ const EditDepartment = () => {
     if (validateForm()) {
       setIsSubmitting(true);
 
-      // Simulate API call or form submission logic
-      setTimeout(() => {
-        setDepartmentName('');
-        setIsSubmitting(false);
-      }, 1000); // Simulate a delay for submission
-    }
-    // Logic for form submission goes here
-    const departmentData = {
-      departmentName
-    };
+      const departmentData = {
+        departmentName,
+        isActive, // Include isActive in the submitted data
+      };
 
-    console.log("Submitted Data:", departmentData);
-    if (validateForm()) {
-    try {
-      // setAdminId("3FA85F64-5717-4562-B3FC-2C963F66AFA6");
-      const response = await DepartmentService.updateDepartments(id,departmentData);
-      //debugger;
-      if(response.status === 1)
-      {
-        navigate('/master/department-list');
-        alert(response.message);
+      try {
+        const response = await DepartmentService.updateDepartments(id, departmentData);
+        if (response.status === 1) {
+          navigate('/master/department-list');
+          toast.success(response.message); // Toast on success
+        }
+        setDepartmentName('');
+      } catch (error) {
+        console.error('Error Editing department:', error);
+        alert('Failed to edit department.');
       }
-      // Reset the form
-      setDepartmentName('');
-    } catch (error) {
-      console.error('Error Editing department:', error);
-      alert('Failed to edit department.');
+
+      setIsSubmitting(false);
     }
   };
-}
 
   return (
     <>
@@ -95,13 +83,24 @@ const EditDepartment = () => {
               {errors.departmentName && <p className="text-red-500 text-xs">{errors.departmentName}</p>}
             </div>
 
+            {/* Is Active Checkbox */}
+            <div className='w-full mt-3 mb-2 px-3 md:w-1/2 lg:w-1/2'>
+              <input
+                type="checkbox"
+                checked={isActive}
+                onChange={(e) => setIsActive(e.target.checked)}
+                className='w-5 mt-8 h-5'
+              />
+            </div>
+
             <div className='w-full flex px-3'>
               <button
                 type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300
+                  ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Submitting...' : 'Update'}
+                {isSubmitting ? "Submitting..." : "Update"}
               </button>
             </div>
           </div>
@@ -112,6 +111,7 @@ const EditDepartment = () => {
 };
 
 export default EditDepartment;
+
 
 
 

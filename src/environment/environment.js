@@ -6,5 +6,10 @@ export const environment = {
   state: "https://localhost:7292/api/State",
   city: "https://localhost:7292/api/City",
   employee: "https://localhost:7292/api/EmployeeMaster",
+  employeePermission: "https://localhost:7292/api/EmployeePermission",
   task: "https://localhost:7292/api/Task",
+  subTask: "https://localhost:7292/api/SubTask",
+  userSubTask: "https://localhost:7292/api/user/SubTask",
+  userTask: "https://localhost:7292/api/user/Task",
+  dashboard: "https://localhost:7292/api/Dashboard",
 };

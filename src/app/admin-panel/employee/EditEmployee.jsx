@@ -154,7 +154,7 @@ const EditEmployee = () => {
         <h1 className="font-semibold text-2xl">Edit Employee</h1>
         <Link
           to="/employee-list"
-          className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2"
+          className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
         >
           <FaArrowLeft size={16} />
           Back

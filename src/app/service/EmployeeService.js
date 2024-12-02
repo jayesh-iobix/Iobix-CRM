@@ -79,17 +79,23 @@ export const EmployeeService = {
   try {
 
     const response = await httpClient.get(`${api}/GetByDepartment/${departmentId}`);
-    console.log(response)
+    // console.log(response)
     return response.data;
   } catch (error) {
     console.error('Failed to fetch employees:', error);
     throw error;
   }
 },
-  
 
-
-
-
+// Method to get all Employee
+getEmployeesProfileDetail: async () => {
+  try {
+    const response = await httpClient.get(`${api}/GetProfileDetail`); // Update 'GetAll' with actual endpoint if different
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch departments:', error);
+    throw error;
+  }
+},
   
 };
