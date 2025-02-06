@@ -33,7 +33,7 @@ export default function UserDashboardStatsGrid() {
 
   return (
     <div className="flex h-[150px] gap-4">
-      <div className="bg-[#d0cefa] rounded-[20px] p-4 flex-1 border-[#908cdc] border-solid border-[3px] flex items-center">
+      <div className="bg-[#d0cefa] rounded-[20px] p-4 flex-1 border-[#908cdc] border-solid border-[3px] flex items-center animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#908CDC]">
           <FaList className="text-2xl text-white" />
         </div>
@@ -47,7 +47,7 @@ export default function UserDashboardStatsGrid() {
           </div>
         </div>
       </div>
-      <div className="bg-[#ffd5d5] rounded-[20px] p-4 flex-1 border-[#fd7373f1] border-solid border-[3px] flex items-center">
+      <div className="bg-[#ffd5d5] rounded-[20px] p-4 flex-1 border-[#fd7373f1] border-solid border-[3px] flex items-center animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#e95d5d]">
           <IoTime className="text-2xl text-white" />
         </div>
@@ -61,7 +61,7 @@ export default function UserDashboardStatsGrid() {
           </div>
         </div>
       </div>
-      <div className="bg-[#CEFADF] rounded-[20px] p-4 flex-1 border-[#71c589] border-solid border-[3px] flex items-center">
+      <div className="bg-[#CEFADF] rounded-[20px] p-4 flex-1 border-[#71c589] border-solid border-[3px] flex items-center animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#71c589]">
           <FaClipboardCheck className="text-2xl text-white" />
         </div>
@@ -75,7 +75,7 @@ export default function UserDashboardStatsGrid() {
           </div>
         </div>
       </div>
-      <div className="bg-[#FFEDD5] rounded-[20px] p-4 flex-1 border-[#ceaa79] border-solid border-[3px] flex items-center">
+      <div className="bg-[#FFEDD5] rounded-[20px] p-4 flex-1 border-[#ceaa79] border-solid border-[3px] flex items-center animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#ceaa79]">
           <FaRightToBracket className="text-2xl text-white" />
         </div>

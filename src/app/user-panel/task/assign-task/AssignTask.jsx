@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { TaskService } from "../../../service/TaskService";
+import { motion } from "framer-motion"; // Import framer-motion
+
 
 
 const AssignTask = () => {
@@ -80,7 +82,8 @@ const AssignTask = () => {
       const response = await TaskService.addTask(taskData);
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
-        navigate("/user/assign-task-list");
+        navigate(-1);
+        // navigate("/user/assign-task-list");
       }
     } catch (error) {
       console.error("Error adding task:", error);
@@ -94,6 +97,10 @@ const AssignTask = () => {
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Task</h1>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
         <Link
           onClick={() => navigate(-1)} // Navigate back to previous page
           className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
@@ -101,6 +108,7 @@ const AssignTask = () => {
           <FaArrowLeft size={16} />
           Back
         </Link>
+        </motion.button>
       </div>
 
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
@@ -115,7 +123,8 @@ const AssignTask = () => {
                 placeholder="Task Name"
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark outline-none"
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+                autoFocus
               />
               {errors.taskName && <p className="text-red-500 text-xs">{errors.taskName}</p>}
             </div>
@@ -130,7 +139,7 @@ const AssignTask = () => {
                   value={departmentId}
                   onChange={(e) => setDepartmentId(e.target.value)}
                   name="departmentId"
-                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2"
+                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
                 >
                   <option value="" className="text-gray-400">
                     --Select Department--
@@ -162,7 +171,7 @@ const AssignTask = () => {
               <select
                 value={taskAssignTo}
                 onChange={(e) => setTaskAssignTo(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="">--Select Employee--</option>
                 {employeeList.map((employee) => (
@@ -180,7 +189,7 @@ const AssignTask = () => {
               <select
                 value={taskType}
                 onChange={(e) => setTaskType(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Type--
@@ -197,7 +206,7 @@ const AssignTask = () => {
               <select
                 value={taskPriority}
                 onChange={(e) => setTaskPriority(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Priority--
@@ -216,7 +225,7 @@ const AssignTask = () => {
                 type="date"
                 value={taskStartingDate}
                 onChange={(e) => setTaskStartingDate(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
              {errors.taskStartingDate && <p className="text-red-500 text-xs">{errors.taskStartingDate}</p>}
             </div>
@@ -228,7 +237,7 @@ const AssignTask = () => {
                 type="date"
                 value={taskExpectedCompletionDate}
                 onChange={(e) => setTaskExpectedCompletionDate(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
               {errors.taskExpectedCompletionDate && <p className="text-red-500 text-xs">{errors.taskExpectedCompletionDate}</p>}
             </div>
@@ -240,20 +249,22 @@ const AssignTask = () => {
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
                 rows="3"
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               ></textarea>
             </div>
 
             <div className="w-full px-3">
-              <button
-                type="submit"
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="submit"
                 className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isSubmitting}
-              >
+            >
                 {isSubmitting ? "Submitting..." : "Add Task"}
-              </button>
+              </motion.button>
             </div>
           </div>
         </form>

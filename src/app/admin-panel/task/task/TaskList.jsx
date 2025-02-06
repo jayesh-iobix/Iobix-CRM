@@ -9,6 +9,7 @@ import { EmployeeService } from "../../../service/EmployeeService";
 import { TaskNoteService } from "../../../service/TaskNoteService";
 import { IoCloseCircle, IoTime, IoTimer, IoTrash } from "react-icons/io5";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion"; // Import framer-motion
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
@@ -20,6 +21,10 @@ const TaskList = () => {
   const [statusFilter, setStatusFilter] = useState(""); // State for status filter
   const [subTasks, setSubTasks] = useState([]); // Stores the sub-tasks for each task
   const [expandedRows, setExpandedRows] = useState({}); // Tracks expanded rows
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
+  const [deleteId, setDeleteId] = useState(null); // Store the Id to delete
+  const [deleteSubTaskId, setDeleteSubTaskId] = useState(null); // Store the Id to delete
 
   //#region Fields for Task Transfer
   const [departments, setDepartments] = useState([]);
@@ -118,34 +123,96 @@ const TaskList = () => {
     fetchTasks();
   }, [departmentId]);
 
-  const deleteTask = async (taskId) => {
-    try {
-      const response = await TaskService.deleteTask(taskId);
-      if (response.status === 1) {
-        setFilteredTasks((prevTasks) =>
-          prevTasks.filter((task) => task.taskAllocationId !== taskId)
+  // const deleteTask = async (taskId) => {
+  //   try {
+  //     const response = await TaskService.deleteTask(taskId);
+  //     if (response.status === 1) {
+  //       setFilteredTasks((prevTasks) =>
+  //         prevTasks.filter((task) => task.taskAllocationId !== taskId)
+  //       );
+  //       toast.error(response.message); 
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting task:", error);
+  //     alert("Failed to delete task");
+  //   }
+  // };
+
+  // const deleteSubTask = async (subTaskId,taskAllocationId) => {
+  //   try {
+  //     const response = await SubTaskService.deleteSubTask(subTaskId);
+  //     if (response.status === 1) {
+  //       fetchsubtaskdata(taskAllocationId);
+  //       alert(response.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting subtask:", error);
+  //     alert("Failed to delete subtask");
+  //   }
+  // };
+
+  const handleDeleteClick = (taskAllocationId) => {
+    // debugger;
+    // event.preventDefault(); // Prevent the default action (page reload)
+    setDeleteId(taskAllocationId);
+    setIsPopupOpen(true); // Open popup
+  };
+
+  const handleSubTaskDeleteClick = (subTaskAllocationId,taskAllocationId) => {
+    // debugger;
+    // event.preventDefault(); // Prevent the default action (page reload)
+    setDeleteSubTaskId(subTaskAllocationId);
+    setIsPopupOpen(true); // Open popup
+  };
+
+  const deleteTask = async (event) => {
+    event.preventDefault(); // Prevent the default action (page reload)
+    // debugger;
+
+    if(deleteId) {
+      try {
+        const response = await TaskService.deleteTask(
+          deleteId
         );
-        toast.error(response.message); 
+        if (response.status === 1) {
+          setFilteredTasks((prevTasks) =>
+            prevTasks.filter(
+              (task) => task.taskAllocationId !== deleteId
+            )
+          );
+          toast.error("Task Deleted Successfully"); // Toast on success
+          setIsPopupOpen(false); // Close popup after deletion
+          setDeleteId(null); // Reset eventTypeIdToDelete
+        }
+      } catch (error) {
+        console.error("Error deleting task", error);
+        alert("Failed to delete task");
       }
-    } catch (error) {
-      console.error("Error deleting task:", error);
-      alert("Failed to delete task");
+    } 
+    else if (deleteSubTaskId){
+      try {
+        const response = await SubTaskService.deleteSubTask(
+          deleteSubTaskId
+        );
+        if (response.status === 1) {
+          // fetchsubtaskdata(deleteSubTaskId)
+          toast.error("Sub Task Deleted Successfully"); // Toast on success
+          setIsPopupOpen(false); // Close popup after deletion
+          setDeleteSubTaskId(null); // Reset eventTypeIdToDelete
+        }
+      } catch (error) {
+        console.error("Error deleting sub task:", error);
+        alert("Failed to delete sub task");
+      }
     }
+    else return;
   };
 
-  const deleteSubTask = async (subTaskId,taskAllocationId) => {
-    try {
-      const response = await SubTaskService.deleteSubTask(subTaskId);
-      if (response.status === 1) {
-        fetchsubtaskdata(taskAllocationId);
-        alert(response.message);
-      }
-    } catch (error) {
-      console.error("Error deleting subtask:", error);
-      alert("Failed to delete subtask");
-    }
+  const handlePopupClose = (event) => {
+    event.preventDefault(); // Prevent the default action (page reload)
+    setIsPopupOpen(false); // Close popup without deleting
+    setDeleteId(null); // Reset the ID
   };
-
 
   const toggleRow = async (taskAllocationId) => {
     const newExpandedRows = { ...expandedRows };
@@ -197,7 +264,8 @@ const TaskList = () => {
     // Filter by status
     if (statusFilter) {
       filtered = filtered.filter((task) =>
-        task.taskStatusName.toLowerCase().includes(statusFilter.toLowerCase())
+        task.taskStatusName.toLowerCase().includes(statusFilter.toLowerCase()),
+        // subT.taskStatusName.toLowerCase().includes(statusFilter.toLowerCase()),
       );
     }
 
@@ -258,12 +326,18 @@ const TaskList = () => {
     ...new Set(tasks.map((task) => task.taskAssignToName)),
   ];
   const uniquePriorities = [...new Set(tasks.map((task) => task.taskPriority))];
-  const uniqueStatuses = [...new Set(tasks.map((task) => task.taskStatusName))];
+  const uniqueStatuses = [
+    ...new Set(tasks.map((task) => task.taskStatusName)),
+    ...new Set((Array.isArray(subTasks) ? subTasks : []).map((subTask) => subTask.taskStatusName)),
+  ];
+  
+  // const uniqueStatuses = [...new Set(tasks.map((task) => task.taskStatusName))];
 
   // Function to handle opening the popup and setting the current task
   const handleEyeClick = (task) => {
     setCurrentTask(task); // Set the selected task data
     setTaskAllocationId(task.taskAllocationId); // Set the selected task data
+    setSubTaskAllocationId(task.subTaskAllocationId); // Set the selected task data
     setTaskDate(formatDate(task.taskDate)); // Assuming taskDate is in a format we can directly display
     setTaskTimeIn(task.taskTimeIn);
     setTaskTimeOut(task.taskTimeOut);
@@ -557,7 +631,8 @@ const TaskList = () => {
     // Convert taskDuration to the required time span format (hh:mm:ss)
 
     const taskNoteData = {
-      taskAllocationId,
+      taskAllocationId: taskAllocationId === "" ? null : taskAllocationId, // Convert empty string to null
+      subTaskAllocationId: subTaskAllocationId === "" ? null : subTaskAllocationId, // Convert empty string to null
       taskDate,
       taskTimeIn: formattedTimeIn,
       taskTimeOut: formattedTimeOut,
@@ -595,13 +670,18 @@ const TaskList = () => {
     <>
       <div className="flex justify-between items-center my-3 ">
         <h1 className="font-semibold text-2xl">Task List</h1>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
         <Link
           to="/task/create-task"
-          className="bg-blue-600 hover:bg-[#0074BD] flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+          className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
         >
           Add Task
           <FaPlus className="mt-[3px]" size={14} />
         </Link>
+        </motion.button>
       </div>
 
       {/* Filters Section */}
@@ -647,6 +727,7 @@ const TaskList = () => {
               {[
                 "",
                 "Task Name",
+                "Assigned By",
                 "Assigned To",
                 "Priority",
                 "Starting Date",
@@ -676,7 +757,14 @@ const TaskList = () => {
                 const isLastRow = index === filteredTasks.length - 1;
                 return (
                   <React.Fragment key={item.taskAllocationId}>
-                    <tr className="border-b hover:bg-gray-50">
+                    <motion.tr
+                      key={item.taskAllocationId}
+                      className="border-b hover:bg-gray-50"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: item * 0.1 }}
+                    >
+                    {/* <tr className="border-b hover:bg-gray-50"> */}
                       <td className="py-3 px-4 text-gray-700">
                         <button
                           onClick={() => toggleRow(item.taskAllocationId)}
@@ -694,6 +782,9 @@ const TaskList = () => {
                       </td>
                       <td className="py-3 px-4 text-gray-700">
                         {item.taskName}
+                      </td>
+                      <td className="py-3 px-4 text-gray-700">
+                        {item.taskAssignByName}
                       </td>
                       <td className="py-3 px-4 text-gray-700">
                         {item.taskAssignToName}
@@ -719,13 +810,26 @@ const TaskList = () => {
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <div className="flex gap-3">
+                        <div className="flex gap-2">
+                          <button>
+                          <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
                           <Link
                             to={`/task/edit-task/${item.taskAllocationId}`}
                             className="text-blue-500 hover:text-blue-700"
                           >
                             <FaEdit size={24} />
                           </Link>
+                          </motion.button>
+                          </button>
+                          
+                          <button>
+                          <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
                           <Link
                             to={`/task/tasknote-list/${item.taskAllocationId}`}
                             className="text-yellow-500 hover:text-yellow-700"
@@ -733,11 +837,20 @@ const TaskList = () => {
                             {/* <FaRegFileLines size={24} /> */}
                             <IoTime size={24} />
                           </Link>
+                          </motion.button>
+                          </button>
+                          
                           <button
-                            onClick={() => deleteTask(item.taskAllocationId)}
+                            onClick={() =>handleDeleteClick(item.taskAllocationId)}
+                            // onClick={() => deleteTask(item.taskAllocationId)}
                             className="text-red-500 hover:text-red-700"
                           >
-                            <FaTrashAlt size={22} />
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                            <FaTrash size={22} />
+                            </motion.button>
                           </button>
                           <button
                             onClick={() =>
@@ -748,7 +861,12 @@ const TaskList = () => {
                               (buttonRefs.current[item.taskAllocationId] = el)
                             }
                           >
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
                             <FaEllipsisV size={24} />
+                            </motion.button>
                           </button>
                           {/* Render dropdown above or below based on space */}
                           {openDropdown === item.taskAllocationId && (
@@ -925,7 +1043,8 @@ const TaskList = () => {
 
                         </div>
                       </td>
-                    </tr>
+                    {/* </tr> */}
+                    </motion.tr>
 
                     {/* Expanded Sub-Task Row */}
                     {expandedRows[item.taskAllocationId] &&
@@ -938,6 +1057,7 @@ const TaskList = () => {
                               <tr>
                                 {[
                                   "Sub-Task Name",
+                                  "Assigned By",
                                   "Assigned To",
                                   "Priority",
                                   "Starting Date",
@@ -968,6 +1088,9 @@ const TaskList = () => {
                                           {subTask.taskName}
                                         </td>
                                         <td className="py-2 px-4">
+                                          {subTask.taskAssignByName}
+                                        </td>
+                                        <td className="py-2 px-4">
                                           {subTask.taskAssignToName}
                                         </td>
                                         <td className="py-2 px-4">
@@ -994,18 +1117,47 @@ const TaskList = () => {
                                           </span>
                                         </td>
                                         <td className="py-3 px-4">
-                                          <div className="flex gap-3">
+                                          <div className="flex gap-2">
+                                            <button>
+                                            <motion.button
+                                              whileHover={{ scale: 1.1 }}
+                                              whileTap={{ scale: 0.9 }}
+                                            >
                                             <Link
-                                              to={`/task/edit-subtask/  ${subTask.subTaskAllocationId}`}
+                                              to={`/task/edit-subtask/${subTask.subTaskAllocationId}`}
                                               className="relative text-blue-500 hover:text-blue-700 group"
                                             >
                                               <FaEdit size={24} />
                                             </Link>
+                                            </motion.button>
+                                            </button>
+                                            
+                                            <button>
+                                            <motion.button
+                                              whileHover={{ scale: 1.1 }}
+                                              whileTap={{ scale: 0.9 }}
+                                            >
+                                            <Link
+                                              to={`/task/tasknote-list/${subTask.subTaskAllocationId}`}
+                                              className="text-yellow-500 hover:text-yellow-700"
+                                            >
+                                              {/* <FaRegFileLines size={24} /> */}
+                                              <IoTime size={24} />
+                                            </Link>
+                                            </motion.button>
+                                            </button>
+                                            
                                             <button
-                                             onClick={() => deleteSubTask(subTask.subTaskAllocationId,subTask.taskAllocationId)}
+                                            onClick={(e) =>handleSubTaskDeleteClick(subTask.subTaskAllocationId,subTask.taskAllocationId)}
+                                            //  onClick={() => deleteSubTask(subTask.subTaskAllocationId,subTask.taskAllocationId)}
                                              className="text-red-500 hover:text-red-700"
                                             >
-                                              <FaTrash size={24} />
+                                              <motion.button
+                                              whileHover={{ scale: 1.1 }}
+                                              whileTap={{ scale: 0.9 }}
+                                            >
+                                              <FaTrash size={22} />
+                                              </motion.button>
                                             </button>
                                             <button
                                               onClick={() =>
@@ -1020,7 +1172,12 @@ const TaskList = () => {
                                                 ] = el)
                                               }
                                             >
+                                              <motion.button
+                                              whileHover={{ scale: 1.1 }}
+                                              whileTap={{ scale: 0.9 }}
+                                            >
                                               <FaEllipsisV size={24} />
+                                              </motion.button>
                                             </button>
                                             {/* Render dropdown above or below based on space */}
                                             {openSubDropdown ===
@@ -1238,7 +1395,8 @@ const TaskList = () => {
                             </table>
                           </td>
                         </tr>
-                      )}
+                    )}
+                      
                   </React.Fragment>
                 );
               })
@@ -1246,6 +1404,40 @@ const TaskList = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Confirmation Popup */}
+      {isPopupOpen && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
+            <div className="flex justify-center mb-4">
+              <div className="bg-red-100 p-5 rounded-full">
+                <FaTrashAlt className="text-red-600 text-4xl" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+              Are you sure you want to delete ?
+            </h3>
+            <div className="flex justify-end gap-4">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={(event) => handlePopupClose(event)}
+                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200"
+              >
+                No
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={(event) => deleteTask(event)}
+                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200"
+              >
+                Yes
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Popup for task details */}
       {isPopupVisible && (
@@ -1331,20 +1523,24 @@ const TaskList = () => {
      {/* Pagination Section */}
      <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
         <div className="flex flex-1 justify-between sm:hidden">
-          <button
+          <motion.button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
             Previous
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
             Next
-          </button>
+          </motion.button>
         </div>
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div>
@@ -1360,44 +1556,50 @@ const TaskList = () => {
           </div>
           <div>
             <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-              <button
+              <motion.button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <span className="sr-only">Previous</span>
-                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
                 </svg>
-              </button>
+              </motion.button>
 
               {/* Pagination Buttons */}
               {[...Array(totalPages)].map((_, index) => (
-                <button
+                <motion.button
                   key={index}
                   onClick={() => handlePageChange(index + 1)}
                   className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
                     currentPage === index + 1 ? "bg-indigo-600" : "bg-gray-200 text-gray-700"
                   }`}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
                   {index + 1}
-                </button>
+                </motion.button>
               ))}
 
-              <button
+              <motion.button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <span className="sr-only">Next</span>
-                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
                 </svg>
-              </button>
+              </motion.button>
             </nav>
           </div>
         </div>
-      </div>
+     </div>
     </>
   );
 };

@@ -5,6 +5,8 @@ import { EmployeeService } from "../../../service/EmployeeService";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { SubTaskService } from "../../../service/SubTaskService";
 import { DepartmentService } from "../../../service/DepartmentService";
+import { motion } from "framer-motion"; // Import framer-motion
+
 
 const EditSubTask = () => {
   const [taskAllocationId, setTaskAllocationId] = useState("");
@@ -135,6 +137,11 @@ const EditSubTask = () => {
           >
             Add Sub Task <span className="mt-[2px]"> <FaPlus size={14} /></span>
           </Link> */}
+
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
           <Link
             to="/task/task-list"
             className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
@@ -142,6 +149,7 @@ const EditSubTask = () => {
             <FaArrowLeft size={16} />
             Back
           </Link>
+          </motion.button>
         </div>
       </div>
 
@@ -158,6 +166,7 @@ const EditSubTask = () => {
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
                 className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+                autoFocus
               />
               {errors.taskName && (
                 <p className="text-red-500 text-xs">{errors.taskName}</p>
@@ -276,7 +285,18 @@ const EditSubTask = () => {
             </div>
 
             <div className="w-full px-3">
-              <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="submit"
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? "Submitting..." : "Update Task"}
+              </motion.button>
+              {/* <button
                 type="submit"
                 className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
@@ -284,7 +304,7 @@ const EditSubTask = () => {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Update Task"}
-              </button>
+              </button> */}
             </div>
           </div>
         </form>

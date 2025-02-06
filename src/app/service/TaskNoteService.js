@@ -52,6 +52,18 @@ export const TaskNoteService = {
       throw error;
     }
   },
+
+  // Method to detete task note
+  deleteTaskNote: async (taskNoteId) => {
+    debugger;
+    try {
+      const response = await httpClient.delete(`${userApi}/DeleteTaskNote/${taskNoteId}`); 
+      return response.data;
+    } catch (error) {
+      console.error('Failed to delete tasknote:', error);
+      throw error;
+    }
+  },
   
 
 //   // Method to get all tasks
@@ -89,14 +101,5 @@ export const TaskNoteService = {
 //     }
 //   },
 
-//    // Method to detete task
-//    deleteTask: async (taskId) => {
-//     try {
-//       const response = await httpClient.delete(`${api}/${taskId}`); 
-//       return response.data;
-//     } catch (error) {
-//       console.error('Failed to fetch tasks:', error);
-//       throw error;
-//     }
-//   },
+   
 };

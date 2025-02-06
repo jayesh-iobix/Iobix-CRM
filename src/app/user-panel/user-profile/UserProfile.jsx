@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { IoClose } from 'react-icons/io5';
 import { FaUser } from "react-icons/fa";
 import { EmployeeService } from '../../service/EmployeeService';
+import { motion } from "framer-motion"; // Import framer-motion
 
 
 const UserProfile = () => {
@@ -59,8 +60,13 @@ const UserProfile = () => {
         </div>
         </div>
         <div>
+        <motion.button
+          whileHover={{ scale: 1.2 }}
+          whileTap={{ scale: 0.9 }}
+        >
             {/* <FaCircleXmark onClick={()=> navigate(-1)} className='text-red-500 cursor-pointer' size={35}/> */}
             <IoClose onClick={()=> navigate(-1)} className='text-red-500 cursor-pointer' size={40}/>
+            </motion.button>
         </div>
       </div>
     

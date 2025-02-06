@@ -76,8 +76,6 @@ body {
 
 .border-active:focus {
   border: 1px solid #a4d4f9;
-  /* ring: 2px;
-  ring-color: #BFDEFF; */
   box-shadow: 0 0 0 2px #BFDEFF;
 }
 
@@ -121,6 +119,24 @@ body {
     }
   }
   
+.animated-box {
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.animated-box:hover {
+  transform: scale(1.05); /* This will give a slight scaling effect */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.animated-box .rounded-full {
+  transition: transform 0.3s ease;
+}
+
+.animated-box:hover .rounded-full {
+  transform: translate(5px, -5px); /* Adjust as needed to move the element */
+}
+
 
   /** Used to define container behavior: width, position: fixed etc... **/
   /* .Toastify__toast-container--top-right {

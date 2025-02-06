@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { TaskService } from "../../../service/TaskService";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { EmployeeService } from "../../../service/EmployeeService";
+import { motion } from "framer-motion"; // Import framer-motion
+
 
 const EditAssignTask = () => {
   const [taskName, setTaskName] = useState("");
@@ -132,12 +134,22 @@ const EditAssignTask = () => {
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Task</h1>
         <div className="flex">
+          <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
           <Link
             to={`/user/task/create-subtask/${id}`}
-            className="bg-[#0296D6] text-white flex gap-2 mx-2 py-2 px-4 rounded hover:no-underline"
+            className="bg-blue-600 hover:bg-blue-700 text-white flex gap-2 mx-2 py-2 px-4 rounded hover:no-underline"
           >
             Add Sub Task <span className="mt-[2px]"> <FaPlus size={14} /></span>
           </Link>
+          </motion.button>
+
+          <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
           <Link
             onClick={() => navigate(-1)} // Navigate back to previous page
             className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
@@ -145,6 +157,7 @@ const EditAssignTask = () => {
             <FaArrowLeft size={16} />
             Back
           </Link>
+          </motion.button>
         </div>
       </div>
 
@@ -160,7 +173,8 @@ const EditAssignTask = () => {
                 placeholder="Task Name"
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark outline-none"
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+                autoFocus
               />
               {errors.taskName && (
                 <p className="text-red-500 text-xs">{errors.taskName}</p>
@@ -191,7 +205,7 @@ const EditAssignTask = () => {
               <select
                 value={taskAssignTo}
                 onChange={(e) => setTaskAssignTo(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="">--Select Employee--</option>
                 {employeeList.map((employee) => (
@@ -211,7 +225,7 @@ const EditAssignTask = () => {
               <select
                 value={taskType}
                 onChange={(e) => setTaskType(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Type--
@@ -227,7 +241,7 @@ const EditAssignTask = () => {
               <select
                 value={taskPriority}
                 onChange={(e) => setTaskPriority(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Priority--
@@ -250,7 +264,7 @@ const EditAssignTask = () => {
                 type="date"
                 value={taskStartingDate}
                 onChange={(e) => setTaskStartingDate(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
             </div>
 
@@ -263,7 +277,7 @@ const EditAssignTask = () => {
                 type="date"
                 value={taskExpectedCompletionDate}
                 onChange={(e) => setTaskExpectedCompletionDate(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
             </div>
 
@@ -273,7 +287,7 @@ const EditAssignTask = () => {
               <select
                 value={taskStatus}
                 onChange={(e) => setTaskStatus(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Status--
@@ -293,12 +307,23 @@ const EditAssignTask = () => {
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
                 rows="3"
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               ></textarea>
             </div>
 
             <div className="w-full px-3">
-              <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="submit"
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? "Submitting..." : "Update Task"}
+              </motion.button>
+              {/* <button
                 type="submit"
                 className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
@@ -306,7 +331,7 @@ const EditAssignTask = () => {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Update Task"}
-              </button>
+              </button> */}
             </div>
           </div>
         </form>

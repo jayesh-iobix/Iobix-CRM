@@ -5,6 +5,7 @@ import { CommonService } from "../../service/CommonService";
 import { DepartmentService } from "../../service/DepartmentService";
 import { DesignationService } from "../../service/DesignationService";
 import { EmployeeService } from "../../service/EmployeeService";
+import { motion } from "framer-motion"; // Import framer-motion
 
 const EditEmployee = () => {
 
@@ -152,13 +153,18 @@ const EditEmployee = () => {
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Employee</h1>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
         <Link
-          to="/employee-list"
+          onClick={() => navigate(-1)}
           className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
         >
           <FaArrowLeft size={16} />
           Back
         </Link>
+        </motion.button>
       </div>
 
       <section className="bg-white shadow-sm m-1 py-8 pt-4 dark:bg-dark">
@@ -183,7 +189,7 @@ const EditEmployee = () => {
                   name={name}
                   value={formData[name] || ""}
                   onChange={handleChange}
-                  className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                  className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
                 />
                 {errors[name] && <p className="text-red-500 text-xs">{errors[name]}</p>}
               </div>
@@ -196,7 +202,7 @@ const EditEmployee = () => {
                 name="departmentId"
                 value={formData.departmentId}
                 onChange={handleChange}
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="">--Select Department--</option>
                 {departmentList.map((dept) => (
@@ -212,7 +218,7 @@ const EditEmployee = () => {
                 name="designationId"
                 value={formData.designationId}
                 onChange={handleChange}
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="">--Select Designation--</option>
                 {designationList.map((desig) => (
@@ -228,7 +234,7 @@ const EditEmployee = () => {
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="">--Select Gender--</option>
                 <option value="Male">Male</option>
@@ -244,7 +250,7 @@ const EditEmployee = () => {
                 name="countryId"
                 value={formData.countryId}
                 onChange={handleChange}
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="">--Select Country--</option>
                 {countryList.map((country) => (
@@ -260,7 +266,7 @@ const EditEmployee = () => {
                 name="stateId"
                 value={formData.stateId}
                 onChange={handleChange}
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="">--Select State--</option>
                 {stateList.map((state) => (
@@ -276,7 +282,7 @@ const EditEmployee = () => {
                 name="cityId"
                 value={formData.cityId}
                 onChange={handleChange}
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="">--Select City--</option>
                 {cityList.map((city) => (
@@ -296,7 +302,7 @@ const EditEmployee = () => {
                 value={formData.reportingTo}
                 onChange={handleChange}
                 name="reportingTo"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select Employee--
@@ -326,7 +332,7 @@ const EditEmployee = () => {
                 value={formData.address}
                 onChange={handleChange}
                 rows="3"
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               />
               {errors.address && <p className="text-red-500 text-xs">{errors.address}</p>}
             </div>
@@ -339,20 +345,31 @@ const EditEmployee = () => {
                 value={formData.keyResponsibility}
                 onChange={handleChange}
                 rows="3"
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               />
               {errors.keyResponsibility && <p className="text-red-500 text-xs">{errors.keyResponsibility}</p>}
             </div>
 
             {/* Submit Button */}
             <div className="w-full flex px-3">
-              <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="submit"
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? "Submitting..." : "Update Employee"}
+              </motion.button>
+              {/* <button
                 type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300  ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Update Employee"}
-              </button>
+              </button> */}
             </div>
           </div>
         </form>

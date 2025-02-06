@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { FaEdit, FaEye } from "react-icons/fa";
+import { FaArrowLeft, FaEdit, FaEye } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { TaskNoteService } from "../../../service/TaskNoteService";
 import { toast } from "react-toastify";
+import { TaskNoteService } from "../../../service/TaskNoteService";
 
-const TaskNoteList = () => {
+const UserTaskNoteList = () => {
   const { id } = useParams();
   const [taskNotes, setTaskNotes] = useState([]);
   const [taskAllocationId, setTaskAllocationId] = useState("");
@@ -27,6 +27,7 @@ const TaskNoteList = () => {
       try {
         const result = await TaskNoteService.getTaskNoteByTaskId(id);
         setTaskNotes(result.data);
+        console.log(result.data)
 
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -139,12 +140,19 @@ const TaskNoteList = () => {
     <>
       <div className="flex justify-between items-center my-3 ">
         <h1 className="font-semibold text-2xl">Task Note List</h1>
-        <button
+        {/* <button
             onClick={() => navigate(-1)} // Navigate back to previous page
             className="px-6 py-2 bg-gray-300 text-black rounded-md font-semibold hover:bg-gray-400 transition duration-200"
           >
             Back
-          </button>
+          </button> */}
+          <Link
+          onClick={() => navigate(-1)} // Navigate back to previous page
+          className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+        >
+          <FaArrowLeft size={16} />
+          Back
+        </Link>
       </div>
 
       <div className="grid overflow-x-auto shadow-xl">
@@ -154,20 +162,26 @@ const TaskNoteList = () => {
               <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
                 Task Name
               </th>
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
+              {/* <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
                 Assigned By
+              </th> */}
+              <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
+                Created By
               </th>
               <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
                 Task Date
               </th>
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
+              {/* <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
                 Task Time In
               </th>
               <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
                 Task Time Out
-              </th>
+              </th> */}
               <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
                 Task Duration
+              </th>
+              <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
+                Task Updates
               </th>
               {/* <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
                 Task Updates
@@ -175,9 +189,9 @@ const TaskNoteList = () => {
               {/* <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
                 Status
               </th> */}
-              <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
+              {/* <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
                 Actions
-              </th>
+              </th> */}
             </tr>
           </thead>
           <tbody>
@@ -188,16 +202,21 @@ const TaskNoteList = () => {
               >
                 <td className="py-3 px-4 text-gray-700">{item.taskName}</td>
                 <td className="py-3 px-4 text-gray-700">
-                  {item.taskAssignToName}
+                  {item.taskCreatedByName}
                 </td>
+                {/* <td className="py-3 px-4 text-gray-700">
+                  {item.taskAssignByName}
+                </td> */}
                 <td className="py-3 px-4 text-gray-700">{formatDate(item.taskDate)}</td>
-                <td className="py-3 px-4 text-gray-700">
+                {/* <td className="py-3 px-4 text-gray-700">
                   {item.taskTimeIn}
                 </td>
                 <td className="py-3 px-4 text-gray-700">
                   {item.taskTimeOut}
-                </td>
+                </td> */}
                 <td className="py-3 px-4 text-gray-700">{item.taskDuration}</td>
+                <td className="py-3 px-4 text-gray-700">{item.taskUpdate}</td>
+
                 {/* <td className="py-3 px-4 text-gray-700">{item.taskUpdate}</td> */}
                 {/* <td className="py-3 px-4">
                   <span
@@ -208,7 +227,7 @@ const TaskNoteList = () => {
                     {item.taskStatusName}
                   </span>
                 </td> */}
-                <td className="py-3 px-4">
+                {/* <td className="py-3 px-4">
                   <div className="flex gap-3">
                     <Link
                       to={`/user/task-list/${item.taskAllocationId}`}
@@ -221,11 +240,8 @@ const TaskNoteList = () => {
                       className="text-green-500 hover:text-green-700"
                       onClick={() => handleEyeClick(item)}
                     />
-                    {/* <Link className="text-yellow-500 hover:text-yellow-700">
-                    <FaRegFileLines size={24} />
-                    </Link> */}
                   </div>
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>
@@ -233,7 +249,7 @@ const TaskNoteList = () => {
       </div>
 
       {/* Popup for task details */}
-      {isPopupVisible && (
+      {/* {isPopupVisible && (
         <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/2 xl:w-1/2">
             <h2 className="text-xl font-semibold mb-4">Task Details</h2>
@@ -313,12 +329,12 @@ const TaskNoteList = () => {
             </form>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 };
 
-export default TaskNoteList;
+export default UserTaskNoteList;
 
 
 

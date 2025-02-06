@@ -5,9 +5,10 @@ import { DepartmentService } from "../../../service/DepartmentService";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { SubTaskService } from "../../../service/SubTaskService";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion"; // Import framer-motion
 
 
-const AddSubTask = () => {
+const AssignSubTask = () => {
   // const [subTaskAllocationId, setSubTaskAllocationId] = useState("");
   const [taskAllocationId, setTaskAllocationId] = useState("");
   const [taskName, setTaskName] = useState("");
@@ -82,7 +83,8 @@ const AddSubTask = () => {
       const response = await SubTaskService.addSubTask(subTaskData);
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
-        navigate("/user/task-list");
+        navigate(-1); // Navigate back to previous page
+        // navigate("/user/task-list");
       }
     } catch (error) {
       console.error("Error adding sub task:", error);
@@ -96,6 +98,10 @@ const AddSubTask = () => {
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Sub Task</h1>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
         <Link
           onClick={() => navigate(-1)} // Navigate back to previous page
           className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
@@ -103,6 +109,7 @@ const AddSubTask = () => {
           <FaArrowLeft size={16} />
           Back
         </Link>
+        </motion.button>
       </div>
 
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
@@ -117,8 +124,9 @@ const AddSubTask = () => {
                 placeholder="Task Name"
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark outline-none"
-              />
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+                autoFocus
+             />
               {errors.taskName && <p className="text-red-500 text-xs">{errors.taskName}</p>}
             </div>
 
@@ -128,7 +136,7 @@ const AddSubTask = () => {
               <select
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 transition border-active"
               >
                 <option value="">--Select Department--</option>
                 {departments.map((department) => (
@@ -146,7 +154,7 @@ const AddSubTask = () => {
               <select
                 value={taskAssignTo}
                 onChange={(e) => setTaskAssignTo(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="">--Select Employee--</option>
                 {employeeList.map((employee) => (
@@ -164,7 +172,7 @@ const AddSubTask = () => {
               <select
                 value={taskType}
                 onChange={(e) => setTaskType(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Type--
@@ -181,7 +189,7 @@ const AddSubTask = () => {
               <select
                 value={taskPriority}
                 onChange={(e) => setTaskPriority(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Priority--
@@ -200,7 +208,7 @@ const AddSubTask = () => {
                 type="date"
                 value={taskStartingDate}
                 onChange={(e) => setTaskStartingDate(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
              {errors.taskStartingDate && <p className="text-red-500 text-xs">{errors.taskStartingDate}</p>}
             </div>
@@ -212,7 +220,7 @@ const AddSubTask = () => {
                 type="date"
                 value={taskExpectedCompletionDate}
                 onChange={(e) => setTaskExpectedCompletionDate(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
               {errors.taskExpectedCompletionDate && <p className="text-red-500 text-xs">{errors.taskExpectedCompletionDate}</p>}
             </div>
@@ -224,7 +232,7 @@ const AddSubTask = () => {
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
                 rows="3"
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               ></textarea>
             </div>
 
@@ -246,4 +254,4 @@ const AddSubTask = () => {
   );
 };
 
-export default AddSubTask;
+export default AssignSubTask;

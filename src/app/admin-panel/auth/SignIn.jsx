@@ -6,8 +6,6 @@ import Logo from "../../../assets/iobix-technolabs.png"
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-
-
 const SignIn = ({onLogin, setLoading}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,8 +20,8 @@ const SignIn = ({onLogin, setLoading}) => {
       try {
         const decodedToken = jwtDecode(token);
         if (
-          decodedToken?.IsSuperAdmin === "1" ||
-          decodedToken?.IsAdmin === "1"
+          decodedToken?.Admin === "IsAdmin" ||
+          decodedToken?.Employee === "IsEmployee"
         ) {
           navigate("/"); // Redirect to dashboard if already authenticated
         }
@@ -73,10 +71,10 @@ const SignIn = ({onLogin, setLoading}) => {
         const { token } = response.data;
         sessionStorage.setItem("token", token); // Store token
 
-        //debugger;
+        // debugger;
         // Decode token to get the role
         const decodedToken = jwtDecode(token);
-        const role = decodedToken.IsSuperAdmin === "1" || decodedToken.IsAdmin === "1" ? "admin" : "user";
+        const role = decodedToken.Admin === "IsAdmin" ? "admin" : "user";
         sessionStorage.setItem("role", role); // Store role
         onLogin(role); // Update authentication state
        
@@ -95,7 +93,7 @@ const SignIn = ({onLogin, setLoading}) => {
         navigate(role === "admin" ? "/" : "/user"); // Redirect based on role
 
       } else {
-        alert(response.message || "Sign-in failed.");
+        toast.error(response.message || "Sign-in failed.");
       }
     } catch (error) {
       console.error("Error during sign-in:", error);
@@ -106,7 +104,7 @@ const SignIn = ({onLogin, setLoading}) => {
       // setLoading(false); // Stop loading spinner after request
       setTimeout(() => {
         setLoading(false);  // Stop loading spinner after request
-      }, 1000); // 1.5 seconds delay before redirect
+      }, 1000); // 1 seconds delay before redirect
     }
   };
 
@@ -209,7 +207,8 @@ const SignIn = ({onLogin, setLoading}) => {
   );
 };
 
-export default SignIn;
+export default SignIn;
+
 
 
 

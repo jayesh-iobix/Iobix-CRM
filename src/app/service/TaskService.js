@@ -39,6 +39,18 @@ export const TaskService = {
     }
   },
 
+
+  // Method to get user main tasks in User Sub Tasks component 
+  getUserTasksBySubTask: async () => {
+    try {
+      const response = await httpClient.get(`${userApi}/GetUserTaskBySubAllocationId`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error);
+      throw error;
+    }
+  },
+
     // Method to get user Task Assign List
     getUserAssignTasks: async () => {
       try {

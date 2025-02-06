@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { FaEdit } from 'react-icons/fa';
+import { FaArrowLeft, FaEdit, FaTrash } from 'react-icons/fa';
 import { TaskNoteService } from '../../../service/TaskNoteService';
+import { toast } from 'react-toastify';
+import { motion } from "framer-motion"; // Import framer-motion
+
 
 export const TaskNoteList = () => {
 
@@ -14,6 +17,7 @@ export const TaskNoteList = () => {
           try {
             const result = await TaskNoteService.getTaskNoteByTaskId(id);
             setTaskNotes(result.data);
+            console.log(result.data);
     
           } catch (error) {
             console.error("Error fetching tasks:", error);
@@ -29,16 +33,45 @@ export const TaskNoteList = () => {
     return date.toLocaleDateString(); // You can customize the date format as needed
   };
 
+  const deleteNote = async (taskNoteId) => {
+    // console.log(taskNoteId);
+    debugger;
+    try {
+      const response = await TaskNoteService.deleteTaskNote(taskNoteId);
+      if (response.status === 1) {
+        setTaskNotes((prevTaskNote) =>
+          prevTaskNote.filter((taskNote) => taskNote.taskNoteId !== taskNoteId)
+        );
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      alert("Failed to delete task");
+    }
+  };
+
   return (
     <>
     <div className="flex justify-between items-center my-3 ">
       <h1 className="font-semibold text-2xl">Task Note List</h1>
-      <button
+      <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+      {/* <button
           onClick={() => navigate(-1)} // Navigate back to previous page
           className="px-6 py-2 bg-gray-300 text-black rounded-md font-semibold hover:bg-gray-400 transition duration-200"
         >
           Back
-        </button>
+        </button> */}
+        <Link
+          onClick={() => navigate(-1)} // Navigate back to previous page
+          className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+        >
+          <FaArrowLeft size={16} />
+          Back
+        </Link>
+        </motion.button>
     </div>
 
     <div className="grid overflow-x-auto shadow-xl">
@@ -49,7 +82,7 @@ export const TaskNoteList = () => {
               Task Name
             </th>
             <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
-              Assigned By
+              Created By
             </th>
             <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
               Task Date
@@ -69,9 +102,9 @@ export const TaskNoteList = () => {
             {/* <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
               Status
             </th> */}
-            <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
+            {/* <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
               Actions
-            </th>
+            </th> */}
           </tr>
         </thead>
         <tbody>
@@ -81,9 +114,10 @@ export const TaskNoteList = () => {
               className="border-b hover:bg-gray-50"
             >
               <td className="py-3 px-4 text-gray-700">{item.taskName}</td>
-              <td className="py-3 px-4 text-gray-700">
+              <td className="py-3 px-4 text-gray-700">{item.taskCreatedByName}</td>
+              {/* <td className="py-3 px-4 text-gray-700">
                 {item.taskAssignToName}
-              </td>
+              </td> */}
               <td className="py-3 px-4 text-gray-700">{formatDate(item.taskDate)}</td>
               <td className="py-3 px-4 text-gray-700">
                 {item.taskTimeIn}
@@ -102,7 +136,15 @@ export const TaskNoteList = () => {
                   {item.taskStatusName}
                 </span>
               </td> */}
-              <td className="py-3 px-4">
+              {/* <td className="py-3 px-4"> */}
+
+              {/* <button
+                onClick={() => deleteNote(item.taskNoteId)}
+                className="text-red-500 hover:text-red-700"
+              >
+                <FaTrash size={22} />
+              </button> */}
+                {/* <FaTrash/> */}
                 {/* <div className="flex gap-3">
                   <Link
                     to={/user/task-list/${item.taskAllocationId}}
@@ -116,7 +158,7 @@ export const TaskNoteList = () => {
                     onClick={() => handleEyeClick(item)}
                   /> */}
                 {/* </div> */}
-              </td>
+              {/* </td> */}
             </tr>
           ))}
         </tbody>

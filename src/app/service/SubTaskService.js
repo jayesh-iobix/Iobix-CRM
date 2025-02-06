@@ -29,8 +29,30 @@ export const SubTaskService = {
     }
   },
 
-    // Method to get tasks by Id
-    getSubTaskById: async (subTaskId) => {
+  // Method to get sub tasks which is assign by user own
+  getUserSubTaskByUser: async (taskAllocationId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetByTaskAllocationIdByTaskAssignBy/${taskAllocationId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch sub tasks:', error);
+      throw error;
+    }
+  },
+
+  // Method to get sub tasks by main task which is assign by other
+  getUserSubTask: async (taskAllocationId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetByTaskAllocationIdByTaskAssignTo/${taskAllocationId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch sub tasks:', error);
+      throw error;
+    }
+  },
+
+  // Method to get tasks by Id
+  getSubTaskById: async (subTaskId) => {
       try {
         const response = await httpClient.get(`${api}/${subTaskId}`);
         return response.data;
@@ -38,7 +60,7 @@ export const SubTaskService = {
         console.error('Failed to fetch sub tasks:', error);
         throw error;
       }
-    },
+  },
 
     // Method to update task by id
   updateSubTask: async (subTaskId, subTaskData) => {

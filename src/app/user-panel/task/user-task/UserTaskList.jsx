@@ -8,6 +8,9 @@ import { DepartmentService } from "../../../service/DepartmentService";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { TaskNoteService } from "../../../service/TaskNoteService";
 import { SubTaskService } from "../../../service/SubTaskService";
+import { motion } from "framer-motion"; // Import framer-motion
+import { IoTime } from "react-icons/io5";
+
 
 const UserTaskList = () => {
 
@@ -61,26 +64,6 @@ const UserTaskList = () => {
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
-  // Function to fetch sub-tasks by task allocation ID
-  const getSubTasksByTaskAllocationId = async (taskAllocationId) => {
-    try {
-      const response = await SubTaskService.getSubTasksByTaskAllocationId(
-        taskAllocationId
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch sub-tasks:", error);
-      throw error;
-    }
-  };
-
-  const fetchsubtaskdata = async (taskAllocationId) => {
-    const subTaskData = await getSubTasksByTaskAllocationId(taskAllocationId); // make sure this function returns a promise
-    setSubTasks((prevSubTasks) => ({
-      ...prevSubTasks,
-      [taskAllocationId]: subTaskData,
-    }));
-  };
 
   const fetchTasks = async () => {
     try {
@@ -108,6 +91,27 @@ const UserTaskList = () => {
       setTasks([]);
       setFilteredTasks([]); // Fallback to an empty array in case of an error
     }
+  };
+
+   // Function to fetch sub-tasks by task allocation ID
+   const getSubTasksByTaskAllocationId = async (taskAllocationId) => {
+    try {
+      const response = await SubTaskService.getUserSubTask(
+        taskAllocationId
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch sub-tasks:", error);
+      throw error;
+    }
+  };
+
+  const fetchsubtaskdata = async (taskAllocationId) => {
+    const subTaskData = await getSubTasksByTaskAllocationId(taskAllocationId); // make sure this function returns a promise
+    setSubTasks((prevSubTasks) => ({
+      ...prevSubTasks,
+      [taskAllocationId]: subTaskData,
+    }));
   };
 
   useEffect(() => {
@@ -306,7 +310,7 @@ const UserTaskList = () => {
 
     // If it's the last row or space below is too small, open the dropdown above
     if (isLastRow || spaceBelow < 400) {
-      return { top: buttonRect.top - 120, left: buttonRect.left - 120 };
+      return { top: buttonRect.top - 100, left: buttonRect.left - 120 };
     }
     
     // Otherwise, open it below
@@ -524,8 +528,10 @@ const UserTaskList = () => {
     // Convert taskDuration to the required time span format (hh:mm:ss)
 
     const taskNoteData = {
-      taskAllocationId,
-      subTaskAllocationId,
+      // taskAllocationId,
+      taskAllocationId: taskAllocationId === "" ? null : taskAllocationId, // Convert empty string to null
+      subTaskAllocationId: subTaskAllocationId === "" ? null : subTaskAllocationId, // Convert empty string to null
+      // subTaskAllocationId,
       taskDate,
       taskTimeIn: formattedTimeIn,
       taskTimeOut: formattedTimeOut,
@@ -607,6 +613,7 @@ const UserTaskList = () => {
             {[
                 "",
                 "Task Name",
+                "Assigned By",
                 "Assigned To",
                 "Priority",
                 "Starting Date",
@@ -636,7 +643,14 @@ const UserTaskList = () => {
             const isLastRow = index === filteredTasks.length - 1;
             return (
               <React.Fragment key={item.taskAllocationId}>
-                <tr className="border-b hover:bg-gray-50">
+                <motion.tr
+                  key={item.employeeId}
+                  className="border-b hover:bg-gray-50"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: item * 0.1 }}
+                >
+                {/* <tr className="border-b hover:bg-gray-50"> */}
                   <td className="py-3 px-4 text-gray-700">
                     <button
                       onClick={() => toggleRow(item.taskAllocationId)}
@@ -653,6 +667,7 @@ const UserTaskList = () => {
                     </button>
                   </td>
                   <td className="py-3 px-4 text-gray-700">{item.taskName}</td>
+                  <td className="py-3 px-4 text-gray-700">{item.taskAssignByName}</td>
                   <td className="py-3 px-4 text-gray-700">{item.taskAssignToName}</td>
                   <td className="py-3 px-4 text-gray-700">{item.taskPriority}</td>
                   <td className="py-3 px-4 text-gray-700">{formatDate(item.taskStartingDate)}</td>
@@ -671,8 +686,33 @@ const UserTaskList = () => {
                         className="relative text-blue-500 hover:text-blue-700 group"
                       >
                         {/* <FaEdit size={24} /> */}
+                        <button>
+                        <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        >
                         <FaCircleInfo size={24} />
+                        </motion.button>
+                        </button>
                       </Link>
+
+                      {item.taskAssignTo === userId && (
+                      <button>
+                          <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                          <Link
+                            to={`/user/tasknote-list/${item.taskAllocationId}`}
+                            className="text-yellow-500 hover:text-yellow-700"
+                          >
+                            {/* <FaRegFileLines size={24} /> */}
+                            <IoTime size={24} />
+                          </Link>
+                          </motion.button>
+                          </button>
+                          )}
+
                       {/* <FaEye
                         size={24}
                         className="text-green-500 hover:text-green-700"
@@ -686,7 +726,12 @@ const UserTaskList = () => {
                               className="text-gray-500 hover:text-gray-700"
                               ref={(el) => (buttonRefs.current[item.taskAllocationId] = el)}
                             >
+                              <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                              >
                               <FaEllipsisV size={24} />
+                              </motion.button>
                             </button>
                           )}
 
@@ -709,11 +754,11 @@ const UserTaskList = () => {
                                 Daily Note
                               </span>
                             </li>
-                            <li>
+                            {/* <li>
                               <span onClick={() => handleTaskTransfer(item)} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                 Task Transfer
                               </span>
-                            </li>
+                            </li> */}
                           </ul>
                         </div>
                       )}
@@ -837,7 +882,8 @@ const UserTaskList = () => {
 
                     </div>
                   </td>
-                </tr>
+                  </motion.tr>
+                {/* </tr> */}
 
                 {/* Expanded Sub-Task Row */}
                 {expandedRows[item.taskAllocationId] &&
@@ -850,6 +896,7 @@ const UserTaskList = () => {
                             <tr>
                             {[
                                   "Sub-Task Name",
+                                  "Assigned By",
                                   "Assigned To",
                                   "Priority",
                                   "Starting Date",
@@ -873,6 +920,7 @@ const UserTaskList = () => {
                               return(
                               <tr key={subTask.subTaskAllocationId}>
                                 <td className="py-2 px-4">{subTask.taskName}</td>
+                                <td className="py-2 px-4">{subTask.taskAssignByName}</td>
                                 <td className="py-2 px-4">{subTask.taskAssignToName}</td>
                                 <td className="py-2 px-4">{subTask.taskPriority}</td>
                                 <td className="py-2 px-4">{formatDate(subTask.taskStartingDate)}</td>
@@ -892,11 +940,28 @@ const UserTaskList = () => {
                                 >
                                 <FaCircleInfo size={24} />                                
                                 </Link>
+
+                                <button>
+                          <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                          <Link
+                            to={`/user/tasknote-list/${subTask.subTaskAllocationId}`}
+                            className="text-yellow-500 hover:text-yellow-700"
+                          >
+                            {/* <FaRegFileLines size={24} /> */}
+                            <IoTime size={24} />
+                          </Link>
+                          </motion.button>
+                          </button>
+
                       {/* <FaEye
                         size={24}
                         className="text-green-500 hover:text-green-700"
                         onClick={() => handleEyeClick(item)}
                       /> */}
+                      {subTask.taskAssignTo === userId && (
                       <button
                         onClick={() => toggleSubTaskDropdown(subTask.subTaskAllocationId)}
                         className="text-gray-500 hover:text-gray-700"
@@ -904,6 +969,7 @@ const UserTaskList = () => {
                       >
                         <FaEllipsisV size={24} />
                       </button>
+                       )}
                       {/* Render dropdown above or below based on space */}
                       {openSubDropdown === subTask.subTaskAllocationId && (
                         <div
@@ -922,11 +988,11 @@ const UserTaskList = () => {
                                 Daily Note
                               </span>
                             </li>
-                            <li>
+                            {/* <li>
                               <span onClick={() => handleSubTaskTransfer(subTask)} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                 Task Transfer
                               </span>
-                            </li>
+                            </li> */}
                           </ul>
                         </div>
                       )}
@@ -1055,6 +1121,7 @@ const UserTaskList = () => {
                     </tbody>
                     </table>
                   </td>
+                  {/* </motion.tr> */}
                 </tr>
                 )}
               </React.Fragment>
@@ -1149,20 +1216,24 @@ const UserTaskList = () => {
       {/* Pagination Section */}
       <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
         <div className="flex flex-1 justify-between sm:hidden">
-          <button
+          <motion.button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
             Previous
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
             Next
-          </button>
+          </motion.button>
         </div>
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div>
@@ -1178,47 +1249,54 @@ const UserTaskList = () => {
           </div>
           <div>
             <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-              <button
+              <motion.button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <span className="sr-only">Previous</span>
-                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
                 </svg>
-              </button>
+              </motion.button>
 
               {/* Pagination Buttons */}
               {[...Array(totalPages)].map((_, index) => (
-                <button
+                <motion.button
                   key={index}
                   onClick={() => handlePageChange(index + 1)}
                   className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
                     currentPage === index + 1 ? "bg-indigo-600" : "bg-gray-200 text-gray-700"
                   }`}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
                   {index + 1}
-                </button>
+                </motion.button>
               ))}
 
-              <button
+              <motion.button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <span className="sr-only">Next</span>
-                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
                 </svg>
-              </button>
+              </motion.button>
             </nav>
           </div>
         </div>
-      </div>
+     </div>
 
     </>
   );
 };
 
 export default UserTaskList;
+

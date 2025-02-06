@@ -4,6 +4,7 @@ import { FaArrowLeft, FaPlus } from "react-icons/fa";
 import { TaskService } from "../../../service/TaskService";
 import { SubTaskNoteService } from "../../../service/SubTaskNoteService";
 import { SubTaskService } from "../../../service/SubTaskService";
+import { motion } from "framer-motion"; // Import framer-motion
 
 
 const TaskDetails = () => {
@@ -167,13 +168,22 @@ const TaskDetails = () => {
             <h1 className="font-semibold text-3xl">Task Details</h1>
             <div className="flex">
             {taskDetails.taskAssignTo === userId && taskDetails.subTaskAllocationId !== id &&(
+              <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
             <Link
             to={`/user/task/create-subtask/${id}`}
-            className="bg-[#0296D6] text-white flex gap-2 mx-2 py-2 px-4 rounded hover:no-underline"
+            className="bg-blue-600 hover:bg-blue-700 text-white flex gap-2 mx-2 py-2 px-4 rounded hover:no-underline"
             >
             Add Sub Task <span className="mt-[2px]"> <FaPlus size={14} /></span>
             </Link>
+            </motion.button>
             )}
+            <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
           <Link
             onClick={() => navigate(-1)} // Navigate back to previous page
             className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
@@ -181,6 +191,7 @@ const TaskDetails = () => {
             <FaArrowLeft size={16} />
             Back
           </Link>
+          </motion.button>
         </div>
           </div>
           <div className="space-y-5">

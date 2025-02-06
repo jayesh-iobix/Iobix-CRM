@@ -5,6 +5,8 @@ import { EmployeeService } from "../../../service/EmployeeService";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { SubTaskService } from "../../../service/SubTaskService";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion"; // Import framer-motion
+
 
 
 
@@ -67,6 +69,7 @@ const CreateSubTask = () => {
     setTaskAllocationId(id);
     const subTaskData = {
       taskAllocationId,
+      departmentId,
       taskName,
       taskAssignTo,
       taskPriority,
@@ -97,6 +100,10 @@ const CreateSubTask = () => {
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Sub Task</h1>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
         <Link
           onClick={() => navigate(-1)} // Navigate back to previous page
           className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
@@ -104,6 +111,7 @@ const CreateSubTask = () => {
           <FaArrowLeft size={16} />
           Back
         </Link>
+        </motion.button>
       </div>
 
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
@@ -118,8 +126,9 @@ const CreateSubTask = () => {
                 placeholder="Task Name"
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark outline-none"
-              />
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+                autoFocus
+             />
               {errors.taskName && <p className="text-red-500 text-xs">{errors.taskName}</p>}
             </div>
 
@@ -129,7 +138,7 @@ const CreateSubTask = () => {
               <select
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="">--Select Department--</option>
                 {departments.map((department) => (
@@ -147,7 +156,7 @@ const CreateSubTask = () => {
               <select
                 value={taskAssignTo}
                 onChange={(e) => setTaskAssignTo(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="">--Select Employee--</option>
                 {employeeList.map((employee) => (
@@ -165,7 +174,7 @@ const CreateSubTask = () => {
               <select
                 value={taskType}
                 onChange={(e) => setTaskType(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Type--
@@ -182,7 +191,7 @@ const CreateSubTask = () => {
               <select
                 value={taskPriority}
                 onChange={(e) => setTaskPriority(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Priority--
@@ -201,7 +210,7 @@ const CreateSubTask = () => {
                 type="date"
                 value={taskStartingDate}
                 onChange={(e) => setTaskStartingDate(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
              {errors.taskStartingDate && <p className="text-red-500 text-xs">{errors.taskStartingDate}</p>}
             </div>
@@ -213,7 +222,7 @@ const CreateSubTask = () => {
                 type="date"
                 value={taskExpectedCompletionDate}
                 onChange={(e) => setTaskExpectedCompletionDate(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
               {errors.taskExpectedCompletionDate && <p className="text-red-500 text-xs">{errors.taskExpectedCompletionDate}</p>}
             </div>
@@ -225,12 +234,23 @@ const CreateSubTask = () => {
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
                 rows="3"
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               ></textarea>
             </div>
 
             <div className="w-full px-3">
-              <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="submit"
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? "Submitting..." : "Add Task"}
+              </motion.button>
+              {/* <button
                 type="submit"
                 className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
@@ -238,7 +258,7 @@ const CreateSubTask = () => {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Add Task"}
-              </button>
+              </button> */}
             </div>
           </div>
         </form>

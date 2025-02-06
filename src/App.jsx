@@ -26,8 +26,6 @@ import EditEmployeePermission from './app/admin-panel/master/employee-permission
 import CreateSubTask from './app/admin-panel/task/sub-task/CreateSubTask';
 import EditSubTask from './app/admin-panel/task/sub-task/EditSubTask';
 import { TaskNoteList } from './app/admin-panel/task/task-note/TaskNoteList';
-import AssignTaskList from './app/user-panel/assign-task/AssignTaskList';
-import AddSubTask from './app/user-panel/task/sub-task/AddSubTask';
 import ForgotPassword from './app/admin-panel/auth/ForgotPassword';
 import ResetPassowrd from './app/admin-panel/auth/ResetPassword';
 // import TaskNoteList from './app/admin-panel/task/task-note/TaskNoteList';
@@ -38,6 +36,18 @@ import UserTaskList from './app/user-panel/task/user-task/UserTaskList';
 import TaskDetails from './app/user-panel/task/user-task/TaskDetails';
 import EditAssignTask from './app/user-panel/task/assign-task/EditAssignTask';
 import AssignTask from './app/user-panel/task/assign-task/AssignTask';
+import AssignTaskList from './app/user-panel/task/assign-task/AssignTaskList';
+import AssignSubTask from './app/user-panel/task/assign-sub-task/AssignSubTask';
+import EditAssignSubTask from './app/user-panel/task/assign-sub-task/EditAssignSubTask';
+import UserSubTaskList from './app/user-panel/task/user-sub-task/UserSubTaskList';
+import UserTaskNoteList from './app/user-panel/task/user-task-note/UserTaskNoteList';
+import ViewEmployee from './app/admin-panel/employee/ViewEmployee';
+import AttendanceList from './app/user-panel/attendance/AttendanceList';
+import ViewAssignTask from './app/user-panel/task/assign-task/ViewAssignTask';
+import LeaveModule from './app/user-panel/leave/LeaveModule';
+import ViewAssignSubTask from './app/user-panel/task/assign-sub-task/ViewAssignSubTask';
+import LeaveList from './app/admin-panel/leave/LeaveList';
+import LeaveTypeList from './app/admin-panel/master/leave-type/LeaveTypeList';
 
 
 
@@ -51,14 +61,15 @@ function App() {
   useEffect(() => {
     // This code runs only once when the component mounts.
     const token = sessionStorage.getItem('token');
+    //console.log(token)
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
         // Check if the decoded token includes valid roles
-        if (decodedToken?.IsSuperAdmin === '1' || decodedToken?.IsAdmin === '1') {
+        if (decodedToken?.Admin === 'IsAdmin') {
           setIsAuthenticated(true); // User is authenticated
           setUserRole('admin'); // Set the role to admin
-        } else if (decodedToken?.IsSuperAdmin === '0' || decodedToken?.IsAdmin === '0') {
+        } else if (decodedToken?.Employee === 'IsEmployee') {
           setIsAuthenticated(true); // User is authenticated
           setUserRole('user'); // Set the role to user
         } else {
@@ -106,6 +117,7 @@ function App() {
       <Route path="employee-list" element={<EmployeeList />} />
       <Route path="employee-list/add-employee" element={<AddEmployee />} />
       <Route path="employee-list/edit-employee/:id" element={<EditEmployee />} />
+      <Route path="employee-list/view-employee/:id" element={<ViewEmployee />} />
       <Route path="master/department-list" element={<DepartmentList />} />
       <Route path="master/department-list/add-department" element={<AddDepartment />} />
       <Route path="master/department-list/edit-department/:id" element={<EditDepartment />} />
@@ -115,12 +127,14 @@ function App() {
       <Route path="master/employeepermission-list" element={<EmployeePermissionList />} />
       <Route path="master/employeepermission-list/add-employeepermission" element={<AddEmployeePermission />} />
       <Route path="master/employeepermission-list/edit-employeepermission/:id" element={<EditEmployeePermission />} />
+      <Route path="master/leave-type-list" element={<LeaveTypeList />} />
       <Route path="task/task-list" element={<TaskList />} />
       <Route path="task/create-task" element={<CreateTask />} />
       <Route path="task/edit-task/:id" element={<EditTask/>} />
       <Route path="task/create-subtask/:id" element={<CreateSubTask/>} />
       <Route path="task/edit-subtask/:id" element={<EditSubTask/>} />
       <Route path="task/tasknote-list/:id" element={<TaskNoteList/>} />
+      <Route path="leave" element={<LeaveList/>} />
       {/* <Route path="/profile" element={<Profile/>} /> */}
     </Route>
 
@@ -128,13 +142,20 @@ function App() {
     <Route path="/user" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
     <Route index element={<UserDashboard />} />
     <Route path="/user/task-list" element={<UserTaskList/>} />
+    <Route path="/user/sub-task-list" element={<UserSubTaskList/>} />
+    <Route path="/user/tasknote-list/:id" element={<UserTaskNoteList/>} />
     <Route path="/user/assign-task-list" element={<AssignTaskList/>} />
     <Route path="/user/assign-task" element={<AssignTask/>} />
     <Route path="/user/edit-assign-task/:id" element={<EditAssignTask/>} />
+    <Route path="/user/view-assign-task/:id" element={<ViewAssignTask/>} />
+    <Route path="/user/view-assign-subtask/:id" element={<ViewAssignSubTask/>} />
     {/* <Route path="/user/task-list/tasknote-list/:id" element={<TaskNoteList/>} /> */}
     <Route path="/user/task-list/:id" element={<TaskDetails/>} />
-    <Route path="/user/task/create-subtask/:id" element={<AddSubTask/>} />
+    <Route path="/user/task/create-subtask/:id" element={<AssignSubTask/>} />
+    <Route path="/user/task/edit-assign-subtask/:id" element={<EditAssignSubTask/>} />
     <Route path="/user/user-profile" element={<UserProfile/>} />
+    <Route path="/user/attendance" element={<AttendanceList/>} />
+    <Route path="/user/leave" element={<LeaveModule/>} />
     </Route>
   </Routes>
   </>

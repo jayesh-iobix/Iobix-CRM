@@ -3,6 +3,8 @@ import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import { DepartmentService } from '../../../service/DepartmentService';
 import { toast } from 'react-toastify';
+import { motion } from "framer-motion"; // Import framer-motion
+
 
 const AddDepartment = () => {
 
@@ -60,10 +62,15 @@ const AddDepartment = () => {
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Department</h1>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
         <Link to='/master/department-list' className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline">
           <FaArrowLeft size={16} />
           Back
         </Link>
+        </motion.button>
       </div>
 
       <section className='bg-white rounded-lg  shadow-sm m-1 py-8 pt-'>
@@ -78,23 +85,35 @@ const AddDepartment = () => {
                 placeholder='Department'
                 value={departmentName}
                 onChange={(e) => setDepartmentName(e.target.value)}
-                className='w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 outline-none transition'
+                className='w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition'
+                autoFocus
               />
               {errors.departmentName && <p className="text-red-500 text-xs">{errors.departmentName}</p>}
 
             </div>
 
             <div className='w-full flex px-3'>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="submit"
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? "Submitting..." : "Add"}
+              </motion.button>
+            {/* <button
                 type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 
                   ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Add"}
-              </button>
+              </button> */}
             </div>
           </div>
         </form>

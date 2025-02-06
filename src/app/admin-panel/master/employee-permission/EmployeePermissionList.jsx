@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
+import { FaEdit, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { EmployeePermissionService } from "../../../service/EmployeePermissionService";
+import { motion } from "framer-motion"; // Import framer-motion
+import { toast } from "react-toastify";
 
 const EmployeePermissionList = () => {
-  const [employeePermissionList, setemployeePermissionList] = useState([]);
+  const [employeePermissionList, setEmployeePermissionList] = useState([]);
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
+  const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
 
   //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,32 +22,62 @@ const EmployeePermissionList = () => {
     const fetchEmployeePermission = async () => {
       try {
         const result = await EmployeePermissionService.getEmployeesPermission();
-        setemployeePermissionList(result.data); // Set the 'data' array to the state
+        setEmployeePermissionList(result.data); // Set the 'data' array to the state
         setTotalItems(result.data.length); // Set total items for pagination
         setCurrentPage(1); // Reset to the first page when a new filter is applied
       } catch (error) {
         console.error("Error fetching employee permission:", error);
-        setemployeePermissionList([]); // Fallback to an empty array in case of an error
+        setEmployeePermissionList([]); // Fallback to an empty array in case of an error
       }
     };
     fetchEmployeePermission();
   }, []);
 
-  const deleteEmployeePermission = async (employeePermissionId) => {
+  // const deleteEmployeePermission = async (employeePermissionId) => {
+  //   try {
+  //     const response = await EmployeePermissionService.deleteEmployeePermission(employeePermissionId);
+  //     if (response.status === 1) {
+  //       setEmployeePermissionList((prevEmployeePermission) =>
+  //         prevEmployeePermission.filter(
+  //           (employeePermission) => employeePermission.employeePermissionId !== employeePermissionId
+  //         )
+  //       );
+  //       alert(response.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting Employee Permission:", error);
+  //     alert("Failed to delete Employee Permission");
+  //   }
+  // };
+
+  const deleteEmployeePermission = async () => {
+    if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
-      const response = await EmployeePermissionService.deleteEmployeePermission(employeePermissionId);
+      const response = await EmployeePermissionService.deleteEmployeePermission(deleteId);
       if (response.status === 1) {
-        setemployeePermissionList((prevEmployeePermission) =>
+        setEmployeePermissionList((prevEmployeePermission) =>
           prevEmployeePermission.filter(
-            (employeePermission) => employeePermission.employeePermissionId !== employeePermissionId
+            (employeePermission) => employeePermission.employeePermissionId !== deleteId
           )
         );
-        alert(response.message);
+        toast.error("Employee Permission Deleted Successfully"); // Toast on success
+        setIsPopupOpen(false); // Close popup after deletion
+        setDeleteId(null); // Reset the ID
       }
     } catch (error) {
-      console.error("Error deleting Employee Permission:", error);
-      alert("Failed to delete Employee Permission");
+      console.error("Error deleting employee permission:", error);
+      alert("Failed to delete employee permission");
     }
+  };
+
+  const handleDeleteClick = (employeePermissionId) => {
+    setDeleteId(employeePermissionId);
+    setIsPopupOpen(true); // Open popup
+  };
+
+  const handlePopupClose = () => {
+    setIsPopupOpen(false); // Close popup without deleting
+    setDeleteId(null); // Reset the ID
   };
 
    //#region Pagination logic
@@ -62,13 +96,15 @@ const EmployeePermissionList = () => {
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Employee Permission List</h1>
-        <Link
-          to="/master/employeepermission-list/add-employeepermission"
-          className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-        >
-          Add
-          <FaPlus className="mt-[3px]" size={14} />
-        </Link>
+        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          <Link
+            to="/master/employeepermission-list/add-employeepermission"
+            className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+          >
+            Add
+            <FaPlus className="mt-[3px]" size={14} />
+          </Link>
+        </motion.button>
       </div>
 
       <div className="grid overflow-x-auto">
@@ -85,52 +121,117 @@ const EmployeePermissionList = () => {
           </thead>
           <tbody>
             {employeePermissionList.map((item) => (
-              <tr key={item.employeePermissionId} className="border-b hover:bg-gray-50">
+              <motion.tr
+                key={item.employeePermissionId}
+                className="border-b hover:bg-gray-50"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: item * 0.1 }}
+              >
+                {/* <tr key={item.employeePermissionId} className="border-b hover:bg-gray-50"> */}
                 <td className="py-3 pl-8 text-gray-700">
                   {item.permissionName}
                 </td>
                 <td className="py-3 pr-8 text-right">
                   <div className="flex justify-end">
-                    {item.isActive?"":<span className="px-2 py-1 mr-4 rounded-lg font-medium text-red-500 bg-red-100">Not Active</span>}
-                  <button className="text-blue-500 hover:text-blue-700 pr-3">
-                    <Link
-                      to={`/master/employeepermission-list/edit-employeepermission/${item.employeePermissionId}`}
-                      className="text-blue-500 hover:text-blue-700"
+                    {item.isActive ? (
+                      ""
+                    ) : (
+                      <span className="px-2 py-1 mr-4 rounded-lg font-medium text-red-500 bg-red-100">
+                        Not Active
+                      </span>
+                    )}
+                    <button className="text-blue-500 hover:text-blue-700 pr-3">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Link
+                          to={`/master/employeepermission-list/edit-employeepermission/${item.employeePermissionId}`}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          <FaEdit size={24} />
+                        </Link>
+                      </motion.button>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(item.employeePermissionId)}
+                      // onClick={() =>
+                      //   deleteEmployeePermission(item.employeePermissionId)
+                      // }
+                      className="text-red-500 hover:text-red-700"
                     >
-                      <FaEdit size={24} />
-                    </Link>
-                  </button>
-                  <button
-                    onClick={() => deleteEmployeePermission(item.employeePermissionId)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <FaTrash size={24} />
-                  </button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <FaTrash size={22} />
+                      </motion.button>
+                    </button>
                   </div>
                 </td>
-              </tr>
+                {/* </tr> */}
+              </motion.tr>
             ))}
           </tbody>
         </table>
       </div>
 
+      {/* Confirmation Popup */}
+      {isPopupOpen && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
+            <div className="flex justify-center mb-4">
+              <div className="bg-red-100 p-5 rounded-full">
+                <FaTrashAlt className="text-red-600 text-4xl" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+              Are you sure you want to delete ?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={handlePopupClose}
+                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200"
+              >
+                No
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={deleteEmployeePermission}
+                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200"
+              >
+                Yes
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Pagination Section */}
-     <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
+      <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
         <div className="flex flex-1 justify-between sm:hidden">
-          <button
+          <motion.button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
             Previous
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
             Next
-          </button>
+          </motion.button>
         </div>
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div>
@@ -138,53 +239,83 @@ const EmployeePermissionList = () => {
               Showing
               <span className="font-semibold mx-1">{indexOfFirstItem + 1}</span>
               to
-              <span className="font-semibold mx-1">{Math.min(indexOfLastItem, totalItems)}</span>
+              <span className="font-semibold mx-1">
+                {Math.min(indexOfLastItem, totalItems)}
+              </span>
               of
               <span className="font-semibold mx-1">{totalItems}</span>
               results
             </p>
           </div>
           <div>
-            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-              <button
+            <nav
+              className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+              aria-label="Pagination"
+            >
+              <motion.button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <span className="sr-only">Previous</span>
-                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
+                <svg
+                  className="size-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
+                    clipRule="evenodd"
+                  />
                 </svg>
-              </button>
+              </motion.button>
 
               {/* Pagination Buttons */}
               {[...Array(totalPages)].map((_, index) => (
-                <button
+                <motion.button
                   key={index}
                   onClick={() => handlePageChange(index + 1)}
                   className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
-                    currentPage === index + 1 ? "bg-indigo-600" : "bg-gray-200 text-gray-700"
+                    currentPage === index + 1
+                      ? "bg-indigo-600"
+                      : "bg-gray-200 text-gray-700"
                   }`}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
                   {index + 1}
-                </button>
+                </motion.button>
               ))}
 
-              <button
+              <motion.button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <span className="sr-only">Next</span>
-                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fillRule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+                <svg
+                  className="size-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+                    clipRule="evenodd"
+                  />
                 </svg>
-              </button>
+              </motion.button>
             </nav>
           </div>
         </div>
-     </div>
-
+      </div>
     </>
   );
 }

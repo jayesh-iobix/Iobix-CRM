@@ -5,6 +5,8 @@ import { DepartmentService } from "../../../service/DepartmentService";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { TaskService } from "../../../service/TaskService";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion"; // Import framer-motion
+
 
 const UserCreateTask = () => {
   const [taskName, setTaskName] = useState("");
@@ -93,6 +95,10 @@ const UserCreateTask = () => {
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Task</h1>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
         <Link
           onClick={() => navigate(-1)} // Navigate back to previous page
           className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
@@ -100,6 +106,7 @@ const UserCreateTask = () => {
           <FaArrowLeft size={16} />
           Back
         </Link>
+        </motion.button>
       </div>
 
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
@@ -244,7 +251,18 @@ const UserCreateTask = () => {
             </div>
 
             <div className="w-full px-3">
-              <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="submit"
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? "Submitting..." : "Add Task"}
+            </motion.button>
+              {/* <button
                 type="submit"
                 className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
@@ -252,7 +270,7 @@ const UserCreateTask = () => {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Add Task"}
-              </button>
+              </button> */}
             </div>
           </div>
         </form>

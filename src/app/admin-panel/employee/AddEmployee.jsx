@@ -5,6 +5,9 @@ import { CommonService } from "../../service/CommonService";
 import { DepartmentService } from "../../service/DepartmentService";
 import { DesignationService } from "../../service/DesignationService";
 import { EmployeeService } from "../../service/EmployeeService";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion"; // Import framer-motion
+
 
 const AddEmployee = () => {
   const [formData, setFormData] = useState({firstName: "", middleName: "", lastName: "", employeecode: "", email: "", password: "", departmentId: "", designationId: "", gender: "", mobileNumber: "", emergencyMobileNumber: "", birthDate: "", dateOfJoining: "", countryId: "", stateId: "", cityId: "", bloodgroup: "", address: "", keyResponsibility: "", reportingTo: "" });
@@ -83,7 +86,7 @@ const AddEmployee = () => {
     if (validateForm()) {
       setIsSubmitting(true);
       try {
-        debugger;
+        //debugger;
         // Call the API to add the employee
         const employeeData = {
           ...formData,
@@ -91,11 +94,10 @@ const AddEmployee = () => {
         };
         const response = await EmployeeService.addEmployee(employeeData); // Call the service
         if(response.status === 1){
-          alert(response.message);    
+          toast.success(response.message);    
           navigate('/employee-list')
         }
         
-
         // Reset the form after successful submission
         setFormData({ firstName: "", middleName: "", lastName: "", employeecode: "", email: "", password: "", departmentId: "", designationId: "", gender: "", mobileNumber: "", emergencyMobileNumber: "", birthDate: "", dateOfJoining: "", countryId: "", stateId: "", cityId: "", bloodgroup: "", address: "", keyResponsibility: "", reportingTo: "",
           // documentName: "",
@@ -119,6 +121,10 @@ const AddEmployee = () => {
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Employee</h1>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
         <Link
           to="/employee-list"
           className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
@@ -126,6 +132,7 @@ const AddEmployee = () => {
           <FaArrowLeft size={16} />
           Back
         </Link>
+        </motion.button>
       </div>
 
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-4 dark:bg-dark">
@@ -154,7 +161,7 @@ const AddEmployee = () => {
                   placeholder={placeholder}
                   value={formData[name]}
                   onChange={handleChange}
-                  className={`w-full mb-2 rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 outline-none transition ${name === "employeecode" ? "bg-gray-100" : "bg-transparent"}`}
+                  className={`w-full mb-2 rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition ${name === "employeecode" ? "bg-gray-100" : "bg-transparent"}`}
                   disabled={name === "employeecode"} // Disable Employee Code field
                 />
                 {errors[name] && (
@@ -173,7 +180,7 @@ const AddEmployee = () => {
                   value={formData.departmentId}
                   onChange={handleChange}
                   name="departmentId"
-                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2"
+                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
                 >
                   <option value="" className="text-gray-400">
                     --Select Department--
@@ -209,7 +216,7 @@ const AddEmployee = () => {
                   value={formData.designationId}
                   onChange={handleChange}
                   name="designationId"
-                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2"
+                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
                 >
                   <option value="" className="text-gray-400">
                     --Select Designation--
@@ -245,7 +252,7 @@ const AddEmployee = () => {
                   value={formData.gender}
                   onChange={handleChange}
                   name="gender"
-                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2"
+                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
                 >
                   <option value="" className="text-gray-400">
                     --Select Gender--
@@ -269,7 +276,7 @@ const AddEmployee = () => {
                 value={formData.countryId}
                 onChange={handleChange}
                 name="countryId"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select Country--
@@ -300,7 +307,7 @@ const AddEmployee = () => {
                 value={formData.stateId}
                 onChange={handleChange}
                 name="stateId"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select State--
@@ -331,7 +338,7 @@ const AddEmployee = () => {
                 value={formData.cityId}
                 onChange={handleChange}
                 name="cityId"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select City--
@@ -362,7 +369,7 @@ const AddEmployee = () => {
                 value={formData.reportingTo}
                 onChange={handleChange}
                 name="reportingTo"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select Employee--
@@ -394,7 +401,7 @@ const AddEmployee = () => {
                 value={formData.address}
                 onChange={handleChange}
                 rows="3"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               ></textarea>
               {errors.address && (
                 <p className="text-red-500 text-xs">{errors.address}</p>
@@ -411,7 +418,7 @@ const AddEmployee = () => {
                 value={formData.keyResponsibility}
                 onChange={handleChange}
                 rows="3"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 outline-none transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               ></textarea>
               {errors.keyResponsibility && (
                 <p className="text-red-500 text-xs">
@@ -421,15 +428,26 @@ const AddEmployee = () => {
             </div>
             
             <div className="w-full flex px-3">
-              <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="submit"
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? "Submitting..." : "Add Employee"}
+              </motion.button>
+              {/* <button
                 type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md ${
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300  ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Add Employee"}
-              </button>
+              </button> */}
             </div>
           </div>
         </form>

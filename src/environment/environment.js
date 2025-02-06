@@ -9,7 +9,9 @@ export const environment = {
   employeePermission: "https://localhost:7292/api/EmployeePermission",
   task: "https://localhost:7292/api/Task",
   subTask: "https://localhost:7292/api/SubTask",
-  userSubTask: "https://localhost:7292/api/user/SubTask",
-  userTask: "https://localhost:7292/api/user/Task",
+  userSubTask: "https://localhost:7292/api/SubTask",
+  userTask: "https://localhost:7292/api/Task",
   dashboard: "https://localhost:7292/api/Dashboard",
-};
+  attendance: "https://localhost:7292/api/Attendance",
+  leave: "https://localhost:7292/api/LeaveRequest",
+}

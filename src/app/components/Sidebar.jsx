@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineLogout } from "react-icons/hi";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { FiMenu, FiX } from "react-icons/fi";
 import classNames from "classnames";
 import logo from "../../assets/iobix-technolabs.png";
+import { jwtDecode } from "jwt-decode";
 import { DASHBOARD_SIDEBAR_BOTTOM_LINKS, DASHBOARD_SIDEBAR_LINKS, USER_DASHBOARD_SIDEBAR_LINKS } from "../sidebar-links";
 // import {
 //   DASHBOARD_SIDEBAR_BOTTOM_LINKS,
@@ -16,6 +17,7 @@ const linkClass =
   "flex items-center gap-2 font-light px-3 py-2 hover:bg-[#042E45] hover:no-underline active:bg-[#042E45] rounded-lg text-base";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State to manage sidebar visibility
   const role = sessionStorage.getItem("role");
 
@@ -25,6 +27,28 @@ export default function Sidebar() {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  const handleLogout = () => {
+      // debugger;
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          sessionStorage.clear();
+          // if (
+          //   decodedToken?.IsSuperAdmin === "1" ||
+          //   decodedToken?.IsAdmin === "1"
+          // ) {
+            navigate("/sign-in");
+          // }
+          // else(
+          //   navigate("sign-in")
+          // )
+        } catch {
+          alert("Token is not decoded");
+        }
+      }
+    };
 
   return (
     <div>
@@ -64,7 +88,7 @@ export default function Sidebar() {
           {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((link) => (
             <SidebarLink key={link.key} link={link} />
           ))}
-          <div className={classNames(linkClass, "cursor-pointer text-red-500")}>
+          <div className={classNames(linkClass, "cursor-pointer text-red-500")} onClick={handleLogout}>
             <span className="text-xl">
               <HiOutlineLogout />
             </span>
@@ -141,6 +165,9 @@ function SidebarLink({ link }) {
     </div>
   );
 }
+
+
+
 
 // import React from "react";
 // import { Link, useLocation } from "react-router-dom";

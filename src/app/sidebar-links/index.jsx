@@ -1,5 +1,5 @@
-import { BiBox, BiTask } from 'react-icons/bi'
-import { BsPeople } from 'react-icons/bs'
+import { BiAbacus, BiBox, BiGrid, BiGridSmall, BiGridVertical, BiListUl, BiTask } from 'react-icons/bi'
+import { BsFillGrid1X2Fill, BsFillGridFill, BsPeople } from 'react-icons/bs'
 import {
 	HiOutlineViewGrid,
 	HiOutlineQuestionMarkCircle,
@@ -20,6 +20,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
 		submenu: [
 		  { label: 'Department', path: '/master/department-list' },
 		  { label: 'Designation', path: '/master/designation-list'},
+		  { label: 'Leave Type', path: '/master/leave-type-list'},
 		  { label: 'Employee Permission', path: '/master/employeepermission-list'},
 		],
 	},
@@ -54,8 +55,21 @@ export const USER_DASHBOARD_SIDEBAR_LINKS = [
 		icon: <BiTask />,
 		submenu: [
 			{ label: 'User Tasks', path: '/user/task-list' },
+			// { label: 'User Sub Tasks', path: '/user/sub-task-list' },
 		    { label: 'Assign Tasks', path: '/user/assign-task-list'},
 		  ],
+	},
+	{
+		key: 'attendance',
+		label: 'Attendance',
+		path: '/user/attendance',
+		icon: <BiListUl />
+	},	
+	{
+		key: 'leave',
+		label: 'Leave',
+		path: '/user/leave',
+		icon: <BsFillGridFill />
 	},	
 ]
 
@@ -63,13 +77,13 @@ export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
 	{
 		key: 'settings',
 		label: 'Settings',
-		path: '/settings',
+		// path: '/settings',
 		icon: <HiOutlineCog />
 	},
 	{
 		key: 'support',
 		label: 'Help & Support',
-		path: '/support',
+		// path: '/support',
 		icon: <HiOutlineQuestionMarkCircle />
 	}
 ]
