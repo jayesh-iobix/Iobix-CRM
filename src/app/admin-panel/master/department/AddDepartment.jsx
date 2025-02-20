@@ -45,7 +45,7 @@ const AddDepartment = () => {
         const response = await DepartmentService.addDepartment(departmentData);
         if (response.status === 1) {
           navigate('/master/department-list');
-          console.log('Department added successfully:', response);
+          // console.log('Department added successfully:', response);
           toast.success(response.message); // Toast on success
         }
         // Reset the form

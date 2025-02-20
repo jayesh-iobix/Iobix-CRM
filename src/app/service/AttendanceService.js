@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { environment } from '../../environment/environment';
 import httpClient from './HttpClient';
 
@@ -10,7 +9,7 @@ export const AttendanceService = {
   addAttendance: async () => {
     // debugger;
     try {
-      const response = await httpClient.post(`${api}/Add`);
+      const response = await httpClient.post(`${api}/TimeIn`);
       return response.data;
     } catch (error) {
       console.error('Failed to add attendanceData:', error);
@@ -33,7 +32,7 @@ export const AttendanceService = {
   updateAttendance: async (attendanceData) => {
     debugger;
     try {
-      const response = await httpClient.put(`${api}/Update`, attendanceData); 
+      const response = await httpClient.put(`${api}/TimeOut`, attendanceData); 
       return response.data;
     } catch (error) {
       console.error('Failed to fetch attendanceData:', error);
@@ -46,6 +45,18 @@ export const AttendanceService = {
     try {
       // const {departmentId} = employeeData
       const response = await httpClient.get(`${api}/GetAll/${employeeId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch attendance:', error);
+      throw error;
+    }
+  },
+
+  //Method to get attendance by employeeId at admin
+  getAttendanceByEmployeeIdatAdmin: async (employeeId) => {
+    try {
+      // const {departmentId} = employeeData
+      const response = await httpClient.get(`${api}/GetForAdmin/${employeeId}`);
       return response.data;
     } catch (error) {
       console.error('Failed to fetch attendance:', error);

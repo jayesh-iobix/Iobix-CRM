@@ -6,6 +6,8 @@ import { DepartmentService } from "../../service/DepartmentService";
 import { DesignationService } from "../../service/DesignationService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { motion } from "framer-motion"; // Import framer-motion
+import { EmployeeLeaveTypeService } from "../../service/EmployeeLeaveTypeService";
+import { toast } from "react-toastify";
 
 const EditEmployee = () => {
 
@@ -29,13 +31,17 @@ const EditEmployee = () => {
     bloodGroup: "",
     address: "",
     keyResponsibility: "",
-    reportingTo: "" 
+    reportingTo: "", 
+    onProbation: "",
+    probationPeriod: "",
+    employeeLeaveTypeId: "",
   });
 
   const { id } = useParams();
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
+  const [employeeLeaveTypeList, setEmployeeLeaveTypeList] = useState([]);
   const [designationList, setDesignationList] = useState([]);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
@@ -48,6 +54,7 @@ const EditEmployee = () => {
       try {
         // Fetch Employee
         const employee = await EmployeeService.getByIdEmployee(id);
+        console.log(employee.data);
         const formattedEmployee = {
           ...employee.data,
           birthDate: employee.data.birthDate ? employee.data.birthDate.split("T")[0] : "",
@@ -56,12 +63,14 @@ const EditEmployee = () => {
         setFormData(formattedEmployee);
 
         // Fetch Departments, Designations, and Countries
-        const [departments, countries] = await Promise.all([
+        const [departments, countries, employeeLeaveType] = await Promise.all([
           DepartmentService.getDepartments(),
-          // DesignationService.getDesignation(formData.departmentId),
           CommonService.getCountry(),
+          EmployeeLeaveTypeService.getLeaveEmployeeTypes(),
+          // DesignationService.getDesignation(formData.departmentId),
         ]);
         setDepartmentList(departments.data);
+        setEmployeeLeaveTypeList(employeeLeaveType.data);
         // setDesignationList(designations.data);
         setCountryList(countries.data);
       } catch (error) {
@@ -128,11 +137,21 @@ const EditEmployee = () => {
     e.preventDefault();
     if (validateForm()) {
       setIsSubmitting(true);
+      const employeeData = {
+        ...formData,
+        reportingTo:
+          formData.reportingTo === "" ? null : formData.reportingTo, // Convert empty string to null
+        probationPeriod:
+          formData.probationPeriod === "" ? 0 : formData.probationPeriod, // Convert empty string to 0
+        employeeLeaveTypeId:
+          formData.employeeLeaveTypeId === "" ? null : formData.employeeLeaveTypeId, // Convert empty string to null
+      };
       try {
-        const response = await EmployeeService.updateEmployee(id, formData);
+        const response = await EmployeeService.updateEmployee(id, employeeData);
         if(response.status === 1)
           {
-            alert(response.message);
+            toast.success("Employee updated successfully");
+            // toast.success(response.message);
             navigate('/employee-list');
           }
       } catch (error) {
@@ -195,7 +214,7 @@ const EditEmployee = () => {
               </div>
             ))}
 
-            {/* Select Fields: Department, Designation, Gender, Country, State, City */}
+            {/* Department */}
             <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium">Department</label>
               <select
@@ -212,6 +231,7 @@ const EditEmployee = () => {
               {errors.departmentId && <p className="text-red-500 text-xs">{errors.departmentId}</p>}
             </div>
 
+            {/* Designation */}
             <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium">Designation</label>
               <select
@@ -228,6 +248,7 @@ const EditEmployee = () => {
               {errors.designationId && <p className="text-red-500 text-xs">{errors.designationId}</p>}
             </div>
 
+            {/* Gender */}
             <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium">Gender</label>
               <select
@@ -244,6 +265,7 @@ const EditEmployee = () => {
               {errors.gender && <p className="text-red-500 text-xs">{errors.gender}</p>}
             </div>
 
+            {/* Country */}
             <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium">Country</label>
               <select
@@ -260,6 +282,7 @@ const EditEmployee = () => {
               {errors.countryId && <p className="text-red-500 text-xs">{errors.countryId}</p>}
             </div>
 
+            {/* State */}
             <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium">State</label>
               <select
@@ -276,6 +299,7 @@ const EditEmployee = () => {
               {errors.stateId && <p className="text-red-500 text-xs">{errors.stateId}</p>}
             </div>
 
+            {/* City */}
             <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium">City</label>
               <select
@@ -291,7 +315,6 @@ const EditEmployee = () => {
               </select>
               {errors.cityId && <p className="text-red-500 text-xs">{errors.cityId}</p>}
             </div>
-
 
              {/* Reporting To Select */}
              <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
@@ -324,30 +347,134 @@ const EditEmployee = () => {
               )} */}
             </div>
 
-            {/* Address */}
-            <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
-              <label className="mb-2 block text-base font-medium">Address</label>
-              <textarea
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                rows="3"
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
-              />
-              {errors.address && <p className="text-red-500 text-xs">{errors.address}</p>}
+            {/* On Probation Select */}
+            <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
+              <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
+                On Probation
+              </label>
+              <div className="relative z-20">
+                <select
+                  value={formData.onProbation}
+                  onChange={handleChange}
+                  name="onProbation"
+                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+                >
+                  <option value="" className="text-gray-400">
+                    --Select On Probation--
+                  </option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              {errors.onProbation && (
+                <p className="text-red-500 text-xs">{errors.onProbation}</p>
+              )}
             </div>
 
-            {/* Key Responsibility */}
-            <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
-              <label className="mb-2 block text-base font-medium">Roles & Responsibility</label>
-              <textarea
-                name="keyResponsibility"
-                value={formData.keyResponsibility}
-                onChange={handleChange}
-                rows="3"
-                className="w-full mb-2 bg-transparent rounded-md border py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
-              />
-              {errors.keyResponsibility && <p className="text-red-500 text-xs">{errors.keyResponsibility}</p>}
+            {/* Probation Period */}
+            {formData.onProbation === "Yes" && (
+            <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
+              <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
+                Probation Period
+              </label>
+              <div className="relative z-20">
+                <select
+                  value={formData.probationPeriod}
+                  onChange={handleChange}
+                  name="probationPeriod"
+                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+                >
+                  <option value="" className="text-gray-400">
+                    --Select Probation Period--
+                  </option>
+                  <option value="90">90 Days</option>
+                  <option value="180">180 Days</option>
+                  <option value="365">365 Days</option>
+                </select>
+              </div>
+              {/* {errors.probationPeriod && (
+                <p className="text-red-500 text-xs">{errors.probationPeriod}</p>
+              )} */}
+            </div>
+            )}
+
+            {/* EmployeeLeave Type - Show only if "No" is selected in On Probation */}
+            {formData.onProbation === "No" && (
+              <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
+                <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
+                  Employee Leave Type
+                </label>
+                <div className="relative z-20">
+                  <select
+                    value={formData.employeeLeaveTypeId}
+                    onChange={handleChange}
+                    name="employeeLeaveTypeId"
+                    className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+                  >
+                    <option value="" className="text-gray-400">
+                      --Select Employee Leave Type--
+                    </option>
+                    {employeeLeaveTypeList.length > 0 ? (
+                      employeeLeaveTypeList.map((employeeLeaveTypeItem) => (
+                        <option
+                          key={employeeLeaveTypeItem.employeeLeaveTypeId}
+                          value={employeeLeaveTypeItem.employeeLeaveTypeId}
+                        >
+                          {employeeLeaveTypeItem.employeeLeaveTypeName}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No employee leave type available
+                      </option>
+                    )}
+                  </select>
+                </div>
+                {/* {errors.employeeLeaveTypeId && (
+                  <p className="text-red-500 text-xs">
+                    {errors.employeeLeaveTypeId}
+                  </p>
+                )} */}
+              </div>
+            )}
+
+            {/* Address Input and KeyResponsibility Input */}
+            <div className="w-full mb-2 px-3 flex">
+              {/* Address Input */}
+              <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
+                <label className="mb-2 block text-base font-medium text-dark dark:text-white">
+                  Address
+                </label>
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  rows="3"
+                  className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                ></textarea>
+                {errors.address && (
+                  <p className="text-red-500 text-xs">{errors.address}</p>
+                )}
+              </div>
+
+              {/* KeyResponsibility Input */}
+              <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
+                <label className="mb-2 block text-base font-medium text-dark dark:text-white">
+                  Roles & Responsibility
+                </label>
+                <textarea
+                  name="keyResponsibility"
+                  value={formData.keyResponsibility}
+                  onChange={handleChange}
+                  rows="3"
+                  className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                ></textarea>
+                {errors.keyResponsibility && (
+                  <p className="text-red-500 text-xs">
+                    {errors.keyResponsibility}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Submit Button */}

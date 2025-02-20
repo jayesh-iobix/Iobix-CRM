@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { EmployeeService } from "../../service/EmployeeService";
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
+import { ReportService } from "../../service/ReportService";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -110,6 +111,19 @@ const EmployeeList = () => {
     setDeleteId(null); // Reset the ID
   };
 
+  const handleDownloadReport = async () => {
+    try {
+      // Wait for the report download to complete
+      await ReportService.downloadEmployeeReport();
+      // Optionally, add a success message or additional logic after the download
+      toast.success("Report downloaded successfully!");
+    } catch (error) {
+      console.error("Error downloading report:", error);
+      toast.error("Failed to download report.");
+    }
+  }
+  
+
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -126,6 +140,15 @@ const EmployeeList = () => {
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Employee List</h1>
+        <div className="flex">
+        <motion.button 
+          whileHover={{ scale: 1.1 }} 
+          whileTap={{ scale: 0.9 }}
+          onClick={handleDownloadReport }
+          className="me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+          >
+            Download Report
+        </motion.button>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link
             to="/employee-list/add-employee"
@@ -135,6 +158,7 @@ const EmployeeList = () => {
             <FaPlus className="mt-[3px]" size={14} />
           </Link>
         </motion.button>
+        </div>
       </div>
 
       {/* Filters Section */}

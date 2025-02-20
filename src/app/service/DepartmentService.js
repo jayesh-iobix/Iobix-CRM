@@ -28,7 +28,7 @@ export const DepartmentService = {
     }
   },
 
-  // Method to get all departments
+  // Method to get by id departments
   getByIdDepartments: async (departmentId) => {
     try {
       const response = await httpClient.get(`${api}/${departmentId}`); // Update 'GetAll' with actual endpoint if different
@@ -39,7 +39,7 @@ export const DepartmentService = {
     }
   },
 
-  // Method to get all departments
+  // Method to update departments
   updateDepartments: async (departmentId,departmentData) => {
     try {
       const response = await httpClient.put(`${api}/${departmentId}`,departmentData); // Update 'GetAll' with actual endpoint if different
@@ -50,6 +50,7 @@ export const DepartmentService = {
     }
   },
 
+  // Method to delete departments
   deleteDepartments: async (departmentId) => {
     try {
       const response = await httpClient.delete(`${api}/${departmentId}`); // Update 'GetAll' with actual endpoint if different

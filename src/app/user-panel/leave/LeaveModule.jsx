@@ -3,6 +3,7 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { FaPlus } from "react-icons/fa";
 import { LeaveService } from "../../service/LeaveService";
 import { toast } from "react-toastify";
+import { LeaveTypeService } from "../../service/LeaveTypeService";
 
 const LeaveModule = () => {
 
@@ -18,51 +19,17 @@ const LeaveModule = () => {
   const [toDate, setToDate] = useState(""); // To Date
   const [totalDays, setTotalDays] = useState(0); // Total Days between fromDate and toDate
   const [reason, setReason] = useState(""); // Reason for leave
-  const [leaveType, setLeaveType] = useState("Full-Day"); // Leave Type (Full-Day / Half-Day)
+  const [leaveType, setLeaveType] = useState(""); // Leave Type (Full-Day / Half-Day)
+  const [leaveTypeId, setLeaveTypeId] = useState("");
+  const [leaveTypeList, setLeaveTypeList] = useState([]);
   const [status, setStatus] = useState("0"); // Leave Type (Full-Day / Half-Day)
 
   const employeeId = sessionStorage.getItem("LoginUserId");
-
-  // Dummy leave data
-//   const dummyLeaveData = [
-//     {
-//       id: 1,
-//       date: "2025-02-01",
-//       status: "Approved",
-//       reason: "Medical Leave",
-//     },
-//     {
-//       id: 2,
-//       date: "2025-02-03",
-//       status: "Pending",
-//       reason: "Personal Work",
-//     },
-//     {
-//       id: 3,
-//       date: "2025-02-05",
-//       status: "Rejected",
-//       reason: "Unpaid Leave",
-//     },
-//     {
-//       id: 4,
-//       date: "2025-02-10",
-//       status: "Approved",
-//       reason: "Family Function",
-//     },
-//     {
-//       id: 5,
-//       date: "2025-02-15",
-//       status: "Pending",
-//       reason: "Vacation",
-//     },
-//   ];
 
 
 const fetchLeaveRecords = async () => {
   try {
     const response = await LeaveService.getLeaveRecords(employeeId);
-    // setLeaveData(dummyLeaveData);
-    // setFilteredData(dummyLeaveData);
     setLeaveData(response.data);
     setFilteredData(response.data);
   } catch (error) {
@@ -71,8 +38,19 @@ const fetchLeaveRecords = async () => {
   }
 };
 
+const fetchLeaveType = async () => {
+  try {
+    const response = await LeaveTypeService.getLeaveTypes();
+    setLeaveTypeList(response.data);
+  } catch (error) {
+    console.error("Error fetching leave type:", error);
+    alert("Error fetching leave type, please try again.");
+  }
+};
+
   useEffect(() => {
     fetchLeaveRecords();
+    fetchLeaveType();
   }, []);
 
   // Function to get all months for the year
@@ -137,6 +115,7 @@ const fetchLeaveRecords = async () => {
       reason,
       leaveType,
       status,
+      leaveTypeId,
     };
 
     debugger;
@@ -167,16 +146,15 @@ const fetchLeaveRecords = async () => {
   return (
     <div className="mt-4">
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Leave Records for {year}</h1>
-
+        <h1 className="font-semibold text-2xl sm:text-3xl">Leave Records of {year}</h1>
 
         {/* Apply Leave Button */}
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={openModal}
-          className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-        >
+          className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline text-sm sm:text-base"
+          >
           Apply Leave
           <FaPlus className="mt-[3px]" size={14} />
         </motion.button>
@@ -193,11 +171,11 @@ const fetchLeaveRecords = async () => {
             }}
             className="border p-2 rounded"
           > */}
-            {/* Dropdown for years */}
-            {/* {new Array(10).fill(0).map((_, idx) => (
+        {/* Dropdown for years */}
+        {/* {new Array(10).fill(0).map((_, idx) => (
               <option key={idx} value={currentYear - 5 + idx}>{currentYear - 5 + idx}</option>
             ))} */}
-          {/* </select>
+        {/* </select>
         </div> */}
 
         {/* Month Dropdown */}
@@ -220,41 +198,52 @@ const fetchLeaveRecords = async () => {
               </option>
             ))}
           </select>
-        </div> */}        
+        </div> */}
       </div>
 
       {/* Card for Year and Month Dropdown */}
       <div className="bg-white shadow-lg rounded-lg p-4">
         <div className="-mx-4 px-10 flex flex-wrap">
-          <div className="w-full mb-2 px-3 md:w-1/4">
-            <label htmlFor="year" className="mr-2">Year:</label>
-            <select 
-              id="year" 
-              value={year} 
+          {/* Year Dropdown */}
+          <div className="w-full mb-2 px-3 md:w-1/4 lg:w-1/5">
+            <label htmlFor="year" className="mr-2">
+              Year:
+            </label>
+            <select
+              id="year"
+              value={year}
               onChange={(e) => {
                 setYear(parseInt(e.target.value));
-                filterDataByMonthAndYear(selectedMonth, parseInt(e.target.value)); // Re-filter data when year changes
+                filterDataByMonthAndYear(
+                  selectedMonth,
+                  parseInt(e.target.value)
+                ); // Re-filter data when year changes
               }}
-              className="w-1/2 border p-2 rounded border-active"
+              className="w-full sm:w-1/2 border p-2 rounded border-active"
             >
               {/* Dropdown for years */}
-            {new Array(10).fill(0).map((_, idx) => (
-              <option key={idx} value={currentYear - 5 + idx}>{currentYear - 5 + idx}</option>
-            ))}
+              {new Array(10).fill(0).map((_, idx) => (
+                <option key={idx} value={currentYear - 5 + idx}>
+                  {currentYear - 5 + idx}
+                </option>
+              ))}
             </select>
           </div>
 
-          <div className="w-full mb-2 px-3 md:w-1/3">
-            <label htmlFor="month" className="mr-2">Month:</label>
-            <select 
-              id="month" 
+          {/* Month Dropdown */}
+          <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/4">
+            <label htmlFor="month" className="mr-2">
+              Month:
+            </label>
+            <select
+              id="month"
               value={selectedMonth !== null ? selectedMonth : ""}
               onChange={(e) => {
                 const selectedMonthIndex = parseInt(e.target.value);
                 setSelectedMonth(selectedMonthIndex);
                 filterDataByMonthAndYear(selectedMonthIndex, year); // Re-filter data when month changes
               }}
-              className="w-1/2 border p-2 rounded border-active"
+              className="w-full sm:w-1/2 border p-2 rounded border-active"
             >
               <option value="">Select Month</option>
               {months.map((month, index) => (
@@ -264,37 +253,49 @@ const fetchLeaveRecords = async () => {
               ))}
             </select>
           </div>
-          </div>
         </div>
+      </div>
 
       {/* Display Leave Records for the Selected Month */}
       {selectedMonth !== null && (
-        <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
-          <div className="overflow-x-auto">
-            <table className="min-w-full table-auto border-collapse">
+        // <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
+          <div className="grid mt-4 overflow-x-auto shadow-xl">
+            <table className="min-w-full table-auto bg-white border border-gray-200">
               <thead className="bg-gray-900 border-b">
                 <tr>
-                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">From Date</th>
-                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">To Date</th>
-                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">Status</th>
-                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">Reason</th>
+                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
+                    From Date
+                  </th>
+                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
+                    To Date
+                  </th>
+                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
+                    Status
+                  </th>
+                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
+                    Reason
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {filteredData.map((leave, index) => (
                   <tr key={index} className="hover:bg-gray-100">
-                    <td className="px-4 py-2 border-b">{leave.fromDate ? formatDate(leave.fromDate) : ""}</td>
+                    <td className="px-4 py-2 border-b">
+                      {leave.fromDate ? formatDate(leave.fromDate) : ""}
+                    </td>
                     {/* <td className="px-4 py-2 border-b">{leave.fromDate}</td> */}
-                    <td className="px-4 py-2 border-b">{leave.toDate ? formatDate(leave.toDate) : ""}</td>
+                    <td className="px-4 py-2 border-b">
+                      {leave.toDate ? formatDate(leave.toDate) : ""}
+                    </td>
                     {/* <td className="px-4 py-2 border-b">{leave.toDate}</td> */}
                     <td className="py-3 px-4">
-                    <span
-                      className={`px-2 py-1 rounded-lg font-medium ${getStatusColor(
-                        leave.statusName
-                      )}`}
-                    >
-                      {leave.statusName}
-                    </span>
+                      <span
+                        className={`px-2 py-1 rounded-lg font-medium ${getStatusColor(
+                          leave.statusName
+                        )}`}
+                      >
+                        {leave.statusName}
+                      </span>
                     </td>
                     {/* <td className="px-4 py-2 border-b">{leave.statusName}</td> */}
                     <td className="px-4 py-2 border-b">{leave.reason}</td>
@@ -303,18 +304,22 @@ const fetchLeaveRecords = async () => {
               </tbody>
             </table>
           </div>
-        </section>
+        // {/* </section> */}
       )}
 
       {/* Modal for Apply Leave */}
       {showModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">Apply Leave</h2>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50 overflow-x-auto">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-full sm:max-w-md md:max-w-lg lg:max-w-2xl w-full">
+            <h2 className="text-xl font-semibold mb-4 text-center sm:text-left">
+              Apply Leave
+            </h2>
 
             {/* From Date */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">From Date</label>
+              <label className="block text-sm font-medium text-gray-700">
+                From Date
+              </label>
               <input
                 type="date"
                 value={fromDate}
@@ -330,7 +335,9 @@ const fetchLeaveRecords = async () => {
 
             {/* To Date */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">To Date</label>
+              <label className="block text-sm font-medium text-gray-700">
+                To Date
+              </label>
               <input
                 type="date"
                 value={toDate}
@@ -346,7 +353,9 @@ const fetchLeaveRecords = async () => {
 
             {/* Total Days */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Total Days</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Total Days
+              </label>
               <input
                 type="text"
                 value={totalDays}
@@ -357,7 +366,9 @@ const fetchLeaveRecords = async () => {
 
             {/* Reason */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Reason</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Reason
+              </label>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
@@ -368,31 +379,185 @@ const fetchLeaveRecords = async () => {
 
             {/* Leave Type */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Leave Type</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Leave Type
+              </label>
+              <select
+                value={leaveTypeId}
+                onChange={(e) => setLeaveTypeId(e.target.value)}
+                name="leaveTypeId"
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              >
+                <option value="" className="text-gray-400">
+                  --Select Leave Type--
+                </option>
+                {leaveTypeList.length > 0 ? (
+                  leaveTypeList.map((leaveType) => (
+                    <option
+                      key={leaveType.leaveTypeId}
+                      value={leaveType.leaveTypeId}
+                    >
+                      {leaveType.leaveTypeName}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No leave type available
+                  </option>
+                )}
+              </select>
+            </div>
+
+            {/* Day */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Day
+              </label>
               <select
                 value={leaveType}
                 onChange={(e) => setLeaveType(e.target.value)}
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
               >
+                <option value="" className="text-gray-400">
+                  --Select Day Type--
+                </option>
                 <option value="Full-Day">Full-Day</option>
                 <option value="Half-Day">Half-Day</option>
               </select>
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-end gap-2">
-              <button onClick={closeModal} className="bg-gray-500 text-white py-2 px-4 rounded-md">
+            <div className="flex justify-end gap-2 flex-col sm:flex-row">
+              <button
+                onClick={closeModal}
+                className="bg-gray-500 text-white py-2 px-4 rounded-md w-full sm:w-auto"
+              >
                 Close
               </button>
-              <button onClick={handleApplyLeave} className="bg-blue-600 text-white py-2 px-4 rounded-md">
+              <button
+                onClick={handleApplyLeave}
+                className="bg-blue-600 text-white py-2 px-4 rounded-md w-full sm:w-auto"
+              >
                 Apply Leave
               </button>
             </div>
           </div>
         </div>
+
+        // <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50 overflow-x-auto">
+        //   <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        //     <h2 className="text-xl font-semibold mb-4">Apply Leave</h2>
+
+        //     {/* From Date */}
+        //     <div className="mb-4">
+        //       <label className="block text-sm font-medium text-gray-700">From Date</label>
+        //       <input
+        //         type="date"
+        //         value={fromDate}
+        //         onChange={(e) => {
+        //           setFromDate(e.target.value);
+        //           if (toDate) {
+        //             calculateTotalDays(e.target.value, toDate);
+        //           }
+        //         }}
+        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+        //       />
+        //     </div>
+
+        //     {/* To Date */}
+        //     <div className="mb-4">
+        //       <label className="block text-sm font-medium text-gray-700">To Date</label>
+        //       <input
+        //         type="date"
+        //         value={toDate}
+        //         onChange={(e) => {
+        //           setToDate(e.target.value);
+        //           if (fromDate) {
+        //             calculateTotalDays(fromDate, e.target.value);
+        //           }
+        //         }}
+        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+        //       />
+        //     </div>
+
+        //     {/* Total Days */}
+        //     <div className="mb-4">
+        //       <label className="block text-sm font-medium text-gray-700">Total Days</label>
+        //       <input
+        //         type="text"
+        //         value={totalDays}
+        //         disabled
+        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+        //       />
+        //     </div>
+
+        //     {/* Reason */}
+        //     <div className="mb-4">
+        //       <label className="block text-sm font-medium text-gray-700">Reason</label>
+        //       <textarea
+        //         value={reason}
+        //         onChange={(e) => setReason(e.target.value)}
+        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+        //         rows="4"
+        //       />
+        //     </div>
+
+        //     {/* Leave Type */}
+        //     <div className="mb-4">
+        //     <label className="block text-sm font-medium text-gray-700">Leave Type</label>
+        //       <select
+        //         value={leaveTypeId}
+        //         onChange={(e) => setLeaveTypeId(e.target.value)}
+        //         name="leaveTypeId"
+        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+        //       >
+        //         <option value="" className="text-gray-400">
+        //           --Select Leave Type--
+        //         </option>
+        //         {leaveTypeList.length > 0 ? (
+        //           leaveTypeList.map((leaveType) => (
+        //             <option key={leaveType.leaveTypeId} value={leaveType.leaveTypeId}>
+        //               {leaveType.leaveTypeName}
+        //             </option>
+        //           ))
+        //         ) : (
+        //           <option value="" disabled>
+        //             No leave type available
+        //           </option>
+        //         )}
+        //       </select>
+        //     </div>
+
+        //     {/* Day */}
+        //     <div className="mb-4">
+        //       <label className="block text-sm font-medium text-gray-700">Day</label>
+        //       <select
+        //         value={leaveType}
+        //         onChange={(e) => setLeaveType(e.target.value)}
+        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+        //       >
+        //         <option value="" className="text-gray-400">
+        //           --Select Day Type--
+        //         </option>
+        //         <option value="Full-Day">Full-Day</option>
+        //         <option value="Half-Day">Half-Day</option>
+        //       </select>
+        //     </div>
+
+        //     {/* Buttons */}
+        //     <div className="flex justify-end gap-2">
+        //       <button onClick={closeModal} className="bg-gray-500 text-white py-2 px-4 rounded-md">
+        //         Close
+        //       </button>
+        //       <button onClick={handleApplyLeave} className="bg-blue-600 text-white py-2 px-4 rounded-md">
+        //         Apply Leave
+        //       </button>
+        //     </div>
+        //   </div>
+        // </div>
       )}
     </div>
   );
 };
 
-export default LeaveModule;
+export default LeaveModule;

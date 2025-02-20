@@ -67,25 +67,28 @@ const LeaveTypeList = () => {
     setDeleteId(null); // Reset the ID
   };
 
-
   const handleCheckboxChange = async (checked, leaveTypeId, item) => {
     // Optimistically update the UI by changing the `isActive` for the current row
     const updatedEventTypes = leaveTypeList.map((item) =>
       item.leaveTypeId === leaveTypeId ? { ...item, isActive: checked } : item
     );
+    
     setLeaveTypeList(updatedEventTypes); // Update the state immediately
-  
+
     try {
       // Prepare the data for the API call
       const eventTypeData = {
-        leaveTypeName  : item.leaveTypeName ,
-        isActive: checked // Only update the isActive field
+        leaveTypeName: item.leaveTypeName,
+        isActive: checked, // Only update the isActive field
       };
 
       //console.log(eventTypeData)
-  
+
       // Call the update API to update the `isActive` field on the server
-      const updatedEventType = await LeaveTypeService.updateLeaveTypes(leaveTypeId, eventTypeData);
+      const updatedEventType = await LeaveTypeService.updateLeaveTypes(
+        leaveTypeId,
+        eventTypeData
+      );
       //console.log(updatedEventType); // If successful, log the response
 
       // Check the response from the API and display a success message
@@ -95,10 +98,13 @@ const LeaveTypeList = () => {
         throw new Error("Failed to update event type.");
       }
     } catch (error) {
-  console.error("Error updating event type:", error.response?.data || error.message);
-  toast.error("Error updating event type.");
-  // Revert UI change if needed
-}
+      console.error(
+        "Error updating leave type:",
+        error.response?.data || error.message
+      );
+      toast.error("Error updating leave type.");
+      // Revert UI change if needed
+    }
   };
   
    //#region Pagination logic
@@ -152,11 +158,16 @@ const LeaveTypeList = () => {
               </tr>
             ) : (
               currentItems.map((item) => (
-                <tr
+                <motion.tr
                   key={item.leaveTypeId}
                   className="border-b hover:bg-gray-50"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: item * 0.1 }}
                 >
-                  <td className="py-3 pl-8 text-gray-700">{item.leaveTypeName }</td>
+                  <td className="py-3 pl-8 text-gray-700">
+                    {item.leaveTypeName}
+                  </td>
                   <td className="py-3 pl-8 text-gray-700">
                     <label className="inline-flex ms-3 items-center cursor-pointer">
                       <input
@@ -171,7 +182,7 @@ const LeaveTypeList = () => {
                         } // Handle checkbox change
                         className="sr-only peer"
                       />
-                      <div className="relative w-16 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                       <span className="ms-3 w-[86px] text-sm font-medium text-gray-900 dark:text-gray-300"></span>
                     </label>
                   </td>
@@ -202,7 +213,7 @@ const LeaveTypeList = () => {
                       </motion.button>
                     </div>
                   </td>
-                </tr>
+                </motion.tr>
               ))
             )}
           </tbody>
@@ -211,8 +222,8 @@ const LeaveTypeList = () => {
 
       {/* Confirmation Popup */}
       {isPopupOpen && (
-        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
-          <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg max-w-full sm:max-w-lg md:max-w-lg lg:max-w-md xl:max-w-lg w-11/12">
             <div className="flex justify-center mb-4">
               <div className="bg-red-100 p-5 rounded-full">
                 <FaTrashAlt className="text-red-600 text-4xl" />
@@ -221,12 +232,12 @@ const LeaveTypeList = () => {
             <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
               Are you sure you want to delete ?
             </h3>
-            <div className="flex justify-end gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={handlePopupClose}
-                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200"
+                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200 w-full sm:w-auto"
               >
                 No
               </motion.button>
@@ -234,7 +245,7 @@ const LeaveTypeList = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={deleteLeaveType}
-                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200"
+                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200 w-full sm:w-auto"
               >
                 Yes
               </motion.button>
@@ -244,7 +255,11 @@ const LeaveTypeList = () => {
       )}
 
       {/* Pagination Section */}
-      <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
+      <div
+        className={`flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg ${
+          isPopupOpen ? "hidden" : ""
+        }`}
+      >
         <div className="flex flex-1 justify-between sm:hidden">
           <motion.button
             onClick={() => handlePageChange(currentPage - 1)}
@@ -311,9 +326,9 @@ const LeaveTypeList = () => {
                 <motion.button
                   key={index}
                   onClick={() => handlePageChange(index + 1)}
-                  className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-[#686868] focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
+                  className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
                     currentPage === index + 1
-                      ? "bg-indigo-600 text-[#ffffff]"
+                      ? "bg-indigo-600"
                       : "bg-gray-200 text-gray-700"
                   }`}
                   whileHover={{ scale: 1.1 }}
@@ -348,8 +363,156 @@ const LeaveTypeList = () => {
           </div>
         </div>
       </div>
+      
     </>
   );
 };
 
 export default LeaveTypeList;
+
+
+
+
+
+
+
+
+// {/* Confirmation Popup */}
+// {isPopupOpen && (
+//   <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
+//     <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
+//       <div className="flex justify-center mb-4">
+//         <div className="bg-red-100 p-5 rounded-full">
+//           <FaTrashAlt className="text-red-600 text-4xl" />
+//         </div>
+//       </div>
+//       <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+//         Are you sure you want to delete ?
+//       </h3>
+//       <div className="flex justify-end gap-4">
+//         <motion.button
+//           whileHover={{ scale: 1.1 }}
+//           whileTap={{ scale: 0.9 }}
+//           onClick={handlePopupClose}
+//           className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200"
+//         >
+//           No
+//         </motion.button>
+//         <motion.button
+//           whileHover={{ scale: 1.1 }}
+//           whileTap={{ scale: 0.9 }}
+//           onClick={deleteLeaveType}
+//           className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200"
+//         >
+//           Yes
+//         </motion.button>
+//       </div>
+//     </div>
+//   </div>
+// )}
+
+// {/* Pagination Section */}
+// <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
+//   <div className="flex flex-1 justify-between sm:hidden">
+//     <motion.button
+//       onClick={() => handlePageChange(currentPage - 1)}
+//       disabled={currentPage === 1}
+//       className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+//       whileHover={{ scale: 1.1 }}
+//       whileTap={{ scale: 0.9 }}
+//     >
+//       Previous
+//     </motion.button>
+//     <motion.button
+//       onClick={() => handlePageChange(currentPage + 1)}
+//       disabled={currentPage === totalPages}
+//       className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+//       whileHover={{ scale: 1.1 }}
+//       whileTap={{ scale: 0.9 }}
+//     >
+//       Next
+//     </motion.button>
+//   </div>
+//   <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+//     <div>
+//       <p className="text-sm text-gray-700">
+//         Showing
+//         <span className="font-semibold mx-1">{indexOfFirstItem + 1}</span>
+//         to
+//         <span className="font-semibold mx-1">
+//           {Math.min(indexOfLastItem, totalItems)}
+//         </span>
+//         of
+//         <span className="font-semibold mx-1">{totalItems}</span>
+//         results
+//       </p>
+//     </div>
+//     <div>
+//       <nav
+//         className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+//         aria-label="Pagination"
+//       >
+//         <motion.button
+//           onClick={() => handlePageChange(currentPage - 1)}
+//           disabled={currentPage === 1}
+//           className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+//           whileHover={{ scale: 1.1 }}
+//           whileTap={{ scale: 0.9 }}
+//         >
+//           <span className="sr-only">Previous</span>
+//           <svg
+//             className="size-5"
+//             viewBox="0 0 20 20"
+//             fill="currentColor"
+//             aria-hidden="true"
+//           >
+//             <path
+//               fillRule="evenodd"
+//               d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
+//               clipRule="evenodd"
+//             />
+//           </svg>
+//         </motion.button>
+
+//         {/* Pagination Buttons */}
+//         {[...Array(totalPages)].map((_, index) => (
+//           <motion.button
+//             key={index}
+//             onClick={() => handlePageChange(index + 1)}
+//             className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-[#686868] focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
+//               currentPage === index + 1
+//                 ? "bg-indigo-600 text-[#ffffff]"
+//                 : "bg-gray-200 text-gray-700"
+//             }`}
+//             whileHover={{ scale: 1.1 }}
+//             whileTap={{ scale: 0.9 }}
+//           >
+//             {index + 1}
+//           </motion.button>
+//         ))}
+
+//         <motion.button
+//           onClick={() => handlePageChange(currentPage + 1)}
+//           disabled={currentPage === totalPages}
+//           className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+//           whileHover={{ scale: 1.1 }}
+//           whileTap={{ scale: 0.9 }}
+//         >
+//           <span className="sr-only">Next</span>
+//           <svg
+//             className="size-5"
+//             viewBox="0 0 20 20"
+//             fill="currentColor"
+//             aria-hidden="true"
+//           >
+//             <path
+//               fillRule="evenodd"
+//               d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+//               clipRule="evenodd"
+//             />
+//           </svg>
+//         </motion.button>
+//       </nav>
+//     </div>
+//   </div>
+// </div>

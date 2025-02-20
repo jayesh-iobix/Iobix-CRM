@@ -814,18 +814,18 @@ const AssignTaskList = () => {
                       <td className="py-3 px-4">
                         <div className="flex gap-3">
                           <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            <Link
+                              to={`/user/view-assign-task/${item.taskAllocationId}`}
+                              className="text-green-500 hover:text-green-700"
                             >
-                              <Link
-                                to={`/user/view-assign-task/${item.taskAllocationId}`}
-                                className="text-green-500 hover:text-green-700"
-                              >
-                                <FaEye size={24} />
-                              </Link>
-                            </motion.button>
+                              <FaEye size={24} />
+                            </Link>
+                          </motion.button>
                           {/* <button> */}
-                            {/* <motion.button
+                          {/* <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                             >
@@ -839,46 +839,46 @@ const AssignTaskList = () => {
                           {/* </button> */}
 
                           {/* <button> */}
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            <Link
+                              to={`/user/tasknote-list/${item.taskAllocationId}`}
+                              className="text-yellow-500 hover:text-yellow-700"
                             >
-                              <Link
-                                to={`/user/tasknote-list/${item.taskAllocationId}`}
-                                className="text-yellow-500 hover:text-yellow-700"
-                              >
-                                {/* <FaRegFileLines size={24} /> */}
-                                <IoTime size={24} />
-                              </Link>
-                            </motion.button>
+                              {/* <FaRegFileLines size={24} /> */}
+                              <IoTime size={24} />
+                            </Link>
+                          </motion.button>
                           {/* </button> */}
 
                           {/* <button> */}
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() =>
-                                handleDeleteClick(item.taskAllocationId)
-                              }
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <FaTrash size={22} />
-                            </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() =>
+                              handleDeleteClick(item.taskAllocationId)
+                            }
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <FaTrash size={22} />
+                          </motion.button>
                           {/* </button> */}
                           {/* <button> */}
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() =>
-                                toggleDropdown(item.taskAllocationId)
-                              }
-                              className="text-gray-500 hover:text-gray-700"
-                              ref={(el) =>
-                                (buttonRefs.current[item.taskAllocationId] = el)
-                              }
-                            >
-                              <FaEllipsisV size={24} />
-                            </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() =>
+                              toggleDropdown(item.taskAllocationId)
+                            }
+                            className="text-gray-500 hover:text-gray-700"
+                            ref={(el) =>
+                              (buttonRefs.current[item.taskAllocationId] = el)
+                            }
+                          >
+                            <FaEllipsisV size={24} />
+                          </motion.button>
                           {/* </button> */}
                           {/* Render dropdown above or below based on space */}
                           {openDropdown === item.taskAllocationId && (
@@ -1416,40 +1416,6 @@ const AssignTaskList = () => {
         </table>
       </div>
 
-      {/* Confirmation Popup */}
-      {isPopupOpen && (
-        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
-          <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
-            <div className="flex justify-center mb-4">
-              <div className="bg-red-100 p-5 rounded-full">
-                <FaTrashAlt className="text-red-600 text-4xl" />
-              </div>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-              Are you sure you want to delete ?
-            </h3>
-            <div className="flex justify-end gap-4">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={(event) => handlePopupClose(event)}
-                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200"
-              >
-                No
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={(event) => deleteTask(event)}
-                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200"
-              >
-                Yes
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Popup for task details */}
       {isPopupVisible && (
         <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
@@ -1531,8 +1497,46 @@ const AssignTaskList = () => {
         </div>
       )}
 
+      {/* Confirmation Popup */}
+      {isPopupOpen && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg max-w-full sm:max-w-lg md:max-w-lg lg:max-w-md xl:max-w-lg w-11/12">
+            <div className="flex justify-center mb-4">
+              <div className="bg-red-100 p-5 rounded-full">
+                <FaTrashAlt className="text-red-600 text-4xl" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+              Are you sure you want to delete ?
+            </h3>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={handlePopupClose}
+                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200 w-full sm:w-auto"
+              >
+                No
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={deleteTask}
+                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200 w-full sm:w-auto"
+              >
+                Yes
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Pagination Section */}
-      <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
+      <div
+        className={`flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg ${
+          isPopupOpen ? "hidden" : ""
+        }`}
+      >
         <div className="flex flex-1 justify-between sm:hidden">
           <motion.button
             onClick={() => handlePageChange(currentPage - 1)}
@@ -1641,3 +1645,147 @@ const AssignTaskList = () => {
 };
 
 export default AssignTaskList;
+
+
+
+
+
+// {/* Confirmation Popup */}
+// {isPopupOpen && (
+//   <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
+//     <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
+//       <div className="flex justify-center mb-4">
+//         <div className="bg-red-100 p-5 rounded-full">
+//           <FaTrashAlt className="text-red-600 text-4xl" />
+//         </div>
+//       </div>
+//       <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+//         Are you sure you want to delete ?
+//       </h3>
+//       <div className="flex justify-end gap-4">
+//         <motion.button
+//           whileHover={{ scale: 1.1 }}
+//           whileTap={{ scale: 0.9 }}
+//           onClick={(event) => handlePopupClose(event)}
+//           className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200"
+//         >
+//           No
+//         </motion.button>
+//         <motion.button
+//           whileHover={{ scale: 1.1 }}
+//           whileTap={{ scale: 0.9 }}
+//           onClick={(event) => deleteTask(event)}
+//           className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200"
+//         >
+//           Yes
+//         </motion.button>
+//       </div>
+//     </div>
+//   </div>
+// )}
+
+// {/* Pagination Section */}
+// <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
+//   <div className="flex flex-1 justify-between sm:hidden">
+//     <motion.button
+//       onClick={() => handlePageChange(currentPage - 1)}
+//       disabled={currentPage === 1}
+//       className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+//       whileHover={{ scale: 1.1 }}
+//       whileTap={{ scale: 0.9 }}
+//     >
+//       Previous
+//     </motion.button>
+//     <motion.button
+//       onClick={() => handlePageChange(currentPage + 1)}
+//       disabled={currentPage === totalPages}
+//       className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+//       whileHover={{ scale: 1.1 }}
+//       whileTap={{ scale: 0.9 }}
+//     >
+//       Next
+//     </motion.button>
+//   </div>
+//   <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+//     <div>
+//       <p className="text-sm text-gray-700">
+//         Showing
+//         <span className="font-semibold mx-1">{indexOfFirstItem + 1}</span>
+//         to
+//         <span className="font-semibold mx-1">
+//           {Math.min(indexOfLastItem, totalItems)}
+//         </span>
+//         of
+//         <span className="font-semibold mx-1">{totalItems}</span>
+//         results
+//       </p>
+//     </div>
+//     <div>
+//       <nav
+//         className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+//         aria-label="Pagination"
+//       >
+//         <motion.button
+//           onClick={() => handlePageChange(currentPage - 1)}
+//           disabled={currentPage === 1}
+//           className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+//           whileHover={{ scale: 1.1 }}
+//           whileTap={{ scale: 0.9 }}
+//         >
+//           <span className="sr-only">Previous</span>
+//           <svg
+//             className="size-5"
+//             viewBox="0 0 20 20"
+//             fill="currentColor"
+//             aria-hidden="true"
+//           >
+//             <path
+//               fillRule="evenodd"
+//               d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
+//               clipRule="evenodd"
+//             />
+//           </svg>
+//         </motion.button>
+
+//         {/* Pagination Buttons */}
+//         {[...Array(totalPages)].map((_, index) => (
+//           <motion.button
+//             key={index}
+//             onClick={() => handlePageChange(index + 1)}
+//             className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
+//               currentPage === index + 1
+//                 ? "bg-indigo-600"
+//                 : "bg-gray-200 text-gray-700"
+//             }`}
+//             whileHover={{ scale: 1.1 }}
+//             whileTap={{ scale: 0.9 }}
+//           >
+//             {index + 1}
+//           </motion.button>
+//         ))}
+
+//         <motion.button
+//           onClick={() => handlePageChange(currentPage + 1)}
+//           disabled={currentPage === totalPages}
+//           className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+//           whileHover={{ scale: 1.1 }}
+//           whileTap={{ scale: 0.9 }}
+//         >
+//           <span className="sr-only">Next</span>
+//           <svg
+//             className="size-5"
+//             viewBox="0 0 20 20"
+//             fill="currentColor"
+//             aria-hidden="true"
+//           >
+//             <path
+//               fillRule="evenodd"
+//               d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+//               clipRule="evenodd"
+//             />
+//           </svg>
+//         </motion.button>
+//       </nav>
+//     </div>
+//   </div>
+// </div>

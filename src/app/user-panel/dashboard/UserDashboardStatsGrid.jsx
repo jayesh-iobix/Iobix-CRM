@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { IoAdd, IoAlbums, IoBagHandle, IoBarChart, IoCart, IoCheckbox, IoDesktop, IoPeople, IoPieChart, IoTime } from "react-icons/io5";
+import { IoTime } from "react-icons/io5";
 import { FaClipboardCheck, FaList } from "react-icons/fa";
 import { FaRightToBracket } from "react-icons/fa6";
 import { DashboardService } from "../../service/DashboardService ";
 
 export default function UserDashboardStatsGrid() {
 
-  const [totalEmployeeCount, setTotalEmployeeCount] = useState("");
-  const [totalDepartmentCount, setTotalDepartmentCount] = useState("");
+  // const [totalEmployeeCount, setTotalEmployeeCount] = useState("");
+  // const [totalDepartmentCount, setTotalDepartmentCount] = useState("");
   const [totalTaskCount, setTotalTaskCount] = useState("");
   const [pendingTaskCount, setPendingTaskCount] = useState("");
   const [inProgressTaskCount, setInProgressTaskCount] = useState("");
@@ -17,8 +17,8 @@ export default function UserDashboardStatsGrid() {
     const fetchDashbordCount = async () => {
       try {
         const result = await DashboardService.getDashboardCount();
-        setTotalEmployeeCount(result.data.totalEmployeeCount);
-        setTotalDepartmentCount(result.data.totalDepartmentCount);
+        // setTotalEmployeeCount(result.data.totalEmployeeCount);
+        // setTotalDepartmentCount(result.data.totalDepartmentCount);
         setTotalTaskCount(result.data.totalTaskCount);
         setPendingTaskCount(result.data.pendingTaskCount);
         setInProgressTaskCount(result.data.inProgressTaskCount);
@@ -32,7 +32,7 @@ export default function UserDashboardStatsGrid() {
 
 
   return (
-    <div className="flex h-[150px] gap-4">
+    <div className="flex flex-col md:flex-row w-full md:h-[150px] md:w-full gap-4">
       <div className="bg-[#d0cefa] rounded-[20px] p-4 flex-1 border-[#908cdc] border-solid border-[3px] flex items-center animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#908CDC]">
           <FaList className="text-2xl text-white" />
@@ -94,10 +94,10 @@ export default function UserDashboardStatsGrid() {
   );
 }
 
-function BoxWrapper({ children }) {
-  return (
-    <div className="bg-[#d0cefa] rounded-[20px] p-4 flex-1 border-[#908cdc] border-solid border-[3px] flex items-center">
-      {children}
-    </div>
-  );
-}
+// function BoxWrapper({ children }) {
+//   return (
+//     <div className="bg-[#d0cefa] rounded-[20px] p-4 flex-1 border-[#908cdc] border-solid border-[3px] flex items-center">
+//       {children}
+//     </div>
+//   );
+// }

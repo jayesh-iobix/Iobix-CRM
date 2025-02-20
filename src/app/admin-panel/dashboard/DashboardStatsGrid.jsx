@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { IoAdd, IoAlbums, IoBagHandle, IoBarChart, IoCart, IoDesktop, IoPeople, IoPieChart } from "react-icons/io5";
+import {IoDesktop, IoPeople } from "react-icons/io5";
 import { FaList } from "react-icons/fa";
 import { FaRightToBracket } from "react-icons/fa6";
 import { Link } from "react-router-dom";

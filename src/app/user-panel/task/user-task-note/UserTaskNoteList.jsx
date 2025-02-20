@@ -37,14 +37,11 @@ const UserTaskNoteList = () => {
     fetchTaskNotes();
   }, [id]);
 
-
-
   // Function to format the date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString(); // You can customize the date format as needed
   };
-
 
   // Function to handle opening the popup and setting the current task
   const handleEyeClick = (task) => {

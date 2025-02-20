@@ -3,7 +3,7 @@ import { environment } from '../../environment/environment';
 import httpClient from './HttpClient';
 
 // Define the base URL for your API
-const api = environment.department;
+const api = environment.leaveType;
 
 export const LeaveTypeService = {
   // Method to add a department

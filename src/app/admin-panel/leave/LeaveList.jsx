@@ -125,6 +125,7 @@ const fetchLeaveRecords = async () => {
     // console.log(leave);
     const leaveData = {
       employeeId: leave.employeeId,
+      leaveTypeId: leave.leaveTypeId,
       fromDate: leave.fromDate,
       toDate: leave.toDate,
       totalDays: leave.totalDays,

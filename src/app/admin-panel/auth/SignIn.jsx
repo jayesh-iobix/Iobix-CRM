@@ -4,7 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Logo from "../../../assets/iobix-technolabs.png"
 import { toast } from "react-toastify";
+import FingerprintJS from "@fingerprintjs/fingerprintjs"; // For fingerprinting
+import { UAParser } from "ua-parser-js";
+import { getToken } from "firebase/messaging";
 import 'react-toastify/dist/ReactToastify.css';
+import { messaging } from "../../../firebase/firebase";
 
 const SignIn = ({onLogin, setLoading}) => {
   const [email, setEmail] = useState("");
@@ -13,6 +17,43 @@ const SignIn = ({onLogin, setLoading}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
+
+  const [deviceId, setDeviceId] = useState(null); // State to store the device ID
+  const [deviceToken, setDeviceToken] = useState(null);
+
+  useEffect(() => {
+    // Check for stored device token
+    const storedDeviceToken = sessionStorage.getItem("deviceToken");
+    if (storedDeviceToken) {
+      setDeviceToken(storedDeviceToken);
+    } 
+    else {
+      // Get the device token if not stored
+      const getDeviceToken = async () => {
+        try {
+          const currentToken = await getToken(messaging, { vapidKey: "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" });
+          if (currentToken) {
+            setDeviceToken(currentToken);
+            console.log(currentToken);
+            sessionStorage.setItem("deviceToken", currentToken);
+          } else {
+            console.log("No device token available.");
+          }
+        } catch (error) {
+          console.error("Error fetching device token:", error);
+        }
+      };
+      getDeviceToken();
+    }
+
+    // Get the device ID using FingerprintJS
+    const getDeviceId = async () => {
+      const fp = await FingerprintJS.load();
+      const result = await fp.get();
+      setDeviceId(result.visitorId);
+    };
+    getDeviceId();
+  }, []);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -60,8 +101,31 @@ const SignIn = ({onLogin, setLoading}) => {
     if (!validateForm()) return;
 
     setLoading(true);  // Start loading spinner
+
+    // Initialize UAParser to get device information
+    const parser = new UAParser();
+    const result = parser.getResult();
+    const { device, os } = result;
+
+    // Collect device information
+    const deviceInfoVM = {
+      deviceId: deviceId || "Unknown Device ID",  // Include the device ID
+      deviceToken: deviceToken || "Unknown Device Token",
+      deviceName: device.model || "Unknown Device",
+      deviceType: device.type || "Unknown Type",
+      deviceOSName: os.name || "Unknown OS",
+      deviceOSVersion: os.version || "Unknown Version",
+    };
+
+    console.log(deviceInfoVM)
     
-    const signInData = { email, password };
+    const signInData = {
+      email,
+      password,
+      deviceInfoVM
+    }
+    
+    // const signInData = { email, password };
     
     // setIsSubmitting(true);
     try {

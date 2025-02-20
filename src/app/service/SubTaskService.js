@@ -51,6 +51,17 @@ export const SubTaskService = {
     }
   },
 
+  // Method to get sub tasks by main task which is assign by other
+  getUserSubTaskByEmployeeId: async (taskAllocationId, employeeId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetSubTaskByTaskIdEmployeeId/${taskAllocationId}/${employeeId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch sub tasks:', error);
+      throw error;
+    }
+  },
+
   // Method to get tasks by Id
   getSubTaskById: async (subTaskId) => {
       try {

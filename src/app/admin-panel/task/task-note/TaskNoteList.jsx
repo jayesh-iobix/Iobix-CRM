@@ -8,46 +8,45 @@ import { motion } from "framer-motion"; // Import framer-motion
 
 export const TaskNoteList = () => {
 
-    const { id } = useParams();
-    const [taskNotes, setTaskNotes] = useState([]);
-    const navigate = useNavigate("")
+  const { id } = useParams();
+  const [taskNotes, setTaskNotes] = useState([]);
+  const navigate = useNavigate("")
 
-    useEffect(() => {
-        const fetchTaskNotes = async () => {
-          try {
-            const result = await TaskNoteService.getTaskNoteByTaskId(id);
-            setTaskNotes(result.data);
-            console.log(result.data);
-    
-          } catch (error) {
-            console.error("Error fetching tasks:", error);
-            setTaskNotes([]);
-          }
-        };
-        fetchTaskNotes();
-      }, [id]);
-
-      // Function to format the date
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(); // You can customize the date format as needed
-  };
-
-  const deleteNote = async (taskNoteId) => {
-    // console.log(taskNoteId);
-    debugger;
-    try {
-      const response = await TaskNoteService.deleteTaskNote(taskNoteId);
-      if (response.status === 1) {
-        setTaskNotes((prevTaskNote) =>
-          prevTaskNote.filter((taskNote) => taskNote.taskNoteId !== taskNoteId)
-        );
-        toast.error(response.message);
+  useEffect(() => {
+    const fetchTaskNotes = async () => {
+      try {
+        const result = await TaskNoteService.getTaskNoteByTaskId(id);
+        setTaskNotes(result.data);
+        console.log(result.data);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        setTaskNotes([]);
       }
-    } catch (error) {
-      console.error("Error deleting task:", error);
-      alert("Failed to delete task");
+    };
+    fetchTaskNotes();
+  }, [id]);
+
+  // Function to format the date
+  const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString(); // You can customize the date format as needed
+  };
+  
+  const deleteNote = async (taskNoteId) => {
+  // console.log(taskNoteId);
+  // debugger;
+  try {
+    const response = await TaskNoteService.deleteTaskNote(taskNoteId);
+    if (response.status === 1) {
+      setTaskNotes((prevTaskNote) =>
+        prevTaskNote.filter((taskNote) => taskNote.taskNoteId !== taskNoteId)
+      );
+      toast.error(response.message);
     }
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    alert("Failed to delete task");
+  }
   };
 
   return (

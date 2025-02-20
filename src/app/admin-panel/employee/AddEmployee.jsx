@@ -7,13 +7,39 @@ import { DesignationService } from "../../service/DesignationService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
+import { EmployeeLeaveTypeService } from "../../service/EmployeeLeaveTypeService";
 
 
 const AddEmployee = () => {
-  const [formData, setFormData] = useState({firstName: "", middleName: "", lastName: "", employeecode: "", email: "", password: "", departmentId: "", designationId: "", gender: "", mobileNumber: "", emergencyMobileNumber: "", birthDate: "", dateOfJoining: "", countryId: "", stateId: "", cityId: "", bloodgroup: "", address: "", keyResponsibility: "", reportingTo: "" });
+  const [formData, setFormData] = useState({
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    employeecode: "",
+    email: "",
+    password: "",
+    departmentId: "",
+    designationId: "",
+    gender: "",
+    mobileNumber: "",
+    emergencyMobileNumber: "",
+    birthDate: "",
+    dateOfJoining: "",
+    countryId: "",
+    stateId: "",
+    cityId: "",
+    bloodgroup: "",
+    address: "",
+    keyResponsibility: "",
+    reportingTo: "",
+    onProbation: "",
+    probationPeriod: "",
+    employeeLeaveTypeId: "",
+  });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
+  const [employeeLeaveTypeList, setEmployeeLeaveTypeList] = useState([]);
   const [designationList, setDesignationList] = useState([]);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
@@ -26,29 +52,45 @@ const AddEmployee = () => {
       try {
         // Fetch departments
         const departmentResult = await DepartmentService.getDepartments();
-        const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
+        const activeDepartments = departmentResult.data.filter(
+          (department) => department.isActive === true
+        );
 
         setDepartmentList(activeDepartments);
 
-        if(formData.departmentId)
-        {
-            // Fetch designation from department
-            const designationResult = await DesignationService.getDesignationByDepartment(formData.departmentId);
+        if (formData.departmentId) {
+          // Fetch designation from department
+          const designationResult =
+            await DesignationService.getDesignationByDepartment(
+              formData.departmentId
+            );
           //  const activeDesignation = designationResult.data.filter(designation => designation.isActive === true);
 
-             setDesignationList(designationResult.data);
+          setDesignationList(designationResult.data);
 
-             // Fetch Employee from department
-             const employeeResult = await EmployeeService.getEmployeeByDepartment(formData.departmentId);
-             setEmployeeList(employeeResult.data);
+          // Fetch Employee from department
+          const employeeResult = await EmployeeService.getEmployeeByDepartment(
+            formData.departmentId
+          );
+          setEmployeeList(employeeResult.data);
         }
-    
-        if(formData.dateOfJoining)
-        {
-            const employeeCodeData = await EmployeeService.getEmployeeCode(formData.dateOfJoining);
-            formData.employeecode = employeeCodeData.data; 
+
+        // Fetch employeeLeaveType
+        const employeeLeaveTypeResult =
+          await EmployeeLeaveTypeService.getLeaveEmployeeTypes();
+        const activeEmployeeLeaveType = employeeLeaveTypeResult.data.filter(
+          (employeeLeaveType) => employeeLeaveType.isActive === true
+        );
+        //  console.log(employeeLeaveTypeResult.data)
+        setEmployeeLeaveTypeList(activeEmployeeLeaveType);
+
+        if (formData.dateOfJoining) {
+          const employeeCodeData = await EmployeeService.getEmployeeCode(
+            formData.dateOfJoining
+          );
+          formData.employeecode = employeeCodeData.data;
         }
-            
+
         // Fetch countries
         const countryResult = await CommonService.getCountry();
         setCountryList(countryResult.data);
@@ -69,10 +111,36 @@ const AddEmployee = () => {
     };
 
     fetchData(); // Call the function to fetch data
-  }, [formData.countryId, formData.stateId, formData.departmentId, formData.dateOfJoining]);  // Watch country, state, departmentfrom and employeecode formData
+  }, [
+    formData.countryId,
+    formData.stateId,
+    formData.departmentId,
+    formData.dateOfJoining,
+  ]); // Watch country, state, departmentfrom and employeecode formData
 
   const validateForm = () => {
-    const requiredFields = [ "firstName", "middleName", "lastName", "employeecode", "email", "password", "departmentId", "designationId", "gender", "mobileNumber", "emergencyMobileNumber", "birthDate", "dateOfJoining", "countryId", "stateId", "cityId", "bloodgroup", "address", "keyResponsibility",];
+    const requiredFields = [
+      "firstName",
+      "middleName",
+      "lastName",
+      "employeecode",
+      "email",
+      "password",
+      "departmentId",
+      "designationId",
+      "gender",
+      "mobileNumber",
+      "emergencyMobileNumber",
+      "birthDate",
+      "dateOfJoining",
+      "countryId",
+      "stateId",
+      "cityId",
+      "bloodgroup",
+      "address",
+      "keyResponsibility",
+      "onProbation",
+    ];
     const newErrors = {};
     requiredFields.forEach((field) => {
       if (!formData[field]) newErrors[field] = `${field} is required`;
@@ -82,6 +150,7 @@ const AddEmployee = () => {
   };
 
   const handleSubmit = async (e) => {
+    debugger;
     e.preventDefault();
     if (validateForm()) {
       setIsSubmitting(true);
@@ -90,16 +159,44 @@ const AddEmployee = () => {
         // Call the API to add the employee
         const employeeData = {
           ...formData,
-          reportingTo: formData.reportingTo === "" ? null : formData.reportingTo, // Convert empty string to null
+          reportingTo:
+            formData.reportingTo === "" ? null : formData.reportingTo, // Convert empty string to null
+          probationPeriod:
+            formData.probationPeriod === "" ? 0 : formData.probationPeriod, // Convert empty string to 0
+          employeeLeaveTypeId:
+            formData.employeeLeaveTypeId === "" ? null : formData.employeeLeaveTypeId, // Convert empty string to null
         };
         const response = await EmployeeService.addEmployee(employeeData); // Call the service
-        if(response.status === 1){
-          toast.success(response.message);    
-          navigate('/employee-list')
+        if (response.status === 1) {
+          toast.success(response.message);
+          navigate("/employee-list");
         }
-        
+
         // Reset the form after successful submission
-        setFormData({ firstName: "", middleName: "", lastName: "", employeecode: "", email: "", password: "", departmentId: "", designationId: "", gender: "", mobileNumber: "", emergencyMobileNumber: "", birthDate: "", dateOfJoining: "", countryId: "", stateId: "", cityId: "", bloodgroup: "", address: "", keyResponsibility: "", reportingTo: "",
+        setFormData({
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          employeecode: "",
+          email: "",
+          password: "",
+          departmentId: "",
+          designationId: "",
+          gender: "",
+          mobileNumber: "",
+          emergencyMobileNumber: "",
+          birthDate: "",
+          dateOfJoining: "",
+          countryId: "",
+          stateId: "",
+          cityId: "",
+          bloodgroup: "",
+          address: "",
+          keyResponsibility: "",
+          reportingTo: "",
+          onProbation: "",
+          probationPeriod: "",
+          employeeLeaveTypeId: "",
           // documentName: "",
         });
         setErrors({});
@@ -121,17 +218,14 @@ const AddEmployee = () => {
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Employee</h1>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-        <Link
-          to="/employee-list"
-          className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
-        >
-          <FaArrowLeft size={16} />
-          Back
-        </Link>
+        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          <Link
+            to="/employee-list"
+            className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+          >
+            <FaArrowLeft size={16} />
+            Back
+          </Link>
         </motion.button>
       </div>
 
@@ -139,17 +233,72 @@ const AddEmployee = () => {
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
             {[
-              { label: "First Name", name: "firstName", type: "text", placeholder: "Enter your first name" },
-              { label: "Middle Name", name: "middleName", type: "text", placeholder: "Enter your middle name" },
-              { label: "Last Name", name: "lastName", type: "text", placeholder: "Enter your last name" },
-              { label: "Email", name: "email", type: "email", placeholder: "Enter your middle name" },
-              { label: "Password", name: "password", type: "password",placeholder: "Enter your password" },
-              { label: "Mobile Number", name: "mobileNumber", type: "number", placeholder: "Enter your phone number" },
-              { label: "Emergency Mobile Number", name: "emergencyMobileNumber", type: "number", placeholder: "Enter an emergency contact number" },
-              { label: "Date of Birth", name: "birthDate", type: "date", placeholder: "Select your birth date" },
-              { label: "Date of Joining", name: "dateOfJoining", type: "date", placeholder: "Select your joining date" },
-              { label: "Employee Code", name: "employeecode", type: "text", placeholder: "Employee code" },
-              { label: "Blood Group", name: "bloodgroup", type: "text", placeholder: "Enter your blood group" },
+              {
+                label: "First Name",
+                name: "firstName",
+                type: "text",
+                placeholder: "Enter your first name",
+              },
+              {
+                label: "Middle Name",
+                name: "middleName",
+                type: "text",
+                placeholder: "Enter your middle name",
+              },
+              {
+                label: "Last Name",
+                name: "lastName",
+                type: "text",
+                placeholder: "Enter your last name",
+              },
+              {
+                label: "Email",
+                name: "email",
+                type: "email",
+                placeholder: "Enter your middle name",
+              },
+              {
+                label: "Password",
+                name: "password",
+                type: "password",
+                placeholder: "Enter your password",
+              },
+              {
+                label: "Mobile Number",
+                name: "mobileNumber",
+                type: "number",
+                placeholder: "Enter your phone number",
+              },
+              {
+                label: "Emergency Mobile Number",
+                name: "emergencyMobileNumber",
+                type: "number",
+                placeholder: "Enter an emergency contact number",
+              },
+              {
+                label: "Date of Birth",
+                name: "birthDate",
+                type: "date",
+                placeholder: "Select your birth date",
+              },
+              {
+                label: "Date of Joining",
+                name: "dateOfJoining",
+                type: "date",
+                placeholder: "Select your joining date",
+              },
+              {
+                label: "Employee Code",
+                name: "employeecode",
+                type: "text",
+                placeholder: "Employee code",
+              },
+              {
+                label: "Blood Group",
+                name: "bloodgroup",
+                type: "text",
+                placeholder: "Enter your blood group",
+              },
             ].map(({ label, name, type, placeholder }) => (
               <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3" key={name}>
                 <label className="mb-2 block text-base font-medium">
@@ -161,7 +310,9 @@ const AddEmployee = () => {
                   placeholder={placeholder}
                   value={formData[name]}
                   onChange={handleChange}
-                  className={`w-full mb-2 rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition ${name === "employeecode" ? "bg-gray-100" : "bg-transparent"}`}
+                  className={`w-full mb-2 rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition ${
+                    name === "employeecode" ? "bg-gray-100" : "bg-transparent"
+                  }`}
                   disabled={name === "employeecode"} // Disable Employee Code field
                 />
                 {errors[name] && (
@@ -376,8 +527,11 @@ const AddEmployee = () => {
                 </option>
                 {employeeList.length > 0 ? (
                   employeeList.map((employee) => (
-                    <option key={employee.employeeId} value={employee.employeeId}>
-                      {employee.firstName + " "+ employee.lastName}
+                    <option
+                      key={employee.employeeId}
+                      value={employee.employeeId}
+                    >
+                      {employee.firstName + " " + employee.lastName}
                     </option>
                   ))
                 ) : (
@@ -391,52 +545,146 @@ const AddEmployee = () => {
               )} */}
             </div>
 
-            {/* Address Input */}
-            <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
-              <label className="mb-2 block text-base font-medium text-dark dark:text-white">
-                Address
+            {/* On Probation Select */}
+            <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
+              <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
+                On Probation
               </label>
-              <textarea
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                rows="3"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
-              ></textarea>
-              {errors.address && (
-                <p className="text-red-500 text-xs">{errors.address}</p>
+              <div className="relative z-20">
+                <select
+                  value={formData.onProbation}
+                  onChange={handleChange}
+                  name="onProbation"
+                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+                >
+                  <option value="" className="text-gray-400">
+                    --Select On Probation--
+                  </option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              {errors.onProbation && (
+                <p className="text-red-500 text-xs">{errors.onProbation}</p>
               )}
             </div>
 
-            {/* KeyResponsibility Input */}
-            <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
-              <label className="mb-2 block text-base font-medium text-dark dark:text-white">
-                Roles & Responsibility
+            {/* Probation Period */}
+            {formData.onProbation === "Yes" && (
+            <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
+              <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
+                Probation Period
               </label>
-              <textarea
-                name="keyResponsibility"
-                value={formData.keyResponsibility}
-                onChange={handleChange}
-                rows="3"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
-              ></textarea>
-              {errors.keyResponsibility && (
-                <p className="text-red-500 text-xs">
-                  {errors.keyResponsibility}
-                </p>
-              )}
+              <div className="relative z-20">
+                <select
+                  value={formData.probationPeriod}
+                  onChange={handleChange}
+                  name="probationPeriod"
+                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+                >
+                  <option value="" className="text-gray-400">
+                    --Select Probation Period--
+                  </option>
+                  <option value="90">90 Days</option>
+                  <option value="180">180 Days</option>
+                  <option value="365">365 Days</option>
+                </select>
+              </div>
+              {/* {errors.probationPeriod && (
+                <p className="text-red-500 text-xs">{errors.probationPeriod}</p>
+              )} */}
             </div>
-            
+            )}
+
+            {/* EmployeeLeave Type - Show only if "No" is selected in On Probation */}
+            {formData.onProbation === "No" && (
+              <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
+                <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
+                  Employee Leave Type
+                </label>
+                <div className="relative z-20">
+                  <select
+                    value={formData.employeeLeaveTypeId}
+                    onChange={handleChange}
+                    name="employeeLeaveTypeId"
+                    className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+                  >
+                    <option value="" className="text-gray-400">
+                      --Select Employee Leave Type--
+                    </option>
+                    {employeeLeaveTypeList.length > 0 ? (
+                      employeeLeaveTypeList.map((employeeLeaveTypeItem) => (
+                        <option
+                          key={employeeLeaveTypeItem.employeeLeaveTypeId}
+                          value={employeeLeaveTypeItem.employeeLeaveTypeId}
+                        >
+                          {employeeLeaveTypeItem.employeeLeaveTypeName}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No employee leave type available
+                      </option>
+                    )}
+                  </select>
+                </div>
+                {/* {errors.employeeLeaveTypeId && (
+                  <p className="text-red-500 text-xs">
+                    {errors.employeeLeaveTypeId}
+                  </p>
+                )} */}
+              </div>
+            )}
+
+            {/* Address Input and KeyResponsibility Input */}
+            <div className="w-full mb-2 px-3 flex">
+              {/* Address Input */}
+              <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
+                <label className="mb-2 block text-base font-medium text-dark dark:text-white">
+                  Address
+                </label>
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  rows="3"
+                  className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                ></textarea>
+                {errors.address && (
+                  <p className="text-red-500 text-xs">{errors.address}</p>
+                )}
+              </div>
+
+              {/* KeyResponsibility Input */}
+              <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
+                <label className="mb-2 block text-base font-medium text-dark dark:text-white">
+                  Roles & Responsibility
+                </label>
+                <textarea
+                  name="keyResponsibility"
+                  value={formData.keyResponsibility}
+                  onChange={handleChange}
+                  rows="3"
+                  className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                ></textarea>
+                {errors.keyResponsibility && (
+                  <p className="text-red-500 text-xs">
+                    {errors.keyResponsibility}
+                  </p>
+                )}
+              </div>
+            </div>
+
             <div className="w-full flex px-3">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              type="submit"
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                type="submit"
                 className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isSubmitting}
-            >
+              >
                 {isSubmitting ? "Submitting..." : "Add Employee"}
               </motion.button>
               {/* <button
@@ -457,3 +705,5 @@ const AddEmployee = () => {
 };
 
 export default AddEmployee;
+
+

@@ -48,6 +48,18 @@ import LeaveModule from './app/user-panel/leave/LeaveModule';
 import ViewAssignSubTask from './app/user-panel/task/assign-sub-task/ViewAssignSubTask';
 import LeaveList from './app/admin-panel/leave/LeaveList';
 import LeaveTypeList from './app/admin-panel/master/leave-type/LeaveTypeList';
+import EmployeeLeaveTypeList from './app/admin-panel/master/employee-leave-type/EmployeeLeaveTypeList';
+import AddLeaveType from './app/admin-panel/master/leave-type/AddLeaveType';
+import EditLeaveType from './app/admin-panel/master/leave-type/EditLeaveType';
+import AddEmployeeLeaveType from './app/admin-panel/master/employee-leave-type/AddEmployeeLeaveType';
+import EditEmployeeLeaveType from './app/admin-panel/master/employee-leave-type/EditEmployeeLeaveType';
+import HolidayList from './app/admin-panel/master/holiday/HolidayList';
+import AddHoliday from './app/admin-panel/master/holiday/AddHoliday';
+import EditHoliday from './app/admin-panel/master/holiday/EditHoliday';
+import { generateToken, messaging } from './firebase/firebase';
+import { onMessage } from 'firebase/messaging';
+import CompanyForm from './app/components/CompanyForm';
+import InquiryModule from './app/components/InquiryModule';
 
 
 
@@ -61,6 +73,15 @@ function App() {
   useEffect(() => {
     // This code runs only once when the component mounts.
     const token = sessionStorage.getItem('token');
+
+    generateToken();
+    // debugger;
+    onMessage(messaging, (payload) => { 
+     // Listen for foreground messages (optional)      
+    //  console.log('Message received in foreground: ', payload);
+    //  toast.success(payload.notification.body)
+    }); 
+
     //console.log(token)
     if (token) {
       try {
@@ -110,6 +131,8 @@ function App() {
     <Route path="/sign-in" element={<SignIn onLogin={() => setIsAuthenticated(true)} setLoading={setLoading} />} />
     <Route path="/forgot-password" element={<ForgotPassword/>} />
     <Route path="/reset-password/:token" element={<ResetPassowrd/>} />
+    <Route path="/inquiry" element={<InquiryModule/>} />
+    <Route path="/company-form" element={<CompanyForm/>} />
 
     {/* Protected Routes */}
     <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
@@ -128,6 +151,14 @@ function App() {
       <Route path="master/employeepermission-list/add-employeepermission" element={<AddEmployeePermission />} />
       <Route path="master/employeepermission-list/edit-employeepermission/:id" element={<EditEmployeePermission />} />
       <Route path="master/leave-type-list" element={<LeaveTypeList />} />
+      <Route path="master/leave-type-list/add-leave-type" element={<AddLeaveType />} />
+      <Route path="master/leave-type-list/edit-leave-type/:id" element={<EditLeaveType/>} />
+      <Route path="master/employee-leavetype-list" element={<EmployeeLeaveTypeList />} />
+      <Route path="master/employee-leavetype-list/add-employee-leavetype" element={<AddEmployeeLeaveType />} />
+      <Route path="master/employee-leavetype-list/edit-employee-leavetype/:id" element={<EditEmployeeLeaveType />} />
+      <Route path="master/holiday-list" element={<HolidayList />} />
+      <Route path="master/holiday-list/add-holiday" element={<AddHoliday />} />
+      <Route path="master/holiday-list/edit-holiday/:id" element={<EditHoliday />} />
       <Route path="task/task-list" element={<TaskList />} />
       <Route path="task/create-task" element={<CreateTask />} />
       <Route path="task/edit-task/:id" element={<EditTask/>} />

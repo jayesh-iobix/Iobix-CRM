@@ -64,14 +64,14 @@ const AddDesignation = () => {
         );
         if (response.status === 1) {
           navigate("/master/designation-list");
-          console.log("Department added successfully:", response);
+          // console.log("Designation added successfully:", response);
           toast.success(response.message); // Toast on success
         }
         // Reset the form
         setDesignationName("");
       } catch (error) {
-        console.error("Error adding department:", error);
-        alert("Failed to add department.");
+        console.error("Error adding designation:", error);
+        alert("Failed to add designation.");
       }
     }
   };

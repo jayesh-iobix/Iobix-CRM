@@ -36,7 +36,6 @@ const AddLeaveType = () => {
     // Logic for form submission goes here
     const leaveTypeData = {
       leaveTypeName,
-      eventDescription
     };
 
     if (validateForm()) {
@@ -44,7 +43,7 @@ const AddLeaveType = () => {
         const response = await LeaveTypeService.addLeaveType(leaveTypeData);
         if (response.status === 1) {
           navigate('/master/leave-type-list');
-          console.log('Leave Type added successfully', response);
+          // console.log('Leave Type added successfully', response);
           toast.success(response.message); // Toast on success
         }
         // Reset the form

@@ -151,6 +151,7 @@ const EditDesignation = () => {
               )}
             </div>
 
+            {/* Designation Name */}
             <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
                 Designation Name

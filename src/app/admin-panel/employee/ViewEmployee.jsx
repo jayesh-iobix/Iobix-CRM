@@ -5,6 +5,7 @@ import { EmployeeService } from "../../service/EmployeeService";
 import { motion } from "framer-motion"; // Import framer-motion
 import AttendanceList from "../attendanceList/AttendanceList";
 import LeaveList from "../leave/LeaveList";
+import UserTaskList from "../task/user-task/UserTaskList";
 
 const ViewEmployee = () => {
 
@@ -110,6 +111,7 @@ const ViewEmployee = () => {
                   "Employee Details",
                   "Attendance List",
                   "Leave List",
+                  "Task List",
                 ].map((tab, index) => (
                   <button
                     key={index}
@@ -172,6 +174,7 @@ const ViewEmployee = () => {
               )}
               {activeTab === 2 && <AttendanceList />}
               {activeTab === 3 && <LeaveList />}
+              {activeTab === 4 && <UserTaskList />}
             </div>
           </div>
         </form>

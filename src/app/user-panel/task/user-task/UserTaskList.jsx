@@ -64,6 +64,11 @@ const UserTaskList = () => {
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region Collapse drop-down
+  const [openDropdown, setOpenDropdown] = useState({}); // State to track which dropdown is open
+  const [openSubDropdown, setOpenSubDropdown] = useState({}); // State to track which dropdown is open
+  const buttonRefs = useRef({}); // To store references to dropdown buttons
+  //#endregion
 
   const fetchTasks = async () => {
     try {
@@ -277,10 +282,6 @@ const UserTaskList = () => {
     }
     return "00:00:00"; // Default fallback if the format is unexpected
   };
-
-  const [openDropdown, setOpenDropdown] = useState({}); // State to track which dropdown is open
-  const [openSubDropdown, setOpenSubDropdown] = useState({}); // State to track which dropdown is open
-  const buttonRefs = useRef({}); // To store references to dropdown buttons
 
   const toggleDropdown = (taskAllocationId) => {
     // Toggle dropdown for the current task, close if it's already open

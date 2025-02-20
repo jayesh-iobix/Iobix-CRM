@@ -14,4 +14,8 @@ export const environment = {
   dashboard: "https://localhost:7292/api/Dashboard",
   attendance: "https://localhost:7292/api/Attendance",
   leave: "https://localhost:7292/api/LeaveRequest",
+  leaveType: "https://localhost:7292/api/LeaveType",
+  employeeLeaveType: "https://localhost:7292/api/EmployeeLeaveType",
+  holiday: "https://localhost:7292/api/HolidayMaster",
+  report: "https://localhost:7292/api/Report",
 }
