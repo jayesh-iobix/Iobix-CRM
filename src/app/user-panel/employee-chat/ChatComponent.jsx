@@ -1,17 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion"; // Import framer-motion
+import { HubConnectionBuilder } from "@microsoft/signalr";
 
 
 const ChatComponent = ({ taskAssignToName }) => {
 
-
   const [messages, setMessages] = useState([]); // State to store messages
   const [newMessage, setNewMessage] = useState(""); // State to store new message
   const [file, setFile] = useState(null); // State to store selected file
+  const [connection, setConnection] = useState(null); // For the SignalR connection
+
+  useEffect(() => {
+    // Set up SignalR connection
+    const newConnection = new HubConnectionBuilder()
+      .withUrl('http://localhost:5000/chatHub') // Your API SignalR Hub endpoint
+      .build();
+
+    newConnection.start()
+      .then(() => {
+        console.log("Connected to SignalR Hub!");
+      })
+      .catch((error) => console.error('Error while starting connection: ' + error));
+
+    // Listen for incoming messages
+    newConnection.on('ReceiveMessage', (user, message) => {
+      setMessages((prevMessages) => [...prevMessages, { user, message }]);
+    });
+
+    // Set connection state
+    setConnection(newConnection);
+
+    // Clean up on component unmount
+    return () => {
+      if (newConnection) {
+        newConnection.stop();
+      }
+    };
+  }, []);
 
   // Handle sending a message
   const handleSendMessage = () => {
     if (newMessage.trim() || file) {
+      if (connection) {
+        connection.invoke('SendMessage', 'You', newMessage) // Send to SignalR Hub
+          .catch((err) => console.error(err));
+      }
       const newMessageObj = {
         id: messages.length + 1,
         text: newMessage,

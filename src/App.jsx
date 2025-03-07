@@ -1,6 +1,14 @@
 import './App.css';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { generateToken, messaging } from './firebase/firebase';
+import { onMessage } from 'firebase/messaging';
+import 'react-toastify/dist/ReactToastify.css';  // Don't forget to import the CSS
+import { jwtDecode } from 'jwt-decode';
+import { RingLoader } from 'react-spinners';
+import SignIn from './app/auth/SignIn';
+import ForgotPassword from './app/auth/ForgotPassword';
+import ResetPassowrd from './app/auth/ResetPassword';
 import EmployeeList from './app/admin-panel/employee/EmployeeList';
 import AddEmployee from './app/admin-panel/employee/AddEmployee';
 import Dashboard from './app/admin-panel/dashboard/Dashboard';
@@ -8,11 +16,9 @@ import Layout from './app/components/Layout';
 import AddDepartment from './app/admin-panel/master/department/AddDepartment';
 import DesignationList from './app/admin-panel/master/designation/DesignationList';
 import AddDesignation from './app/admin-panel/master/designation/AddDesignation';
-import SignIn from './app/admin-panel/auth/SignIn';
+// import SignIn from './app/admin-panel/auth/SignIn';
 import EditDepartment from './app/admin-panel/master/department/EditDepartment';
-import { jwtDecode } from 'jwt-decode';
 import EditDesignation from './app/admin-panel/master/designation/EditDesignation';
-import { RingLoader } from 'react-spinners';
 import EditEmployee from './app/admin-panel/employee/EditEmployee';
 import UserDashboard from './app/user-panel/dashboard/UserDashboard';
 import TaskList from './app/admin-panel/task/task/TaskList';
@@ -22,15 +28,9 @@ import DepartmentList from './app/admin-panel/master/department/DepartmentList';
 import AddEmployeePermission from './app/admin-panel/master/employee-permission/AddEmployeePermission';
 import EmployeePermissionList from './app/admin-panel/master/employee-permission/EmployeePermissionList';
 import EditEmployeePermission from './app/admin-panel/master/employee-permission/EditEmployeePermission';
-// import TaskNoteList from './app/user-panel/task/TaskNoteList';
 import CreateSubTask from './app/admin-panel/task/sub-task/CreateSubTask';
 import EditSubTask from './app/admin-panel/task/sub-task/EditSubTask';
 import { TaskNoteList } from './app/admin-panel/task/task-note/TaskNoteList';
-import ForgotPassword from './app/admin-panel/auth/ForgotPassword';
-import ResetPassowrd from './app/admin-panel/auth/ResetPassword';
-// import TaskNoteList from './app/admin-panel/task/task-note/TaskNoteList';
-import 'react-toastify/dist/ReactToastify.css';  // Don't forget to import the CSS
-import { ToastContainer } from 'react-toastify';
 import UserProfile from './app/user-panel/user-profile/UserProfile';
 import UserTaskList from './app/user-panel/task/user-task/UserTaskList';
 import TaskDetails from './app/user-panel/task/user-task/TaskDetails';
@@ -56,11 +56,60 @@ import EditEmployeeLeaveType from './app/admin-panel/master/employee-leave-type/
 import HolidayList from './app/admin-panel/master/holiday/HolidayList';
 import AddHoliday from './app/admin-panel/master/holiday/AddHoliday';
 import EditHoliday from './app/admin-panel/master/holiday/EditHoliday';
-import { generateToken, messaging } from './firebase/firebase';
-import { onMessage } from 'firebase/messaging';
 import CompanyForm from './app/components/CompanyForm';
-import InquiryModule from './app/components/InquiryModule';
-
+import InquiryTypeList from './app/admin-panel/master/inquiry-type/InquiryTypeList';
+import AddInquiryType from './app/admin-panel/master/inquiry-type/AddInquiryType';
+import CompanyRegistration from './app/components/CompanyRegistration';
+import EditInquiryType from './app/admin-panel/master/inquiry-type/EditInquiryType';
+import InquirySourceList from './app/admin-panel/master/inquiry-source/InquirySourceList';
+import AddInquirySource from './app/admin-panel/master/inquiry-source/AddInquirySource';
+import EditInquirySource from './app/admin-panel/master/inquiry-source/EditInquirySource';
+import PartnerRegistration from './app/components/PartnerRegistration';
+import ClientCompanyList from './app/admin-panel/client-company/ClientCompanyList';
+import ViewClientCompany from './app/admin-panel/client-company/ViewClientCompany';
+import AddClientCompany from './app/admin-panel/client-company/AddClientCompany';
+import EditClientCompany from './app/admin-panel/client-company/EditClientCompany';
+import PartnerList from './app/admin-panel/partner/PartnerList';
+import AddPartner from './app/admin-panel/partner/AddPartner';
+import ViewPartner from './app/admin-panel/partner/ViewPartner';
+import EditPartner from './app/admin-panel/partner/EditPartner';
+import InquiryModuleList from './app/company-panel/company-information/InquiryModuleList';
+import InquiryModule from './app/company-panel/company-information/InquiryModule';
+import ViewIquiryModule from './app/company-panel/company-information/ViewIquiryModule';
+import ClientCompDashboard from './app/company-panel/dashboard/ClientCompDashboard';
+import PartnerDashboard from './app/partner-panel/dashboard/PartnerDashboard';
+import AddInquiry from './app/partner-panel/inquiry/AddInquiry';
+import InquiryList from './app/partner-panel/inquiry/InquiryList';
+import PartnerViewInquiry from './app/admin-panel/inquiry/ViewInquiry';
+// import InquiryListInAdmin from './app/admin-panel/partner-inquiry/InquiryList';
+import AddPartnerInquiry from './app/admin-panel/partner-inquiry/AddPartnerInquiry';
+import InquiryOriginList from './app/admin-panel/master/inquiry-origin/InquiryOriginList';
+import AddInquiryOrigin from './app/admin-panel/master/inquiry-origin/AddInquiryOrigin';
+import EditInquiryOrigin from './app/admin-panel/master/inquiry-origin/EditInquiryOrigin';
+import AddInquiryPermission from './app/admin-panel/master/inquiry-permission/AddInquiryPermission';
+import InquiryPermissionList from './app/admin-panel/master/inquiry-permission/InquiryPermissionList';
+import EditInquiryPermission from './app/admin-panel/master/inquiry-permission/EditInquiryPermission';
+import ViewInquiry from './app/partner-panel/inquiry/ViewInquiry';
+import GetInquiryList from './app/partner-panel/inquiry/GetInquiryList';
+import AdminInqryPermiList from './app/admin-panel/master/admin-inqry-permission/AdminInqryPermiList';
+import AddAdminInqryPermi from './app/admin-panel/master/admin-inqry-permission/AddAdminInqryPermi';
+import EditAdminInqryPermi from './app/admin-panel/master/admin-inqry-permission/EditAdminInqryPermi';
+import PartnerInquiryList from './app/admin-panel/partner-inquiry/PartnerInquiryList';
+import ClientInquiryList from './app/admin-panel/client-inquiry/ClientInquiryList';
+import AddClientInquiry from './app/admin-panel/client-inquiry/AddClientInquiry';
+import ClientViewInquiry from './app/admin-panel/inquiry/ViewInquiry';
+import CreatePartnerInqryList from './app/admin-panel/create-partner-inquiry/CreatePartnerInqryList';
+import CreatePartnerInqry from './app/admin-panel/create-partner-inquiry/CreatePartnerInqry';
+import ViewCreatePartnerInqry from './app/admin-panel/inquiry/ViewInquiry';
+import CreateClientInqryList from './app/admin-panel/create-client-inquiry/CreateClientInqryList';
+import CreateClientInqry from './app/admin-panel/create-client-inquiry/CreateClientInqry';
+import ViewCreateClientInqry from './app/admin-panel/inquiry/ViewInquiry';
+import UserInquiryList from './app/user-panel/inquiry/InquiryList';
+import CreateInquiryList from './app/user-panel/inquiry/CreateInquiryList';
+import ForwardPartnerInqryList from './app/user-panel/inquiry/ForwardPartnerInqryList';
+import ForwardClientInqryList from './app/user-panel/inquiry/ForwardClientInqryList';
+import UserViewInquiry from './app/user-panel/inquiry/UserViewInquiry';
+import GetViewInquiry from './app/partner-panel/inquiry/GetViewInquiry';
 
 
 function App() {
@@ -74,8 +123,8 @@ function App() {
     // This code runs only once when the component mounts.
     const token = sessionStorage.getItem('token');
 
-    generateToken();
     // debugger;
+    generateToken();
     onMessage(messaging, (payload) => { 
      // Listen for foreground messages (optional)      
     //  console.log('Message received in foreground: ', payload);
@@ -87,12 +136,24 @@ function App() {
       try {
         const decodedToken = jwtDecode(token);
         // Check if the decoded token includes valid roles
-        if (decodedToken?.Admin === 'IsAdmin') {
+        if (decodedToken?.Admin === 'IsAdmin' || decodedToken.Admin === 'IsAdminIT' || decodedToken.Admin === 'IsAdminBD') {
           setIsAuthenticated(true); // User is authenticated
           setUserRole('admin'); // Set the role to admin
+        // } else if (decodedToken?.Admin === 'IsAdminIT') {
+        //   setIsAuthenticated(true); // User is authenticated
+        //   setUserRole('ITadmin'); // Set the role to employee
+        // } else if (decodedToken?.Admin === 'IsAdminBD') {
+        //   setIsAuthenticated(true); // User is authenticated
+        //   setUserRole('BDadmin'); // Set the role to employee
         } else if (decodedToken?.Employee === 'IsEmployee') {
           setIsAuthenticated(true); // User is authenticated
-          setUserRole('user'); // Set the role to user
+          setUserRole('user'); // Set the role to employee
+        } else if (decodedToken?.Partner === 'IsPartner') {
+          setIsAuthenticated(true); // User is authenticated
+          setUserRole('partner'); // Set the role to partner
+        } else if (decodedToken?.Client === 'IsClient') {
+          setIsAuthenticated(true); // User is authenticated
+          setUserRole('company'); // Set the role to company
         } else {
           sessionStorage.clear();
           setIsAuthenticated(false);
@@ -113,7 +174,7 @@ function App() {
     return (
       <div className="loader-container">
       {/* <div className="loader"> */}
-      <RingLoader color='#3498db' size={600} className='loder'/>
+      <RingLoader color='#3498db' size={400} className='loder'/>
       {/* </div> */}
     </div>
     );
@@ -131,16 +192,14 @@ function App() {
     <Route path="/sign-in" element={<SignIn onLogin={() => setIsAuthenticated(true)} setLoading={setLoading} />} />
     <Route path="/forgot-password" element={<ForgotPassword/>} />
     <Route path="/reset-password/:token" element={<ResetPassowrd/>} />
-    <Route path="/inquiry" element={<InquiryModule/>} />
+    {/* <Route path="/inquiry" element={<InquiryModule/>} /> */}
     <Route path="/company-form" element={<CompanyForm/>} />
+    <Route path="/company-registration" element={<CompanyRegistration/>} />
+    <Route path="/partner-registration" element={<PartnerRegistration/>} />
 
-    {/* Protected Routes */}
+    {/* Admin dashboard Routes */}
     <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
       <Route index element={<Dashboard />} />
-      <Route path="employee-list" element={<EmployeeList />} />
-      <Route path="employee-list/add-employee" element={<AddEmployee />} />
-      <Route path="employee-list/edit-employee/:id" element={<EditEmployee />} />
-      <Route path="employee-list/view-employee/:id" element={<ViewEmployee />} />
       <Route path="master/department-list" element={<DepartmentList />} />
       <Route path="master/department-list/add-department" element={<AddDepartment />} />
       <Route path="master/department-list/edit-department/:id" element={<EditDepartment />} />
@@ -159,13 +218,54 @@ function App() {
       <Route path="master/holiday-list" element={<HolidayList />} />
       <Route path="master/holiday-list/add-holiday" element={<AddHoliday />} />
       <Route path="master/holiday-list/edit-holiday/:id" element={<EditHoliday />} />
+      <Route path="master/inquirytype-list" element={<InquiryTypeList />} />
+      <Route path="master/inquirytype-list/add-inquirytype" element={<AddInquiryType />} />
+      <Route path="master/inquirytype-list/edit-inquirytype/:id" element={<EditInquiryType />} />
+      <Route path="master/inquirysource-list" element={<InquirySourceList />} />
+      <Route path="master/inquirysource-list/add-inquirysource" element={<AddInquirySource />} />
+      <Route path="master/inquirysource-list/edit-inquirysource/:id" element={<EditInquirySource />} />
+      <Route path="master/inquiryorigin-list" element={<InquiryOriginList />} />
+      <Route path="master/inquiryorigin-list/add-inquiryorigin" element={<AddInquiryOrigin />} />
+      <Route path="master/inquiryorigin-list/edit-inquiryorigin/:id" element={<EditInquiryOrigin />} />
+      <Route path="master/userinquirypermission-list" element={<InquiryPermissionList />} />
+      <Route path="master/userinquirypermission-list/add-userinquirypermission" element={<AddInquiryPermission />} />
+      <Route path="master/userinquirypermission-list/edit-userinquirypermission/:id" element={<EditInquiryPermission />} />
+      <Route path="master/inquirypermission-list" element={<AdminInqryPermiList />} />
+      <Route path="master/inquirypermission-list/add-inquirypermission" element={<AddAdminInqryPermi />} />
+      <Route path="master/inquirypermission-list/edit-inquirypermission/:id" element={<EditAdminInqryPermi />} />
+      <Route path="employee-list" element={<EmployeeList />} />
+      <Route path="employee-list/add-employee" element={<AddEmployee />} />
+      <Route path="employee-list/edit-employee/:id" element={<EditEmployee />} />
+      <Route path="employee-list/view-employee/:id" element={<ViewEmployee />} />
+      <Route path="leave" element={<LeaveList/>} />
       <Route path="task/task-list" element={<TaskList />} />
       <Route path="task/create-task" element={<CreateTask />} />
       <Route path="task/edit-task/:id" element={<EditTask/>} />
       <Route path="task/create-subtask/:id" element={<CreateSubTask/>} />
       <Route path="task/edit-subtask/:id" element={<EditSubTask/>} />
       <Route path="task/tasknote-list/:id" element={<TaskNoteList/>} />
-      <Route path="leave" element={<LeaveList/>} />
+      <Route path="partnerinquiry-list" element={<PartnerInquiryList />} />
+      <Route path="partnerinquiry-list/add-partnerinquiry" element={<AddPartnerInquiry />} />
+      <Route path="partnerinquiry-list/view-partnerinquiry/:id" element={<PartnerViewInquiry/>} />
+      <Route path="clientinquiry-list" element={<ClientInquiryList />} />
+      <Route path="clientinquiry-list/add-clientinquiry" element={<AddClientInquiry />} />
+      <Route path="clientinquiry-list/view-clientinquiry/:id" element={<ClientViewInquiry/>} />
+      <Route path="create-partnerinquiry-list" element={<CreatePartnerInqryList />} />
+      <Route path="create-partnerinquiry-list/add-partnerinquiry" element={<CreatePartnerInqry />} />
+      <Route path="create-partnerinquiry-list/view-partnerinquiry/:id" element={<ViewCreatePartnerInqry />} />
+      <Route path="create-clientinquiry-list" element={<CreateClientInqryList />} />
+      <Route path="create-clientinquiry-list/add-clientinquiry" element={<CreateClientInqry />} />
+      <Route path="create-clientinquiry-list/view-clientinquiry/:id" element={<ViewCreateClientInqry />} />
+      {/* <Route path="inquiry-list/edit-inquiry/:id" element={<EditPartner />} /> */}
+      {/* <Route path="inquiry-list/view-inquiry/:id" element={<ViewPartner />} /> */}
+      <Route path="partner-list" element={<PartnerList />} />
+      <Route path="partner-list/add-partner" element={<AddPartner />} />
+      <Route path="partner-list/edit-partner/:id" element={<EditPartner />} />
+      <Route path="partner-list/view-partner/:id" element={<ViewPartner />} />
+      <Route path="clientcompany-list" element={<ClientCompanyList />} />
+      <Route path="clientcompany-list/add-clientcompany" element={<AddClientCompany />} />
+      <Route path="clientcompany-list/edit-clientcompany/:id" element={<EditClientCompany />} />
+      <Route path="clientcompany-list/view-clientcompany/:id" element={<ViewClientCompany />} />
       {/* <Route path="/profile" element={<Profile/>} /> */}
     </Route>
 
@@ -187,7 +287,51 @@ function App() {
     <Route path="/user/user-profile" element={<UserProfile/>} />
     <Route path="/user/attendance" element={<AttendanceList/>} />
     <Route path="/user/leave" element={<LeaveModule/>} />
+    <Route path="/user/inquiry-list" element={<UserInquiryList/>} />
+    <Route path="/user/forwarded-partnerinquiry-list" element={<ForwardPartnerInqryList/>} />
+    <Route path="/user/forwarded-clientinquiry-list" element={<ForwardClientInqryList/>} />
+    <Route path="/user/clientinquiry-list" element={<ClientInquiryList />} />
+    <Route path="/user/partnerinquiry-list" element={<PartnerInquiryList />} />
+    <Route path="/user/create-inquiry-list" element={<CreateInquiryList />} />
+    <Route path="/user/partnerinquiry-list/view-partnerinquiry/:id" element={<UserViewInquiry />} />
+    <Route path="/user/clientinquiry-list/view-clientinquiry/:id" element={<UserViewInquiry />} />
+    <Route path="/user/create-partnerinquiry-list" element={<CreatePartnerInqryList />} />
+    <Route path="/user/create-partnerinquiry-list/add-partnerinquiry" element={<CreatePartnerInqry />} />
+    <Route path="/user/create-partnerinquiry-list/view-partnerinquiry/:id" element={<UserViewInquiry />} />
+    {/* <Route path="/user/create-partnerinquiry-list/view-partnerinquiry/:id" element={<ViewCreatePartnerInqry />} /> */}
+    <Route path="/user/create-clientinquiry-list" element={<CreateClientInqryList />} />
+    <Route path="/user/create-clientinquiry-list/add-clientinquiry" element={<CreateClientInqry />} />
+    <Route path="/user/create-clientinquiry-list/view-clientinquiry/:id" element={<UserViewInquiry />} />
+    {/* <Route path="/user/create-clientinquiry-list/view-clientinquiry/:id" element={<ViewCreateClientInqry />} /> */}
     </Route>
+
+    {/* Company dashboard route */}
+    <Route path="/company" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
+    <Route index element={<ClientCompDashboard />} />
+    <Route path="/company/icp-list" element={<InquiryModuleList/>} />
+    <Route path="/company/add-icp" element={<InquiryModule/>} />
+    <Route path="/company/view-icp/:id" element={<ViewIquiryModule/>} />
+    <Route path="/company/inquiry-list" element={<InquiryList/>} />
+    <Route path="/company/inquiry-list/add-inquiry" element={<AddInquiry/>} />
+    <Route path="/company/inquiry-list/view-inquiry/:id" element={<ViewInquiry/>} />
+    <Route path="/company/get-inquiry-list" element={<GetInquiryList/>} />
+    <Route path="/company/get-inquiry-list/view-inquiry/:id" element={<GetViewInquiry/>} />
+    {/* <Route path="/company/inquiry-list" element={<InquiryListInCompany />} />
+    <Route path="/company/inquiry-list/add-inquiry" element={<AddInquiryInCompany />} /> */}
+    {/* <Route path="/company/task-list" element={<UserTaskList/>} /> */}
+    </Route>
+
+    {/* Partner dashboard route */}
+    <Route path="/partner" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
+    <Route index element={<PartnerDashboard />} />
+    <Route path="/partner/inquiry-list" element={<InquiryList/>} />
+    <Route path="/partner/get-inquiry-list" element={<GetInquiryList/>} />
+    <Route path="/partner/get-inquiry-list/view-inquiry/:id" element={<GetViewInquiry/>} />
+    <Route path="/partner/inquiry-list/add-inquiry" element={<AddInquiry/>} />
+    <Route path="/partner/inquiry-list/view-inquiry/:id" element={<ViewInquiry/>} />
+    {/* <Route path="/company/task-list" element={<UserTaskList/>} /> */}
+    </Route>
+  
   </Routes>
   </>
   );

@@ -40,7 +40,7 @@ export default function Header() {
 
       // Listen for foreground messages
       const notification = payload.notification;
-      console.log(notification);
+      // console.log(notification);
 
       // Play the notification sound
       notificationSound.play();
@@ -347,7 +347,7 @@ export default function Header() {
                 leaveFrom="opacity-100 translate-y-0"
                 leaveTo="opacity-0 translate-y-1"
               >
-                <Popover.Panel className="absolute right-2 z-2 mt-2.5 transform w-60 sm:w-64 md:w-72 lg:w-80 xl:w-96">
+                <Popover.Panel className="absolute right-2 z-10 mt-2.5 transform w-60 sm:w-64 md:w-72 lg:w-80 xl:w-96">
                   <div className="bg-white rounded-sm shadow-md ring-1 ring-black ring-opacity-5 px-4 py-4 sm:px-3 sm:py-3 md:px-4 md:py-4">
                     <strong className="text-gray-700 font-medium text-sm sm:text-base">
                       Notifications

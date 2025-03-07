@@ -151,7 +151,7 @@ const ViewAssignTask = () => {
         </div>
 
         {/* Chat Component */}
-        {/* <ChatComponent taskAssignToName={taskDetails.taskAssignToName} /> */}
+        <ChatComponent taskAssignToName={taskDetails.taskAssignToName} />
 
       </div>
     </>

@@ -26,11 +26,14 @@ export const ReportService = {
   },
 
   // Method to download task report
-  downloadTaskReport: async (employeeId) => {
+  downloadTaskReport: async (employeeId, year, month) => {
     try {
-      const response = await httpClient.get(`${api}/DownloadTaskAssignReport/${employeeId}`, {
+      const response = await httpClient.get(`${api}/DownloadTaskAssignReport/${employeeId}/${year}/${month}`, {
         responseType: 'blob', // Important
       });
+      // const response = await httpClient.get(`${api}/DownloadTaskAssignReport/${employeeId}/${year}/${month}`, {
+      //   responseType: 'blob', // Important
+      // });
 
       // Create a link element, use it to download the blob, and then remove it
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -44,53 +47,48 @@ export const ReportService = {
       console.error('Error downloading the report:', error);
     }
   },
-  
 
-  // Method to get all attendance
-//   getAttendance: async () => {
-//     try {
-//       const response = await httpClient.get(`${api}/GetAll`); // Update 'GetAll' with actual endpoint if different
-//       return response.data;
-//     } catch (error) {
-//       console.error('Failed to fetch attendance:', error);
-//       throw error;
-//     }
-//   },
+  // Method to attendance task report
+  downloadAttendanceReport: async (employeeId, month, year ) => {
+    // debugger;
+    try {
+      const response = await httpClient.get(`${api}/DownloadAttendanceReport/${employeeId}/${month}/${year}`, {
+        responseType: 'blob', // Important
+      });
 
-  // Method to update attendance
-//   updateAttendance: async (attendanceData) => {
-//     debugger;
-//     try {
-//       const response = await httpClient.put(`${api}/TimeOut`, attendanceData); 
-//       return response.data;
-//     } catch (error) {
-//       console.error('Failed to fetch attendanceData:', error);
-//       throw error;
-//     }
-//   },
-
-  //Method to get attendance by employeeId 
-//   getAttendanceByEmployeeId: async (employeeId) => {
-//     try {
-//       // const {departmentId} = employeeData
-//       const response = await httpClient.get(`${api}/GetAll/${employeeId}`);
-//       return response.data;
-//     } catch (error) {
-//       console.error('Failed to fetch attendance:', error);
-//       throw error;
-//     }
-//   },
-
-  //Method to get attendance by employeeId at admin
-//   getAttendanceByEmployeeIdatAdmin: async (employeeId) => {
-//     try {
-//       // const {departmentId} = employeeData
-//       const response = await httpClient.get(`${api}/GetForAdmin/${employeeId}`);
-//       return response.data;
-//     } catch (error) {
-//       console.error('Failed to fetch attendance:', error);
-//       throw error;
-//     }
-//   },
+      // Create a link element, use it to download the blob, and then remove it
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Attendance_Report_${month}_${year}.pdf`); // Specify the file name
+      // link.setAttribute('download', 'AttendanceReport.pdf'); // Specify the file name
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading the report:', error);
+    }
+  },
 
 };
+
+
+
+ // downloadTaskReport: async (employeeId) => {
+  //   try {
+  //     const response = await httpClient.get(`${api}/DownloadTaskAssignReport/${employeeId}`, {
+  //       responseType: 'blob', // Important
+  //     });
+
+  //     // Create a link element, use it to download the blob, and then remove it
+  //     const url = window.URL.createObjectURL(new Blob([response.data]));
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.setAttribute('download', 'TaskReport.pdf'); // Specify the file name
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     link.remove();
+  //   } catch (error) {
+  //     console.error('Error downloading the report:', error);
+  //   }
+  // },

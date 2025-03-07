@@ -276,7 +276,7 @@ const AttendanceList = () => {
                    const isSunday = dayData.day === "Sunday";
   
                   return (
-                    <tr key={index} className="hover:bg-gray-100">
+                    <tr key={index} className={`hover:bg-gray-100 ${dayData.day === "Sunday" || dayData.day === "Saturday" ? "bg-yellow-200" : ""}`}>
                       <td className="px-4 py-2 border-b">{dayData.day}</td>
                       <td className="px-4 py-2 border-b">
                         {`${dayData.date.getDate()}/${dayData.date.getMonth() + 1}/${dayData.date.getFullYear()}`}

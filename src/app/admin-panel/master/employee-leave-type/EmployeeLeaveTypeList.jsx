@@ -219,8 +219,8 @@ const EmployeeLeaveTypeList = () => {
                   <td className="py-3 pl-8 text-gray-700">
                     {item.totalDaysofLeave}
                   </td>
-                  <td className="py-3 pl-8 text-gray-700">
-                    <label className="inline-flex ms-3 items-center cursor-pointer">
+                  <td className="py-3 pl-8 text-right text-gray-700">
+                    <label className="flex ms-3 items-center cursor-pointer">
                       <input
                         type="checkbox"
                         checked={item.isActive} // Use item's active state

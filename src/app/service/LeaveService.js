@@ -40,6 +40,17 @@ export const LeaveService = {
     }
   },
 
+  // Method to cancle leave
+  cancleLeave: async (leaveRequestId,leaveData) => {
+    try {
+      const response = await httpClient.put(`${api}/CancleLeave/${leaveRequestId}`,leaveData); 
+      return response.data;
+    } catch (error) {
+      console.error('Failed to cancle leave:', error);
+      throw error;
+    }
+  },
+
   // Method to get all leave
   // getLeaveRecords: async () => {
   //   try {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion"; // Import framer-motion
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaTimes } from "react-icons/fa";
 import { LeaveService } from "../../service/LeaveService";
 import { toast } from "react-toastify";
 import { LeaveTypeService } from "../../service/LeaveTypeService";
@@ -25,6 +25,12 @@ const LeaveModule = () => {
   const [status, setStatus] = useState("0"); // Leave Type (Full-Day / Half-Day)
 
   const employeeId = sessionStorage.getItem("LoginUserId");
+
+  //#region Pagination state
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
+  // const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
+  //#endregion
 
 
 const fetchLeaveRecords = async () => {
@@ -118,12 +124,18 @@ const fetchLeaveType = async () => {
       leaveTypeId,
     };
 
-    debugger;
+    // debugger;
 
     try {
       const response = await LeaveService.applyLeave(leaveData);
+      // debugger;
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
+        fetchLeaveRecords();
+      }
+      if (response.status === 2) {
+        toast.error(response.message); // Toast on success
+        // toast.success("You already applied leave for that date."); // Toast on success
         fetchLeaveRecords();
       }
     } catch (error) {
@@ -142,11 +154,57 @@ const fetchLeaveType = async () => {
     return `${day}-${month}-${year}`;
   };
   
+  // Handle to cancle leave
+  const handelCancleLeave = async (leave, statusValue, e) => {
+    e.preventDefault();
+    // console.log(leave);
+    const leaveData = {
+      employeeId: leave.employeeId,
+      leaveTypeId: leave.leaveTypeId,
+      fromDate: leave.fromDate,
+      toDate: leave.toDate,
+      totalDays: leave.totalDays,
+      reason: leave.reason,
+      leaveType: leave.leaveType,
+      status: statusValue, // 1 for Approve, 2 for Reject, 3 for Cancle
+    };
+
+      // debugger;
+
+      try {
+        const response = await LeaveService.cancleLeave(
+          leave.leaveRequestId,
+          leaveData
+        );
+        if (response.status === 1) {
+          toast.success("Leave Cancle Succesfully"); // Toast on success
+          fetchLeaveRecords();
+        }
+      } catch (error) {
+        console.error("Error cancle leave:", error);
+        toast.error("Failed to cancle leave.");
+      }
+      closeModal();
+  };
+
+  //#region Pagination logic
+  // const indexOfLastItem = currentPage * itemsPerPage;
+  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  // const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  // const handlePageChange = (pageNumber) => {
+  //   setCurrentPage(pageNumber);
+  // };
+  //#endregion
 
   return (
     <div className="mt-4">
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl sm:text-3xl">Leave Records of {year}</h1>
+        <h1 className="font-semibold text-2xl sm:text-3xl">
+          Leave Records of {year}
+        </h1>
 
         {/* Apply Leave Button */}
         <motion.button
@@ -154,7 +212,7 @@ const fetchLeaveType = async () => {
           whileTap={{ scale: 0.9 }}
           onClick={openModal}
           className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline text-sm sm:text-base"
-          >
+        >
           Apply Leave
           <FaPlus className="mt-[3px]" size={14} />
         </motion.button>
@@ -259,51 +317,75 @@ const fetchLeaveType = async () => {
       {/* Display Leave Records for the Selected Month */}
       {selectedMonth !== null && (
         // <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
-          <div className="grid mt-4 overflow-x-auto shadow-xl">
-            <table className="min-w-full table-auto bg-white border border-gray-200">
-              <thead className="bg-gray-900 border-b">
-                <tr>
-                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
-                    From Date
-                  </th>
-                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
-                    To Date
-                  </th>
-                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
-                    Status
-                  </th>
-                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
-                    Reason
-                  </th>
+        <div className="grid mt-4 overflow-x-auto shadow-xl">
+          <table className="min-w-full table-auto bg-white border border-gray-200">
+            <thead className="bg-gray-900 border-b">
+              <tr>
+                <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
+                  From Date
+                </th>
+                <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
+                  To Date
+                </th>
+                <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
+                  Status
+                </th>
+                <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
+                  Reason
+                </th>
+                <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.map((leave, index) => (
+                <tr key={index} className="hover:bg-gray-100">
+                  <td className="px-4 py-2 border-b">
+                    {leave.fromDate ? formatDate(leave.fromDate) : ""}
+                  </td>
+                  {/* <td className="px-4 py-2 border-b">{leave.fromDate}</td> */}
+                  <td className="px-4 py-2 border-b">
+                    {leave.toDate ? formatDate(leave.toDate) : ""}
+                  </td>
+                  {/* <td className="px-4 py-2 border-b">{leave.toDate}</td> */}
+                  <td className="py-3 px-4">
+                    <span
+                      className={`px-2 py-1 rounded-lg font-medium ${getStatusColor(
+                        leave.statusName
+                      )}`}
+                    >
+                      {leave.statusName}
+                    </span>
+                  </td>
+                  {/* <td className="px-4 py-2 border-b">{leave.statusName}</td> */}
+                  <td className="px-4 py-2 border-b">{leave.reason}</td>
+                  <td className="px-4 py-2 border-b">
+                    {leave.status !== 2 && leave.status !== 3 ? (
+                      <div className="flex gap-2">
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={(e) => {
+                            handelCancleLeave(leave, 3, e);
+                          }}
+                          className="bg-red-600 text-white py-2 px-4 flex gap-2 rounded-md"
+                        >
+                          Cancle
+                          <FaTimes size={18} />
+                        </motion.button>
+                      </div>
+                    ) : leave.status === 2 ? (
+                      <p className="text-red-500">Leave is rejected</p>
+                    ) : leave.status === 3 ? (
+                      <p className="text-gray-500">Leave is cancle by you.</p>
+                    ) : null}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((leave, index) => (
-                  <tr key={index} className="hover:bg-gray-100">
-                    <td className="px-4 py-2 border-b">
-                      {leave.fromDate ? formatDate(leave.fromDate) : ""}
-                    </td>
-                    {/* <td className="px-4 py-2 border-b">{leave.fromDate}</td> */}
-                    <td className="px-4 py-2 border-b">
-                      {leave.toDate ? formatDate(leave.toDate) : ""}
-                    </td>
-                    {/* <td className="px-4 py-2 border-b">{leave.toDate}</td> */}
-                    <td className="py-3 px-4">
-                      <span
-                        className={`px-2 py-1 rounded-lg font-medium ${getStatusColor(
-                          leave.statusName
-                        )}`}
-                      >
-                        {leave.statusName}
-                      </span>
-                    </td>
-                    {/* <td className="px-4 py-2 border-b">{leave.statusName}</td> */}
-                    <td className="px-4 py-2 border-b">{leave.reason}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
         // {/* </section> */}
       )}
 
@@ -556,8 +638,132 @@ const fetchLeaveType = async () => {
         //   </div>
         // </div>
       )}
+
     </div>
   );
 };
 
 export default LeaveModule;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// {/* Pagination Section */}
+// <div
+// className={`flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg ${
+//   showModal ? "hidden" : ""
+// }`}
+// >
+// <div className="flex flex-1 justify-between sm:hidden">
+//   <motion.button
+//     onClick={() => handlePageChange(currentPage - 1)}
+//     disabled={currentPage === 1}
+//     className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+//     whileHover={{ scale: 1.1 }}
+//     whileTap={{ scale: 0.9 }}
+//   >
+//     Previous
+//   </motion.button>
+//   <motion.button
+//     onClick={() => handlePageChange(currentPage + 1)}
+//     disabled={currentPage === totalPages}
+//     className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+//     whileHover={{ scale: 1.1 }}
+//     whileTap={{ scale: 0.9 }}
+//   >
+//     Next
+//   </motion.button>
+// </div>
+// <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+//   <div>
+//     <p className="text-sm text-gray-700">
+//       Showing
+//       <span className="font-semibold mx-1">{indexOfFirstItem + 1}</span>
+//       to
+//       <span className="font-semibold mx-1">
+//         {Math.min(indexOfLastItem, totalItems)}
+//       </span>
+//       of
+//       <span className="font-semibold mx-1">{totalItems}</span>
+//       results
+//     </p>
+//   </div>
+//   <div>
+//     <nav
+//       className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+//       aria-label="Pagination"
+//     >
+//       <motion.button
+//         onClick={() => handlePageChange(currentPage - 1)}
+//         disabled={currentPage === 1}
+//         className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+//         whileHover={{ scale: 1.1 }}
+//         whileTap={{ scale: 0.9 }}
+//       >
+//         <span className="sr-only">Previous</span>
+//         <svg
+//           className="size-5"
+//           viewBox="0 0 20 20"
+//           fill="currentColor"
+//           aria-hidden="true"
+//         >
+//           <path
+//             fillRule="evenodd"
+//             d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
+//             clipRule="evenodd"
+//           />
+//         </svg>
+//       </motion.button>
+
+//       {/* Pagination Buttons */}
+//       {[...Array(totalPages)].map((_, index) => (
+//         <motion.button
+//           key={index}
+//           onClick={() => handlePageChange(index + 1)}
+//           className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
+//             currentPage === index + 1
+//               ? "bg-indigo-600"
+//               : "bg-gray-200 text-gray-700"
+//           }`}
+//           whileHover={{ scale: 1.1 }}
+//           whileTap={{ scale: 0.9 }}
+//         >
+//           {index + 1}
+//         </motion.button>
+//       ))}
+
+//       <motion.button
+//         onClick={() => handlePageChange(currentPage + 1)}
+//         disabled={currentPage === totalPages}
+//         className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+//         whileHover={{ scale: 1.1 }}
+//         whileTap={{ scale: 0.9 }}
+//       >
+//         <span className="sr-only">Next</span>
+//         <svg
+//           className="size-5"
+//           viewBox="0 0 20 20"
+//           fill="currentColor"
+//           aria-hidden="true"
+//         >
+//           <path
+//             fillRule="evenodd"
+//             d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+//             clipRule="evenodd"
+//           />
+//         </svg>
+//       </motion.button>
+//     </nav>
+//   </div>
+// </div>
+// </div>

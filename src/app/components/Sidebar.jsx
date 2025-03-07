@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineLogout } from "react-icons/hi";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
@@ -6,7 +6,8 @@ import { FiMenu, FiX } from "react-icons/fi";
 import classNames from "classnames";
 import logo from "../../assets/iobix-technolabs.png";
 import { jwtDecode } from "jwt-decode";
-import { DASHBOARD_SIDEBAR_BOTTOM_LINKS, DASHBOARD_SIDEBAR_LINKS, USER_DASHBOARD_SIDEBAR_LINKS } from "../sidebar-links";
+import { DASHBOARD_SIDEBAR_BOTTOM_LINKS, DASHBOARD_SIDEBAR_LINKS, USER_DASHBOARD_SIDEBAR_LINKS, COMPANY_DASHBOARD_SIDEBAR_LINKS, PARTNER_DASHBOARD_SIDEBAR_LINKS, IT_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS, BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS } from "../sidebar-links";
+import { DepartmentService } from "../service/DepartmentService";
 // import {
 //   DASHBOARD_SIDEBAR_BOTTOM_LINKS,
 //   DASHBOARD_SIDEBAR_LINKS,
@@ -19,36 +20,88 @@ const linkClass =
 export default function Sidebar() {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State to manage sidebar visibility
+  const [departmentName, setDepartmentName] = useState(""); // State to manage sidebar visibility
   const role = sessionStorage.getItem("role");
 
+  // debugger;
+  // const sidebarLinks =
+  //   // role === "admin" || role ==="ITadmin" || role ==="BDadmin"
+  //   role === "admin"
+  //     ? DASHBOARD_SIDEBAR_LINKS
+  //     : role === "user"
+  //     ? (departmentName === "IT"
+  //       ? IT_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS
+  //       : departmentName === "BD"
+  //       ? BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS
+  //       : USER_DASHBOARD_SIDEBAR_LINKS) // Default links for users who are neither IT nor BD
+  //     : role === "partner"
+  //     ? PARTNER_DASHBOARD_SIDEBAR_LINKS
+  //     : role === "company"
+  //     ? COMPANY_DASHBOARD_SIDEBAR_LINKS
+  //     : USER_DASHBOARD_SIDEBAR_LINKS; // Default links for other users
   const sidebarLinks =
-    role === "admin" ? DASHBOARD_SIDEBAR_LINKS : USER_DASHBOARD_SIDEBAR_LINKS;
+    // role === "admin" || role ==="ITadmin" || role ==="BDadmin"
+    role === "admin"
+      ? DASHBOARD_SIDEBAR_LINKS
+      : role === "user"
+      ? USER_DASHBOARD_SIDEBAR_LINKS
+      : role === "partner"
+      ? PARTNER_DASHBOARD_SIDEBAR_LINKS
+      : role === "company"
+      ? COMPANY_DASHBOARD_SIDEBAR_LINKS
+      : USER_DASHBOARD_SIDEBAR_LINKS; // Default links for other users
+
+  // const sidebarLinks =
+  //   role === "admin" || role ==="ITadmin" || role ==="ITadmin"
+  //     ? DASHBOARD_SIDEBAR_LINKS
+  //     : role === "userIT"
+  //     ? IT_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS
+  //     : role === "userBD"
+  //     ? BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS
+  //     : role === "partner"
+  //     ? PARTNER_DASHBOARD_SIDEBAR_LINKS
+  //     : role === "company"
+  //     ? COMPANY_DASHBOARD_SIDEBAR_LINKS
+  //     : USER_DASHBOARD_SIDEBAR_LINKS; // Default links for other users
+
+  // role === "admin" ? DASHBOARD_SIDEBAR_LINKS : USER_DASHBOARD_SIDEBAR_LINKS;
+
+
+  // useEffect(() => {
+  //   const fetchDepartment = async () => {
+  //     debugger;
+  //     const depatment = await DepartmentService.getDepartments();
+  //     setDepartmentName(depatment.data)
+  //     console.log(depatment)
+  //   }
+  //   fetchDepartment();  
+  //   }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const handleLogout = () => {
-      // debugger;
-      const token = sessionStorage.getItem("token");
-      if (token) {
-        try {
-          const decodedToken = jwtDecode(token);
-          sessionStorage.clear();
-          // if (
-          //   decodedToken?.IsSuperAdmin === "1" ||
-          //   decodedToken?.IsAdmin === "1"
-          // ) {
-            navigate("/sign-in");
-          // }
-          // else(
-          //   navigate("sign-in")
-          // )
-        } catch {
-          alert("Token is not decoded");
-        }
+    // debugger;
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        sessionStorage.clear();
+        // if (
+        //   decodedToken?.IsSuperAdmin === "1" ||
+        //   decodedToken?.IsAdmin === "1"
+        // ) {
+        navigate("/sign-in");
+        // }
+        // else(
+        //   navigate("sign-in")
+        // )
+      } catch {
+        alert("Token is not decoded");
       }
-    };
+    }
+  };
 
   return (
     <div>
@@ -88,7 +141,10 @@ export default function Sidebar() {
           {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((link) => (
             <SidebarLink key={link.key} link={link} />
           ))}
-          <div className={classNames(linkClass, "cursor-pointer text-red-500")} onClick={handleLogout}>
+          <div
+            className={classNames(linkClass, "cursor-pointer text-red-500")}
+            onClick={handleLogout}
+          >
             <span className="text-xl">
               <HiOutlineLogout />
             </span>

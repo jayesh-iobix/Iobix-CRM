@@ -304,6 +304,8 @@ const fetchLeaveRecords = async () => {
                         <p className="text-green-500">Leave is already approved</p>
                       ) : leave.status === 2 ? (
                         <p className="text-red-500">Leave is already rejected</p>
+                      ) : leave.status === 3 ? (
+                        <p className="text-gray-500">Leave is cancled by employee</p>
                       ) : null}
 
                     </td>

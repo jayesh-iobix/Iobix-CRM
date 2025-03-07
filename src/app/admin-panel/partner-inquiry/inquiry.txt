@@ -1,0 +1,293 @@
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
+import { InquiryTypeService } from '../../service/InquiryTypeService';
+import { InquirySourceService } from '../../service/InquirySourceService';
+
+const AddInquiry = () => {
+  const [inquiryTitle, setInquiryTitle] = useState('');
+  const [inquiryLocation, setInquiryLocation] = useState('');
+  const [inquiryTypeId , setInquiryTypeId ] = useState('');
+  const [inquirySource, setInquirySource] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [customerContactInfo, setCustomerContactInfo] = useState('');
+  const [estimatedValue, setEstimatedValue] = useState('');
+  const [inquiryDescription, setInquiryDescription] = useState('');
+  const [priorityLevel, setPriorityLevel] = useState('');
+  const [inquiryStatus, setInquiryStatus] = useState('');
+  const [reasonForClosure, setReasonForClosure] = useState('');
+
+  const [inquiryTypeList, setInquiryTypeList] = useState([]);
+  const [inquirySourceList, setInquirySourceList] = useState([]);
+
+  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch iquiry types
+        const inquiryTypeResult = await InquiryTypeService.getInquiryType();
+        const activeInquiryTypes = inquiryTypeResult.data.filter(
+          (inquiryType) => inquiryType.isActive === true
+        );
+        setInquiryTypeList(activeInquiryTypes);
+        // console.log(inquiryTypeResult.result);
+
+        // Fetch iquiry source
+        const inquirySourceResult = await InquirySourceService.getInquirySource();
+        const activeInquirySource = inquirySourceResult.data.filter(
+          (inquirySource) => inquirySource.isActive === true
+        );
+        setInquirySourceList(activeInquirySource);
+        console.log(activeInquirySource);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []); 
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Add form validation and submission logic here
+  };
+
+  const isSubmitting = false; // Replace with state if you have submitting logic
+
+  return (
+    <div>
+      <div className="flex justify-between items-center my-3">
+        <h1 className="font-semibold text-2xl">Add Inquiry</h1>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Link
+            onClick={() => navigate(-1)}
+            className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+          >
+            <FaArrowLeft size={16} />
+            Back
+          </Link>
+        </motion.button>
+      </div>
+
+      <section className="bg-white rounded-lg shadow-lg m-1 py-8">
+        <form onSubmit={handleSubmit} className="container">
+          <div className="-mx-4 px-10 mt- flex flex-wrap">
+            {/* Inquiry Title */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">Inquiry Title</label>
+              <input
+                name="inquiryTitle"
+                type="text"
+                placeholder="Inquiry Title"
+                value={inquiryTitle}
+                onChange={(e) => setInquiryTitle(e.target.value)}
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+                autoFocus
+              />
+              {errors.inquiryTitle && <p className="text-red-500 text-xs">{errors.inquiryTitle}</p>}
+            </div>
+
+            {/* Inquiry Location */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">Inquiry Location</label>
+              <input
+                name="inquiryLocation"
+                type="text"
+                placeholder="Inquiry Location"
+                value={inquiryLocation}
+                onChange={(e) => setInquiryLocation(e.target.value)}
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+              />
+              {errors.inquiryLocation && <p className="text-red-500 text-xs">{errors.inquiryLocation}</p>}
+            </div>
+
+            {/* Inquiry Type */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">Inquiry Type</label>
+              <select
+                value={inquiryTypeId }
+                onChange={(e) => setInquiryTypeId (e.target.value)}
+                name="departmentId"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+              >
+                <option value="" className="text-gray-400">--Select Inquiry Type--</option>
+                {inquiryTypeList.length > 0 ? (
+                    inquiryTypeList.map((inquiryTypeItem) => (
+                      <option
+                        key={inquiryTypeItem.inquiryTypeId }
+                        value={inquiryTypeItem.inquiryTypeId}
+                      >
+                        {inquiryTypeItem.inquiryTypeName}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No inquiry type available
+                    </option>
+                  )}
+                {/* <option value="B2B">B2B</option>
+                <option value="B2C">B2C</option>
+                <option value="B2G">B2G</option>
+                <option value="B2E">B2E</option> */}
+              </select>
+              {errors.inquiryTypeId  && <p className="text-red-500 text-xs">{errors.inquiryTypeId }</p>}
+            </div>
+
+            {/* Inquiry Source */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">Inquiry Source</label>
+              <select
+                value={inquirySource}
+                onChange={(e) => setInquirySource(e.target.value)}
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+              >
+                <option value="" className="text-gray-400">--Select Inquiry Source--</option>
+                {inquirySourceList.length > 0 ? (
+                    inquirySourceList.map((inquirySourceItem) => (
+                      <option
+                        key={inquirySourceItem.inquirySourceId  }
+                        value={inquirySourceItem.inquirySourceId}
+                      >
+                        {inquirySourceItem.inquirySourceName}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No inquiry source available
+                    </option>
+                  )}
+                {/* <option value="Website">Website</option>
+                <option value="Email">Email</option>
+                <option value="Phone">Phone</option>
+                <option value="Walk-in">Walk-in</option> */}
+              </select>
+              {errors.inquirySource && <p className="text-red-500 text-xs">{errors.inquirySource}</p>}
+            </div>
+
+            {/* Customer Name */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">Customer Name</label>
+              <input
+                name="customerName"
+                type="text"
+                placeholder="Customer Name"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+              />
+              {errors.customerName && <p className="text-red-500 text-xs">{errors.customerName}</p>}
+            </div>
+
+            {/* Customer Contact Info */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">Customer Contact Info</label>
+              <input
+                name="customerContactInfo"
+                type="text"
+                placeholder="Customer Contact Info"
+                value={customerContactInfo}
+                onChange={(e) => setCustomerContactInfo(e.target.value)}
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+              />
+              {errors.customerContactInfo && <p className="text-red-500 text-xs">{errors.customerContactInfo}</p>}
+            </div>
+
+            {/* Estimated Value */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">Estimated Value</label>
+              <input
+                name="estimatedValue"
+                type="number"
+                placeholder="Estimated Value"
+                value={estimatedValue}
+                onChange={(e) => setEstimatedValue(e.target.value)}
+                className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+              />
+              {errors.estimatedValue && <p className="text-red-500 text-xs">{errors.estimatedValue}</p>}
+            </div>
+
+            {/* Inquiry Description */}
+            <div className="w-full mb-2 px-3">
+              <label className="block text-base font-medium">Inquiry Description</label>
+              <textarea
+                value={inquiryDescription}
+                onChange={(e) => setInquiryDescription(e.target.value)}
+                rows="3"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+              ></textarea>
+              {errors.inquiryDescription && <p className="text-red-500 text-xs">{errors.inquiryDescription}</p>}
+            </div>
+
+            {/* Priority Level */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">Priority Level</label>
+              <select
+                value={priorityLevel}
+                onChange={(e) => setPriorityLevel(e.target.value)}
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+              >
+                <option value="">--Select Priority Level--</option>
+                <option value="1">High</option>
+                <option value="2">Medium</option>
+                <option value="3">Low</option>
+              </select>
+              {errors.priorityLevel && <p className="text-red-500 text-xs">{errors.priorityLevel}</p>}
+            </div>
+
+            {/* Inquiry Status */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">Inquiry Status</label>
+              <select
+                value={inquiryStatus}
+                onChange={(e) => setInquiryStatus(e.target.value)}
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+              >
+                <option value="">--Select Inquiry Status--</option>
+                <option value="1">Open</option>
+                <option value="2">Close</option>
+                <option value="3">Pending</option>
+              </select>
+              {errors.inquiryStatus && <p className="text-red-500 text-xs">{errors.inquiryStatus}</p>}
+            </div>
+
+            {/* Reason for Closure */}
+            <div className="w-full mb-2 px-3">
+              <label className="block text-base font-medium">Reason for Closure</label>
+              <textarea
+                value={reasonForClosure}
+                onChange={(e) => setReasonForClosure(e.target.value)}
+                rows="3"
+                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+              ></textarea>
+              {errors.reasonForClosure && <p className="text-red-500 text-xs">{errors.reasonForClosure}</p>}
+            </div>
+
+            <div className="w-full px-3">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                type="submit"
+                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Add Inquiry"}
+              </motion.button>
+            </div>
+          </div>
+        </form>
+      </section>
+    </div>
+  );
+  
+};
+
+export default AddInquiry;

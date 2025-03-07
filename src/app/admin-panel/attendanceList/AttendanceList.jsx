@@ -4,6 +4,7 @@ import { FaPlus } from "react-icons/fa";
 import { AttendanceService } from "../../service/AttendanceService";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
+import { ReportService } from "../../service/ReportService";
 
 const AttendanceList = () => {
   const currentYear = new Date().getFullYear();
@@ -13,12 +14,8 @@ const AttendanceList = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [year, setYear] = useState(currentYear); // Set the year to current year
   const [selectedMonth, setSelectedMonth] = useState(currentMonth); // Set the selected month to current month
-  const [showModal, setShowModal] = useState(false); // Modal visibility
-  const [inDateTime, setInDateTime] = useState("");  // In DateTime
-  const [outDateTime, setOutDateTime] = useState(""); // Out DateTime
-  const [totalTime, setTotalTime] = useState("");    // Total Time
-  const [status, setStatus] = useState("Present");   // New state for Status
-  const [remarks, setRemarks] = useState("On Time"); // New state for Remarks
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
 
   const { id } = useParams();
 
@@ -71,56 +68,6 @@ const AttendanceList = () => {
     return years;
   };
 
-  const openModal = () => {
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setInDateTime("");
-    setOutDateTime("");
-    setTotalTime("");
-  };
-
-  const handleSubmitAttendance = async (e) => {
-    e.preventDefault();
-    const totalTimeFormatted = calculateTotalTime(inDateTime, outDateTime);
-
-    const attendanceData = {
-      inDateTime,
-      outDateTime,
-      totalTime: totalTimeFormatted,
-      status,
-      remarks,
-    };
-
-    try {
-      const response = await AttendanceService.addAttendance(attendanceData);
-      if (response.status === 1) {
-        toast.success(response.message); // Toast on success
-      }
-    } catch (error) {
-      console.error("Error adding attendance:", error);
-      toast.error("Failed to add attendance.");
-    }
-    closeModal();
-  };
-
-  const calculateTotalTime = (inDateTime, outDateTime) => {
-    const inDate = new Date(inDateTime);
-    const outDate = new Date(outDateTime);
-
-    const diffInMs = outDate - inDate;
-
-    const hours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const minutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diffInMs % (1000 * 60)) / 1000);
-
-    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-    return formattedTime;
-  };
-
   // Create an array of months for the year
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -171,26 +118,27 @@ const AttendanceList = () => {
   }, [currentMonth, currentYear]);
 
   const handleDownloadReport = async () => {
-    const monthName = months[selectedMonth]; // Get the month name using the selected index
+    const month = months[selectedMonth]; // Get the month name using the selected index
+    setIsSubmitting(true);
 
-    const yearMonthData = {
-      year,
-      monthName
-      // selectedMonth: monthName // Pass the month name instead of the index
-    }
-    debugger;
-    console.log(yearMonthData)
     try {
-      const response = await AttendanceService.downloadReport(yearMonthData);
-      // const response = await AttendanceService.downloadReport(year, selectedMonth);
-      const blob = new Blob([response.data], { type: "application/vnd.ms-excel" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `Attendance_Report_${year}_${selectedMonth + 1}.xlsx`;
-      link.click();
+      // Wait for the report download to complete with the selected year and month
+      const response = await ReportService.downloadAttendanceReport(id, month, year);
+      if(response) {
+        toast.success("Report downloaded successfully!");
+      }
+      // await ReportService.downloadAttendanceReport(id, year, month);
+      // Optionally, add a success message or additional logic after the download
+      // const blob = new Blob([response.data], { type: "application/vnd.ms-excel" });
+      // const link = document.createElement("a");
+      // link.href = URL.createObjectURL(blob);
+      // link.download = `Attendance_Report_${year}_${selectedMonth + 1}.xlsx`;
+      // link.click();
     } catch (error) {
       console.error("Error downloading report:", error);
       toast.error("Failed to download report.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -205,15 +153,17 @@ const AttendanceList = () => {
           whileTap={{ scale: 0.9 }}
           type="button" // Added this line to prevent form submission
           onClick={handleDownloadReport}
-          className="bg-green-600 hover:bg-green-700 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+          className ={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
+            ${isSubmitting ? "opacity-50 cursor-not-allowed" : "" }`}
+          disabled={isSubmitting}
         >
-          Download Report
+          {isSubmitting ? "Downloading..." : "Download Report"}
         </motion.button>
       </div>
 
       {/* Card for Year and Month Dropdown */}
-      <div className="-mx-4 px-10 flex flex-wrap">
-        <div className="w-full mb-2 px-3 md:w-1/4">
+      <div className="-mx-4 px-10 flex flex-wrap gap-4">
+        <div className="w-full mb-2 px-3 md:w-1/3">
           <label htmlFor="year" className="mr-2">Year:</label>
           <select
             id="year"
@@ -222,7 +172,8 @@ const AttendanceList = () => {
               setYear(parseInt(e.target.value));
               filterDataByMonthAndYear(selectedMonth, parseInt(e.target.value)); // Re-filter data when year changes
             }}
-            className="w-1/2 border p-2 rounded border-active"
+            className="w-24 sm:w-1/2 md:w-1/2 lg:w-1/2 border p-2 rounded border-active"
+            // className="w-full sm:w-1/2 border p-2 rounded border-active"
           >
             {getYears().map((yearOption) => (
               <option key={yearOption} value={yearOption}>
@@ -242,7 +193,8 @@ const AttendanceList = () => {
               setSelectedMonth(selectedMonthIndex);
               filterDataByMonthAndYear(selectedMonthIndex, year); // Re-filter data when month changes
             }}
-            className="w-1/2 border p-2 rounded border-active"
+            className="w-30 sm:w-1/2 md:w-1/2 lg:w-1/2 border p-2 rounded border-active"
+            // className="w-full sm:w-1/2 border p-2 rounded border-active"
           >
             <option value="">Select Month</option>
             {months.map((month, index) => (
@@ -257,12 +209,12 @@ const AttendanceList = () => {
       {/* Display Days and Dates of Selected Month */}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         {selectedMonth !== null && (
-          <div className="overflow-x-auto">
+          <div className="grid overflow-x-auto">
             <table className="min-w-full table-auto border-collapse">
               <thead className="bg-gray-900 border-b">
                 <tr>
-                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">Day</th>
                   <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">Date</th>
+                  <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">Day</th>
                   <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">In Time</th>
                   <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">Out Time</th>
                   <th className="px-4 py-2 border-b text-left uppercase font-semibold text-sm text-[#939393]">Working Hours</th>
@@ -278,13 +230,13 @@ const AttendanceList = () => {
                   });
 
                   return (
-                    <tr key={index} className="hover:bg-gray-100">
-                      <td className="px-4 py-2 border-b">{dayData.day}</td>
+                    <tr key={index} className={`hover:bg-gray-100 ${dayData.day === "Sunday" || dayData.day === "Saturday" ? "bg-yellow-200" : ""}`}>
                       <td className="px-4 py-2 border-b">
                         {`${dayData.date.getDate()}/${
                           dayData.date.getMonth() + 1
                         }/${dayData.date.getFullYear()}`}
                       </td>
+                      <td className="px-4 py-2 border-b">{dayData.day}</td>
                       <td className="px-4 py-2 border-b">{attendance && attendance.inDateTime ? formatTime(attendance.inDateTime) : '-'}</td>
                       <td className="px-4 py-2 border-b">{attendance && attendance.outDateTime ? formatTime(attendance.outDateTime) : '-'}</td>
                       <td className="px-4 py-2 border-b">
@@ -308,88 +260,6 @@ const AttendanceList = () => {
           </div>
         )}
       </section>
-
-      {/* Modal for Add Attendance */}
-      {showModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h3 className="text-xl font-semibold mb-4">Add Attendance</h3>
-            <form onSubmit={handleSubmitAttendance}>
-              <div className="mb-4">
-                <label htmlFor="inDateTime" className="block">In Time:</label>
-                <input
-                  type="datetime-local"
-                  id="inDateTime"
-                  value={inDateTime}
-                  onChange={(e) => setInDateTime(e.target.value)}
-                  className="w-full border p-2 rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="outDateTime" className="block">Out Time:</label>
-                <input
-                  type="datetime-local"
-                  id="outDateTime"
-                  value={outDateTime}
-                  onChange={(e) => setOutDateTime(e.target.value)}
-                  className="w-full border p-2 rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="totalTime" className="block">Total Time:</label>
-                <input
-                  type="text"
-                  id="totalTime"
-                  value={totalTime}
-                  onChange={(e) => setTotalTime(e.target.value)}
-                  className="w-full border p-2 rounded"
-                  readOnly
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="status" className="block">Status:</label>
-                <select
-                  id="status"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="w-full border p-2 rounded"
-                >
-                  <option value="Present">Present</option>
-                  <option value="LeaveRequest">Leave Request</option>
-                  <option value="LeaveApproved">Leave Approved</option>
-                  <option value="OnLeave">On Leave</option>
-                  <option value="Absent">Absent</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label htmlFor="remarks" className="block">Remarks:</label>
-                <input
-                  type="text"
-                  id="remarks"
-                  value={remarks}
-                  onChange={(e) => setRemarks(e.target.value)}
-                  className="w-full border p-2 rounded"
-                />
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="mr-3 px-4 py-2 bg-gray-300 text-black rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded"
-                >
-                  Add
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

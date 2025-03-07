@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { AuthService } from "../../service/AuthService";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import Logo from "../../../assets/iobix-technolabs.png"
+import Logo from "../../assets/iobix-technolabs.png"
 import { toast } from "react-toastify";
 import FingerprintJS from "@fingerprintjs/fingerprintjs"; // For fingerprinting
 import { UAParser } from "ua-parser-js";
 import { getToken } from "firebase/messaging";
 import 'react-toastify/dist/ReactToastify.css';
-import { messaging } from "../../../firebase/firebase";
+import { messaging } from "../../firebase/firebase";
+import { AuthService } from "../service/AuthService";
 
 const SignIn = ({onLogin, setLoading}) => {
   const [email, setEmail] = useState("");
@@ -59,13 +59,30 @@ const SignIn = ({onLogin, setLoading}) => {
     const token = sessionStorage.getItem("token");
     if (token) {
       try {
+        // debugger;
         const decodedToken = jwtDecode(token);
         if (
           decodedToken?.Admin === "IsAdmin" ||
-          decodedToken?.Employee === "IsEmployee"
+          decodedToken?.Admin === "IsAdminIT" ||
+          decodedToken?.Admin === "IsAdminBD"
         ) {
           navigate("/"); // Redirect to dashboard if already authenticated
+        } else if(
+          decodedToken?.Employee === "IsEmployee"
+        ) {
+          navigate("/user")
+        } else if(
+          decodedToken?.Partner === "IsPartner"
+        ) {
+          navigate("/partner")
+        } else if(
+          decodedToken?.Client === "IsClient"
+        ) {
+          navigate("/company")
+        } else{
+          navigate("/sign-in")
         }
+        
       } catch {
         sessionStorage.clear();
         navigate("/sign-in");
@@ -131,14 +148,34 @@ const SignIn = ({onLogin, setLoading}) => {
     try {
       const response = await AuthService.signIn(signInData);
       if (response.status === 1 && response.data !== null) {
-        toast.success(response.message || "Login successful!"); // Toast on success
+        toast.success(response.message || "Login successfull!"); // Toast on success
         const { token } = response.data;
         sessionStorage.setItem("token", token); // Store token
 
-        // debugger;
+        debugger;
         // Decode token to get the role
         const decodedToken = jwtDecode(token);
-        const role = decodedToken.Admin === "IsAdmin" ? "admin" : "user";
+
+        let role;
+
+        if (decodedToken.Admin === "IsAdmin" || decodedToken.Admin === "IsAdminIT" || decodedToken.Admin === "IsAdminBD") {
+          role = "admin";
+        // } 
+        // else if (decodedToken.Admin === "IsAdminIT") {
+        //   role = "ITadmin";
+        // } else if (decodedToken.Admin === "IsAdminBD") {
+        //   role = "BDadmin";
+        } else if (decodedToken.Employee === "IsEmployee") {
+          role = "user";
+        }  else if (decodedToken.Partner === "IsPartner") {
+          role = "partner";
+        } else if (decodedToken.Client === "IsClient") {
+          role = "company";
+        } else {
+          role = "user"; // Default role if none of the conditions match
+        }
+
+        // const role = decodedToken.Admin === "IsAdmin" ? "admin" : "user";
         sessionStorage.setItem("role", role); // Store role
         onLogin(role); // Update authentication state
        
@@ -154,7 +191,20 @@ const SignIn = ({onLogin, setLoading}) => {
       
        
         // navigate("/"); // Redirect to dashboard after successful login
-        navigate(role === "admin" ? "/" : "/user"); // Redirect based on role
+        // navigate(role === "admin" ? "/" : "/user"); // Redirect based on role
+        // if (role === "admin" || role === "ITadmin" || role === "BDadmin") {
+        if (role === "admin") {
+          navigate("/");  // Redirect to the admin home or dashboard
+        } else if (role === "user") {
+          navigate("/user");  // Redirect to the user page
+        } else if (role === "partner") {
+          navigate("/partner");  // Redirect to the partner page
+        } 
+        else if (role === "company") {
+          navigate("/company");  // Redirect to the exhibitor page
+        } else {
+          navigate("/user");  // Default redirect for 'user' or any unrecognized role
+        }
 
       } else {
         toast.error(response.message || "Sign-in failed.");
@@ -271,7 +321,7 @@ const SignIn = ({onLogin, setLoading}) => {
   );
 };
 
-export default SignIn;
+export default SignIn;
 
 
 

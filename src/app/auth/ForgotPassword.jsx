@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { AuthService } from "../../service/AuthService";
+import { AuthService } from "../service/AuthService";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import Logo from "../../../assets/iobix-technolabs.png"
+import Logo from "../../assets/iobix-technolabs.png"
 import { toast } from "react-toastify";
 
 const ForgotPassword = () => {

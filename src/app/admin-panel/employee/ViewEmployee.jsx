@@ -140,7 +140,7 @@ const ViewEmployee = () => {
                   className="mt-7"
                   aria-labelledby="card-type-tab-item-1"
                 >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[
                       { label: "First Name", name: "firstName", value: formData.firstName },
                       { label: "Middle Name", name: "middleName", value: formData.middleName },

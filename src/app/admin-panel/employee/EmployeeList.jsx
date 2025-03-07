@@ -11,8 +11,9 @@ const EmployeeList = () => {
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
   const [departmentFilter, setDepartmentFilter] = useState(""); // State for department filter
-  const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -112,6 +113,7 @@ const EmployeeList = () => {
   };
 
   const handleDownloadReport = async () => {
+    setIsSubmitting(true);
     try {
       // Wait for the report download to complete
       await ReportService.downloadEmployeeReport();
@@ -120,6 +122,8 @@ const EmployeeList = () => {
     } catch (error) {
       console.error("Error downloading report:", error);
       toast.error("Failed to download report.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
   
@@ -145,9 +149,11 @@ const EmployeeList = () => {
           whileHover={{ scale: 1.1 }} 
           whileTap={{ scale: 0.9 }}
           onClick={handleDownloadReport }
-          className="me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+          className ={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
+            ${isSubmitting ? "opacity-50 cursor-not-allowed" : "" }`}
+          disabled={isSubmitting}
           >
-            Download Report
+            {isSubmitting ? "Downloading..." : "Download Report"}
         </motion.button>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link

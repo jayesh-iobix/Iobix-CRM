@@ -589,9 +589,7 @@ const TaskList = () => {
 
   const handleSubTransferSubmit = async (event) => {
     event.preventDefault();
-
-    debugger;
-
+    // debugger;
 
     const transferSubTask = {
       allocationId,
@@ -859,6 +857,7 @@ const TaskList = () => {
                               <FaTrash size={22} />
                             </motion.button>
                           </button>
+
                           <button
                             onClick={() =>
                               toggleDropdown(item.taskAllocationId)
@@ -875,6 +874,7 @@ const TaskList = () => {
                               <FaEllipsisV size={24} />
                             </motion.button>
                           </button>
+                          
                           {/* Render dropdown above or below based on space */}
                           {openDropdown === item.taskAllocationId && (
                             <div

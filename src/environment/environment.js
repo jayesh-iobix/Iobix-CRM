@@ -1,5 +1,6 @@
 export const environment = {
   auth: "https://localhost:7292/api/Auth",
+  admin: "https://localhost:7292/api/AdminMaster",
   department: "https://localhost:7292/api/Department",
   designation: "https://localhost:7292/api/Designation",
   country: "https://localhost:7292/api/Country",
@@ -18,4 +19,14 @@ export const environment = {
   employeeLeaveType: "https://localhost:7292/api/EmployeeLeaveType",
   holiday: "https://localhost:7292/api/HolidayMaster",
   report: "https://localhost:7292/api/Report",
+  icp: "https://localhost:7292/api/IdealCustomerProfile",
+  inquiryType: "https://localhost:7292/api/InquiryType",
+  inquirySource: "https://localhost:7292/api/InquirySource",
+  clientCompany: "https://localhost:7292/api/ClientCompanyRegistration",
+  partner: "https://localhost:7292/api/PartnerRegistration",
+  inquiryOrigin: "https://localhost:7292/api/InquiryOriginMaster",
+  inquiryPermission: "https://localhost:7292/api/InquiryPermission",
+  inquiry: "https://localhost:7292/api/InquiryRegistration",
+  inquiryFollowUp: "https://localhost:7292/api/InquiryFollowUp",
+  inquiryApproveReject: "https://localhost:7292/api/InquiryApproveReject",
 }

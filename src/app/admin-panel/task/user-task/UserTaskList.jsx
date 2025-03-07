@@ -1,60 +1,28 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FaArrowDown, FaArrowRight, FaEllipsisV } from "react-icons/fa";
-import { Link, useParams } from "react-router-dom";
-import { FaCircleInfo } from "react-icons/fa6";
+import React, { useEffect, useState } from "react";
+import { FaArrowDown, FaArrowRight } from "react-icons/fa";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { TaskService } from "../../../service/TaskService";
-import { DepartmentService } from "../../../service/DepartmentService";
-import { EmployeeService } from "../../../service/EmployeeService";
-import { TaskNoteService } from "../../../service/TaskNoteService";
 import { SubTaskService } from "../../../service/SubTaskService";
 import { motion } from "framer-motion"; // Import framer-motion
-import { IoTime } from "react-icons/io5";
 import { ReportService } from "../../../service/ReportService";
 
 
 const UserTaskList = () => {
 
   const { id } = useParams();
-//   const userId = sessionStorage.getItem("LoginUserId")
-
   const [tasks, setTasks] = useState([]);
-  const [taskAllocationId, setTaskAllocationId] = useState("");
-  const [subTaskAllocationId, setSubTaskAllocationId] = useState("");
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
   const [priorityFilter, setPriorityFilter] = useState(""); // State for priority filter
   const [statusFilter, setStatusFilter] = useState(""); // State for status filter
   const [subTasks, setSubTasks] = useState([]); // Stores the sub-tasks for each task
   const [expandedRows, setExpandedRows] = useState({}); // Tracks expanded rows
-
-  //#region Fields for Task Transfer
-  const [departments, setDepartments] = useState([]);
-  const [employeeList, setEmployeeList] = useState([]);
   const [departmentId, setDepartmentId] = useState("");
-  const [allocationId, setAllocationId] = useState("");
-  const [taskTransferTo, setTaskTransferTo] = useState("");
-  //#endregion
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //#region Task Start And End useState
-  const [actualStartingDate, setActualStartingDate] = useState("");
-  const [taskCompletionDate, setTaskCompletionDate] = useState("");
-  //#endregion
-
-  //#region  Popup useState
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [subStartDateIsPopupVisible, setSubStartDateIsPopupVisible] = useState(false);
-  const [subTaskTransferIsPopupVisible, setSuTaskTransferIsPopupVisible] = useState(false);
-  const [currentTask, setCurrentTask] = useState(null);
-  //#endregion
-
-  //#region Fields for the popup form useState
-  const [taskDate, setTaskDate] = useState("");
-  const [taskTimeIn, setTaskTimeIn] = useState("");
-  const [taskTimeOut, setTaskTimeOut] = useState("");
-  const [taskDuration, setTaskDuration] = useState("");
-  const [taskUpdate, setTaskUpdate] = useState("");
-  //#endregion
+  const [yearFilter, setYearFilter] = useState("");  // State for year filter
+  const [monthFilter, setMonthFilter] = useState(""); // State for month filter
 
   //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,11 +30,22 @@ const UserTaskList = () => {
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
-  //#region Collapse drop-down
-  const [openDropdown, setOpenDropdown] = useState({}); // State to track which dropdown is open
-  const [openSubDropdown, setOpenSubDropdown] = useState({}); // State to track which dropdown is open
-  const buttonRefs = useRef({}); // To store references to dropdown buttons
-  //#endregion
+  // Get the list of unique years and months for the filter dropdowns
+const uniqueYears = [...new Set(tasks.map((task) => new Date(task.taskStartingDate).getFullYear()))];
+const uniqueMonths = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
   const fetchTasks = async () => {
     try {
@@ -77,17 +56,6 @@ const UserTaskList = () => {
       result.data.map((item) => {
         fetchsubtaskdata(item.taskAllocationId);
       });
-
-      const departmentResult = await DepartmentService.getDepartments();
-      setDepartments(departmentResult.data); // Set the 'data' array to the state\
-      // console.log(departmentId);
-      if (departmentId) {
-        // debugger;
-        const employeeResult = await EmployeeService.getEmployeeByDepartment(
-          departmentId
-        );
-        setEmployeeList(employeeResult.data);
-      }
 
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -118,6 +86,18 @@ const UserTaskList = () => {
       [taskAllocationId]: subTaskData,
     }));
   };
+
+  useEffect(() => {
+    // Automatically set current year and month
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear().toString();
+    const currentMonth = (currentDate.getMonth() + 1).toString(); // Months are 0-indexed, so add 1
+
+    setYearFilter(currentYear); // Set current year
+    setMonthFilter(currentMonth); // Set current month
+
+    fetchTasks(); // Fetch tasks on mount
+  }, [id]); // Dependency array includes 'id' to ensure fetch happens when 'id' changes
 
   useEffect(() => {
     fetchTasks();
@@ -152,46 +132,48 @@ const UserTaskList = () => {
   };
 
   useEffect(() => {
-    // Apply filters to the tasks array
     let filtered = tasks;
-
+  
     // Filter by employee
     if (employeeFilter) {
       filtered = filtered.filter((task) =>
         task.taskAssignToName.toLowerCase().includes(employeeFilter.toLowerCase())
       );
     }
-
+  
     // Filter by priority
     if (priorityFilter) {
       filtered = filtered.filter((task) =>
         task.taskPriority.toLowerCase().includes(priorityFilter.toLowerCase())
       );
     }
-
+  
     // Filter by status
     if (statusFilter) {
       filtered = filtered.filter((task) =>
         task.taskStatusName.toLowerCase().includes(statusFilter.toLowerCase())
       );
     }
-
+  
+    // Filter by year
+    if (yearFilter) {
+      filtered = filtered.filter(
+        (task) => new Date(task.taskStartingDate).getFullYear().toString() === yearFilter
+      );
+    }
+  
+    // Filter by month
+    if (monthFilter) {
+      filtered = filtered.filter(
+        (task) => new Date(task.taskStartingDate).getMonth() + 1 === parseInt(monthFilter)
+      );
+    }
+  
     setFilteredTasks(filtered); // Update filtered tasks based on all filters
     setTotalItems(filtered.length); 
     setCurrentPage(1); // Reset to the first page when a new filter is applied
-  }, [employeeFilter, priorityFilter, statusFilter, tasks]);
-
-  //#region Pagination logic
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredTasks.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-  //#endregion
+  }, [employeeFilter, priorityFilter, statusFilter, tasks, yearFilter, monthFilter]);
+  
 
   // Function to set the color based on the task status
   const getStatusColor = (taskStatusName) => {
@@ -229,168 +211,36 @@ const UserTaskList = () => {
     ];
     const uniquePriorities = [...new Set(tasks.map((task) => task.taskPriority))];
     const uniqueStatuses = [...new Set(tasks.map((task) => task.taskStatusName))];
-
-  // Function to handle opening the popup and setting the current task
-  const handleEyeClick = (task) => {
-    setCurrentTask(task); // Set the selected task data
-    setTaskAllocationId(task.taskAllocationId); // Set the selected task data
-    setSubTaskAllocationId(task.subTaskAllocationId); // Set the selected task data
-    setTaskDate(formatDate(task.taskDate)); // Assuming taskDate is in a format we can directly display
-    setTaskTimeIn(task.taskTimeIn);
-    setTaskTimeOut(task.taskTimeOut);
-    setTaskDuration(task.taskDuration);
-    setTaskUpdate(task.taskUpdate);
-    setIsPopupVisible(true); // Show the popup
-    // setStartDateIsPopupVisible(true)
-  };
-
-  // Function to calculate task duration based on time in and time out
-  const calculateDuration = () => {
-    if (taskTimeIn && taskTimeOut) {
-      const timeIn = new Date(`1970-01-01T${taskTimeIn}:00`);
-      const timeOut = new Date(`1970-01-01T${taskTimeOut}:00`);
-
-      let duration = (timeOut - timeIn) / 1000 / 60; // Duration in minutes
-      if (duration < 0) {
-        duration += 24 * 60; // If the duration is negative, it means timeOut is the next day
-      }
-
-      const hours = Math.floor(duration / 60);
-      const minutes = duration % 60;
-      setTaskDuration(`${hours}h ${minutes}m`);
-    }
-  };
-
-  // Watch for changes in time fields and calculate duration
-  useEffect(() => {
-    calculateDuration();
-  }, [taskTimeIn, taskTimeOut]);
-
-
-  const toggleSubTaskDropdown = (subTaskAllocationId) => {
-    // Toggle dropdown for the current task, close if it's already open
-    setOpenSubDropdown((prev) => (prev === subTaskAllocationId ? null : subTaskAllocationId));
-  };
-
-  const closeMenu = () => {
-    setOpenDropdown(null);
-    setOpenSubDropdown(null);
-    // setActiveSubTaskMenu(null);
-  };
-
-  const getDropdownPositionForSubTask = (subTaskAllocationId, isLastRow) => {
-    debugger;
-    const button = buttonRefs.current[subTaskAllocationId];  // Get reference to the button
-    if (!button) return { top: 0, left: 0 };  // Fallback if the button ref is not available
   
-    const buttonRect = button.getBoundingClientRect();  // Get button's bounding box (position & size)
-    const windowHeight = window.innerHeight;  // Get the height of the window
-    const spaceBelow = windowHeight - buttonRect.bottom;  // Calculate space below the button
-    const spaceAbove = buttonRect.top;  // Calculate space above the button
+    //#region Pagination logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredTasks.slice(indexOfFirstItem, indexOfLastItem);
   
-    // If the row is the last one or if there's not enough space below, show the dropdown above
-    if (isLastRow || spaceBelow < 130) {
-      return { top: buttonRect.top - 120, left: buttonRect.right - 120 };  // Position above the button
-    }
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
   
-    // Otherwise, position the dropdown below the button
-    return { top: buttonRect.bottom-5, left: buttonRect.right - 120 };  // Position below the button
-  };
-
-  const handleSubTaskStartAndEndDate = (subTask) => {
-    setSubTaskAllocationId(subTask.subTaskAllocationId); // Set the selected task data
-    setSubStartDateIsPopupVisible(true); // Show the popup
-  };
-
-   //#region Add Start And End Date of Task
-  // Handle the start date change
-  const handleSubStartDateChange = async (e) => {
-    const newStartingDate = e.target.value; // Get the new date value
-    setActualStartingDate(newStartingDate); // Set the date state
-    const taskData = {
-      actualStartingDate: newStartingDate,
+    const handlePageChange = (pageNumber) => {
+      setCurrentPage(pageNumber);
     };
-    try {
-      const response = await SubTaskService.updateSubTaskActualStartingDate(
-        subTaskAllocationId,
-        taskData
-      );
-      if (response.status === 1) {
-        toast.success(response.message); // Toast on success
-        fetchTasks();
-      }
-    } catch (error) {
-      console.error("Error updating ActualStaringDate:", error);
-    }
-  };
+    //#endregion
 
-  // Handle the end date change
-  const handleSubCompletionDateChange = async (e) => {
-    const newStartingDate = e.target.value; // Get the new date value
-    setTaskCompletionDate(newStartingDate); // Set the date state
-    const taskData = {
-      taskCompletionDate: newStartingDate,
-    };
-    try {
-      const response = await SubTaskService.updateSubTaskCompletionDate(
-        subTaskAllocationId,
-        taskData
-      );
-      if (response.status === 1) {
-        toast.success(response.message); // Toast on success
-        fetchTasks();
-      }
-    } catch (error) {
-      console.error("Error updating ActualStaringDate:", error);
-    }
-  };
-  //#endregion
+    const handleDownloadReport = async (year, month) => {
 
-  const handleSubTransferSubmit = async (event) => {
-    event.preventDefault();
-
-    const transferSubTask = {
-      allocationId,
-      taskTransferTo
-    };
-
-    console.log("Submitting task transfer data:", transferSubTask); // Log the data before submitting
-
-    try {
-      // Call the API to add the task note
-      const response = await SubTaskService.transferSubTask(transferSubTask);
-      if(response.status === 1)
-      {
-        toast.success(response.message); // Toast on success
-        fetchTasks();
-      }
-      // console.log("Transfer Sub Task Successfully:", response);
-
-      // Optionally, you can update the task state or show a success message here
-      setSubStartDateIsPopupVisible(false); // Close the popup
-    } catch (error) {
-      console.error(
-        "Error tranfering sub task",
-        error.response?.data || error.message
-      );
-      if (error.response?.data?.errors) {
-        console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-      }
-    }
-
-  };
-
-  const handleDownloadReport = async () => {
+      setIsSubmitting(true);
+      // debugger;
       try {
-        // Wait for the report download to complete
-        await ReportService.downloadTaskReport(id);
+        // Wait for the report download to complete with the selected year and month
+        await ReportService.downloadTaskReport(id, year, month);
         // Optionally, add a success message or additional logic after the download
         toast.success("Report downloaded successfully!");
       } catch (error) {
         console.error("Error downloading report:", error);
         toast.error("Failed to download report.");
+      } finally {
+        setIsSubmitting(false);
       }
-    }
+    };
+    
 
   return (
     <>
@@ -402,15 +252,19 @@ const UserTaskList = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           type="button" // Added this line to prevent form submission
-          onClick={handleDownloadReport}
-          className="bg-purple-600 hover:bg-purple-700 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-        >
-          Download Task Report
+          onClick={() => handleDownloadReport(yearFilter, monthFilter)} // Pass selected year and month here
+          // onClick={handleDownloadReport}
+          className ={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
+            ${isSubmitting ? "opacity-50 cursor-not-allowed" : "" }`}
+          disabled={isSubmitting}
+          >
+            {isSubmitting ? "Downloading..." : "Download Task Report"}
         </motion.button>
       </div>
 
       {/* Filters Section */}
-      <div className="flex gap-4 my-4">
+      <div className="flex flex-wrap gap-4 my-4">
+        {/* Priority */}
         <select
           value={priorityFilter}
           onChange={handlePriorityFilterChange}
@@ -423,6 +277,8 @@ const UserTaskList = () => {
             </option>
           ))}
         </select>
+
+        {/* Status */}
         <select
           value={statusFilter}
           onChange={handleStatusFilterChange}
@@ -432,6 +288,34 @@ const UserTaskList = () => {
           {uniqueStatuses.map((status) => (
             <option key={status} value={status}>
               {status}
+            </option>
+          ))}
+        </select>
+
+        {/* Year Filter */}
+        <select
+          value={yearFilter}
+          onChange={(e) => setYearFilter(e.target.value)}
+          className="p-2 outline-none rounded border border-gray-300"
+        >
+          <option value="">All Years</option>
+          {uniqueYears.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+
+        {/* Month Filter */}
+        <select
+          value={monthFilter}
+          onChange={(e) => setMonthFilter(e.target.value)}
+          className="p-2 outline-none rounded border border-gray-300"
+        >
+          <option value="">All Months</option>
+          {uniqueMonths.map((month, index) => (
+            <option key={month} value={index + 1}>
+              {month}
             </option>
           ))}
         </select>
@@ -451,7 +335,6 @@ const UserTaskList = () => {
                 "Expected Completion Date",
                 "Task Type",
                 "Status",
-                // "Actions",
               ].map((header) => (
                 <th
                   key={header}
@@ -471,7 +354,6 @@ const UserTaskList = () => {
               </tr>
             ) : (
               currentItems.map((item, index) => {
-                const isLastRow = index === filteredTasks.length - 1;
                 return (
                   <React.Fragment key={item.taskAllocationId}>
                     <motion.tr
@@ -549,7 +431,6 @@ const UserTaskList = () => {
                                     "Expected Completion Date",
                                     "Task Type",
                                     "Status",
-                                    "Actions",
                                   ].map((header) => (
                                     <th
                                       key={header}
@@ -563,10 +444,6 @@ const UserTaskList = () => {
                               <tbody>
                                 {subTasks[item.taskAllocationId].map(
                                   (subTask, index) => {
-                                    const isLastRow =
-                                      index ===
-                                      subTasks[item.taskAllocationId].length -
-                                        1;
                                     return (
                                       <tr key={subTask.subTaskAllocationId}>
                                         <td className="py-2 px-4">
@@ -604,249 +481,6 @@ const UserTaskList = () => {
                                             {subTask.taskStatusName}
                                           </span>
                                         </td>
-                                        <td className="py-3 px-4">
-                                          <div className="flex gap-3">
-                                            <Link
-                                              to={`/user/task-list/${subTask.subTaskAllocationId}`}
-                                              className="relative text-blue-500 hover:text-blue-700 group"
-                                            >
-                                              <FaCircleInfo size={24} />
-                                            </Link>
-
-                                            <button>
-                                              <motion.button
-                                                whileHover={{ scale: 1.1 }}
-                                                whileTap={{ scale: 0.9 }}
-                                              >
-                                                <Link
-                                                  to={`/user/tasknote-list/${subTask.subTaskAllocationId}`}
-                                                  className="text-yellow-500 hover:text-yellow-700"
-                                                >
-                                                  {/* <FaRegFileLines size={24} /> */}
-                                                  <IoTime size={24} />
-                                                </Link>
-                                              </motion.button>
-                                            </button>
- 
-                                            {subTask.taskAssignTo === id && (
-                                              <button
-                                                onClick={() =>
-                                                  toggleSubTaskDropdown(
-                                                    subTask.subTaskAllocationId
-                                                  )
-                                                }
-                                                className="text-gray-500 hover:text-gray-700"
-                                                ref={(el) =>
-                                                  (buttonRefs.current[
-                                                    subTask.subTaskAllocationId
-                                                  ] = el)
-                                                }
-                                              >
-                                                <FaEllipsisV size={24} />
-                                              </button>
-                                            )}
-                                            {/* Render dropdown above or below based on space */}
-                                            {openSubDropdown ===
-                                              subTask.subTaskAllocationId && (
-                                              <div
-                                                className="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-                                                style={getDropdownPositionForSubTask(
-                                                  subTask.subTaskAllocationId,
-                                                  isLastRow
-                                                )}
-                                                onMouseLeave={closeMenu}
-                                              >
-                                                <ul className="py-2 text-sm text-gray-800 cursor-pointer dark:text-gray-200">
-                                                  <li>
-                                                    <span
-                                                      onClick={() =>
-                                                        handleSubTaskStartAndEndDate(
-                                                          subTask
-                                                        )
-                                                      }
-                                                      className="block px-4 py-2 hover:bg-gray-100 hover:no-underline dark:hover:bg-gray-600 dark:hover:text-white"
-                                                    >
-                                                      Task Updates
-                                                    </span>
-                                                  </li>
-                                                  <li>
-                                                    <span
-                                                      onClick={() =>
-                                                        handleEyeClick(subTask)
-                                                      }
-                                                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                                    >
-                                                      Daily Note
-                                                    </span>
-                                                  </li>
-                                                </ul>
-                                              </div>
-                                            )}
-
-                                            {subStartDateIsPopupVisible && (
-                                              <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
-                                                <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
-                                                  <h2 className="text-xl font-semibold mb-4">
-                                                    Task Updates
-                                                  </h2>
-                                                  <form>
-                                                    <div className="mb-4">
-                                                      <label className="block text-sm font-medium text-gray-700">
-                                                        Task Actual Start Date
-                                                      </label>
-                                                      <input
-                                                        type="date"
-                                                        value={
-                                                          actualStartingDate
-                                                        }
-                                                        onChange={(e) =>
-                                                          handleSubStartDateChange(
-                                                            e
-                                                          )
-                                                        }
-                                                        className="w-full mt-1 px-3 py-2 border rounded-md border-active"
-                                                      />
-                                                    </div>
-
-                                                    <div className="mb-4">
-                                                      <label className="block text-sm font-medium text-gray-700">
-                                                        Task End Date
-                                                      </label>
-                                                      <input
-                                                        type="date"
-                                                        value={
-                                                          taskCompletionDate
-                                                        }
-                                                        onChange={(e) =>
-                                                          handleSubCompletionDateChange(
-                                                            e
-                                                          )
-                                                        }
-                                                        className="w-full mt-1 px-3 py-2 border rounded-md border-active"
-                                                      />
-                                                    </div>
-
-                                                    <div className="flex flex-col md:flex-row justify-end gap-4">
-                                                      <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                          setSubStartDateIsPopupVisible(
-                                                            false
-                                                          )
-                                                        }
-                                                        className="px-7 py-2 bg-gray-300 text-black rounded border-active"
-                                                      >
-                                                        Cancel
-                                                      </button>
-                                                    </div>
-                                                  </form>
-                                                </div>
-                                              </div>
-                                            )}
-
-                                            {subTaskTransferIsPopupVisible && (
-                                              <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
-                                                <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
-                                                  <h2 className="text-xl font-semibold mb-4">
-                                                    Task Transfer
-                                                  </h2>
-                                                  <form>
-                                                    <div className="mb-4">
-                                                      <label className="block text-sm font-medium text-gray-700">
-                                                        Select Department
-                                                      </label>
-                                                      <select
-                                                        value={departmentId}
-                                                        onChange={(e) =>
-                                                          setDepartmentId(
-                                                            e.target.value
-                                                          )
-                                                        }
-                                                        className="w-full mt-1 px-3 py-2 rounded-md border border-active"
-                                                      >
-                                                        <option value="">
-                                                          --Select Department--
-                                                        </option>
-                                                        {departments.map(
-                                                          (department) => (
-                                                            <option
-                                                              key={
-                                                                department.departmentId
-                                                              }
-                                                              value={
-                                                                department.departmentId
-                                                              }
-                                                            >
-                                                              {
-                                                                department.departmentName
-                                                              }
-                                                            </option>
-                                                          )
-                                                        )}
-                                                      </select>
-                                                    </div>
-                                                    <div className="mb-4">
-                                                      <label className="block text-sm font-medium text-gray-700">
-                                                        Task Transfer to:
-                                                      </label>
-                                                      <select
-                                                        value={taskTransferTo}
-                                                        onChange={(e) =>
-                                                          setTaskTransferTo(
-                                                            e.target.value
-                                                          )
-                                                        }
-                                                        className="w-full mt-1 px-3 py-2 rounded-md border border-active"
-                                                      >
-                                                        <option value="">
-                                                          --Select Employee--
-                                                        </option>
-                                                        {employeeList.map(
-                                                          (employee) => (
-                                                            <option
-                                                              key={
-                                                                employee.employeeId
-                                                              }
-                                                              value={
-                                                                employee.employeeId
-                                                              }
-                                                            >
-                                                              {employee.firstName +
-                                                                " " +
-                                                                employee.lastName}
-                                                            </option>
-                                                          )
-                                                        )}
-                                                      </select>
-                                                    </div>
-
-                                                    <div className="flex flex-col md:flex-row justify-end gap-4">
-                                                      <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                          setSuTaskTransferIsPopupVisible(
-                                                            false
-                                                          )
-                                                        }
-                                                        className="px-7 py-2 bg-gray-300 text-black rounded border-active"
-                                                      >
-                                                        Cancel
-                                                      </button>
-                                                      <button
-                                                        onClick={
-                                                          handleSubTransferSubmit
-                                                        }
-                                                        className="px-4 py-2 bg-blue-500 text-white rounded border-active"
-                                                      >
-                                                        Submit
-                                                      </button>
-                                                    </div>
-                                                  </form>
-                                                </div>
-                                              </div>
-                                            )}
-                                          </div>
-                                        </td>
                                       </tr>
                                     );
                                   }
@@ -854,9 +488,8 @@ const UserTaskList = () => {
                               </tbody>
                             </table>
                           </td>
-                          {/* </motion.tr> */}
                         </tr>
-                    )}
+                      )}
                   </React.Fragment>
                 );
               })
