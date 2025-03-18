@@ -8,6 +8,7 @@ import logo from "../../assets/iobix-technolabs.png";
 import { jwtDecode } from "jwt-decode";
 import { DASHBOARD_SIDEBAR_BOTTOM_LINKS, DASHBOARD_SIDEBAR_LINKS, USER_DASHBOARD_SIDEBAR_LINKS, COMPANY_DASHBOARD_SIDEBAR_LINKS, PARTNER_DASHBOARD_SIDEBAR_LINKS, IT_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS, BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS } from "../sidebar-links";
 import { DepartmentService } from "../service/DepartmentService";
+import { AuthService } from "../service/AuthService";
 // import {
 //   DASHBOARD_SIDEBAR_BOTTOM_LINKS,
 //   DASHBOARD_SIDEBAR_LINKS,
@@ -24,32 +25,33 @@ export default function Sidebar() {
   const role = sessionStorage.getItem("role");
 
   // debugger;
-  // const sidebarLinks =
-  //   // role === "admin" || role ==="ITadmin" || role ==="BDadmin"
-  //   role === "admin"
-  //     ? DASHBOARD_SIDEBAR_LINKS
-  //     : role === "user"
-  //     ? (departmentName === "IT"
-  //       ? IT_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS
-  //       : departmentName === "BD"
-  //       ? BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS
-  //       : USER_DASHBOARD_SIDEBAR_LINKS) // Default links for users who are neither IT nor BD
-  //     : role === "partner"
-  //     ? PARTNER_DASHBOARD_SIDEBAR_LINKS
-  //     : role === "company"
-  //     ? COMPANY_DASHBOARD_SIDEBAR_LINKS
-  //     : USER_DASHBOARD_SIDEBAR_LINKS; // Default links for other users
   const sidebarLinks =
     // role === "admin" || role ==="ITadmin" || role ==="BDadmin"
     role === "admin"
       ? DASHBOARD_SIDEBAR_LINKS
       : role === "user"
-      ? USER_DASHBOARD_SIDEBAR_LINKS
+      ? (departmentName === "IT"
+        ? IT_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS
+        : departmentName === "BD"
+        ? BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS
+        : USER_DASHBOARD_SIDEBAR_LINKS) // Default links for users who are neither IT nor BD
       : role === "partner"
       ? PARTNER_DASHBOARD_SIDEBAR_LINKS
       : role === "company"
       ? COMPANY_DASHBOARD_SIDEBAR_LINKS
       : USER_DASHBOARD_SIDEBAR_LINKS; // Default links for other users
+      
+  // const sidebarLinks =
+  //   // role === "admin" || role ==="ITadmin" || role ==="BDadmin"
+  //   role === "admin"
+  //     ? DASHBOARD_SIDEBAR_LINKS
+  //     : role === "user"
+  //     ? USER_DASHBOARD_SIDEBAR_LINKS
+  //     : role === "partner"
+  //     ? PARTNER_DASHBOARD_SIDEBAR_LINKS
+  //     : role === "company"
+  //     ? COMPANY_DASHBOARD_SIDEBAR_LINKS
+  //     : USER_DASHBOARD_SIDEBAR_LINKS; // Default links for other users
 
   // const sidebarLinks =
   //   role === "admin" || role ==="ITadmin" || role ==="ITadmin"
@@ -67,15 +69,15 @@ export default function Sidebar() {
   // role === "admin" ? DASHBOARD_SIDEBAR_LINKS : USER_DASHBOARD_SIDEBAR_LINKS;
 
 
-  // useEffect(() => {
-  //   const fetchDepartment = async () => {
-  //     debugger;
-  //     const depatment = await DepartmentService.getDepartments();
-  //     setDepartmentName(depatment.data)
-  //     console.log(depatment)
-  //   }
-  //   fetchDepartment();  
-  //   }, []);
+  useEffect(() => {
+    const fetchDepartment = async () => {
+      // debugger;
+      const depatment = await AuthService.getBasicDetail();
+      setDepartmentName(depatment.data.departmentName)
+      // console.log(depatment.data)
+    }
+    fetchDepartment();  
+    }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);

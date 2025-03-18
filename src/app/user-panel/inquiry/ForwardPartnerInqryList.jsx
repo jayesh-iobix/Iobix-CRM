@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
+import { format } from "date-fns";
 
 const ForwardPartnerInqryList = () => {
   const [inquiries, setInquiries] = useState([]);
@@ -171,14 +172,28 @@ const ForwardPartnerInqryList = () => {
     switch (inquiryStatusName) {
       case "Pending":
         return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
-      case "Approved":
-        return "text-green-500 bg-green-100"; // Green for Approved
-      case "Rejected":
+      case "Open":
+        return "text-blue-500 bg-blue-100"; // Green for Approved
+      case "FinalApproval":
+        return "text-green-500 bg-green-100"; // Blue for FinalApproval
+      case "Close":
         return "text-red-500 bg-red-100"; // Red for Rejected
       default:
         return "text-gray-500 bg-gray-100"; // Default color
-    }
-  };
+    }
+  };
+  // const getStatusColor = (inquiryStatusName) => {
+  //   switch (inquiryStatusName) {
+  //     case "Pending":
+  //       return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
+  //     case "Approved":
+  //       return "text-green-500 bg-green-100"; // Green for Approved
+  //     case "Rejected":
+  //       return "text-red-500 bg-red-100"; // Red for Rejected
+  //     default:
+  //       return "text-gray-500 bg-gray-100"; // Default color
+  //   }
+  // };
   
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {
@@ -267,12 +282,13 @@ const ForwardPartnerInqryList = () => {
         <select
           value={categoryFilter}
           onChange={handleCategoryFilterChange}
-          className="border border-gray-300 rounded p-2"
+          className="border border-gray-300 rounded p-2 w-fit border-active"
         >
-          <option value="">All Status</option>
-          <option value="Pending">Pending</option>
-          <option value="Open">Open</option>
-          <option value="Close">Close</option>
+            <option value="">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Open">Open</option>
+            <option value="Close">Close</option>
+            <option value="FinalApproval">FinalApproval</option>
         </select>
       </div>
 
@@ -281,7 +297,9 @@ const ForwardPartnerInqryList = () => {
           <thead className="bg-gray-900 border-b">
             <tr>
               {[
+                "Date of Inquiry",
                 "Inquiry Title",
+                "Inquiry Send By",
                 "Inquiry Location",
                 "Inquiry Type",
                 "Priority Level",
@@ -315,7 +333,13 @@ const ForwardPartnerInqryList = () => {
                   transition={{ duration: 0.5, delay: item * 0.1 }}
                 >
                   <td className="py-3 px-4 text-gray-700">
+                    {item.createdOn ? format(new Date(item.createdOn), 'dd/MM/yyyy') : 'N/A'}
+                  </td>
+                  <td className="py-3 px-4 text-gray-700">
                     {item.inquiryTitle}
+                  </td>
+                  <td className="py-3 px-4 text-gray-700">
+                    {item.senderName}
                   </td>
                   <td className="py-3 px-4 text-gray-700">
                     {item.inquiryLocation}

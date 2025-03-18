@@ -9,6 +9,8 @@ import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
 import { InquiryPermissionService } from "../../service/InquiryPermissionService";
+import { format } from 'date-fns';
+
 
 const PartnerInquiryList = () => {
   const [inquiries, setInquiries] = useState([]);
@@ -78,6 +80,7 @@ const PartnerInquiryList = () => {
       if(role === "admin") {
         const result = await InquiryService.getInquiryFromPartner();
         setInquiries(result.data);
+        console.log(result.data);
         setFilteredInquiries(result.data);
         setTotalItems(result.data.length);
       } else if (role === "user") {
@@ -203,9 +206,11 @@ const PartnerInquiryList = () => {
     switch (inquiryStatusName) {
       case "Pending":
         return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
-      case "Approved":
-        return "text-green-500 bg-green-100"; // Green for Approved
-      case "Rejected":
+      case "Open":
+        return "text-blue-500 bg-blue-100"; // Green for Approved
+      case "FinalApproval":
+        return "text-green-500 bg-green-100"; // Blue for FinalApproval
+      case "Close":
         return "text-red-500 bg-red-100"; // Red for Rejected
       default:
         return "text-gray-500 bg-gray-100"; // Default color
@@ -222,7 +227,7 @@ const PartnerInquiryList = () => {
   const handleInquirySubmit = async (event) => {
     event.preventDefault();
 
-    debugger;
+    // debugger;
 
     const inquiryData = {
       inquiryRegistrationId,
@@ -333,7 +338,7 @@ const PartnerInquiryList = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Partner Inquiry List</h1>
+        <h1 className="font-semibold text-2xl">Partner Project List</h1>
         <div className="flex">
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
@@ -354,19 +359,20 @@ const PartnerInquiryList = () => {
           value={inquiryFilter}
           onChange={handleInquiryFilterChange}
           placeholder="Search Inquiry"
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-gray-300 border-active"
         />
 
         <select
           value={categoryFilter}
           onChange={handleCategoryFilterChange}
-          className="border border-gray-300 rounded p-2"
-        >
-          <option value="">All Status</option>
-          <option value="Pending">Pending</option>
-          <option value="Open">Open</option>
-          <option value="Close">Close</option>
-        </select>
+          className="border border-gray-300 rounded p-2 w-fit border-active"
+          >
+            <option value="">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Open">Open</option>
+            <option value="Close">Close</option>
+            <option value="FinalApproval">FinalApproval</option>
+          </select>
       </div>
 
       <div className="grid overflow-x-auto">
@@ -374,11 +380,13 @@ const PartnerInquiryList = () => {
           <thead className="bg-gray-900 border-b">
             <tr>
               {[
-                "Inquiry Title",
-                "Inquiry Location",
-                "Inquiry Type",
+                "Date of Inquiry",
+                "Project Title",
+                "Project Send By",
+                "Project Location",
+                "Project Type",
                 "Priority Level",
-                "Inquiry Status",
+                "Project Status",
                 "Actions",
               ].map((header) => (
                 <th
@@ -407,8 +415,20 @@ const PartnerInquiryList = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: item * 0.1 }}
                 >
+
+                  {/* <td className="py-3 px-4 text-gray-700">
+                    {item.createdOn
+                      ? format(new Date(item.createdOn), 'MM/dd/yyyy HH:mm:ss') // Example format
+                      : 'N/A'}
+                  </td> */}
+                  <td className="py-3 px-4 text-gray-700">
+                    {item.createdOn ? format(new Date(item.createdOn), 'dd/MM/yyyy') : 'N/A'}
+                  </td>
                   <td className="py-3 px-4 text-gray-700">
                     {item.inquiryTitle}
+                  </td>
+                  <td className="py-3 px-4 text-gray-700">
+                    {item.senderName}
                   </td>
                   <td className="py-3 px-4 text-gray-700">
                     {item.inquiryLocation}

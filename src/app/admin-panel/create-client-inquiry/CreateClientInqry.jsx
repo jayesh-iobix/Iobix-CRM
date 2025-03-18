@@ -94,7 +94,7 @@ const CreateClientInqry = () => {
     const fetchData = async () => {
       try {
         const clientCompanyResult = await ClientCompanyService.getClientCompany();
-        console.log(clientCompanyResult.data);
+        // console.log(clientCompanyResult.data);
         setClientCompanyList(clientCompanyResult.data.filter(item => item.isActive));
 
         const inquiryTypeResult = await InquiryTypeService.getInquiryType();
@@ -131,8 +131,8 @@ const CreateClientInqry = () => {
     Object.keys(formData).forEach((key) => {
       formDataToSend.append(key, formData[key]);
     });
-    console.log(formDataToSend);
-    console.log(formData);
+    // console.log(formDataToSend);
+    // console.log(formData);
 
     try {
       const result = await InquiryService.addInquiryByAdmin(formDataToSend);

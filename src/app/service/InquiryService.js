@@ -215,15 +215,15 @@ export const InquiryService = {
   },
 
   // Methos to update Inquiry
-  updateInquiry: async (inquiryRegistrationId, inquiryData) => {
-   try {
-     const response = await httpClient.put(`${api}/${inquiryRegistrationId}`,inquiryData); 
-     return response.data;
-   } catch (error) {
-     console.error('Failed to Update Inquiry:', error);
-     throw error;
-   }
-  },
+    updateInquiry: async (inquiryRegistrationId, inquiryData) => {
+     try {
+       const response = await httpClient.put(`${api}/${inquiryRegistrationId}`,inquiryData); 
+       return response.data;
+     } catch (error) {
+       console.error('Failed to Update Inquiry:', error);
+       throw error;
+     }
+    },
 
   // Methos to delete Inquiry
   deleteInquiry: async (inquiryRegistrationId) => {
@@ -247,5 +247,26 @@ export const InquiryService = {
     }
   },
 
+  // Method to recived all project 
+  receivedAllProjects: async () => {
+    try {
+      const response = await httpClient.get(`${api}/ReceiveAllInqInAdmin`); 
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch project', error);
+      throw error;
+    }
+   },
+
+  // Method to created all project 
+  createdAllProjects: async () => {
+    try {
+      const response = await httpClient.get(`${api}/CreatedAllInqInAdmin`); 
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch project', error);
+      throw error;
+    }
+   },
  
 };

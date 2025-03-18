@@ -1,35 +1,42 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit, FaEllipsisV, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { InquiryService } from "../../service/InquiryService"; // Assuming you have an InquiryService for API calls
+import { InquiryService } from "../../../service/InquiryService"; // Assuming you have an InquiryService for API calls
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { ReportService } from "../../service/ReportService"; // Assuming you have a ReportService for downloading reports
-import { DepartmentService } from "../../service/DepartmentService";
-import { EmployeeService } from "../../service/EmployeeService";
-import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
+import { DepartmentService } from "../../../service/DepartmentService";
+import { EmployeeService } from "../../../service/EmployeeService";
+import { InquiryFollowUpService } from "../../../service/InquiryFollowUpService";
 import { format } from "date-fns";
 
-const ClientInquiryList = () => {
+const CreatedProjectList = () => {
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
   const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry name or code
   const [categoryFilter, setCategoryFilter] = useState(""); // Filter for inquiry category
+  const [projectFilter, setProjectFilter] = useState(""); // Filter for project creaded for
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId for deletion
   const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup for confirmation
   const [isSubmitting, setIsSubmitting] = useState(false); // Button loading state
 
-  const buttonRefs = useRef({}); // To store references to dropdown buttons
   const [openDropdown, setOpenDropdown] = useState({}); // State to track which dropdown is open
-  const [forwardPopupVisible, setForwardPopupVisible] = useState(false);
-  const [transferPopupVisible, setTransferPopupVisible] = useState(false);
+  const buttonRefs = useRef({}); // To store references to dropdown buttons
   const [departments, setDepartments] = useState([]);
+  const [forwardPopupVisible, setForwardPopupVisible] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
   const [departmentId, setDepartmentId] = useState("");
   const [inquiryForwardedTo, setInquiryForwardedTo] = useState("");  
-  const [inquiryTransferTo, setInquiryTransferTo] = useState("");  
-  const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState("");  
+  const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState(""); 
+  
+  //#region  Popup useState
+  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by taskAllocationId
+  const [activeSubTaskMenu, setActiveSubTaskMenu] = useState(null); // Track the active sub-task menu
+
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [completionDateIsPopupVisible, setCompletionDateIsPopupVisible] = useState(false);
+  const [currentTask, setCurrentTask] = useState(null);
+  //#endregion
   
   //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,26 +47,16 @@ const ClientInquiryList = () => {
   const role = sessionStorage.getItem("role");
   // console.log(role);
 
-  // const navigateTo = role === 'partner' 
-  // ? '/partner/inquiry-list/add-inquiry' 
-  // : '/company/inquiry-list/add-inquiry';
+  const navigateTo = role === 'admin' 
+  ? '/create-partnerinquiry-list/add-partnerinquiry' 
+  : '/user/create-partnerinquiry-list/add-partnerinquiry';
 
   const fetchInquiries = async () => {
     try {
-      if(role === "admin") {
-        const result = await InquiryService.getInquiryFromCompany();
-        setInquiries(result.data);
-        setFilteredInquiries(result.data);
-        setTotalItems(result.data.length);
-      } else if( role === "user") {
-        const result = await InquiryService.getInquiryInUserToCompany();
-        setInquiries(result.data);
-        setFilteredInquiries(result.data);
-        setTotalItems(result.data.length);
-      } else {
-        console.log("Error fetching inquiry")
-      }
-
+      const result = await InquiryService.createdAllProjects();
+      setInquiries(result.data);
+      setFilteredInquiries(result.data);
+      setTotalItems(result.data.length);
       const departmentResult = await DepartmentService.getDepartments();
       setDepartments(departmentResult.data); // Set the 'data' array to the state\
       // console.log(departmentId);
@@ -80,7 +77,7 @@ const ClientInquiryList = () => {
       setFilteredInquiries([]);
     }
   };
-
+  
   useEffect(() => {
     fetchInquiries();
   }, [departmentId]);
@@ -111,6 +108,10 @@ const ClientInquiryList = () => {
   const handleCategoryFilterChange = (event) => {
     setCategoryFilter(event.target.value);
   };
+
+  const handleProjectFilterChange = (event) => {
+    setProjectFilter(event.target.value);
+  };
   
   useEffect(() => {
     let filtered = inquiries;
@@ -125,10 +126,14 @@ const ClientInquiryList = () => {
       filtered = filtered.filter((inquiry) => inquiry.inquiryStatusName === categoryFilter);
     }
 
+    if (projectFilter) {
+        filtered = filtered.filter((inquiry) => inquiry.generatedFor === projectFilter);
+    }
+
     setFilteredInquiries(filtered);
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
-  }, [inquiryFilter, categoryFilter, inquiries]);
+  }, [inquiryFilter, categoryFilter, projectFilter, inquiries]);
   
   const deleteInquiry = async () => {
     if (!deleteId) return;
@@ -184,6 +189,19 @@ const ClientInquiryList = () => {
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
+
+  // const getStatusColor = (inquiryStatusName) => {
+  //   switch (inquiryStatusName) {
+  //     case "Pending":
+  //       return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
+  //     case "Approved":
+  //       return "text-green-500 bg-green-100"; // Green for Approved
+  //     case "Rejected":
+  //       return "text-red-500 bg-red-100"; // Red for Rejected
+  //     default:
+  //       return "text-gray-500 bg-gray-100"; // Default color
+  //   }
+  // };
   
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {
@@ -191,105 +209,44 @@ const ClientInquiryList = () => {
     setForwardPopupVisible(true); // Show the popup
   };
 
-  // Function to handle opening the popup and setting the current task
-  const handleTransferInquiry = (inquiry) => {
-    setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
-    setTransferPopupVisible(true); // Show the popup
-  };
-
-  //Function to submit the api
-  const handleInquirySubmit = async (event) => {
+  const handleForwardSubmit = async (event) => {
     event.preventDefault();
 
     // debugger;
 
-    const inquiryData = {
+    const inquiryForwardData = {
       inquiryRegistrationId,
       inquiryForwardedTo,
-      inquiryFollowUpDescription,
-      inquiryTransferTo
+      inquiryFollowUpDescription
       // taskTransferTo,
     };
-
     //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
 
     try {
       // Call the API to add the task note
-      const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryData);
+      const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryForwardData);
       if (response.status === 1) {
-        if(inquiryForwardedTo === null || "") {
-          toast.success("Inquiry Transfer Successfully."); // Toast on success
-        }
-
-        if(inquiryTransferTo === null || "") {
-          toast.success("Inquiry Forwarded Successfully."); // Toast on success
-        }
+        toast.success("Inquiry Forwarded Successfully."); // Toast on success
         // toast.success(response.message); // Toast on success
         fetchInquiries();
-        setInquiryFollowUpDescription("");
-        setInquiryForwardedTo("");
-        setInquiryTransferTo("");
-      } else {
-        setInquiryFollowUpDescription("");
-        setInquiryForwardedTo("");
-        setInquiryTransferTo("");
       }
-      // console.log("task transfer added successfully:", response);
+      console.log("task transfer added successfully:", response);
 
       // Optionally, you can update the task state or show a success message here
       setForwardPopupVisible(false); // Close the popup
     } catch (error) {
       console.error(
-        "Error transfering or forwarding a inquiry:",
+        "Error adding task note:",
         error.response?.data || error.message
       );
       if (error.response?.data?.errors) {
         console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
       }
     }
-    
-        // Close the popup after submission
-        // setIsPopupVisible(false);
+  
+      // Close the popup after submission
+      // setIsPopupVisible(false);
   };
-
-  // const handleForwardSubmit = async (event) => {
-  //     event.preventDefault();
-  
-  //     // debugger;
-  
-  //     const inquiryForwardData = {
-  //       inquiryRegistrationId,
-  //       inquiryForwardedTo,
-  //       inquiryFollowUpDescription
-  //       // taskTransferTo,
-  //     };
-  //     //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-  
-  //     try {
-  //       // Call the API to add the task note
-  //       const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryForwardData);
-  //       if (response.status === 1) {
-  //         toast.success("Inquiry Forwarded Successfully."); // Toast on success
-  //         // toast.success(response.message); // Toast on success
-  //         fetchInquiries();
-  //       }
-  //       console.log("task transfer added successfully:", response);
-  
-  //       // Optionally, you can update the task state or show a success message here
-  //       setForwardPopupVisible(false); // Close the popup
-  //     } catch (error) {
-  //       console.error(
-  //         "Error adding task note:",
-  //         error.response?.data || error.message
-  //       );
-  //       if (error.response?.data?.errors) {
-  //         console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //       }
-  //     }
-    
-  //       // Close the popup after submission
-  //       // setIsPopupVisible(false);
-  // };
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -306,12 +263,12 @@ const ClientInquiryList = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Client Company Project List</h1>
+        <h1 className="font-semibold text-2xl">Created Project List</h1>
         <div className="flex">
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
-              to="/clientinquiry-list/add-clientinquiry"
-              // to={navigateTo}
+              to={navigateTo}
+              // to="/create-partnerinquiry-list/add-partnerinquiry"
               className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
             >
               Add
@@ -326,7 +283,7 @@ const ClientInquiryList = () => {
           type="text"
           value={inquiryFilter}
           onChange={handleInquiryFilterChange}
-          placeholder="Search Inquiry"
+          placeholder="Search Project"
           className="p-2 outline-none rounded border border-gray-300 border-active"
         />
         <select
@@ -340,6 +297,16 @@ const ClientInquiryList = () => {
             <option value="Close">Close</option>
             <option value="FinalApproval">FinalApproval</option>
         </select>
+
+        <select
+          value={projectFilter}
+          onChange={handleProjectFilterChange}
+          className="border border-gray-300 rounded p-2 w-fit border-active"
+          >
+            <option value="">All Project</option>
+            <option value="Partner">Partner</option>
+            <option value="Client">Client Company</option>
+        </select>
       </div>
 
       <div className="grid overflow-x-auto">
@@ -347,14 +314,14 @@ const ClientInquiryList = () => {
           <thead className="bg-gray-900 border-b">
             <tr>
               {[
-               "Date of Inquiry",
-               "Project Title",
-               "Project Send By",
-               "Project Location",
-               "Project Type",
-               "Priority Level",
-               "Project Status",
-               "Actions",
+                "Date of Inquiry",
+                "Project Title",
+                "Project Send By",
+                "Project Location",
+                "Project Type",
+                "Priority Level",
+                "Project Status",
+                "Actions",
               ].map((header) => (
                 <th
                   key={header}
@@ -419,7 +386,12 @@ const ClientInquiryList = () => {
                         whileTap={{ scale: 0.9 }}
                       >
                         <Link
-                          to={`/clientinquiry-list/view-clientinquiry/${item.inquiryRegistrationId}`}
+                          to={`/view-project/${item.inquiryRegistrationId}`}
+                        //   to={
+                        //     role === 'admin'
+                        //       ? `/create-partnerinquiry-list/view-partnerinquiry/${item.inquiryRegistrationId}`
+                        //       : `/user/create-partnerinquiry-list/view-partnerinquiry/${item.inquiryRegistrationId}`
+                        //   }
                           className="text-green-500 hover:text-green-700"
                         >
                           <FaEye size={24} />
@@ -437,20 +409,20 @@ const ClientInquiryList = () => {
                         <FaTrash size={22} />
                       </motion.button>
 
-                        {/* <motion.button
-                          type="button"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="text-gray-500 hover:text-gray-700"
-                          onClick={() =>
-                            toggleDropdown(item.inquiryRegistrationId)
-                          }
-                          ref={(el) =>
-                            (buttonRefs.current[item.inquiryRegistrationId] = el)
+                      {/* <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() =>
+                          toggleDropdown(item.inquiryRegistrationId)
                         }
-                        >
-                          <FaEllipsisV size={24} />
-                        </motion.button> */}
+                        className="text-gray-500 hover:text-gray-700"
+                        ref={(el) =>
+                          (buttonRefs.current[item.inquiryRegistrationId] = el)
+                        }
+                      >
+                        <FaEllipsisV size={24} />
+                      </motion.button> */}
 
                       {/* Render dropdown above or below based on space */}
                       {openDropdown === item.inquiryRegistrationId && (
@@ -468,15 +440,7 @@ const ClientInquiryList = () => {
                                 onClick={() => handleForwardInquiry(item)}
                                 className="block px-4 py-2 hover:bg-gray-100 hover:no-underline dark:hover:bg-gray-600 dark:hover:text-white"
                               >
-                                Forward Inquiry
-                              </span>
-                            </li>
-                            <li>
-                              <span
-                                onClick={() => handleTransferInquiry(item)}
-                                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                              >
-                                Inquiry Transfer
+                                Forward Project
                               </span>
                             </li>
                             <li>
@@ -484,7 +448,7 @@ const ClientInquiryList = () => {
                                 // onClick={() => handleTaskTransfer(item)}
                                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                               >
-                                Take Inquiry
+                                Transfer Project
                               </span>
                             </li>
                           </ul>
@@ -492,7 +456,7 @@ const ClientInquiryList = () => {
                             <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
                               <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
                                 <h2 className="text-xl font-semibold mb-4">
-                                  Forward Inquiry
+                                  Forward Project
                                 </h2>
                                 <form>
                                   <div className="mb-4">
@@ -574,107 +538,10 @@ const ClientInquiryList = () => {
                                       Cancel
                                     </button>
                                     <button
-                                      onClick={handleInquirySubmit}
+                                      onClick={handleForwardSubmit}
                                       className="px-4 py-2 bg-blue-500 text-white rounded border-active"
                                     >
                                       Forward
-                                    </button>
-                                  </div>
-                                </form>
-                              </div>
-                            </div>
-                          )}
-
-                          {transferPopupVisible && (
-                            <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
-                              <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
-                                <h2 className="text-xl font-semibold mb-4">
-                                  Transfer Inquiry
-                                </h2>
-                                <form>
-                                  <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                      Select Department
-                                    </label>
-                                    <select
-                                      value={departmentId}
-                                      onChange={(e) =>
-                                        setDepartmentId(e.target.value)
-                                      }
-                                      className="w-full mt-1 px-3 py-2 rounded-md border border-active"
-                                    >
-                                      <option value="">
-                                        --Select Department--
-                                      </option>
-                                      {departments.map((department) => (
-                                        <option
-                                          key={department.departmentId}
-                                          value={department.departmentId}
-                                        >
-                                          {department.departmentName}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </div>
-
-                                  <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                      Trafser to:
-                                    </label>
-                                    
-                                    <select
-                                      value={inquiryTransferTo}
-                                      onChange={(e) =>
-                                        setInquiryTransferTo(e.target.value)
-                                      }
-                                      className="w-full mt-1 px-3 py-2 rounded-md border border-active"
-                                    >
-                                      <option value="">
-                                        --Select Employee--
-                                      </option>
-                                      {employeeList.map((employee) => (
-                                        <option
-                                          key={employee.employeeId}
-                                          value={employee.employeeId}
-                                        >
-                                          {employee.firstName +
-                                            " " +
-                                            employee.lastName}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </div>
-
-                                  {/* Description Field */}
-                                  <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                      Transfer Reason
-                                    </label>
-                                    <textarea
-                                      value={inquiryFollowUpDescription}
-                                      onChange={(e) =>
-                                        setInquiryFollowUpDescription(e.target.value)
-                                      }
-                                      className="w-full mt-1 px-3 py-2 rounded-md border border-active"
-                                      rows="4"
-                                    />
-                                  </div>
-
-                                  <div className="flex flex-col md:flex-row justify-end gap-4">
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        setTransferPopupVisible(false)
-                                      }
-                                      className="px-7 py-2 bg-gray-300 text-black rounded border-active"
-                                    >
-                                      Cancel
-                                    </button>
-                                    <button
-                                      onClick={handleInquirySubmit}
-                                      className="px-4 py-2 bg-blue-500 text-white rounded border-active"
-                                    >
-                                      Transfer
                                     </button>
                                   </div>
                                 </form>
@@ -702,7 +569,7 @@ const ClientInquiryList = () => {
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-              Are you sure you want to delete this inquiry?
+              Are you sure you want to delete this project?
             </h3>
             <div className="flex justify-center gap-4">
               <motion.button
@@ -835,4 +702,4 @@ const ClientInquiryList = () => {
   );
 };
 
-export default ClientInquiryList;
+export default CreatedProjectList;

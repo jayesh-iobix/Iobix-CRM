@@ -233,7 +233,7 @@ const AddPartner = () => {
                 label: "Email",
                 name: "email",
                 type: "email",
-                placeholder: "Enter your middle name",
+                placeholder: "Enter your email",
               },
               {
                 label: "Password",

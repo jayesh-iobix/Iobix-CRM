@@ -1,0 +1,201 @@
+import React, { useState, useEffect } from "react";
+import InquiryChat from "./InquiryChat";
+import { InquiryService } from "../../service/InquiryService";
+import { InquiryChatService } from "../../service/InquiryChatService";
+
+const ChatInquiry = () => {
+  const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry category
+  const [partnerClientEmployeeList, setPartnerClientEmployeeList] = useState([]); // State for second dropdown
+  const [selectedPerson, setSelectedPerson] = useState(""); // State for the selected partner/client/employee
+  const [inquiries, setInquiries] = useState([]); // State for storing inquiries
+  const [selectedInquiry, setSelectedInquiry] = useState(null); // State for the selected inquiry
+
+  const handleInquiryFilterChange = (event) => {
+    const selectedInquiryType = event.target.value;
+    setInquiryFilter(selectedInquiryType);
+    setSelectedPerson(""); // Reset selected person when inquiry type changes
+    setInquiries([]); // Clear inquiries on inquiry type change
+    
+    const fetchInquiries = async () => {
+      try {
+        const response = await InquiryChatService.getPartnerClientEmployeeList(selectedInquiryType);
+        console.log(response.data);
+        // Extract only senderName from the response and store it in state
+        const senderNames = response.data.map(inquiry => inquiry.name);
+        setPartnerClientEmployeeList(senderNames); // Assuming the response is an array of inquiries
+      } catch (error) {
+        console.error("Error fetching inquiries:", error);
+        // Handle error state if needed
+      }
+    };
+
+    fetchInquiries();
+  };
+
+  // const handlePersonSelect = (person) => {
+  //   setSelectedPerson(person);
+  //   // Fetch inquiries for the selected person (this is mocked data for now)
+  //   // In a real scenario, you might want to fetch data from an API for the selected person.
+  //   switch (inquiryFilter) {
+  //     case "createdByPartner":
+  //       setInquiries([
+  //         { id: 1, inquiryText: "Inquiry 1 for Olivia Johnson" },
+  //         { id: 2, inquiryText: "Inquiry 2 for Olivia Johnson" },
+  //         { id: 3, inquiryText: "Inquiry 3 for Olivia Johnson" },
+  //         { id: 4, inquiryText: "Inquiry 4 for Olivia Johnson" },
+  //         { id: 5, inquiryText: "Inquiry 5 for Olivia Johnson" },
+  //         { id: 6, inquiryText: "Inquiry 6 for Olivia Johnson" },
+  //         { id: 7, inquiryText: "Inquiry 7 for Olivia Johnson" },
+  //         { id: 8, inquiryText: "Inquiry 8 for Olivia Johnson" },
+  //         { id: 9, inquiryText: "Inquiry 9 for Olivia Johnson" },
+  //         { id: 10, inquiryText: "Inquiry 10 for Olivia Johnson" }
+  //       ]);
+  //       break;
+  //     case "createdByClient":
+  //       setInquiries([
+  //         { id: 1, inquiryText: "Inquiry 1 for Alexander Walker" },
+  //         { id: 2, inquiryText: "Inquiry 2 for Alexander Walker" }
+  //       ]);
+  //       break;
+  //     case "forwardedToPartner":
+  //       setInquiries([
+  //         { id: 1, inquiryText: "Inquiry 1 for Benjamin Scott" }
+  //       ]);
+  //       break;
+  //     case "forwardedToClient":
+  //       setInquiries([
+  //         { id: 1, inquiryText: "Inquiry 1 for Abigail Perez" },
+  //         { id: 2, inquiryText: "Inquiry 2 for Abigail Perez" }
+  //       ]);
+  //       break;
+  //     case "createdForPartner":
+  //       setInquiries([
+  //         { id: 1, inquiryText: "Inquiry 1 for Chloe Rivera" }
+  //       ]);
+  //       break;
+  //     case "createdForClient":
+  //       setInquiries([
+  //         { id: 1, inquiryText: "Inquiry 1 for Chloe Rivera" }
+  //       ]);
+  //       break;
+  //     case "forwardedToEmployee":
+  //       setInquiries([
+  //         { id: 1, inquiryText: "Inquiry 1 for Jackson Reed" },
+  //         { id: 2, inquiryText: "Inquiry 2 for Jackson Reed" }
+  //       ]);
+  //       break;
+  //     default:
+  //       setInquiries([]);
+  //   }
+  // };
+
+  const handlePersonSelect = async (person) => {
+    setSelectedPerson(person);
+  
+    // Fetch inquiries for the selected senderName
+    // if (selectedInquiryType === "createdByPartner") {
+      // Send the selected person's name to the backend to get their inquiries
+      const fetchInquiriesForSender = async () => {
+        try {
+          const response = await InquiryService.getInquiriesBySender(person);
+          console.log(response.data);  // Assuming the response contains the inquiries of the selected person
+          
+          // Set inquiries in the state
+          setInquiries(response.data);
+        } catch (error) {
+          console.error("Error fetching inquiries:", error);
+        }
+      // };
+      
+      fetchInquiriesForSender();
+    }
+  };
+  
+
+  const handleInquirySelect = (inquiry) => {
+    setSelectedInquiry(inquiry);
+  };
+
+  return (
+    <div className="mt-4">
+      <div className="flex justify-between items-center my-3">
+        <h1 className="font-semibold text-2xl sm:text-3xl">Inquiry Chat</h1>
+      </div>
+
+      {/* Card for Inquiry Type and Partner/Client/Employee Dropdown */}
+      <div className="bg-white shadow-lg rounded-lg p-4">
+        <div className="-mx-4 px-10 flex flex-wrap">
+          {/* Inquiry Type Dropdown */}
+          <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
+            <label htmlFor="inquiryType" className="mr-2">Select Type of Inquiry:</label>
+            <select
+              value={inquiryFilter}
+              onChange={handleInquiryFilterChange}
+              className="w-full relative sm:w-1/2 border p-2 rounded border-active"
+            >
+              <option value="">--Select Inquiry Type--</option>
+              <option value="createdByPartner">Created By Partner</option>
+              <option value="createdByClient">Created By Client</option>
+              <option value="forwardedToPartner">Forwarded To Partner</option>
+              <option value="forwardedToClient">Forwarded To Client</option>
+              <option value="createdForPartner">Created For Partner</option>
+              <option value="createdForClient">Created For Client</option>
+              <option value="forwardedToEmployee">Forwarded to Employee</option>
+            </select>
+          </div>
+
+          {/* Partner/Client/Employee Dropdown */}
+          {inquiryFilter && (
+            <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
+              <label htmlFor="partnerClientEmployee" className="mr-2">
+                Select {inquiryFilter.includes('Partner') ? "Partner" : inquiryFilter.includes('Client') ? "Client" : "Employee"}:
+              </label>
+              <select
+                className="w-full relative sm:w-1/2 border p-2 rounded border-active"
+                value={selectedPerson}
+                onChange={(e) => handlePersonSelect(e.target.value)}
+              >
+                <option value="">--Select {inquiryFilter.includes('Partner') ? "Partner" : inquiryFilter.includes('Client') ? "Client" : "Employee"}--</option>
+                {partnerClientEmployeeList.map((person, index) => (
+                  <option key={index} value={person}>{person}</option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Layout for Inquiries and Chat */}
+      <div className="flex mt-6">
+        
+        {/* Left side: List of inquiries */}
+        <div className="w-1/3 bg-white p-4 border-r">
+          <h2 className="font-semibold mb-2">Inquiries</h2>
+          {inquiries.map((inquiry) => (
+            <div
+              key={inquiry.id}
+              onClick={() => handleInquirySelect(inquiry)}
+              className="cursor-pointer p-2 border-b"
+            >
+              {inquiry.inquiryText}
+            </div>
+          ))}
+        </div>
+
+        {/* Right side: Chat */}
+        <div className="w-2/3 p-4">
+          {selectedInquiry ? (
+            <div>
+              {/* <h2 className="font-semibold mb-2">Chat for {selectedInquiry.inquiryText}</h2> */}
+              <InquiryChat senderId={selectedInquiry.id} chatPersoneName={selectedInquiry.inquiryText}/>
+            </div>
+          ) : (
+            <p>Please select an inquiry to start the chat.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ChatInquiry;

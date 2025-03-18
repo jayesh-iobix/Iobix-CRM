@@ -26,13 +26,6 @@ const LeaveModule = () => {
 
   const employeeId = sessionStorage.getItem("LoginUserId");
 
-  //#region Pagination state
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
-  // const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
-  //#endregion
-
-
 const fetchLeaveRecords = async () => {
   try {
     const response = await LeaveService.getLeaveRecords(employeeId);
@@ -114,6 +107,16 @@ const fetchLeaveType = async () => {
   const handleApplyLeave = async (e) => {
     e.preventDefault();
 
+    // Convert fromDate and toDate to Date objects to check the day of the week
+    const fromDateObj = new Date(fromDate);
+    const toDateObj = new Date(toDate);
+
+    // Check if fromDate or toDate is Sunday (0 represents Sunday)
+    if (fromDateObj.getDay() === 0 || toDateObj.getDay() === 0) {
+      toast.error("You cannot apply for leave on a Sunday, as it's already a holiday.");
+      return; // Exit the function if it's a Sunday
+    }
+
     const leaveData = {
       fromDate,
       toDate,
@@ -187,17 +190,6 @@ const fetchLeaveType = async () => {
       closeModal();
   };
 
-  //#region Pagination logic
-  // const indexOfLastItem = currentPage * itemsPerPage;
-  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  // const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-
-  // const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  // const handlePageChange = (pageNumber) => {
-  //   setCurrentPage(pageNumber);
-  // };
-  //#endregion
 
   return (
     <div className="mt-4">
@@ -216,47 +208,6 @@ const fetchLeaveType = async () => {
           Apply Leave
           <FaPlus className="mt-[3px]" size={14} />
         </motion.button>
-
-        {/* Year Dropdown */}
-        {/* <div className="flex items-center mr-4">
-          <label htmlFor="year" className="mr-2">Year:</label>
-          <select 
-            id="year" 
-            value={year} 
-            onChange={(e) => {
-              setYear(parseInt(e.target.value));
-              filterDataByMonthAndYear(selectedMonth, parseInt(e.target.value)); // Re-filter data when year changes
-            }}
-            className="border p-2 rounded"
-          > */}
-        {/* Dropdown for years */}
-        {/* {new Array(10).fill(0).map((_, idx) => (
-              <option key={idx} value={currentYear - 5 + idx}>{currentYear - 5 + idx}</option>
-            ))} */}
-        {/* </select>
-        </div> */}
-
-        {/* Month Dropdown */}
-        {/* <div className="flex items-center">
-          <label htmlFor="month" className="mr-2">Month:</label>
-          <select 
-            id="month" 
-            value={selectedMonth}
-            onChange={(e) => {
-              const selectedMonthIndex = parseInt(e.target.value);
-              setSelectedMonth(selectedMonthIndex);
-              filterDataByMonthAndYear(selectedMonthIndex, year); // Re-filter data when month changes
-            }}
-            className="border p-2 rounded"
-          >
-            <option value="">Select Month</option>
-            {months.map((month, index) => (
-              <option key={index} value={index}>
-                {month}
-              </option>
-            ))}
-          </select>
-        </div> */}
       </div>
 
       {/* Card for Year and Month Dropdown */}

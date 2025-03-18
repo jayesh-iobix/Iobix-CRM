@@ -1,6 +1,6 @@
 import { BiAbacus, BiBox, BiGrid, BiGridSmall, BiGridVertical, BiListUl, BiTask } from 'react-icons/bi'
-import { BsFillGrid1X2Fill, BsFillGridFill, BsHandThumbsUp, BsPeople, BsPersonRaisedHand } from 'react-icons/bs'
-import { FaBuilding, FaBusinessTime, FaHandshake, FaHandshakeAltSlash, FaRegHandshake } from 'react-icons/fa';
+import { BsChat, BsFillGrid1X2Fill, BsFillGridFill, BsHandThumbsUp, BsPeople, BsPersonRaisedHand } from 'react-icons/bs'
+import { FaBuilding, FaBusinessTime, FaHandshake, FaHandshakeAltSlash, FaRegHandshake, FaVenusDouble } from 'react-icons/fa';
 import {
 	HiOutlineViewGrid,
 	HiOutlineQuestionMarkCircle,
@@ -81,23 +81,32 @@ export const DASHBOARD_SIDEBAR_LINKS = [
   //   icon: <HiOutlineQuestionMarkCircle />,
   // },
   {
-    key: "inquiry",
-    label: "Inquiry",
+    key: "project",
+    label: "Project",
     icon: <HiOutlineQuestionMarkCircle />,
     submenu: [
-      { label: "Recived Partner Inquiry", path: "/partnerinquiry-list" },
-      { label: "Recived Client Inquiry", path: "/clientinquiry-list" },
+      { label: "Received Project", path: "/received-project-list" },
+      { label: "Created Project", path: "/created-project-list" },
     ],
   },
-  {
-    key: "createinquiry",
-    label: "Create Inquiry",
-    icon: <HiOutlineQuestionMarkCircle />,
-    submenu: [
-      { label: "Create Partner Inquiry", path: "/create-partnerinquiry-list" },
-      { label: "Create Client Inquiry", path: "/create-clientinquiry-list" },
-    ],
-  },
+  // {
+  //   key: "inquiry",
+  //   label: "Project",
+  //   icon: <HiOutlineQuestionMarkCircle />,
+  //   submenu: [
+  //     { label: "Recived Partner Project", path: "/partnerinquiry-list" },
+  //     { label: "Recived Client Project", path: "/clientinquiry-list" },
+  //   ],
+  // },
+  // {
+  //   key: "createinquiry",
+  //   label: "Create Project",
+  //   icon: <HiOutlineQuestionMarkCircle />,
+  //   submenu: [
+  //     { label: "Create Partner Project", path: "/create-partnerinquiry-list" },
+  //     { label: "Create Client Project", path: "/create-clientinquiry-list" },
+  //   ],
+  // },
   {
     key: "partner",
     label: "Partners",
@@ -105,10 +114,22 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     icon: <FaRegHandshake />,
   },
   {
+    key: "vendor",
+    label: "Vendors",
+    path: "/vendor-list",
+    icon: <FaVenusDouble />,
+  },
+  {
     key: "client company",
     label: "Client Company",
     path: "/clientcompany-list",
     icon: <FaBusinessTime />,
+  },
+  {
+    key: "inquiry-chat",
+    label: "Inquiry Chat",
+    path: "/inquiry-chat",
+    icon: <BsChat />,
   },
 ];
 
@@ -263,7 +284,6 @@ export const USER_DASHBOARD_SIDEBAR_LINKS = [
 ];
 
 
-
 //Partner Dashboard Sidebar Links
 export const PARTNER_DASHBOARD_SIDEBAR_LINKS = [
   {
@@ -273,12 +293,12 @@ export const PARTNER_DASHBOARD_SIDEBAR_LINKS = [
     icon: <HiOutlineViewGrid />,
   },
   {
-    key: "inquiry",
-    label: "Inquiry",
+    key: "project",
+    label: "Project",
     icon: <HiOutlineQuestionMarkCircle />,
     submenu: [
-      { label: "Send Inquiry", path: "/partner/inquiry-list" },
-      { label: "Recived Inquiry", path:"/partner/get-inquiry-list" },
+      { label: "Send Project", path: "/partner/project-list" },
+      { label: "Recived Project", path:"/partner/get-project-list" },
     ],
   },
   // {
@@ -304,18 +324,18 @@ export const COMPANY_DASHBOARD_SIDEBAR_LINKS = [
     icon: <HiOutlineViewGrid />,
   },
   {
-    key: "",
+    key: "icp",
     label: "ICP form",
 	  path: "/company/icp-list",
     icon: <BiTask />,
   },
   {
-    key: "inquiry",
-    label: "Inquiry",
+    key: "project",
+    label: "Project",
     icon: <HiOutlineQuestionMarkCircle />,
     submenu: [
-      { label: "Send Inquiry", path: "/company/inquiry-list" },
-      { label: "Recived Inquiry", path:"/company/get-inquiry-list" },
+      { label: "Recived Project", path:"/company/get-project-list" },
+      { label: "Send Project", path: "/company/project-list" },
     ],
   },
   // {

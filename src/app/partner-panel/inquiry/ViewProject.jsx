@@ -3,10 +3,11 @@ import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryService } from "../../service/InquiryService";
-import { toast } from "react-toastify";
-import { InquiryApproveRejectService } from "../../service/InquiryApproveRejectService";
+import Chat from "./Chat";
+import InquiryChat from "../../admin-panel/inquiry/InquiryChat";
+import PartnerInquiryChat from "./PartnerInquiryChat";
 
-const GetViewInquiry = () => {
+const ViewProject = () => {
 
   const [formData, setFormData] = useState({
     inquiryTitle: '',
@@ -29,8 +30,7 @@ const GetViewInquiry = () => {
   });
 
   const [activeTab, setActiveTab] = useState(1);
-  const role = sessionStorage.getItem("role");
-  
+  const [inquiryRegistrationId, setInquiryRegistrationId] = useState(1);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -63,77 +63,26 @@ const GetViewInquiry = () => {
     setActiveTab(tabIndex);
   };
 
-   const handleApproveReject = async (status) => {
-      // Add your approval logic here
-  
-      // debugger;
-  
-      const inquiryApproveRejectData = {
-        inquiryRegistrationId: id,
-        clientApprovedReject: role === 'company' ? status : null,  // Store status if the role is 'client'
-        partnerApprovedReject: role === 'partner' ? status : null, // Store status if the role is 'partner'
-        // clientApprovedReject : status,
-        // partnerApprovedReject: status,
-      };
-      try {
-        // Call the API to add the task note
-        const response = await InquiryApproveRejectService.addInquiryApproveReject(inquiryApproveRejectData);
-        if (response.status === 1 || response.status === 3 ) {
-          toast.success(response.message); // Toast on success
-          // fetchInquiries();
-        }
-        else if (response.status === 2 || response.status === 4 || response.status === 5 || response.status === 6) {
-          toast.error(response.message); // Toast on success
-          // fetchInquiries();
-        }
-        else {
-          toast.error(response.message); // Toast on error
-        }
-  
-      } catch (error) {
-        console.error(
-          "Error:",
-          error.response?.data || error.message
-        );
-        if (error.response?.data?.errors) {
-          console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-        }
-      }
-    };
-    
-
   return (
     <>
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => handleApproveReject(1)} // Replace with your actual function for approval
-            className="bg-green-600 hover:bg-green-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-          >
-            Accept Project
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => handleApproveReject(2)} // Replace with your actual function for rejection
-            className="bg-red-600 hover:bg-red-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-          >
-            Reject Project
-          </motion.button>
-
-          {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <Link
-              to={/inquiry-list/edit-inquiry/${id}}
-              className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+          {formData.inquiryStatus !== 3 && formData.inquiryStatus !== 4 && (
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
-              Edit Inquiry
-              <FaEdit size={16} /> 
-            </Link>
-          </motion.button> */}
+              <Link
+                to={`/partner/project-list/edit-project/${id}`}
+                className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+              >
+                Edit Project
+                <FaEdit size={16} />
+              </Link>
+            </motion.button>
+          )}
+
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <button
               onClick={() => navigate(-1)}
@@ -274,8 +223,13 @@ const GetViewInquiry = () => {
           </div>
         </form>
       </section>
+
+      <PartnerInquiryChat 
+      chatPersoneName={formData.senderName}
+      senderId='3FA85F64-5717-4562-B3FC-2C963F66AFA6'
+      inquiryId='648b3f95-6699-4e60-bb25-ec4b8ba59894' />
     </>
   );
 };
 
-export default GetViewInquiry;
+export default ViewProject;

@@ -13,6 +13,7 @@ const EditEmployeeLeaveType = () => {
   const [employeeLeaveTypeName, setEmployeeLeaveTypeName] = useState("");
   const [leaveTypeList, setLeaveTypeList] = useState([]);
   const [leaveTypeDays, setLeaveTypeDays] = useState({});
+  const [isActive, setIsActive] = useState(false); // State for Active status
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -28,7 +29,8 @@ const EditEmployeeLeaveType = () => {
         // Fetch the employee leave type details by ID
         const employeeLeaveTypeResponse = await EmployeeLeaveTypeService.getByIdEmployeeLeaveTypes(id);
         const employeeLeaveType = employeeLeaveTypeResponse.data;
-        console.log(employeeLeaveType);
+        setIsActive(employeeLeaveType.isActive); // Assuming the employee leave type object contains isActive
+        // console.log(employeeLeaveType);
   
         // Check if leaveData exists before proceeding
         if (employeeLeaveType && employeeLeaveType.leaveData) {
@@ -101,7 +103,8 @@ const EditEmployeeLeaveType = () => {
         leaveData: selectedLeaveTypes.map(option => ({
           leaveTypeId: option.value,
           totalDaysofLeave: leaveTypeDays[option.value]
-        }))
+        })),
+        isActive
       };
 
       try {

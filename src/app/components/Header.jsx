@@ -34,9 +34,16 @@ export default function Header() {
   const loginId = sessionStorage.getItem("LoginUserId");
 
   useEffect(() => {
+    // debugger;
     onMessage(messaging, (payload) => {
 
       const notificationSound = new Audio("/notification-sound.mp3"); // Sound file from public folder
+
+      // Check if the audio is supported in the current environment
+      // notificationSound.load();
+      // notificationSound.onerror = () => {
+      //   console.error("Failed to load audio file");
+      // };
 
       // Listen for foreground messages
       const notification = payload.notification;
@@ -54,7 +61,7 @@ export default function Header() {
       // Calculate the number of notifications (or length of notifications)
       setNotificationLength(prevLength => prevLength + 1);
 
-      console.log('Notification Length:', notificationLength);
+      // console.log('Notification Length:', notificationLength);
     });
   }, [notificationLength]); // Re-run effect when notificationLength changes
 
@@ -81,9 +88,9 @@ export default function Header() {
     }
   };
 
-  useEffect(() => {  
-      fetchIsOutTime();
-    }, []);
+  useEffect(() => {
+    fetchIsOutTime();
+  }, []);
 
   const handleLogout = () => {
     const token = sessionStorage.getItem("token");

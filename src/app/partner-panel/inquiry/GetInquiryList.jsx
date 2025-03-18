@@ -5,6 +5,7 @@ import { InquiryService } from "../../service/InquiryService"; // Assuming you h
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService"; // Assuming you have a ReportService for downloading reports
+import { format } from "date-fns";
 
 const GetInquiryList = () => {
   const [inquiries, setInquiries] = useState([]);
@@ -25,7 +26,7 @@ const GetInquiryList = () => {
   //#endregion
 
   const role = sessionStorage.getItem("role");
-  console.log(role);
+  // console.log(role);
 
   useEffect(() => {
     const fetchInquiries = async () => {
@@ -93,7 +94,7 @@ const GetInquiryList = () => {
     }
 
     if (categoryFilter) {
-      filtered = filtered.filter((inquiry) => inquiry.category === categoryFilter);
+      filtered = filtered.filter((inquiry) => inquiry.inquiryStatusName === categoryFilter);
     }
 
     setFilteredInquiries(filtered);
@@ -145,19 +146,22 @@ const GetInquiryList = () => {
     switch (inquiryStatusName) {
       case "Pending":
         return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
-      case "Approved":
-        return "text-green-500 bg-green-100"; // Green for Approved
-      case "Rejected":
+      case "Open":
+        return "text-blue-500 bg-blue-100"; // Green for Approved
+      case "FinalApproval":
+        return "text-green-500 bg-green-100"; // Blue for FinalApproval
+      case "Close":
         return "text-red-500 bg-red-100"; // Red for Rejected
       default:
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
 
+
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = inquiries.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredInquiries.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -169,7 +173,7 @@ const GetInquiryList = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Get Inquiry List From Iobix</h1>
+        <h1 className="font-semibold text-2xl">Get Project List From Iobix</h1>
         {/* <div className="flex">
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
@@ -188,18 +192,19 @@ const GetInquiryList = () => {
           type="text"
           value={inquiryFilter}
           onChange={handleInquiryFilterChange}
-          placeholder="Search Inquiry"
-          className="p-2 outline-none rounded border border-gray-300"
+          placeholder="Search Project"
+          className="p-2 outline-none rounded border border-gray-300 border-active"
         />
         <select
           value={categoryFilter}
           onChange={handleCategoryFilterChange}
-          className="border border-gray-300 rounded p-2"
+          className="border border-gray-300 rounded p-2 w-fit border-active"
         >
-          <option value="">All Categories</option>
-          <option value="Support">Support</option>
-          <option value="Sales">Sales</option>
-          <option value="Feedback">Feedback</option>
+          <option value="">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Open">Open</option>
+          <option value="Close">Close</option>
+          <option value="FinalApproval">FinalApproval</option>
         </select>
       </div>
 
@@ -208,11 +213,13 @@ const GetInquiryList = () => {
           <thead className="bg-gray-900 border-b">
             <tr>
               {[
-                "Inquiry Title",
-                "Inquiry Location",
-                "Inquiry Type",
+                "Date of Inquiry",
+                "Project Title",
+                // "Project Send By",
+                "Project Location",
+                "Project Type",
                 "Priority Level",
-                "Inquiry Status",
+                "Project Status",
                 "Actions",
               ].map((header) => (
                 <th
@@ -242,8 +249,14 @@ const GetInquiryList = () => {
                   transition={{ duration: 0.5, delay: item * 0.1 }}
                 >
                   <td className="py-3 px-4 text-gray-700">
+                    {item.createdOn ? format(new Date(item.createdOn), 'dd/MM/yyyy') : 'N/A'}
+                  </td>
+                  <td className="py-3 px-4 text-gray-700">
                     {item.inquiryTitle}
                   </td>
+                  {/* <td className="py-3 px-4 text-gray-700">
+                    {item.senderName}
+                  </td> */}
                   <td className="py-3 px-4 text-gray-700">
                     {item.inquiryLocation}
                   </td>
@@ -274,9 +287,9 @@ const GetInquiryList = () => {
                         <Link
                         to={
                           role === 'partner'
-                            ? `/partner/get-inquiry-list/view-inquiry/${item.inquiryRegistrationId}`
+                            ? `/partner/get-project-list/view-project/${item.inquiryRegistrationId}`
                             : role === 'company'
-                            ? `/company/get-inquiry-list/view-inquiry/${item.inquiryRegistrationId}`
+                            ? `/company/get-project-list/view-project/${item.inquiryRegistrationId}`
                             : `/none` // Fallback URL for any other role
                           }
                           // to={`/partner/inquiry-list/view-inquiry/${item.inquiryRegistrationId}`}

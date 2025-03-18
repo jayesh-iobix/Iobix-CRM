@@ -82,7 +82,7 @@ const AddInquiry = () => {
   });
 
   const role = sessionStorage.getItem("role");
-  console.log(role);
+  // console.log(role);
 
   const [inquiryTypeList, setInquiryTypeList] = useState([]);
   const [inquirySourceList, setInquirySourceList] = useState([]);
@@ -116,13 +116,34 @@ const AddInquiry = () => {
     setFormData(prev => ({ ...prev, [name]: files[0] }));  // Storing the first file
   };  
 
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.inquiryTitle) newErrors.inquiryTitle = "Project Title is required.";
+    if (!formData.inquiryLocation) newErrors.inquiryLocation = "Project Location is required.";
+    if (!formData.inquiryTypeId) newErrors.inquiryTypeId = "Project Type is required.";
+    // if (!formData.inquirySourceId) newErrors.inquirySourceId = "Project Source is required.";
+    if (!formData.customerName) newErrors.customerName = "Customer Name is required.";
+    // if (!formData.customerContactInfo) newErrors.customerContactInfo = "Customer Contact Info is required.";
+    // if (!formData.estimatedValue) newErrors.estimatedValue = "Estimated Value is required.";
+    if (!formData.priorityLevel) newErrors.priorityLevel = "Priority Level is required.";
+    if (!formData.inquiryDescription) newErrors.inquiryDescription = "Project Description is required.";
+    // if (!formData.specialNotes) newErrors.specialNotes = "Special Notes are required.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     // debugger;
-    // Add form validation logic here
-    // Add form validation and submission logic here
+
+    // Validate form before submitting
+    if (!validate()) {
+      setIsSubmitting(false);
+      return; // Prevent form submission if validation fails
+    }
 
     // const formDataToSend = new FormData();
     // Object.keys(formData).forEach((key) => {
@@ -170,17 +191,6 @@ const AddInquiry = () => {
       } else {
         toast.error("You are not authorized to add inquiry!");
       }
-      // console.log(result.data);
-      // const result = await InquiryService.addInquiry(formDataToSend);
-      // console.log(result.data);
-      // debugger;
-      // if (result.status === 1) {
-      //   toast.success("Inquiry added successfully!");
-      //   navigate(-1);
-      // } else {    
-      //   // setErrors({ general: "Something went wrong, please try again later." });
-      // }
-      // navigate('/success');
     } catch (error) {
       console.error("Error submitting form:", error);
       // setErrors({ general: "Something went wrong, please try again later." });
@@ -192,7 +202,7 @@ const AddInquiry = () => {
   return (
     <div>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Add Inquiry</h1>
+        <h1 className="font-semibold text-2xl">Add Project</h1>
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -211,7 +221,7 @@ const AddInquiry = () => {
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
             <InputField
-              label="Inquiry Title"
+              label="Project Title"
               value={formData.inquiryTitle}
               onChange={handleInputChange}
               name="inquiryTitle"
@@ -219,7 +229,7 @@ const AddInquiry = () => {
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
             <InputField
-              label="Inquiry Location"
+              label="Project Location"
               value={formData.inquiryLocation}
               onChange={handleInputChange}
               name="inquiryLocation"
@@ -227,7 +237,7 @@ const AddInquiry = () => {
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
             <SelectField
-              label="Inquiry Type"
+              label="Project Type"
               value={formData.inquiryTypeId}
               onChange={handleInputChange}
               name="inquiryTypeId"
@@ -236,7 +246,7 @@ const AddInquiry = () => {
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
             <SelectField
-              label="Inquiry Source"
+              label="Project Source"
               value={formData.inquirySourceId}
               onChange={handleInputChange}
               name="inquirySourceId"
@@ -293,7 +303,7 @@ const AddInquiry = () => {
             /> */}
             
             <InputField
-              label="Inquiry Document"
+              label="Project Document"
               value={formData.inquiryDocuments}
               onChange={handleFileChange}
               name="inquiryDocuments"
@@ -301,23 +311,8 @@ const AddInquiry = () => {
               error={errors.inquiryDocuments}
               className="md:w-1/3"
             />
-
-            {/* <InputField label="Inquiry Document" value={formData.inquiryDocuments} onChange={handleFileChange} name="inquiryDocuments" type="file" error={errors.inquiryDocuments} className="md:w-1/3" /> */}
-
-            {/* <SelectField
-              label="Inquiry Status"
-              value={formData.inquiryStatus}
-              onChange={handleInputChange}
-              name="inquiryStatus"
-              options={[
-                { id: '1', name: 'Open' },
-                { id: '2', name: 'Close' },
-                { id: '3', name: 'Pending' },
-              ]}
-              error={errors.inquiryStatus}
-            /> */}
             <InputField
-              label="Inquiry Description"
+              label="Project Description"
               value={formData.inquiryDescription}
               onChange={handleInputChange}
               name="inquiryDescription"
@@ -345,7 +340,7 @@ const AddInquiry = () => {
                 }`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Add Inquiry"}
+                {isSubmitting ? "Submitting..." : "Add Project"}
               </motion.button>
             </div>
           </div>

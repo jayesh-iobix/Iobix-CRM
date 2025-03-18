@@ -94,7 +94,7 @@ const CreatePartnerInqry = () => {
     const fetchData = async () => {
       try {
         const partnerResult = await PartnerService.getPartner();
-        console.log(partnerResult.data);
+        // console.log(partnerResult.data);
         setPartnerList(partnerResult.data.filter(item => item.isActive));
 
         const inquiryTypeResult = await InquiryTypeService.getInquiryType();
@@ -123,7 +123,7 @@ const CreatePartnerInqry = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    debugger;
+    // debugger;
     // Add form validation logic here
     // Add form validation and submission logic here
 
@@ -131,8 +131,9 @@ const CreatePartnerInqry = () => {
     Object.keys(formData).forEach((key) => {
       formDataToSend.append(key, formData[key]);
     });
-    console.log(formDataToSend);
-    console.log(formData);
+
+    // console.log(formDataToSend);
+    // console.log(formData);
 
     try {
       const result = await InquiryService.addInquiryByAdmin(formDataToSend);

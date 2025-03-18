@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService"; // Assuming you have a ReportService for downloading reports
 import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
+import { format } from "date-fns";
 
 const InquiryList = () => {
   const [inquiries, setInquiries] = useState([]);
@@ -28,16 +29,16 @@ const InquiryList = () => {
   
 
   //#region  Popup useState
-    const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by taskAllocationId
-    const [activeSubTaskMenu, setActiveSubTaskMenu] = useState(null); // Track the active sub-task menu
-  
-    const [isPopupVisible, setIsPopupVisible] = useState(false);
-    const [forwardPopupVisible, setForwardPopupVisible] = useState(false);
-    const [completionDateIsPopupVisible, setCompletionDateIsPopupVisible] = useState(false);
-    const [taskTransferIsPopupVisible, setTaskTransferIsPopupVisible] = useState(false);
-    const [subTaskTransferIsPopupVisible, setSubTaskTransferIsPopupVisible] = useState(false);
-    const [currentTask, setCurrentTask] = useState(null);
-    //#endregion
+  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by taskAllocationId
+  const [activeSubTaskMenu, setActiveSubTaskMenu] = useState(null); // Track the active sub-task menu
+
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [forwardPopupVisible, setForwardPopupVisible] = useState(false);
+  const [completionDateIsPopupVisible, setCompletionDateIsPopupVisible] = useState(false);
+  const [taskTransferIsPopupVisible, setTaskTransferIsPopupVisible] = useState(false);
+  const [subTaskTransferIsPopupVisible, setSubTaskTransferIsPopupVisible] = useState(false);
+  const [currentTask, setCurrentTask] = useState(null);
+  //#endregion
 
   //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,11 +47,11 @@ const InquiryList = () => {
   //#endregion
 
   const role = sessionStorage.getItem("role");
-  console.log(role);
+  // console.log(role);
 
   const navigateTo = role === 'partner' 
-  ? '/partner/inquiry-list/add-inquiry' 
-  : '/company/inquiry-list/add-inquiry';
+  ? '/partner/project-list/add-project' 
+  : '/company/project-list/add-project';
 
   useEffect(() => {
     const fetchInquiries = async () => {
@@ -58,7 +59,7 @@ const InquiryList = () => {
         if (role === "partner") {
           const result = await InquiryService.getPartnerInquiry();
           setInquiries(result.data);
-          console.log(result.data);
+          // console.log(result.data);
           setFilteredInquiries(result.data);
           setTotalItems(result.data.length);
         } else if (role === "company") {
@@ -153,7 +154,7 @@ const InquiryList = () => {
     }
 
     if (categoryFilter) {
-      filtered = filtered.filter((inquiry) => inquiry.category === categoryFilter);
+      filtered = filtered.filter((inquiry) => inquiry.inquiryStatusName === categoryFilter);
     }
 
     setFilteredInquiries(filtered);
@@ -233,14 +234,17 @@ const InquiryList = () => {
     switch (inquiryStatusName) {
       case "Pending":
         return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
-      case "Approved":
-        return "text-green-500 bg-green-100"; // Green for Approved
-      case "Rejected":
+      case "Open":
+        return "text-blue-500 bg-blue-100"; // Green for Approved
+      case "FinalApproval":
+        return "text-green-500 bg-green-100"; // Blue for FinalApproval
+      case "Close":
         return "text-red-500 bg-red-100"; // Red for Rejected
       default:
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
+
 
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {
@@ -251,7 +255,7 @@ const InquiryList = () => {
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = inquiries.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredInquiries.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -263,7 +267,7 @@ const InquiryList = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Inquiry List</h1>
+        <h1 className="font-semibold text-2xl">Project List</h1>
         <div className="flex">
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
@@ -283,18 +287,19 @@ const InquiryList = () => {
           type="text"
           value={inquiryFilter}
           onChange={handleInquiryFilterChange}
-          placeholder="Search Inquiry"
-          className="p-2 outline-none rounded border border-gray-300"
+          placeholder="Search Project"
+          className="p-2 outline-none rounded border border-gray-300 border-active"
         />
         <select
           value={categoryFilter}
           onChange={handleCategoryFilterChange}
-          className="border border-gray-300 rounded p-2"
-        >
-          <option value="">All Categories</option>
-          <option value="Support">Support</option>
-          <option value="Sales">Sales</option>
-          <option value="Feedback">Feedback</option>
+          className="border border-gray-300 rounded p-2 w-fit border-active"
+          >
+            <option value="">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Open">Open</option>
+            <option value="Close">Close</option>
+            <option value="FinalApproval">FinalApproval</option>
         </select>
       </div>
 
@@ -303,11 +308,13 @@ const InquiryList = () => {
           <thead className="bg-gray-900 border-b">
             <tr>
               {[
-                "Inquiry Title",
-                "Inquiry Location",
-                "Inquiry Type",
+                "Date of Inquiry",
+                "Project Title",
+                // "Project Send By",
+                "Project Location",
+                "Project Type",
                 "Priority Level",
-                "Inquiry Status",
+                "Project Status",
                 "Actions",
               ].map((header) => (
                 <th
@@ -337,8 +344,14 @@ const InquiryList = () => {
                   transition={{ duration: 0.5, delay: item * 0.1 }}
                 >
                   <td className="py-3 px-4 text-gray-700">
+                    {item.createdOn ? format(new Date(item.createdOn), 'dd/MM/yyyy') : 'N/A'}
+                  </td>
+                  <td className="py-3 px-4 text-gray-700">
                     {item.inquiryTitle}
                   </td>
+                  {/* <td className="py-3 px-4 text-gray-700">
+                    {item.senderName}
+                  </td> */}
                   <td className="py-3 px-4 text-gray-700">
                     {item.inquiryLocation}
                   </td>
@@ -356,7 +369,7 @@ const InquiryList = () => {
                     >
                       {item.inquiryStatusName}
                     </span>
-                    </td>
+                  </td>
                   {/* <td className="py-3 px-4 text-gray-700">
                     {item.inquiryStatusName}
                   </td> */}
@@ -367,21 +380,26 @@ const InquiryList = () => {
                         whileTap={{ scale: 0.9 }}
                       >
                         <Link
-                          to={`/partner/inquiry-list/view-inquiry/${item.inquiryRegistrationId}`}
+                          to={`/partner/project-list/view-project/${item.inquiryRegistrationId}`}
                           className="text-green-500 hover:text-green-700"
                         >
                           <FaEye size={24} />
                         </Link>
                       </motion.button>
 
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => handleCancelClick(item.inquiryRegistrationId)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <FaTimes size={22} />
-                      </motion.button>
+                      {item.inquiryStatus !== 3 &&
+                        item.inquiryStatus !== 4 && (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() =>
+                              handleCancelClick(item.inquiryRegistrationId)
+                            }
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <FaTimes size={22} />
+                          </motion.button>
+                        )}
 
                       {/* <motion.button
                         whileHover={{ scale: 1.1 }}

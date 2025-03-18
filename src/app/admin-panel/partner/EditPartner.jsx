@@ -159,7 +159,7 @@ const EditPartner = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Add Partner</h1>
+        <h1 className="font-semibold text-2xl">Edit Partner</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link
             onClick={() => navigate(-1)}
@@ -191,14 +191,14 @@ const EditPartner = () => {
                 label: "Email",
                 name: "email",
                 type: "email",
-                placeholder: "Enter your middle name",
+                placeholder: "Enter your email",
               },
-              {
-                label: "Password",
-                name: "password",
-                type: "password",
-                placeholder: "Enter your password",
-              },
+              // {
+              //   label: "Password",
+              //   name: "password",
+              //   type: "password",
+              //   placeholder: "Enter your password",
+              // },
               {
                 label: "Contact Person Name",
                 name: "contactPersonName",

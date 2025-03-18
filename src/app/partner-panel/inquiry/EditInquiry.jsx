@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { InquiryTypeService } from '../../service/InquiryTypeService';
 import { InquirySourceService } from '../../service/InquirySourceService';
@@ -81,8 +81,10 @@ const EditInquiry = () => {
     inquiryDocuments: '', // Store file here
   });
 
+   const { id } = useParams();
+
   const role = sessionStorage.getItem("role");
-  console.log(role);
+  // console.log(role);
 
   const [inquiryTypeList, setInquiryTypeList] = useState([]);
   const [inquirySourceList, setInquirySourceList] = useState([]);
@@ -94,6 +96,10 @@ const EditInquiry = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const inquiry = await InquiryService.getByIdInquiry(id);
+        setFormData(inquiry.data);
+        console.log(inquiry.data);
+
         const inquiryTypeResult = await InquiryTypeService.getInquiryType();
         setInquiryTypeList(inquiryTypeResult.data.filter(item => item.isActive));
         const inquirySourceResult = await InquirySourceService.getInquirySource();
@@ -136,28 +142,36 @@ const EditInquiry = () => {
 
     try {
       // debugger;
-      if (role === "partner") {
-        const result = await InquiryService.addInquiry(formDataToSend);
+        const result = await InquiryService.updateInquiry(id,formDataToSend);
         if (result.status === 1) {
-          toast.success("Inquiry added successfully!");
+          toast.success("Inquiry updated successfully!");
           navigate(-1);
         } else {
           toast.error("Faild to add inquiry!");
           console.log("Error:", result.data);
         }
-      } else if (role === "company") {
-        const result = await InquiryService.addInquiry(formDataToSend);
-        if (result.status === 1) {
-          toast.success("Inquiry added successfully!");
-          navigate(-1);
-        } 
-        else {
-          toast.error("Faild to add inquiry!");
-          console.log("Error:", result.data);
-        }
-      } else {
-        toast.error("You are not authorized to add inquiry!");
-      }
+      // if (role === "partner") {
+      //   const result = await InquiryService.updateInquiry(formDataToSend);
+      //   if (result.status === 1) {
+      //     toast.success("Inquiry updated successfully!");
+      //     navigate(-1);
+      //   } else {
+      //     toast.error("Faild to add inquiry!");
+      //     console.log("Error:", result.data);
+      //   }
+      // } else if (role === "company") {
+      //   const result = await InquiryService.updateInquiry(formDataToSend);
+      //   if (result.status === 1) {
+      //     toast.success("Inquiry updated successfully!");
+      //     navigate(-1);
+      //   } 
+      //   else {
+      //     toast.error("Faild to add inquiry!");
+      //     console.log("Error:", result.data);
+      //   }
+      // } else {
+      //   toast.error("You are not authorized to add inquiry!");
+      // }
     } catch (error) {
       console.error("Error submitting form:", error);
     }

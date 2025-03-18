@@ -29,4 +29,5 @@ export const environment = {
   inquiry: "https://localhost:7292/api/InquiryRegistration",
   inquiryFollowUp: "https://localhost:7292/api/InquiryFollowUp",
   inquiryApproveReject: "https://localhost:7292/api/InquiryApproveReject",
+  inquiryChat: "https://localhost:7292/api/InquiryChat",
 }

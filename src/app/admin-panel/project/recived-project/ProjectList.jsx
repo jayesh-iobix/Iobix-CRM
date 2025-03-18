@@ -1,21 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit, FaEllipsisV, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { InquiryService } from "../../service/InquiryService"; // Assuming you have an InquiryService for API calls
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { ReportService } from "../../service/ReportService"; // Assuming you have a ReportService for downloading reports
-import { DepartmentService } from "../../service/DepartmentService";
-import { EmployeeService } from "../../service/EmployeeService";
-import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
-import { format } from "date-fns";
+import { format } from 'date-fns';
+import { InquiryService } from "../../../service/InquiryService";
+import { InquiryPermissionService } from "../../../service/InquiryPermissionService";
+import { DepartmentService } from "../../../service/DepartmentService";
+import { EmployeeService } from "../../../service/EmployeeService";
+import { InquiryFollowUpService } from "../../../service/InquiryFollowUpService";
 
-const ClientInquiryList = () => {
+
+const ProjectList = () => {
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
   const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry name or code
   const [categoryFilter, setCategoryFilter] = useState(""); // Filter for inquiry category
+  const [projectFilter, setProjectFilter] = useState(""); // Filter for project creaded by
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId for deletion
   const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup for confirmation
   const [isSubmitting, setIsSubmitting] = useState(false); // Button loading state
@@ -30,6 +32,19 @@ const ClientInquiryList = () => {
   const [inquiryForwardedTo, setInquiryForwardedTo] = useState("");  
   const [inquiryTransferTo, setInquiryTransferTo] = useState("");  
   const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState("");  
+  const [inquiryHideShow, setInquiryHideShow] = useState(false);
+  
+  
+  //#region  Popup useState
+  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by taskAllocationId
+  const [activeSubTaskMenu, setActiveSubTaskMenu] = useState(null); // Track the active sub-task menu
+
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [completionDateIsPopupVisible, setCompletionDateIsPopupVisible] = useState(false);
+  const [taskTransferIsPopupVisible, setTaskTransferIsPopupVisible] = useState(false);
+  const [subTaskTransferIsPopupVisible, setSubTaskTransferIsPopupVisible] = useState(false);
+  const [currentTask, setCurrentTask] = useState(null);
+  //#endregion
   
   //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,26 +54,28 @@ const ClientInquiryList = () => {
   
   const role = sessionStorage.getItem("role");
   // console.log(role);
-
-  // const navigateTo = role === 'partner' 
-  // ? '/partner/inquiry-list/add-inquiry' 
-  // : '/company/inquiry-list/add-inquiry';
+  
+  const fetchInquiriePermission = async (id) => {
+    try {
+      // Fetch Inquiry
+      const inquiryPermission = await InquiryPermissionService.getAccessOfInquiryInAdmin(id);
+      setInquiryHideShow(inquiryPermission.data);
+      
+    } catch (error) {
+      console.error("Error fetching inquiries:", error);
+      setInquiryHideShow(false);
+    }
+  }
 
   const fetchInquiries = async () => {
     try {
-      if(role === "admin") {
-        const result = await InquiryService.getInquiryFromCompany();
-        setInquiries(result.data);
-        setFilteredInquiries(result.data);
-        setTotalItems(result.data.length);
-      } else if( role === "user") {
-        const result = await InquiryService.getInquiryInUserToCompany();
-        setInquiries(result.data);
-        setFilteredInquiries(result.data);
-        setTotalItems(result.data.length);
-      } else {
-        console.log("Error fetching inquiry")
-      }
+
+      // Fetch Inquiry
+      const result = await InquiryService.receivedAllProjects();
+      setInquiries(result.data);
+      console.log(result.data);
+      setFilteredInquiries(result.data);
+      setTotalItems(result.data.length);
 
       const departmentResult = await DepartmentService.getDepartments();
       setDepartments(departmentResult.data); // Set the 'data' array to the state\
@@ -86,7 +103,7 @@ const ClientInquiryList = () => {
   }, [departmentId]);
   
   // Function to get the dropdown position (top or bottom) based on available space
-  const getDropdownPosition = (inquiryRegistrationId , isLastRow) => {
+  const getDropdownPosition = (inquiryRegistrationId, isLastRow) => {
     const button = buttonRefs.current[inquiryRegistrationId ];
     if (!button) return { top: 0, left: 0 };
 
@@ -97,7 +114,7 @@ const ClientInquiryList = () => {
 
     // If it's the last row or space below is too small, open the dropdown above
     if (isLastRow || spaceBelow < 400) {
-      return { top: buttonRect.top - 120, left: buttonRect.left - 120 };
+      return { top: buttonRect.top - 100, left: buttonRect.left - 120 };
     }
 
     // Otherwise, open it below
@@ -110,6 +127,10 @@ const ClientInquiryList = () => {
 
   const handleCategoryFilterChange = (event) => {
     setCategoryFilter(event.target.value);
+  };
+
+  const handleProjectFilterChange = (event) => {
+    setProjectFilter(event.target.value);
   };
   
   useEffect(() => {
@@ -125,10 +146,14 @@ const ClientInquiryList = () => {
       filtered = filtered.filter((inquiry) => inquiry.inquiryStatusName === categoryFilter);
     }
 
+    if (projectFilter) {
+      filtered = filtered.filter((inquiry) => inquiry.generatedBy === projectFilter);
+    }
+
     setFilteredInquiries(filtered);
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
-  }, [inquiryFilter, categoryFilter, inquiries]);
+  }, [inquiryFilter, categoryFilter, projectFilter, inquiries]);
   
   const deleteInquiry = async () => {
     if (!deleteId) return;
@@ -191,12 +216,6 @@ const ClientInquiryList = () => {
     setForwardPopupVisible(true); // Show the popup
   };
 
-  // Function to handle opening the popup and setting the current task
-  const handleTransferInquiry = (inquiry) => {
-    setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
-    setTransferPopupVisible(true); // Show the popup
-  };
-
   //Function to submit the api
   const handleInquirySubmit = async (event) => {
     event.preventDefault();
@@ -207,7 +226,7 @@ const ClientInquiryList = () => {
       inquiryRegistrationId,
       inquiryForwardedTo,
       inquiryFollowUpDescription,
-      inquiryTransferTo
+      inquiryTransferTo : inquiryTransferTo === "" ? null : inquiryTransferTo,
       // taskTransferTo,
     };
 
@@ -247,48 +266,54 @@ const ClientInquiryList = () => {
         console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
       }
     }
-    
-        // Close the popup after submission
-        // setIsPopupVisible(false);
+  
+      // Close the popup after submission
+      // setIsPopupVisible(false);
+  };
+   
+  // Function to handle opening the popup and setting the current task
+  const handleTransferInquiry = (inquiry) => {
+    setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
+    setTransferPopupVisible(true); // Show the popup
   };
 
-  // const handleForwardSubmit = async (event) => {
-  //     event.preventDefault();
-  
-  //     // debugger;
-  
-  //     const inquiryForwardData = {
-  //       inquiryRegistrationId,
-  //       inquiryForwardedTo,
-  //       inquiryFollowUpDescription
-  //       // taskTransferTo,
-  //     };
-  //     //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-  
-  //     try {
-  //       // Call the API to add the task note
-  //       const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryForwardData);
-  //       if (response.status === 1) {
-  //         toast.success("Inquiry Forwarded Successfully."); // Toast on success
-  //         // toast.success(response.message); // Toast on success
-  //         fetchInquiries();
-  //       }
-  //       console.log("task transfer added successfully:", response);
-  
-  //       // Optionally, you can update the task state or show a success message here
-  //       setForwardPopupVisible(false); // Close the popup
-  //     } catch (error) {
-  //       console.error(
-  //         "Error adding task note:",
-  //         error.response?.data || error.message
-  //       );
-  //       if (error.response?.data?.errors) {
-  //         console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //       }
+  // const handleTransferSubmit = async (event) => {
+  //   event.preventDefault();
+
+  //   // debugger;
+
+  //   const inquiryTransferData = {
+  //     inquiryRegistrationId,
+  //     inquiryForwardedTo,
+  //     inquiryFollowUpDescription
+  //     // taskTransferTo,
+  //   };
+  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
+
+  //   try {
+  //     // Call the API to add the task note
+  //     const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryTransferData);
+  //     if (response.status === 1) {
+  //       toast.success("Inquiry Forwarded Successfully."); // Toast on success
+  //       // toast.success(response.message); // Toast on success
+  //       fetchInquiries();
   //     }
-    
-  //       // Close the popup after submission
-  //       // setIsPopupVisible(false);
+  //     console.log("task transfer added successfully:", response);
+
+  //     // Optionally, you can update the task state or show a success message here
+  //     setForwardPopupVisible(false); // Close the popup
+  //   } catch (error) {
+  //     console.error(
+  //       "Error adding task note:",
+  //       error.response?.data || error.message
+  //     );
+  //     if (error.response?.data?.errors) {
+  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
+  //     }
+  //   }
+  
+  //     // Close the popup after submission
+  //     // setIsPopupVisible(false);
   // };
 
   //#region Pagination logic
@@ -306,11 +331,11 @@ const ClientInquiryList = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Client Company Project List</h1>
+        <h1 className="font-semibold text-2xl">Partner Project List</h1>
         <div className="flex">
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
-              to="/clientinquiry-list/add-clientinquiry"
+              to="/partnerinquiry-list/add-partnerinquiry"
               // to={navigateTo}
               className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
             >
@@ -326,9 +351,10 @@ const ClientInquiryList = () => {
           type="text"
           value={inquiryFilter}
           onChange={handleInquiryFilterChange}
-          placeholder="Search Inquiry"
+          placeholder="Search Project"
           className="p-2 outline-none rounded border border-gray-300 border-active"
         />
+
         <select
           value={categoryFilter}
           onChange={handleCategoryFilterChange}
@@ -340,6 +366,16 @@ const ClientInquiryList = () => {
             <option value="Close">Close</option>
             <option value="FinalApproval">FinalApproval</option>
         </select>
+
+        <select
+          value={projectFilter}
+          onChange={handleProjectFilterChange}
+          className="border border-gray-300 rounded p-2 w-fit border-active"
+          >
+            <option value="">All Project</option>
+            <option value="Partner">Partner</option>
+            <option value="Client">Client Company</option>
+        </select>
       </div>
 
       <div className="grid overflow-x-auto">
@@ -347,14 +383,14 @@ const ClientInquiryList = () => {
           <thead className="bg-gray-900 border-b">
             <tr>
               {[
-               "Date of Inquiry",
-               "Project Title",
-               "Project Send By",
-               "Project Location",
-               "Project Type",
-               "Priority Level",
-               "Project Status",
-               "Actions",
+                "Date of Inquiry",
+                "Project Title",
+                "Project Send By",
+                "Project Location",
+                "Project Type",
+                "Priority Level",
+                "Project Status",
+                "Actions",
               ].map((header) => (
                 <th
                   key={header}
@@ -382,6 +418,12 @@ const ClientInquiryList = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: item * 0.1 }}
                 >
+
+                  {/* <td className="py-3 px-4 text-gray-700">
+                    {item.createdOn
+                      ? format(new Date(item.createdOn), 'MM/dd/yyyy HH:mm:ss') // Example format
+                      : 'N/A'}
+                  </td> */}
                   <td className="py-3 px-4 text-gray-700">
                     {item.createdOn ? format(new Date(item.createdOn), 'dd/MM/yyyy') : 'N/A'}
                   </td>
@@ -419,7 +461,7 @@ const ClientInquiryList = () => {
                         whileTap={{ scale: 0.9 }}
                       >
                         <Link
-                          to={`/clientinquiry-list/view-clientinquiry/${item.inquiryRegistrationId}`}
+                          to={`/view-project/${item.inquiryRegistrationId}`}
                           className="text-green-500 hover:text-green-700"
                         >
                           <FaEye size={24} />
@@ -441,12 +483,13 @@ const ClientInquiryList = () => {
                           type="button"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
+                          onClick={() => {
+                            fetchInquiriePermission(item.inquiryRegistrationId);
+                            toggleDropdown(item.inquiryRegistrationId);
+                          }}
                           className="text-gray-500 hover:text-gray-700"
-                          onClick={() =>
-                            toggleDropdown(item.inquiryRegistrationId)
-                          }
                           ref={(el) =>
-                            (buttonRefs.current[item.inquiryRegistrationId] = el)
+                           (buttonRefs.current[item.inquiryRegistrationId] = el)
                         }
                         >
                           <FaEllipsisV size={24} />
@@ -468,10 +511,31 @@ const ClientInquiryList = () => {
                                 onClick={() => handleForwardInquiry(item)}
                                 className="block px-4 py-2 hover:bg-gray-100 hover:no-underline dark:hover:bg-gray-600 dark:hover:text-white"
                               >
-                                Forward Inquiry
+                                Forward Project
+                              </span>
+                            </li>
+
+                            {inquiryHideShow === true && (
+                              <>
+                              <li>
+                              <span
+                                onClick={() => handleTransferInquiry(item)}
+                                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                              >
+                                Transfer Project
                               </span>
                             </li>
                             <li>
+                              <span
+                                // onClick={() => handleTaskTransfer(item)}
+                                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                              >
+                                Take Project
+                              </span>
+                            </li>
+                              </>
+                            )}
+                            {/* <li>
                               <span
                                 onClick={() => handleTransferInquiry(item)}
                                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
@@ -486,13 +550,13 @@ const ClientInquiryList = () => {
                               >
                                 Take Inquiry
                               </span>
-                            </li>
+                            </li> */}
                           </ul>
                           {forwardPopupVisible && (
                             <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
                               <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
                                 <h2 className="text-xl font-semibold mb-4">
-                                  Forward Inquiry
+                                  Forward Project
                                 </h2>
                                 <form>
                                   <div className="mb-4">
@@ -589,7 +653,7 @@ const ClientInquiryList = () => {
                             <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
                               <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
                                 <h2 className="text-xl font-semibold mb-4">
-                                  Transfer Inquiry
+                                  Transfer Project
                                 </h2>
                                 <form>
                                   <div className="mb-4">
@@ -702,7 +766,7 @@ const ClientInquiryList = () => {
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-              Are you sure you want to delete this inquiry?
+              Are you sure you want to delete this project?
             </h3>
             <div className="flex justify-center gap-4">
               <motion.button
@@ -835,4 +899,4 @@ const ClientInquiryList = () => {
   );
 };
 
-export default ClientInquiryList;
+export default ProjectList;

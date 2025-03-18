@@ -84,6 +84,28 @@ export const InquiryPermissionService = {
     }
   },
 
+  // Method to get Access of Client Dropdown for Inquiry in Admin and Employee
+  accessOfGetClientInAdminEmp: async (inquiryRegistrationId ) => {
+    try {
+      const response = await httpClient.get(`${api}/AccessOfGetClientInAdminEmp/${inquiryRegistrationId}`); 
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch AccessOfGetClientInAdminEmp:', error);
+      throw error;
+    }
+  },
+
+  // Method to get Access of Partner Dropdown for Inquiry in Admin and Employee
+  accessOfGetPartnerInAdminEmp: async (inquiryRegistrationId ) => {
+    try {
+      const response = await httpClient.get(`${api}/AccessOfGetPartnerInAdminEmp/${inquiryRegistrationId}`); 
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch AccessOfGetPartnerInAdminEmp:', error);
+      throw error;
+    }
+  },
+
 
  
 };

@@ -6,15 +6,13 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs"; // For fingerprinting
 import { UAParser } from "ua-parser-js";
 import { messaging } from "../../../firebase/firebase";
 import { getToken } from "firebase/messaging";
-import { EmployeeService } from "../../service/EmployeeService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
-import { EmployeeLeaveTypeService } from "../../service/EmployeeLeaveTypeService";
 import { InquirySourceService } from "../../service/InquirySourceService";
-import { ClientCompanyService } from "../../service/ClientCompanyService";
+import { PartnerService } from "../../service/PartnerService";
 
 
-const AddClientCompany = () => {
+const AddVendor = () => {
   const [formData, setFormData] = useState({
     companyName: "",
     companyRegistrationNumber : "",
@@ -149,13 +147,12 @@ const AddClientCompany = () => {
       setIsSubmitting(true);
       try {
         //debugger;
-        // Call the API to add the employee
+        // Call the API to add the partner
         const companyData = {
             ...formData,
             deviceInfoVM,
-            // role: "IsClient",
         }
-        const response = await ClientCompanyService.addClientCompany(companyData); // Call the service
+        const response = await PartnerService.addPartner(companyData); // Call the service
         if (response.status === 1) {
           toast.success("Registration successfully");
           navigate(-1);
@@ -185,8 +182,8 @@ const AddClientCompany = () => {
         });
         setErrors({});
       } catch (error) {
-        console.error("Error adding client company:", error);
-        alert("Failed to add client company. Please try again.");
+        console.error("Error adding partner:", error);
+        alert("Failed to add client partner. Please try again.");
       } finally {
         setIsSubmitting(false);
       }
@@ -201,7 +198,7 @@ const AddClientCompany = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Add Client Company</h1>
+        <h1 className="font-semibold text-2xl">Add Vendor</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link
             onClick={() => navigate(-1)}
@@ -283,12 +280,6 @@ const AddClientCompany = () => {
                 type: "url",
                 placeholder: "Enter Contact Person Linkedin",
               },
-            //   {
-            //     label: "Employee Code",
-            //     name: "employeecode",
-            //     type: "text",
-            //     placeholder: "Employee code",
-            //   },
             ].map(({ label, name, type, placeholder }) => (
               <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3" key={name}>
                 <label className="mb-2 block text-base font-medium">
@@ -466,7 +457,7 @@ const AddClientCompany = () => {
                 }`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Add Client Company"}
+                {isSubmitting ? "Submitting..." : "Add Partner"}
               </motion.button>
             </div>
           </div>
@@ -476,6 +467,6 @@ const AddClientCompany = () => {
   );
 };
 
-export default AddClientCompany;
+export default AddVendor;
 
 

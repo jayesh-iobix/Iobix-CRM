@@ -110,6 +110,13 @@ import ForwardPartnerInqryList from './app/user-panel/inquiry/ForwardPartnerInqr
 import ForwardClientInqryList from './app/user-panel/inquiry/ForwardClientInqryList';
 import UserViewInquiry from './app/user-panel/inquiry/UserViewInquiry';
 import GetViewInquiry from './app/partner-panel/inquiry/GetViewInquiry';
+import ChatInquiry from './app/admin-panel/inquiry/ChatInquiry';
+import EditInquiry from './app/partner-panel/inquiry/EditInquiry';
+import AddInquiryTask from './app/admin-panel/inquiry-task/AddInquiryTask';
+import ProjectList from './app/admin-panel/project/recived-project/ProjectList';
+import CreatedProjectList from './app/admin-panel/project/created-project/CreatedProjectList';
+import ViewPartnerProject from './app/partner-panel/inquiry/ViewProject';
+import ViewProject from './app/admin-panel/project/ViewProject';
 
 
 function App() {
@@ -146,8 +153,8 @@ function App() {
         //   setIsAuthenticated(true); // User is authenticated
         //   setUserRole('BDadmin'); // Set the role to employee
         } else if (decodedToken?.Employee === 'IsEmployee') {
-          setIsAuthenticated(true); // User is authenticated
           setUserRole('user'); // Set the role to employee
+          setIsAuthenticated(true); // User is authenticated
         } else if (decodedToken?.Partner === 'IsPartner') {
           setIsAuthenticated(true); // User is authenticated
           setUserRole('partner'); // Set the role to partner
@@ -179,7 +186,6 @@ function App() {
     </div>
     );
   }
-
 
   return (
 
@@ -246,7 +252,7 @@ function App() {
       <Route path="task/tasknote-list/:id" element={<TaskNoteList/>} />
       <Route path="partnerinquiry-list" element={<PartnerInquiryList />} />
       <Route path="partnerinquiry-list/add-partnerinquiry" element={<AddPartnerInquiry />} />
-      <Route path="partnerinquiry-list/view-partnerinquiry/:id" element={<PartnerViewInquiry/>} />
+      <Route path="partnerinquiry-list/view-partnerinquiry/:id" element={<PartnerViewInquiry hideTab={true}/>} />
       <Route path="clientinquiry-list" element={<ClientInquiryList />} />
       <Route path="clientinquiry-list/add-clientinquiry" element={<AddClientInquiry />} />
       <Route path="clientinquiry-list/view-clientinquiry/:id" element={<ClientViewInquiry/>} />
@@ -266,6 +272,11 @@ function App() {
       <Route path="clientcompany-list/add-clientcompany" element={<AddClientCompany />} />
       <Route path="clientcompany-list/edit-clientcompany/:id" element={<EditClientCompany />} />
       <Route path="clientcompany-list/view-clientcompany/:id" element={<ViewClientCompany />} />
+      <Route path="inquiry-chat" element={<ChatInquiry />} />
+      <Route path="partnerinquiry-list/create-inquiry-task/:id" element={<AddInquiryTask />} />
+      <Route path="received-project-list" element={<ProjectList />} />
+      <Route path="created-project-list" element={<CreatedProjectList />} />
+      <Route path="view-project/:id" element={<ViewProject />} />
       {/* <Route path="/profile" element={<Profile/>} /> */}
     </Route>
 
@@ -311,11 +322,11 @@ function App() {
     <Route path="/company/icp-list" element={<InquiryModuleList/>} />
     <Route path="/company/add-icp" element={<InquiryModule/>} />
     <Route path="/company/view-icp/:id" element={<ViewIquiryModule/>} />
-    <Route path="/company/inquiry-list" element={<InquiryList/>} />
-    <Route path="/company/inquiry-list/add-inquiry" element={<AddInquiry/>} />
-    <Route path="/company/inquiry-list/view-inquiry/:id" element={<ViewInquiry/>} />
-    <Route path="/company/get-inquiry-list" element={<GetInquiryList/>} />
-    <Route path="/company/get-inquiry-list/view-inquiry/:id" element={<GetViewInquiry/>} />
+    <Route path="/company/project-list" element={<InquiryList/>} />
+    <Route path="/company/project-list/add-project" element={<AddInquiry/>} />
+    <Route path="/company/project-list/view-project/:id" element={<ViewInquiry/>} />
+    <Route path="/company/get-project-list" element={<GetInquiryList/>} />
+    <Route path="/company/get-project-list/view-project/:id" element={<GetViewInquiry/>} />
     {/* <Route path="/company/inquiry-list" element={<InquiryListInCompany />} />
     <Route path="/company/inquiry-list/add-inquiry" element={<AddInquiryInCompany />} /> */}
     {/* <Route path="/company/task-list" element={<UserTaskList/>} /> */}
@@ -324,11 +335,13 @@ function App() {
     {/* Partner dashboard route */}
     <Route path="/partner" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
     <Route index element={<PartnerDashboard />} />
-    <Route path="/partner/inquiry-list" element={<InquiryList/>} />
-    <Route path="/partner/get-inquiry-list" element={<GetInquiryList/>} />
-    <Route path="/partner/get-inquiry-list/view-inquiry/:id" element={<GetViewInquiry/>} />
-    <Route path="/partner/inquiry-list/add-inquiry" element={<AddInquiry/>} />
-    <Route path="/partner/inquiry-list/view-inquiry/:id" element={<ViewInquiry/>} />
+    <Route path="/partner/project-list" element={<InquiryList/>} />
+    <Route path="/partner/get-project-list" element={<GetInquiryList/>} />
+    <Route path="/partner/get-project-list/view-project/:id" element={<GetViewInquiry/>} />
+    <Route path="/partner/project-list/add-project" element={<AddInquiry/>} />
+    {/* <Route path="/partner/inquiry-list/view-inquiry/:id" element={<ViewInquiry/>} /> */}
+    <Route path="/partner/project-list/view-project/:id" element={<ViewPartnerProject/>} />
+    <Route path="/partner/project-list/edit-project/:id" element={<EditInquiry/>} />
     {/* <Route path="/company/task-list" element={<UserTaskList/>} /> */}
     </Route>
   
@@ -338,6 +351,14 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+
+
+
 
 
 

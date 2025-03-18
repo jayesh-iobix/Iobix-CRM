@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft, FaEdit } from "react-icons/fa";
+import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryService } from "../../service/InquiryService";
@@ -11,8 +11,11 @@ import { InquiryPermissionService } from "../../service/InquiryPermissionService
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import ApprovedPartnerInqry from "../approved-inquiry/ApprovedPartnerInqry";
 import ApprovedClientInqry from "../approved-inquiry/ApprovedClientInqry";
+import InquiryChat from "./InquiryChat";
+import { PartnerService } from "../../service/PartnerService";
+import ChatInquiry from "./ChatInquiry";
 
-const ViewInquiry = () => {
+const ViewInquiry = ({hideTab}) => {
 
   const [formData, setFormData] = useState({
     inquiryTitle: '',
@@ -32,6 +35,8 @@ const ViewInquiry = () => {
     specialNotes: '',  // Replaced reasonForClosure with specialNotes
     inquiryDocuments: '', // Store file here
     reasonForClosure: '', 
+    senderName:'',
+    senderId:'',
   });
 
   // const [inquiryHideShow, setInquiryHideShow] = useState(false);
@@ -40,12 +45,20 @@ const ViewInquiry = () => {
   const [forwardPopupVisible, setForwardPopupVisible] = useState(false);
   const [transferPopupVisible, setTransferPopupVisible] = useState(false);
   const [selectedOption, setSelectedOption] = useState('employee')
+  const [clientDropdownHideShow, setClientDropdownHideShow] = useState(false);
+  const [partnerDropdownHideShow, setPartnerDropdownHideShow] = useState(false);
+  const [inquiryForwadedeData, setInquiryForwadedeData] = useState(""); 
+  const [inquiryTransferdData, setInquiryTransferdData] = useState("");
+  
+  // const [name, setName] = useState("")
 
   const [departments, setDepartments] = useState([]);
   const [clients, setClients] = useState([]);
+  const [partners, setPartners] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
-  const [clientId, setClientId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [partnerId, setPartnerId] = useState("");
   const [inquiryForwardedTo, setInquiryForwardedTo] = useState("");  
   const [inquiryTransferTo, setInquiryTransferTo] = useState("");  
   const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState(""); 
@@ -63,12 +76,40 @@ const ViewInquiry = () => {
 
       // Fetch Inquiry
       const inquiry = await InquiryService.getByIdInquiry(id);
+      console.log(inquiry.data);
       setFormData(inquiry.data);
+      // setName(inquiry.data.senderName);
+      // console.log(name)
+      // console.log(inquiry.data);
 
       // Fetch Client Company
       const clientCompany = await ClientCompanyService.getClientCompany();
       setClients(clientCompany.data);
-      console.log(clientCompany.data);
+      // console.log(clientCompany.data);
+
+      // Fetch Partner 
+      const partnerCompany = await PartnerService.getPartner();
+      setPartners(partnerCompany.data);
+      // console.log(partnerCompany.data);
+
+      // Fetch Inquiry Permission for Client Dropdown
+      const inquiryPermissionforClient = await InquiryPermissionService.accessOfGetClientInAdminEmp(id);
+      setClientDropdownHideShow(inquiryPermissionforClient.data);
+     
+      // Fetch Inquiry Permission Partner Dropdown
+      const inquiryPermissionforPartner = await InquiryPermissionService.accessOfGetPartnerInAdminEmp(id);
+      setPartnerDropdownHideShow(inquiryPermissionforPartner.data);
+
+      // Fetch Inquiry FollowUp Details
+      const inquiryResult = await InquiryFollowUpService.getInquiryFollowUp(id);
+
+      // Map over the array and extract 'inquiryTransferDetails' from each object
+      const transferDetails = inquiryResult.data.map(item => item.inquiryTransferDetails);
+      const forwardDetails = inquiryResult.data.map(item => item.inquiryForwardedDetais);
+      setInquiryForwadedeData(forwardDetails);
+      setInquiryTransferdData(transferDetails);
+      // console.log(inquiryResult.data);
+      // console.log(forwardDetails);
 
       // const inquiryToggle = await InquiryFollowUpService.hideInquirybutton(id);
       // debugger;
@@ -145,14 +186,24 @@ const ViewInquiry = () => {
   const handleInquirySubmit = async (event) => {
     event.preventDefault();
 
+    // Validation for Forward Inquiry Popup
+    if ( !inquiryFollowUpDescription || inquiryFollowUpDescription.trim() === "") {
+        toast.error("Please select an employee/client/partner to forward the inquiry and provide a follow-up description.");
+        return; // Prevent form submission
+    }
+
     debugger;
 
     const inquiryData = {
       inquiryRegistrationId: id,
       inquiryForwardedTo: 
-      (inquiryForwardedTo === "" && clientId !== "") ? clientId : 
-      (clientId === "" && inquiryForwardedTo !== "") ? inquiryForwardedTo : 
-      (inquiryForwardedTo === "" && clientId === "" ? null : inquiryForwardedTo),
+      (inquiryForwardedTo === "" && partnerId === "" && clientId !== "") ? clientId : 
+      (inquiryForwardedTo === "" && clientId === "" && partnerId !== "") ? partnerId : 
+      (clientId === "" && partnerId === "" && inquiryForwardedTo !== "") ? inquiryForwardedTo : 
+      (inquiryForwardedTo === "" && clientId === "" && partnerId === "" ? null : inquiryForwardedTo),
+      // (inquiryForwardedTo === "" && clientId !== "") ? clientId : 
+      // (clientId === "" && inquiryForwardedTo !== "") ? inquiryForwardedTo : 
+      // (inquiryForwardedTo === "" && clientId === "" ? null : inquiryForwardedTo),
       // inquiryForwardedTo: inquiryForwardedTo === "" ? null : inquiryForwardedTo,
       inquiryFollowUpDescription,
       inquiryTransferTo: null
@@ -165,6 +216,7 @@ const ViewInquiry = () => {
     try {
       // Call the API to add the task note
       const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryData);
+      console.log(response.status);
       if (response.status === 1) {
          toast.success("Inquiry Forwarded Successfully."); // Toast on success
         // if(inquiryForwardedTo === null || "") {
@@ -176,12 +228,20 @@ const ViewInquiry = () => {
         setInquiryForwardedTo("");
         setInquiryTransferTo("");
         setDepartmentId("")
-      } 
+        setClientId("")
+        setPartnerId("")
+      } else if (response.status === 2) {
+          toast.error("Inquiry is already Transfered to you.")
+      } else if (response.status === 3) {
+          toast.error("Inquiry is already Forwarded to this person.")
+      }    
       else {
         setInquiryFollowUpDescription("");
         setInquiryForwardedTo("");
         setInquiryTransferTo("");
         setDepartmentId("")
+        setClientId("")
+        setPartnerId("")
       }
       // console.log("task transfer added successfully:", response);
 
@@ -206,7 +266,7 @@ const ViewInquiry = () => {
   const handleTransferInquirySubmit = async (event) => {
     event.preventDefault();
 
-    debugger;
+    // debugger;
 
     const inquiryData = {
       inquiryRegistrationId: id,
@@ -229,6 +289,10 @@ const ViewInquiry = () => {
         setInquiryForwardedTo("");
         setInquiryTransferTo("");
         setDepartmentId("")
+      } else if (response.status === 2) {
+        toast.error("Inquiry is already Transfered to this person.")
+      } else if (response.status === 3) {
+          toast.error("Inquiry is already Forwarded to this person.")
       } 
       else {
         setInquiryFollowUpDescription("");
@@ -254,6 +318,121 @@ const ViewInquiry = () => {
       // Close the popup after submission
       // setIsPopupVisible(false);
   };
+
+
+  // //Function to forward submit the api
+  // const handleInquirySubmit = async (event) => {
+  //   event.preventDefault();
+
+  //   debugger;
+
+  //   const inquiryData = {
+  //     inquiryRegistrationId: id,
+  //     inquiryForwardedTo: 
+  //     (inquiryForwardedTo === "" && clientId !== "") ? clientId : 
+  //     (clientId === "" && inquiryForwardedTo !== "") ? inquiryForwardedTo : 
+  //     (inquiryForwardedTo === "" && clientId === "" ? null : inquiryForwardedTo),
+  //     // inquiryForwardedTo: inquiryForwardedTo === "" ? null : inquiryForwardedTo,
+  //     inquiryFollowUpDescription,
+  //     inquiryTransferTo: null
+  //     // inquiryTransferTo: inquiryTransferTo === "" ? null : inquiryTransferTo,
+  //     // taskTransferTo,
+  //   };
+
+  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
+
+  //   try {
+  //     // Call the API to add the task note
+  //     const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryData);
+  //     if (response.status === 1) {
+  //        toast.success("Inquiry Forwarded Successfully."); // Toast on success
+  //       // if(inquiryForwardedTo === null || "") {
+  //       //   toast.success("Inquiry Transfer Successfully."); // Toast on success
+  //       // }
+  //       // toast.success(response.message); // Toast on success
+  //       // fetchInquiries();
+  //       setInquiryFollowUpDescription("");
+  //       setInquiryForwardedTo("");
+  //       setInquiryTransferTo("");
+  //       setDepartmentId("")
+  //     } 
+  //     else {
+  //       setInquiryFollowUpDescription("");
+  //       setInquiryForwardedTo("");
+  //       setInquiryTransferTo("");
+  //       setDepartmentId("")
+  //     }
+  //     // console.log("task transfer added successfully:", response);
+
+  //     // Optionally, you can update the task state or show a success message here
+  //     setForwardPopupVisible(false); // Close the popup
+  //     setTransferPopupVisible(false); // Close the popup
+  //   } catch (error) {
+  //     console.error(
+  //       "Error forwarding a inquiry:",
+  //       error.response?.data || error.message
+  //     );
+  //     if (error.response?.data?.errors) {
+  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
+  //     }
+  //   }
+  
+  //     // Close the popup after submission
+  //     // setIsPopupVisible(false);
+  // };
+
+  // //Function to transfer submit the api
+  // const handleTransferInquirySubmit = async (event) => {
+  //   event.preventDefault();
+
+  //   debugger;
+
+  //   const inquiryData = {
+  //     inquiryRegistrationId: id,
+  //     inquiryForwardedTo:null,
+  //     // inquiryForwardedTo: inquiryForwardedTo === "" ? null : inquiryForwardedTo,
+  //     inquiryFollowUpDescription,
+  //     inquiryTransferTo,
+  //   };
+
+  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
+
+  //   try {
+  //     // Call the API to add the task note
+  //     const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryData);
+  //     if (response.status === 1) {
+  //         toast.success("Inquiry Transfer Successfully."); // Toast on success
+  //       // toast.success(response.message); // Toast on success
+  //       // fetchInquiries();
+  //       setInquiryFollowUpDescription("");
+  //       setInquiryForwardedTo("");
+  //       setInquiryTransferTo("");
+  //       setDepartmentId("")
+  //     } 
+  //     else {
+  //       setInquiryFollowUpDescription("");
+  //       setInquiryForwardedTo("");
+  //       setInquiryTransferTo("");
+  //       setDepartmentId("")
+  //     }
+  //     // console.log("task transfer added successfully:", response);
+
+  //     // Optionally, you can update the task state or show a success message here
+  //     setForwardPopupVisible(false); // Close the popup
+  //     setTransferPopupVisible(false); // Close the popup
+  //   } catch (error) {
+  //     console.error(
+  //       "Error transfering a inquiry:",
+  //       error.response?.data || error.message
+  //     );
+  //     if (error.response?.data?.errors) {
+  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
+  //     }
+  //   }
+  
+  //     // Close the popup after submission
+  //     // setIsPopupVisible(false);
+  // };
 
   // const handleForwardSubmit = async (event) => {
   //   event.preventDefault();
@@ -301,15 +480,29 @@ const ViewInquiry = () => {
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Inquiry</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
+
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+        <Link
+          to={`/partnerinquiry-list/create-inquiry-task/${id}`}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+        >
+          Add Inquiry Task
+          <FaPlus size={16} />
+        </Link>
+        </motion.button>
+
           {/* Forward Inquiry Button placed above the edit and back buttons */}
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <button
               onClick={() => setForwardPopupVisible(true)} // Show the popup
               className="bg-yellow-500 hover:bg-yellow-600 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
             >
               Forward Inquiry
             </button>
-          </motion.button>
+          </motion.button> */}
 
           {inquiryHideShow === true && (
             <>
@@ -321,11 +514,11 @@ const ViewInquiry = () => {
                 onClick={() => setTransferPopupVisible(true)} // Show the popup
                 className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
               >
-                Transfer Inquiry
+                Transfer Project
               </motion.button>
 
               {/* Take Inquiry Button placed above the edit and back buttons */}
-              <motion.button
+              {/* <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 type="button"
@@ -333,21 +526,21 @@ const ViewInquiry = () => {
                 className="bg-green-600 hover:bg-green-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
               >
                 Take Inquiry
-              </motion.button>
+              </motion.button> */}
 
               {/* Edit Inquiry */}
-              <motion.button
+              {/* <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <Link
-                  to={`/inquiry-list/edit-inquiry/${id}`}
+                  to={`/partner/inquiry-list/edit-inquiry/${id}`}
                   className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
                 >
                   Edit Inquiry
                   <FaEdit size={16} />
                 </Link>
-              </motion.button>
+              </motion.button> */}
             </>
           )}
 
@@ -372,7 +565,6 @@ const ViewInquiry = () => {
             <form>
               {/* Radio buttons for selecting Client or Employee */}
               <div className="mb-4 flex gap-4">
-                
                 <label className="flex items-center">
                   <input
                     type="radio"
@@ -385,20 +577,38 @@ const ViewInquiry = () => {
                   Select Employee
                 </label>
 
-                {inquiryHideShow === true && (
+                {inquiryHideShow === true && clientDropdownHideShow == true && (
                   <>
-                  <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="selectionOption"
-                    value="client"
-                    checked={selectedOption === "client"}
-                    onChange={() => setSelectedOption("client")}
-                    className="mr-2"
-                  />
-                  Select Client
-                </label>
-                  </>)}
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="selectionOption"
+                        value="client"
+                        checked={selectedOption === "client"}
+                        onChange={() => setSelectedOption("client")}
+                        className="mr-2"
+                      />
+                      Select Client
+                    </label>
+                  </>
+                )}
+
+                {inquiryHideShow === true &&
+                  partnerDropdownHideShow == true && (
+                    <>
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="selectionOption"
+                          value="partner"
+                          checked={selectedOption === "partner"}
+                          onChange={() => setSelectedOption("partner")}
+                          className="mr-2"
+                        />
+                        Select Partner
+                      </label>
+                    </>
+                  )}
               </div>
 
               {/* Client selection (visible when "Client" is selected) */}
@@ -415,8 +625,51 @@ const ViewInquiry = () => {
                     >
                       <option value="">--Select Client--</option>
                       {clients.map((client) => (
-                        <option key={client.clientRegistrationId} value={client.clientRegistrationId}>
+                        <option
+                          key={client.clientRegistrationId}
+                          value={client.clientRegistrationId}
+                        >
                           {client.companyName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Description Field */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      FollowUp Description
+                    </label>
+                    <textarea
+                      value={inquiryFollowUpDescription}
+                      onChange={(e) =>
+                        setInquiryFollowUpDescription(e.target.value)
+                      }
+                      className="w-full mt-1 px-3 py-2 rounded-md border border-active"
+                      rows="4"
+                    />
+                  </div>
+                </>
+              )}
+
+              {selectedOption === "partner" && (
+                <>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Select Client
+                    </label>
+                    <select
+                      value={partnerId}
+                      onChange={(e) => setPartnerId(e.target.value)}
+                      className="w-full mt-1 px-3 py-2 rounded-md border border-active"
+                    >
+                      <option value="">--Select Partner--</option>
+                      {partners.map((partner) => (
+                        <option
+                          key={partner.partnerRegistrationId}
+                          value={partner.partnerRegistrationId}
+                        >
+                          {partner.companyName}
                         </option>
                       ))}
                     </select>
@@ -617,10 +870,11 @@ const ViewInquiry = () => {
                 aria-orientation="horizontal"
               >
                 {[
-                  "Partner Details",
-                  "Approved Inquiry By Partner",
-                  "Approved Inquiry By Client",
-                  //   "Leave List",
+                  "Project Details",
+                  "Approved By Client",
+                  "Approved By Partner",
+                  "Chat",
+                  // !hideTab && "Approved By Partner",
                 ].map((tab, index) => (
                   <button
                     key={index}
@@ -630,6 +884,9 @@ const ViewInquiry = () => {
                         ? "bg-blue-600 text-white font-bold border-b-2 border-blue-600 dark:bg-blue-700 dark:border-blue-800 dark:text-white"
                         : "bg-blue-100 text-blue-600 border-transparent hover:bg-blue-200 dark:bg-neutral-700 dark:text-blue-300 dark:hover:bg-neutral-600"
                     } -mb-px py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium text-center border rounded-t-lg`}
+                    // } -mb-px py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium text-center border rounded-t-lg ${
+                    //   hideTab && index === 2 ? 'hidden' : '' // Add hidden class when it's "Approved By Client"
+                    // }`}
                     onClick={() => handleTabClick(index + 1)}
                     role="tab"
                     aria-selected={activeTab === index + 1}
@@ -652,22 +909,22 @@ const ViewInquiry = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[
                       {
-                        label: "Inquiry Title",
+                        label: "Project Title",
                         name: "inquiryTitle",
                         value: formData.inquiryTitle,
                       },
                       {
-                        label: "Inquiry Location",
+                        label: "Project Location",
                         name: "inquiryLocation",
                         value: formData.inquiryLocation,
                       },
                       {
-                        label: "Inquiry Type",
+                        label: "Project Type",
                         name: "inquiryTypeName",
                         value: formData.inquiryTypeName,
                       },
                       {
-                        label: "Inquiry Source",
+                        label: "Project Source",
                         name: "inquirySourceName",
                         value: formData.inquirySourceName,
                       },
@@ -692,12 +949,12 @@ const ViewInquiry = () => {
                         value: formData.priorityLevelName,
                       },
                       {
-                        label: "Inquiry Document",
+                        label: "Project Document",
                         name: "inquiryDocuments",
                         value: formData.inquiryDocuments,
                       },
                       {
-                        label: "Inquiry Description",
+                        label: "Project Description",
                         name: "inquiryDescription",
                         value: formData.inquiryDescription,
                       },
@@ -712,7 +969,7 @@ const ViewInquiry = () => {
                         value: formData.reasonForClosure,
                       },
                       {
-                        label: "Inquiry Status",
+                        label: "Project Status",
                         name: "inquiryStatusName",
                         value: formData.inquiryStatusName,
                       },
@@ -729,13 +986,55 @@ const ViewInquiry = () => {
                 </div>
               )}
 
-              {activeTab === 2 && <ApprovedPartnerInqry/>}
-              {activeTab === 3 && <ApprovedClientInqry/>}
-              {/* {activeTab === 3 && "Leave List"}  */}
+              {activeTab === 2 && <ApprovedClientInqry />}
+              {activeTab === 3 && <ApprovedPartnerInqry />}
+              {activeTab === 4 && (
+                <InquiryChat
+                  senderId={formData.senderId}
+                  chatPersoneName={formData.senderName}
+                />
+              )}
             </div>
           </div>
         </form>
       </section>
+
+      <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
+        <div className="md:px-2 lg:px-2 px-7">
+          <div className="flex">
+            <div className="test-base me-2 text-l">Project Forwarded:</div>
+            <div className="text-red-500">
+              {inquiryForwadedeData && inquiryForwadedeData.length > 0 ? (
+                inquiryForwadedeData.map((data, index) => (
+                  <div key={index}>{data}</div> // Each item will be rendered in a new line
+                ))
+              ) : (
+                <span>No data available</span> // Fallback if there's no data
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="md:px-2 lg:px-2 px-7">
+          <div className="flex">
+            <div className="test-base me-2 text-l">Project Transferd:</div>
+            <div className="text-red-500">
+              {inquiryTransferdData && inquiryTransferdData.length > 0 ? (
+                inquiryTransferdData.map((data, index) => (
+                  <div key={index}>{data}</div> // Each item will be rendered in a new line
+                ))
+              ) : (
+                <span>No data available</span> // Fallback if there's no data
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Chat Component */}
+      {/* <InquiryChat
+        chatPersoneName={formData.senderName}
+        senderId={formData.senderId}
+      /> */}
     </>
   );
 };

@@ -12,7 +12,7 @@ const EmployeeLeaveTypeList = () => {
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
-  const [isActive, setIsActive] = useState(false); // State for Active status
+
     
 
   //#region Pagination state
@@ -27,7 +27,7 @@ const EmployeeLeaveTypeList = () => {
         const result = await EmployeeLeaveTypeService.getLeaveEmployeeTypes();
         setEmployeeLeaveTypeList(result.data);
         setFilteredEmployeeLeaveTypeList(result.data); // Set initial data without filtering
-        // console.log(result.data); 
+        console.log(result.data); 
         setTotalItems(result.data.length); // Set total items for pagination
       } catch (error) {
         console.error("Error fetching designations:", error);

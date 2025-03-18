@@ -1,60 +1,114 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion"; // Import framer-motion
 import { HubConnectionBuilder } from "@microsoft/signalr";
+import { InquiryChatService } from "../../service/InquiryChatService";
+import { useParams } from "react-router-dom";
 
-
-const ChatComponent = ({ taskAssignToName }) => {
-
+const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
   const [messages, setMessages] = useState([]); // State to store messages
   const [newMessage, setNewMessage] = useState(""); // State to store new message
   const [file, setFile] = useState(null); // State to store selected file
   const [connection, setConnection] = useState(null); // For the SignalR connection
 
+  const { id } = useParams();
+  const loginId = sessionStorage.getItem("LoginUserId");
+
+  // Fetch initial chat data
   useEffect(() => {
-    // Set up SignalR connection
+    const fetchData = async () => {
+      try {
+        const chatData = await InquiryChatService.getChatInAdmin(inquiryId, senderId);
+        setMessages(chatData.data);
+        // console.log(chatData);
+      } catch (error) {
+        console.error("Error fetching chat data:", error);
+      }
+    };
+    fetchData();
+  }, [inquiryId, senderId]);
+
+  // Scroll to the bottom when messages change
+  useEffect(() => {
+    const chatContainer = document.getElementById("chatContainer");
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages]);
+
+  // Set up SignalR connection
+  useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      // .withUrl('http://localhost:7292/inquirychathub') // Your API SignalR Hub endpoint
+      .withUrl("https://localhost:7292/inquirychathub") // Your SignalR Hub URL
       .build();
 
     newConnection.start()
       .then(() => {
-        console.log("Connected to SignalR Hub!");
+        // console.log("Connected to SignalR Hub!");
       })
-      .catch((error) => console.error('Error while starting connection: ' + error));
+      .catch((error) => console.error("Error while starting connection: " + error));
 
-    // Listen for incoming messages
-    newConnection.on('ReceiveMessage', (user, message) => {
-      setMessages((prevMessages) => [...prevMessages, { user, message }]);
+    // Listen for the new message from SignalR
+    newConnection.on("ReceiveMessage", (messages) => {
+      if (newMessage.inquiryRegistrationId === inquiryId) {
+        // Append the new message to the state
+        // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
+        setMessages((prevMessages) => [...prevMessages, messages]);
+      }
     });
 
-    // Set connection state
     setConnection(newConnection);
 
-    // Clean up on component unmount
+    // Cleanup on unmount
     return () => {
       if (newConnection) {
         newConnection.stop();
       }
     };
-  }, []);
+
+  }, [inquiryId, senderId]);
 
   // Handle sending a message
-  const handleSendMessage = () => {
+  
+  
+  const handleSendMessage = async () => {
     if (newMessage.trim() || file) {
-      if (connection) {
-        connection.invoke('SendMessage', 'You', newMessage) // Send to SignalR Hub
-          .catch((err) => console.error(err));
-      }
       const newMessageObj = {
-        id: messages.length + 1,
-        text: newMessage,
-        sender: "You",
-        timestamp: new Date().toLocaleTimeString(),
-        file: file ? file : null, // Attach file if any
+        inquiryRegistrationId: inquiryId,
+        message: newMessage,
+        receiverId: senderId,
       };
-      setMessages((prevMessages) => [...prevMessages, newMessageObj]);
-      setNewMessage(""); // Clear input field after sending
-      setFile(null); // Clear file after sending
+
+      const formData = new FormData();
+      if (file) {
+        formData.append("chatMessageVM.file", file);
+        formData.append("chatMessageVM.Message", null); // Send message as null if file is attached
+      } else {
+        formData.append("chatMessageVM.Message", newMessageObj.message);
+      }
+
+      formData.append("chatMessageVM.InquiryRegistrationId", newMessageObj.inquiryRegistrationId);
+      formData.append("chatMessageVM.ReceiverId", newMessageObj.receiverId);
+
+      try {
+        const response = await InquiryChatService.addPartnerInquiryChat(formData);
+        if (response.status === 1) {
+          console.log("Chat added successfully!");
+          
+          // Update the local messages state to include the new message
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { user: "You", message: newMessageObj.message, file: file ? file : null },
+          ]);
+
+          // Clear input fields after sending
+          setNewMessage("");
+          setFile(null);
+        } else {
+          console.error("Failed to add chat:", response.message || "Unknown error");
+        }
+      } catch (error) {
+        console.error("Error adding chat:", error);
+      }
     }
   };
 
@@ -71,31 +125,47 @@ const ChatComponent = ({ taskAssignToName }) => {
     setFile(null);
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", {
+      weekday: 'short', // Optional: to show weekday
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // Optional: true for 12-hour format, false for 24-hour format
+    });
+  };
+
   return (
     <>
       {/* Chat Section */}
       <section className="bg-white rounded-lg shadow-lg mt-8 p-6">
-        <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Chat with {taskAssignToName}</h2>
+        <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Chat with {chatPersoneName}</h2>
 
         {/* Chat Window */}
-        <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto mb-4 shadow-inner space-y-4 border border-gray-200">
+        <div
+          id="chatContainer"
+          className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto mb-4 shadow-inner space-y-4 border border-gray-200"
+        >
           {messages.length === 0 ? (
             <p className="text-center text-gray-500">Start a conversation...</p>
           ) : (
-            messages.map((message) => (
+            messages.map((message, index) => (
               <div
-                key={message.id}
-                className={`flex ${message.sender === "You" ? "justify-end" : "justify-start"}`}
+                key={index}
+                className={`flex ${message.user === "You" || message.senderId === loginId ? "justify-end" : "justify-start"}`}
               >
                 <div
                   className={`max-w-xs p-3 rounded-lg text-sm shadow-md ${
-                    message.sender === "You"
+                    message.user === "You" || message.senderId === senderId
                       ? "bg-blue-300 text-white rounded-br-none"
                       : "bg-gray-200 text-gray-700 rounded-bl-none"
                   }`}
                 >
-                  <div className="font-semibold text-sm">{message.sender}</div>
-                  <div className="text-black">{message.text}</div>
+                  <div className="font-semibold text-sm">{message.user}</div>
+                  <div className="text-black">{message.message}</div>
 
                   {/* File Preview */}
                   {message.file && (
@@ -120,7 +190,7 @@ const ChatComponent = ({ taskAssignToName }) => {
                     </div>
                   )}
 
-                  <div className="text-xs text-gray-600 mt-2">{message.timestamp}</div>
+                  <div className="text-xs text-gray-600 mt-2">{formatDate(message.sentDate)}</div>
                 </div>
               </div>
             ))
@@ -192,4 +262,4 @@ const ChatComponent = ({ taskAssignToName }) => {
   );
 };
 
-export default ChatComponent;
+export default PartnerInquiryChat;

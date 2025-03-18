@@ -3,6 +3,9 @@ import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryService } from "../../service/InquiryService";
+import Chat from "./Chat";
+import InquiryChat from "../../admin-panel/inquiry/InquiryChat";
+import PartnerInquiryChat from "./PartnerInquiryChat";
 
 const ViewInquiry = () => {
 
@@ -27,6 +30,7 @@ const ViewInquiry = () => {
   });
 
   const [activeTab, setActiveTab] = useState(1);
+  const [inquiryRegistrationId, setInquiryRegistrationId] = useState(1);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -64,15 +68,21 @@ const ViewInquiry = () => {
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Inquiry</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <Link
-              to={`/inquiry-list/edit-inquiry/${id}`}
-              className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+          {formData.inquiryStatus !== 3 && formData.inquiryStatus !== 4 && (
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
-              Edit Inquiry
-              <FaEdit size={16} /> 
-            </Link>
-          </motion.button>
+              <Link
+                to={`/inquiry-list/edit-inquiry/${id}`}
+                className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+              >
+                Edit Inquiry
+                <FaEdit size={16} />
+              </Link>
+            </motion.button>
+          )}
+
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <button
               onClick={() => navigate(-1)}
@@ -97,9 +107,9 @@ const ViewInquiry = () => {
                 aria-orientation="horizontal"
               >
                 {[
-                  "Partner Details",
-                //   "Attendance List",
-                //   "Leave List",
+                  "Inquiry Details",
+                  //   "Attendance List",
+                  //   "Leave List",
                 ].map((tab, index) => (
                   <button
                     key={index}
@@ -130,20 +140,72 @@ const ViewInquiry = () => {
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[
-                      { label: "Inquiry Title", name: "inquiryTitle", value: formData.inquiryTitle },
-                      { label: "Inquiry Location", name: "inquiryLocation", value: formData.inquiryLocation },
-                      { label: "Inquiry Type", name: "inquiryTypeName", value: formData.inquiryTypeName },
-                      { label: "Inquiry Source", name: "inquirySourceName", value: formData.inquirySourceName },
-                      { label: "Customer Name", name: "customerName", value: formData.customerName },
-                      { label: "Customer Contact Info", name: "customerContactInfo",value: formData.customerContactInfo },
-                      { label: "Estimated Value", name: "estimatedValue", value: formData.estimatedValue},
-                      { label: "Priority Level", name: "priorityLevelName", value: formData.priorityLevelName},
-                      { label: "Inquiry Document", name: "inquiryDocuments",  value: formData.inquiryDocuments },
-                      { label: "Inquiry Description", name: "inquiryDescription", value: formData.inquiryDescription },
-                      { label: "Special Notes", name: "specialNotes",  value: formData.specialNotes },
-                      { label: "Reason For Closure", name: "reasonForClosure",  value: formData.reasonForClosure },
-                      { label: "Inquiry Status", name: "inquiryStatusName",  value: formData.inquiryStatusName },
-                    // { label: "Key Responsibility", name: "keyResponsibility", value: formData.keyResponsibility },
+                      {
+                        label: "Inquiry Title",
+                        name: "inquiryTitle",
+                        value: formData.inquiryTitle,
+                      },
+                      {
+                        label: "Inquiry Location",
+                        name: "inquiryLocation",
+                        value: formData.inquiryLocation,
+                      },
+                      {
+                        label: "Inquiry Type",
+                        name: "inquiryTypeName",
+                        value: formData.inquiryTypeName,
+                      },
+                      {
+                        label: "Inquiry Source",
+                        name: "inquirySourceName",
+                        value: formData.inquirySourceName,
+                      },
+                      {
+                        label: "Customer Name",
+                        name: "customerName",
+                        value: formData.customerName,
+                      },
+                      {
+                        label: "Customer Contact Info",
+                        name: "customerContactInfo",
+                        value: formData.customerContactInfo,
+                      },
+                      {
+                        label: "Estimated Value",
+                        name: "estimatedValue",
+                        value: formData.estimatedValue,
+                      },
+                      {
+                        label: "Priority Level",
+                        name: "priorityLevelName",
+                        value: formData.priorityLevelName,
+                      },
+                      {
+                        label: "Inquiry Document",
+                        name: "inquiryDocuments",
+                        value: formData.inquiryDocuments,
+                      },
+                      {
+                        label: "Inquiry Description",
+                        name: "inquiryDescription",
+                        value: formData.inquiryDescription,
+                      },
+                      {
+                        label: "Special Notes",
+                        name: "specialNotes",
+                        value: formData.specialNotes,
+                      },
+                      {
+                        label: "Reason For Closure",
+                        name: "reasonForClosure",
+                        value: formData.reasonForClosure,
+                      },
+                      {
+                        label: "Inquiry Status",
+                        name: "inquiryStatusName",
+                        value: formData.inquiryStatusName,
+                      },
+                      // { label: "Key Responsibility", name: "keyResponsibility", value: formData.keyResponsibility },
                     ].map((field, idx) => (
                       <div key={idx} className="w-full px-2">
                         <label className="font-semibold text-gray-700 me-2">
@@ -153,7 +215,6 @@ const ViewInquiry = () => {
                       </div>
                     ))}
                   </div>
-
                 </div>
               )}
               {/* {activeTab === 2 && "Attendance List"} */}
@@ -163,7 +224,10 @@ const ViewInquiry = () => {
         </form>
       </section>
 
-      
+      <PartnerInquiryChat 
+      chatPersoneName={formData.senderName}
+      senderId='3FA85F64-5717-4562-B3FC-2C963F66AFA6'
+      inquiryId='648b3f95-6699-4e60-bb25-ec4b8ba59894' />
     </>
   );
 };
