@@ -48,8 +48,12 @@ const CreatedProjectList = () => {
   // console.log(role);
 
   const navigateTo = role === 'admin' 
-  ? '/create-partnerinquiry-list/add-partnerinquiry' 
-  : '/user/create-partnerinquiry-list/add-partnerinquiry';
+  ? '/created-project-list/create-project' 
+  : '/user/created-project-list/create-project';
+
+//   const navigateTo = role === 'admin' 
+//   ? '/create-partnerinquiry-list/add-partnerinquiry' 
+//   : '/user/create-partnerinquiry-list/add-partnerinquiry';
 
   const fetchInquiries = async () => {
     try {
@@ -316,7 +320,7 @@ const CreatedProjectList = () => {
               {[
                 "Date of Inquiry",
                 "Project Title",
-                "Project Send By",
+                "Project Send To",
                 "Project Location",
                 "Project Type",
                 "Priority Level",
@@ -356,7 +360,7 @@ const CreatedProjectList = () => {
                     {item.inquiryTitle}
                   </td>
                   <td className="py-3 px-4 text-gray-700">
-                    {item.senderName}
+                    {item.receiverName}
                   </td>
                   <td className="py-3 px-4 text-gray-700">
                     {item.inquiryLocation}

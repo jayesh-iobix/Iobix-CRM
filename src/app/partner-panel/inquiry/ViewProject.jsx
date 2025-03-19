@@ -108,7 +108,7 @@ const ViewProject = () => {
               >
                 {[
                   "Project Details",
-                  //   "Attendance List",
+                  "Chat",
                   //   "Leave List",
                 ].map((tab, index) => (
                   <button
@@ -217,17 +217,17 @@ const ViewProject = () => {
                   </div>
                 </div>
               )}
-              {/* {activeTab === 2 && "Attendance List"} */}
+              {activeTab === 2 && <Chat/>}
               {/* {activeTab === 3 && "Leave List"}  */}
             </div>
           </div>
         </form>
       </section>
 
-      <PartnerInquiryChat 
+      {/* <PartnerInquiryChat 
       chatPersoneName={formData.senderName}
       senderId='3FA85F64-5717-4562-B3FC-2C963F66AFA6'
-      inquiryId='648b3f95-6699-4e60-bb25-ec4b8ba59894' />
+      inquiryId='648b3f95-6699-4e60-bb25-ec4b8ba59894' /> */}
     </>
   );
 };

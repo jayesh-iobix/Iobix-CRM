@@ -31,17 +31,29 @@ export const InquiryChatService = {
     }
   },
 
-// Method to get all inquiryChat
-getChatInAdmin: async (inquiryRegistrationId, receiverId) => {
-  try {
-    // debugger;
-    const response = await httpClient.get(`${api}/GetChatInAdmin/${inquiryRegistrationId}/${receiverId}`); // Update 'GetAll' with actual endpoint if different
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch Chat In Admin:', error);
-    throw error;
-  }
- },
+  // Method to get all inquiryChat
+  getChatInAdmin: async (inquiryRegistrationId, receiverId) => {
+    try {
+      // debugger;
+      const response = await httpClient.get(`${api}/GetChatWithPartnerInAdmin/${inquiryRegistrationId}/${receiverId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch Chat In Admin:', error);
+      throw error;
+    }
+   },
+  
+  // Method to get all inquiryChat
+  getAdminChatInPartner: async (inquiryRegistrationId) => {
+    try {
+      // debugger;
+      const response = await httpClient.get(`${api}/GetChatWithPartnerInPartner/${inquiryRegistrationId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch Chat In Admin:', error);
+      throw error;
+    }
+   },
   
   // Method to get all inquiryChat
   getPartnerClientEmployeeList: async (inquiryChatType, id) => {
@@ -75,28 +87,5 @@ getChatInAdmin: async (inquiryRegistrationId, receiverId) => {
       throw error;
     }
   },
-
-   // Methos to update Employee
-//    updateEmployee: async (employeeId, updatedEmployeeData) => {
-//     try {
-//       const response = await httpClient.put(${api}/${employeeId},updatedEmployeeData); 
-//       return response.data;
-//     } catch (error) {
-//       console.error('Failed to fetch employee:', error);
-//       throw error;
-//     }
-//   },
-
-  // Methos to delete Employee
-//   deleteEmployee: async (employeeId) => {
-//     try {
-//       const response = await httpClient.delete(${api}/${employeeId}); 
-//       return response.data;
-//     } catch (error) {
-//       console.error('Failed to fetch employee:', error);
-//       throw error;
-//     }
-//   },
-  
 
 };

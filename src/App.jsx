@@ -117,6 +117,8 @@ import ProjectList from './app/admin-panel/project/recived-project/ProjectList';
 import CreatedProjectList from './app/admin-panel/project/created-project/CreatedProjectList';
 import ViewPartnerProject from './app/partner-panel/inquiry/ViewProject';
 import ViewProject from './app/admin-panel/project/ViewProject';
+import AddProject from './app/admin-panel/project/AddProject';
+import Chat from './app/partner-panel/inquiry/Chat';
 
 
 function App() {
@@ -276,6 +278,7 @@ function App() {
       <Route path="partnerinquiry-list/create-inquiry-task/:id" element={<AddInquiryTask />} />
       <Route path="received-project-list" element={<ProjectList />} />
       <Route path="created-project-list" element={<CreatedProjectList />} />
+      <Route path="created-project-list/create-project" element={<AddProject />} />
       <Route path="view-project/:id" element={<ViewProject />} />
       {/* <Route path="/profile" element={<Profile/>} /> */}
     </Route>
@@ -342,6 +345,7 @@ function App() {
     {/* <Route path="/partner/inquiry-list/view-inquiry/:id" element={<ViewInquiry/>} /> */}
     <Route path="/partner/project-list/view-project/:id" element={<ViewPartnerProject/>} />
     <Route path="/partner/project-list/edit-project/:id" element={<EditInquiry/>} />
+    <Route path="/partner/inquiry-chat" element={<Chat/>} />
     {/* <Route path="/company/task-list" element={<UserTaskList/>} /> */}
     </Route>
   

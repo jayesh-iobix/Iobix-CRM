@@ -14,7 +14,9 @@ const AddInquiryTask = () => {
   const [taskName, setTaskName] = useState("");
   const [partnerRegistrationId, setPartnerRegistrationId] = useState("");
   const [clientRegistrationId, setClientRegistrationId] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
+  const [taskDocument, setTaskDocument] = useState(null);
   const [taskPriority, setTaskPriority] = useState("");
   const [taskType, setTaskType] = useState("");
   const [taskStartingDate, setTaskStartingDate] = useState("");
@@ -75,16 +77,17 @@ const AddInquiryTask = () => {
 
     const inquiryTaskData = {
       taskName,
-      partnerRegistrationId: partnerRegistrationId === "" ? null : partnerRegistrationId,
-      clientRegistrationId: clientRegistrationId === "" ? null : clientRegistrationId,
       departmentId: departmentId === "" ? null : departmentId,
-      taskAssignTo: taskAssignTo === ""? null : taskAssignTo,
+      taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && employeeId !== "") ? employeeId : 
+      (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
+      (clientRegistrationId === "" && employeeId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,
       taskPriority,
       taskType,
       taskStartingDate,
       taskExpectedCompletionDate: taskExpectedCompletionDate === "" ? null : taskExpectedCompletionDate,
       taskDescription,
       taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate, // Convert empty string to null
+      taskDocument, // Add the task document to the data
     };
 
     setIsSubmitting(true);
@@ -99,6 +102,13 @@ const AddInquiryTask = () => {
       toast.error("Failed to add inquiry task.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setTaskDocument(file);  // Store the selected document
     }
   };
 
@@ -279,8 +289,8 @@ const AddInquiryTask = () => {
                 <div className="w-full mb-2 px-3 md:w-1/3">
                   <label className="block text-base font-medium">Employee</label>
                   <select
-                    value={taskAssignTo}
-                    onChange={(e) => setTaskAssignTo(e.target.value)}
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
                     className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
                   >
                     <option value="">--Select Employee--</option>
@@ -352,6 +362,17 @@ const AddInquiryTask = () => {
                 className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
               {errors.taskExpectedCompletionDate && <p className="text-red-500 text-xs">{errors.taskExpectedCompletionDate}</p>}
+            </div>
+
+            {/* Task Document */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
+              <label className="block text-base font-medium">Task Document</label>
+              <input
+                type="file"
+                onChange={handleFileChange}  // Handle file selection
+                className="w-full mb-2 rounded-md border py-[10px] px-4"
+              />
+              {taskDocument && <p className="text-gray-500 text-xs">{taskDocument.name}</p>}
             </div>
 
             {/* Task Description */}

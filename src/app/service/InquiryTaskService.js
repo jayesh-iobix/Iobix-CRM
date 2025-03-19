@@ -2,7 +2,7 @@ import { environment } from "../../environment/environment";
 import httpClient from "./HttpClient";
 
 // Define the base URL for your API
-const api = environment.subTask;
+const api = environment.inquiryTask;
 const userApi = environment.userSubTask;
 
 export const InquiryTaskService = {

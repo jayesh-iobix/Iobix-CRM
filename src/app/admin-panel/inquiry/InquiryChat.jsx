@@ -22,8 +22,19 @@ const InquiryChat = ({ senderId }) => {
   useEffect(() => {
     const fetchData = async () => {
       const chatData = await InquiryChatService.getChatInAdmin(id, senderId);
-      setMessages(chatData.data);
-      console.log(chatData);
+
+      // Map through the chat data and set the senderName to "You" if senderId matches loginId
+      const updatedMessages = chatData.data.map((message) => {
+        if (message.senderId === loginId) {
+          return { ...message, senderName: "You" }; // Set senderName to "You" if senderId matches
+        }
+        return message; // Otherwise, return the message as is
+      });
+
+       setMessages(updatedMessages); // Update the state with the modified messages
+      // console.log(chatData.data.senderId)
+      // setMessages(chatData.data);
+      // console.log(chatData);
     };
     fetchData();
   }, [id, senderId]);
@@ -38,22 +49,30 @@ const InquiryChat = ({ senderId }) => {
 
   // Set up SignalR connection
   useEffect(() => {
+
+    // Set up SignalR connection
     const newConnection = new HubConnectionBuilder()
       .withUrl("https://localhost:7292/inquirychathub") // Your SignalR Hub URL
       .build();
-
+  
     newConnection.start()
       .then(() => {
         console.log("Connected to SignalR Hub!");
       })
       .catch((error) => console.error("Error while starting connection: " + error));
-
-    newConnection.on("ReceiveMessage", (chatData) => {
-      setMessages((prevMessages) => [...prevMessages, chatData]);
+  
+    // Listen for incoming messages
+    newConnection.on("ReceiveMessage", (chatMessage) => {
+      setMessages((prevMessages) => [...prevMessages, {
+        user: chatMessage.user,  // Ensure this matches what you're sending from the backend
+        message: chatMessage.message,
+        sentDate: chatMessage.sentDate,
+        file: chatMessage.file ? chatMessage.file : null,  // Ensure file handling if needed
+      }]); // Update the messages state with the new message
     });
-
+  
     setConnection(newConnection);
-
+  
     // Cleanup on unmount
     return () => {
       if (newConnection) {
@@ -61,6 +80,7 @@ const InquiryChat = ({ senderId }) => {
       }
     };
   }, []);
+  
 
   // Fetch chat persons based on selected type (Partner, Client, Employee)
   const handleChatPersonTypeChange = async (event) => {
@@ -125,9 +145,16 @@ const InquiryChat = ({ senderId }) => {
         const response = await InquiryChatService.addInquiryChat(formData);
         if (response.status === 1) {
           console.log("Chat added successfully!");
+          
+          // Broadcast the message to other clients via SignalR
+          // debugger;
+          // if (connection) {
+          //   connection.invoke("SendMessage", newMessageObj);  // Send the message to the SignalR Hub
+          // }
+          
           setMessages((prevMessages) => [
             ...prevMessages,
-            { user: "You", message: newMessageObj.message, file: file ? file : null },
+            { senderName: "You", message: newMessageObj.message, sentDate: new Date().toISOString(), file: file ? file : null, },
           ]);
 
           // Clear input fields after sending
@@ -227,14 +254,14 @@ const InquiryChat = ({ senderId }) => {
             messages.map((message, index) => (
               <div
                 key={index}
-                className={`flex ${message.user === "You" || message.senderId === loginId ? "justify-end" : "justify-start"}`}
+                className={`flex ${message.senderName === "You" || message.senderId === loginId ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-xs p-3 rounded-lg text-sm shadow-md ${message.user === "You" || message.senderId === senderId
+                  className={`max-w-xs p-3 rounded-lg text-sm shadow-md ${message.senderName === "You" || message.senderId === loginId
                     ? "bg-blue-300 text-white rounded-br-none"
                     : "bg-gray-200 text-gray-700 rounded-bl-none"}`}
                 >
-                  <div className="font-semibold text-sm">{message.user}</div>
+                  <div className="font-semibold text-sm">{message.senderName}</div>
                   <div className="text-black">{message.message}</div>
 
                   {/* File Preview */}
@@ -249,7 +276,7 @@ const InquiryChat = ({ senderId }) => {
                       ) : (
                         <div className="text-xs text-blue-500 mt-1">
                           <a
-                            href={URL.createObjectURL(message.file)}
+                            href={URL.createObjectURL(message.filePath)}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -319,6 +346,7 @@ const InquiryChat = ({ senderId }) => {
 
           {/* Send Button */}
           <motion.button
+            type="button"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleSendMessage}
