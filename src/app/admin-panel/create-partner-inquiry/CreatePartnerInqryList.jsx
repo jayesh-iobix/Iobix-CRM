@@ -296,7 +296,7 @@ const CreatePartnerInqryList = () => {
           <thead className="bg-gray-900 border-b">
             <tr>
               {[
-                "Date of Inquiry",
+                "Date of Project",
                 "Project Title",
                 "Project Send By",
                 "Project Location",

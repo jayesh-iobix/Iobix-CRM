@@ -73,7 +73,7 @@ const InquiryList = () => {
   return (
     <>
       <div className="flex flex-wrap justify-between items-center listmy-3">
-        <h1 className="font-semibold text-xl sm:text-2xl">Inquiry List</h1>
+        <h1 className="font-semibold text-xl sm:text-2xl">Project List</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
           {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
@@ -111,8 +111,8 @@ const InquiryList = () => {
                 {[
                   "Forwarded Partner List",
                   "Forwarded Client List",
-                  "Partner Inquiry List",
-                  "Client Inquiry List",
+                  // "Partner Project List",
+                  // "Client Project List",
                 ].map((tab, index) => (
                   <button
                     key={index}
@@ -136,8 +136,8 @@ const InquiryList = () => {
             <div className="mt-3">
               {activeTab === 1 && <ForwardInquiryList />}
               {activeTab === 2 && <ForwardClientInquiryList />}
-              {activeTab === 3 && <PartnerInquiryList />}
-              {activeTab === 4 && <ClientInquiryList />}
+              {/* {activeTab === 3 && <PartnerInquiryList />}
+              {activeTab === 4 && <ClientInquiryList />} */}
             </div>
           </div>
         </form>

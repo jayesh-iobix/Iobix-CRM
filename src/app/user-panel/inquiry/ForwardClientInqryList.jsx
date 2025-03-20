@@ -244,7 +244,7 @@ const ForwardClientInqryList = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Forwarded Client Inquiry List</h1>
+        <h1 className="font-semibold text-2xl">Forwarded Client Project List</h1>
         <div className="flex">
           {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
@@ -264,7 +264,7 @@ const ForwardClientInqryList = () => {
           type="text"
           value={inquiryFilter}
           onChange={handleInquiryFilterChange}
-          placeholder="Search Inquiry"
+          placeholder="Search Project"
           className="p-2 outline-none rounded border border-gray-300 border-active"
         />
 
@@ -286,13 +286,13 @@ const ForwardClientInqryList = () => {
           <thead className="bg-gray-900 border-b">
             <tr>
               {[
-                "Date of Inquiry",
-                "Inquiry Title",
-                "Inquiry Send By",
-                "Inquiry Location",
-                "Inquiry Type",
+                "Date of Project",
+                "Project Title",
+                "Project Send By",
+                "Project Location",
+                "Project Type",
                 "Priority Level",
-                "Inquiry Status",
+                "Project Status",
                 "Actions",
               ].map((header) => (
                 <th
@@ -307,7 +307,7 @@ const ForwardClientInqryList = () => {
           {currentItems.length === 0 ? (
             <tr>
               <td colSpan="5" className="text-center py-3 px-4 text-gray-700">
-                No inquiries found.
+                No project found.
               </td>
             </tr>
           ) : (
@@ -358,14 +358,14 @@ const ForwardClientInqryList = () => {
                         whileTap={{ scale: 0.9 }}
                       >
                         <Link
-                          to={`/user/clientinquiry-list/view-clientinquiry/${item.inquiryRegistrationId}`}
+                          to={`/user/clientproject-list/view-clientproject/${item.inquiryRegistrationId}`}
                           className="text-green-500 hover:text-green-700"
                         >
                           <FaEye size={24} />
                         </Link>
                       </motion.button>
 
-                      <motion.button
+                      {/* <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
@@ -375,7 +375,7 @@ const ForwardClientInqryList = () => {
                         className="text-red-500 hover:text-red-700"
                       >
                         <FaTrash size={22} />
-                      </motion.button>
+                      </motion.button> */}
 
                         {/* <motion.button
                           whileHover={{ scale: 1.1 }}
@@ -408,7 +408,7 @@ const ForwardClientInqryList = () => {
                                 onClick={() => handleForwardInquiry(item)}
                                 className="block px-4 py-2 hover:bg-gray-100 hover:no-underline dark:hover:bg-gray-600 dark:hover:text-white"
                               >
-                                Forward Inquiry
+                                Forward Project
                               </span>
                             </li>
                             <li>
@@ -416,7 +416,7 @@ const ForwardClientInqryList = () => {
                                 // onClick={() => handleTaskTransfer(item)}
                                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                               >
-                                Inquiry Transfer
+                                Transfer Project
                               </span>
                             </li>
                           </ul>
@@ -424,7 +424,7 @@ const ForwardClientInqryList = () => {
                             <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
                               <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
                                 <h2 className="text-xl font-semibold mb-4">
-                                  Forward Inquiry
+                                  Forward Project
                                 </h2>
                                 <form>
                                   <div className="mb-4">
@@ -537,7 +537,7 @@ const ForwardClientInqryList = () => {
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-              Are you sure you want to delete this inquiry?
+              Are you sure you want to delete this project?
             </h3>
             <div className="flex justify-center gap-4">
               <motion.button

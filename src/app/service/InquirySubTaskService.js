@@ -29,6 +29,17 @@ export const InquirySubTaskService = {
     }
   },
 
+  // Method to get inquiry cub tasks by inquirySubTaskAllocationId
+  getInquirySubTasksById: async (inquirySubTaskAllocationId) => {
+    try {
+      const response = await httpClient.get(`${api}/${inquirySubTaskAllocationId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch inquiry sub tasks:", error);
+      throw error;
+    }
+  },
+
   // Method to get sub tasks which is assign by user own
   getUserSubTaskByUser: async (inquiryTaskAllocationId) => {
     try {

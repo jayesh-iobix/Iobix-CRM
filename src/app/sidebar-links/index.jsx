@@ -113,24 +113,26 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     path: "/partner-list",
     icon: <FaRegHandshake />,
   },
-  // {
-  //   key: "vendor",
-  //   label: "Vendors",
-  //   path: "/vendor-list",
-  //   icon: <FaVenusDouble />,
-  // },
+
   {
     key: "client company",
     label: "Client Company",
     path: "/clientcompany-list",
     icon: <FaBusinessTime />,
   },
-  {
-    key: "inquiry-chat",
-    label: "Inquiry Chat",
-    path: "/inquiry-chat",
-    icon: <BsChat />,
-  },
+  // {
+  //   key: "vendor",
+  //   label: "Vendors",
+  //   path: "/vendor-list",
+  //   icon: <FaVenusDouble />,
+  // },
+
+  // {
+  //   key: "inquiry-chat",
+  //   label: "Inquiry Chat",
+  //   path: "/inquiry-chat",
+  //   icon: <BsChat />,
+  // },
 ];
 
 //IT Employee Dashboard Sidebar Links
@@ -215,12 +217,12 @@ export const BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS = [
     icon: <BsFillGridFill />,
   },
   {
-    key: "inquiry",
-    label: "Inquiry",
+    key: "project",
+    label: "Project",
     icon: <HiOutlineQuestionMarkCircle />,
     submenu: [
-      { label: "Inquiry List", path: "/user/inquiry-list" },
-      { label: "Create Inquiry", path: "/user/create-inquiry-list" },
+      { label: "Project List", path: "/user/project-list" },
+      // { label: "Create project", path: "/user/create-project-list" },
       // { label: "Recived Partner Inquiry", path: "/partnerinquiry-list" },
       // { label: "Recived Client Inquiry", path: "/clientinquiry-list" },
     ],
@@ -264,17 +266,17 @@ export const USER_DASHBOARD_SIDEBAR_LINKS = [
     path: "/user/leave",
     icon: <BsFillGridFill />,
   },
-  {
-    key: "inquiry",
-    label: "Inquiry",
-    icon: <HiOutlineQuestionMarkCircle />,
-    submenu: [
-      { label: "Inquiry List", path: "/user/inquiry-list" },
-      { label: "Create Inquiry", path: "/user/create-inquiry-list" },
-      // { label: "Recived Partner Inquiry", path: "/partnerinquiry-list" },
-      // { label: "Recived Client Inquiry", path: "/clientinquiry-list" },
-    ],
-  },
+  // {
+  //   key: "inquiry",
+  //   label: "Inquiry",
+  //   icon: <HiOutlineQuestionMarkCircle />,
+  //   submenu: [
+  //     { label: "Inquiry List", path: "/user/inquiry-list" },
+  //     { label: "Create Inquiry", path: "/user/create-inquiry-list" },
+  //     // { label: "Recived Partner Inquiry", path: "/partnerinquiry-list" },
+  //     // { label: "Recived Client Inquiry", path: "/clientinquiry-list" },
+  //   ],
+  // },
   // {
   //   key: "inquiry",
   //   label: "Inquiry",

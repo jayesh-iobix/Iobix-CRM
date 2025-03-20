@@ -180,11 +180,11 @@ const ViewInquiry = () => {
                         name: "priorityLevelName",
                         value: formData.priorityLevelName,
                       },
-                      {
-                        label: "Inquiry Document",
-                        name: "inquiryDocuments",
-                        value: formData.inquiryDocuments,
-                      },
+                      // {
+                      //   label: "Inquiry Document",
+                      //   name: "inquiryDocuments",
+                      //   value: formData.inquiryDocuments,
+                      // },
                       {
                         label: "Inquiry Description",
                         name: "inquiryDescription",

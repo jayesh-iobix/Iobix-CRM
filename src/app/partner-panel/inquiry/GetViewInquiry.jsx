@@ -231,11 +231,11 @@ const GetViewInquiry = () => {
                         name: "priorityLevelName",
                         value: formData.priorityLevelName,
                       },
-                      {
-                        label: "Project Document",
-                        name: "inquiryDocuments",
-                        value: formData.inquiryDocuments,
-                      },
+                      // {
+                      //   label: "Project Document",
+                      //   name: "inquiryDocuments",
+                      //   value: formData.inquiryDocuments,
+                      // },
                       {
                         label: "Project Description",
                         name: "inquiryDescription",

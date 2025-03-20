@@ -255,7 +255,7 @@ const ForwardPartnerInqryList = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Forwarded Partner Inquiry List</h1>
+        <h1 className="font-semibold text-2xl">Forwarded Partner Project List</h1>
         <div className="flex">
           {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
@@ -275,7 +275,7 @@ const ForwardPartnerInqryList = () => {
           type="text"
           value={inquiryFilter}
           onChange={handleInquiryFilterChange}
-          placeholder="Search Inquiry"
+          placeholder="Search Project"
           className="p-2 outline-none rounded border border-gray-300"
         />
 
@@ -297,13 +297,13 @@ const ForwardPartnerInqryList = () => {
           <thead className="bg-gray-900 border-b">
             <tr>
               {[
-                "Date of Inquiry",
-                "Inquiry Title",
-                "Inquiry Send By",
-                "Inquiry Location",
-                "Inquiry Type",
+                "Date of Project",
+                "Project Title",
+                "Project Send By",
+                "Project Location",
+                "Project Type",
                 "Priority Level",
-                "Inquiry Status",
+                "Project Status",
                 "Actions",
               ].map((header) => (
                 <th
@@ -318,7 +318,7 @@ const ForwardPartnerInqryList = () => {
           {currentItems.length === 0 ? (
             <tr>
               <td colSpan="5" className="text-center py-3 px-4 text-gray-700">
-                No inquiries found.
+                No project found.
               </td>
             </tr>
           ) : (
@@ -369,14 +369,14 @@ const ForwardPartnerInqryList = () => {
                         whileTap={{ scale: 0.9 }}
                       >
                         <Link
-                          to={`/user/partnerinquiry-list/view-partnerinquiry/${item.inquiryRegistrationId}`}
+                          to={`/user/partneproject-list/view-partneproject/${item.inquiryRegistrationId}`}
                           className="text-green-500 hover:text-green-700"
                         >
                           <FaEye size={24} />
                         </Link>
                       </motion.button>
 
-                      <motion.button
+                      {/* <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
@@ -386,7 +386,7 @@ const ForwardPartnerInqryList = () => {
                         className="text-red-500 hover:text-red-700"
                       >
                         <FaTrash size={22} />
-                      </motion.button>
+                      </motion.button> */}
 
                         {/* <motion.button
                           whileHover={{ scale: 1.1 }}
@@ -548,7 +548,7 @@ const ForwardPartnerInqryList = () => {
               </div>
             </div>
             <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-              Are you sure you want to delete this inquiry?
+              Are you sure you want to delete this Project?
             </h3>
             <div className="flex justify-center gap-4">
               <motion.button

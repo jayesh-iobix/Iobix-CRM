@@ -731,7 +731,7 @@ const InquiryTaskList = () => {
                 "Expected Completion Date",
                 "Task Type",
                 "Status",
-                // "Actions",
+                "Actions",
               ].map((header) => (
                 <th
                   key={header}
@@ -809,9 +809,22 @@ const InquiryTaskList = () => {
                           {item.taskStatusName}
                         </span>
                       </td>
-                      {/* <td className="py-3 px-4">
+                      <td className="py-3 px-4">
                         <div className="flex gap-1">
                             <motion.button
+                              type="button"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <Link
+                                to={`/view-inquiry-task/${item.inquiryTaskAllocationId}`}
+                                className="text-green-500 hover:text-green-700"
+                              >
+                                <FaEye size={24} />
+                              </Link>
+                            </motion.button>
+
+                            {/* <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
@@ -822,9 +835,9 @@ const InquiryTaskList = () => {
                               >
                                 <FaEdit size={24} />
                               </Link>
-                            </motion.button>
+                            </motion.button> */}
 
-                            <motion.button
+                            {/* <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
@@ -835,9 +848,9 @@ const InquiryTaskList = () => {
                               >
                                 <IoTime size={24} />
                               </Link>
-                            </motion.button>
+                            </motion.button> */}
 
-                            <motion.button
+                            {/* <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
@@ -847,9 +860,9 @@ const InquiryTaskList = () => {
                               className="text-red-500 hover:text-red-700"
                             >
                               <FaTrash size={22} />
-                            </motion.button>
+                            </motion.button> */}
 
-                            <motion.button
+                            {/* <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
@@ -862,9 +875,9 @@ const InquiryTaskList = () => {
                               }
                             >
                               <FaEllipsisV size={24} />
-                            </motion.button>
+                            </motion.button> */}
                           
-                          {openDropdown === item.taskAllocationId && (
+                          {/* {openDropdown === item.taskAllocationId && (
                             <div
                               className="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
                               style={getDropdownPosition(
@@ -1032,9 +1045,9 @@ const InquiryTaskList = () => {
                                 </form>
                               </div>
                             </div>
-                          )}
+                          )} */}
                         </div>
-                      </td> */}
+                      </td>
                       {/* </tr> */}
                     </motion.tr>
 

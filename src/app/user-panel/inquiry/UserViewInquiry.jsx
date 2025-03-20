@@ -326,7 +326,7 @@ const UserViewInquiry = () => {
   return (
     <>
       <div className="flex flex-wrap justify-between items-center my-3">
-        <h1 className="font-semibold text-xl sm:text-2xl">View Inquiry</h1>
+        <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
 
           {/* Forward Inquiry Button placed above the edit and back buttons */}
@@ -335,7 +335,7 @@ const UserViewInquiry = () => {
               onClick={() => setForwardPopupVisible(true)} // Show the popup
               className="bg-yellow-500 hover:bg-yellow-600 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
             >
-              Forward Inquiry
+              Forward Project
             </button>
           </motion.button>
           
@@ -350,7 +350,7 @@ const UserViewInquiry = () => {
             onClick={() => setTransferPopupVisible(true)} // Show the popup
             className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
            >
-            Transfer Inquiry
+            Transfer Project
            </motion.button>
 
            {/* Take Inquiry Button placed above the edit and back buttons */}
@@ -361,7 +361,7 @@ const UserViewInquiry = () => {
             onClick={handleTakeInquiry} 
             className="bg-green-600 hover:bg-green-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
             >
-             Take Inquiry
+             Take Project
            </motion.button>
 
            {/* Edit Inquiry */}
@@ -370,7 +370,7 @@ const UserViewInquiry = () => {
               to={`/inquiry-list/edit-inquiry/${id}`}
               className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
             >
-              Edit Inquiry
+              Edit Project
               <FaEdit size={16} />
             </Link>
           </motion.button>
@@ -395,7 +395,7 @@ const UserViewInquiry = () => {
       {forwardPopupVisible && (
         <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
-            <h2 className="text-xl font-semibold mb-4">Forward Inquiry</h2>
+            <h2 className="text-xl font-semibold mb-4">Forward Project</h2>
 
             <form>
               {/* Radio buttons for selecting Client or Employee */}
@@ -695,7 +695,7 @@ const UserViewInquiry = () => {
       {transferPopupVisible && (
         <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
-            <h2 className="text-xl font-semibold mb-4">Transfer Inquiry</h2>
+            <h2 className="text-xl font-semibold mb-4">Transfer Project</h2>
             <form>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -821,22 +821,22 @@ const UserViewInquiry = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[
                       {
-                        label: "Inquiry Title",
+                        label: "Project Title",
                         name: "inquiryTitle",
                         value: formData.inquiryTitle,
                       },
                       {
-                        label: "Inquiry Location",
+                        label: "Project Location",
                         name: "inquiryLocation",
                         value: formData.inquiryLocation,
                       },
                       {
-                        label: "Inquiry Type",
+                        label: "Project Type",
                         name: "inquiryTypeName",
                         value: formData.inquiryTypeName,
                       },
                       {
-                        label: "Inquiry Source",
+                        label: "Project Source",
                         name: "inquirySourceName",
                         value: formData.inquirySourceName,
                       },
@@ -860,13 +860,13 @@ const UserViewInquiry = () => {
                         name: "priorityLevelName",
                         value: formData.priorityLevelName,
                       },
+                      // {
+                      //   label: "Project Document",
+                      //   name: "inquiryDocuments",
+                      //   value: formData.inquiryDocuments,
+                      // },
                       {
-                        label: "Inquiry Document",
-                        name: "inquiryDocuments",
-                        value: formData.inquiryDocuments,
-                      },
-                      {
-                        label: "Inquiry Description",
+                        label: "Project Description",
                         name: "inquiryDescription",
                         value: formData.inquiryDescription,
                       },
@@ -881,7 +881,7 @@ const UserViewInquiry = () => {
                         value: formData.reasonForClosure,
                       },
                       {
-                        label: "Inquiry Status",
+                        label: "Project Status",
                         name: "inquiryStatusName",
                         value: formData.inquiryStatusName,
                       },

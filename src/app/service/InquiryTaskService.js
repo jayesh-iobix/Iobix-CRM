@@ -39,6 +39,17 @@ export const InquiryTaskService = {
     }
   },
 
+  // Method to get inquiry tasks by inquiryTaskAllocationId
+  getInquiryTasksById: async (inquiryTaskAllocationId) => {
+    try {
+      const response = await httpClient.get(`${api}/${inquiryTaskAllocationId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch inquiry tasks:", error);
+      throw error;
+    }
+  },
+
   // Method to get all tasks
   getSubTasksByTaskAllocationId: async (taskAllocationId) => {
     try {

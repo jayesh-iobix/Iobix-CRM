@@ -731,7 +731,7 @@ const PartnerInquiryTaskList = () => {
                 "Expected Completion Date",
                 "Task Type",
                 "Status",
-                // "Actions",
+                "Actions",
               ].map((header) => (
                 <th
                   key={header}
@@ -809,9 +809,22 @@ const PartnerInquiryTaskList = () => {
                           {item.taskStatusName}
                         </span>
                       </td>
-                      {/* <td className="py-3 px-4">
+                      <td className="py-3 px-4">
                         <div className="flex gap-1">
                             <motion.button
+                              type="button"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <Link
+                                to={`/partner/view-inquiry-task/${item.inquiryTaskAllocationId}`}
+                                className="text-green-500 hover:text-green-700"
+                              >
+                                <FaEye size={24} />
+                              </Link>
+                            </motion.button>
+                            
+                            {/* <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
@@ -1032,9 +1045,9 @@ const PartnerInquiryTaskList = () => {
                                 </form>
                               </div>
                             </div>
-                          )}
+                          )} */}
                         </div>
-                      </td> */}
+                      </td>
                       {/* </tr> */}
                     </motion.tr>
 
