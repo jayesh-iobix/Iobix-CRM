@@ -17,6 +17,28 @@ export const InquiryTaskService = {
     }
   },
 
+  // Method to get all inquiry tasks
+  getInquiryTasks: async (inquiryRegistrationId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetAll/${inquiryRegistrationId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch inquiry tasks:', error);
+      throw error;
+    }
+  },
+
+  // Method to get all inquiry tasks
+  getInquiryTaskInPartner: async (inquiryRegistrationId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetInquiryTask/${inquiryRegistrationId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch inquiry tasks in partner:', error);
+      throw error;
+    }
+  },
+
   // Method to get all tasks
   getSubTasksByTaskAllocationId: async (taskAllocationId) => {
     try {

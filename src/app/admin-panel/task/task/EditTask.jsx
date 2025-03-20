@@ -151,7 +151,8 @@ const EditTask = () => {
           whileTap={{ scale: 0.9 }}
         >
           <Link
-            to="/task/task-list"
+            onClick={() => navigate(-1)}
+            // to="/task/task-list"
             className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
           >
             <FaArrowLeft size={16} />

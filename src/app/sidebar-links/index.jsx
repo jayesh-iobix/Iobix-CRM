@@ -113,12 +113,12 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     path: "/partner-list",
     icon: <FaRegHandshake />,
   },
-  {
-    key: "vendor",
-    label: "Vendors",
-    path: "/vendor-list",
-    icon: <FaVenusDouble />,
-  },
+  // {
+  //   key: "vendor",
+  //   label: "Vendors",
+  //   path: "/vendor-list",
+  //   icon: <FaVenusDouble />,
+  // },
   {
     key: "client company",
     label: "Client Company",

@@ -13,6 +13,7 @@ import { PartnerService } from "../../service/PartnerService";
 import ApprovedClientInqry from "../approved-inquiry/ApprovedClientInqry";
 import ApprovedPartnerInqry from "../approved-inquiry/ApprovedPartnerInqry";
 import InquiryChat from "../inquiry/InquiryChat";
+import InquiryTaskList from "../inquiry-task/InquiryTaskList";
 // import ChatInquiry from "./ChatInquiry";
 
 const ViewProject = () => {
@@ -492,7 +493,7 @@ const ViewProject = () => {
         >
         <Link
           to={`/partnerinquiry-list/create-inquiry-task/${id}`}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
         >
           Add Inquiry Task
           <FaPlus size={16} />
@@ -500,27 +501,42 @@ const ViewProject = () => {
         </motion.button>
 
           {/* Forward Inquiry Button placed above the edit and back buttons */}
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <button
               onClick={() => setForwardPopupVisible(true)} // Show the popup
               className="bg-yellow-500 hover:bg-yellow-600 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
             >
               Forward Project
             </button>
-          </motion.button>
+          </motion.button> */}
 
           {inquiryHideShow === true && (
             <>
+              {/* Forward Inquiry Button buttons */}
+              {formData.inquiryStatus !== 4 && (
+                <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <button
+                    onClick={() => setForwardPopupVisible(true)} // Show the popup
+                    className="bg-yellow-500 hover:bg-yellow-600 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+                  >
+                    Forward Project
+                  </button>
+                </motion.button>
+              )}
+
+
               {/* Trabsfer Inquiry Button placed above the edit and back buttons  */}
-              {/* <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                type="button"
-                onClick={() => setTransferPopupVisible(true)} // Show the popup
-                className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-              >
-                Transfer Project
-              </motion.button> */}
+              {formData.inquiryStatus === 4 && (
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  type="button"
+                  onClick={() => setTransferPopupVisible(true)} // Show the popup
+                  className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+                >
+                  Transfer Project
+                </motion.button>
+              )}
 
               {/* Take Inquiry Button placed above the edit and back buttons */}
               {/* <motion.button
@@ -884,6 +900,7 @@ const ViewProject = () => {
                   "Project Details",
                   "Approved By Client",
                   "Approved By Partner",
+                  "Inquiry Task",
                   "Chat",
                   // !hideTab && "Approved By Partner",
                 ].map((tab, index) => (
@@ -999,7 +1016,8 @@ const ViewProject = () => {
 
               {activeTab === 2 && <ApprovedClientInqry />}
               {activeTab === 3 && <ApprovedPartnerInqry />}
-              {activeTab === 4 && (
+              {activeTab === 4 && <InquiryTaskList />}
+              {activeTab === 5 && (
                 <InquiryChat
                   senderId={formData.senderId}
                   chatPersoneName={formData.senderName}

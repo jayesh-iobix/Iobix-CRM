@@ -6,6 +6,7 @@ import { InquiryService } from "../../service/InquiryService";
 import Chat from "./Chat";
 import InquiryChat from "../../admin-panel/inquiry/InquiryChat";
 import PartnerInquiryChat from "./PartnerInquiryChat";
+import PartnerInquiryTaskList from "../inquiry-task/PartnerInquiryTaskList";
 
 const ViewProject = () => {
 
@@ -108,6 +109,7 @@ const ViewProject = () => {
               >
                 {[
                   "Project Details",
+                  "Inquiry Task",
                   "Chat",
                   //   "Leave List",
                 ].map((tab, index) => (
@@ -217,8 +219,8 @@ const ViewProject = () => {
                   </div>
                 </div>
               )}
-              {activeTab === 2 && <Chat/>}
-              {/* {activeTab === 3 && "Leave List"}  */}
+              {activeTab === 2 && <PartnerInquiryTaskList/>} 
+              {activeTab === 3 && <Chat/>}
             </div>
           </div>
         </form>

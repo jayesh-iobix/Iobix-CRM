@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { EmployeeService } from "../../service/EmployeeService";
 import { TaskService } from "../../service/TaskService";
 import { DepartmentService } from "../../service/DepartmentService";
@@ -9,6 +9,7 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { PartnerService } from "../../service/PartnerService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { InquiryTaskService } from "../../service/InquiryTaskService";
+import { id } from "date-fns/locale";
 
 const AddInquiryTask = () => {
   const [taskName, setTaskName] = useState("");
@@ -16,7 +17,7 @@ const AddInquiryTask = () => {
   const [clientRegistrationId, setClientRegistrationId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
-  const [taskDocument, setTaskDocument] = useState(null);
+  const [taskDocument, setTaskDocument] = useState("");
   const [taskPriority, setTaskPriority] = useState("");
   const [taskType, setTaskType] = useState("");
   const [taskStartingDate, setTaskStartingDate] = useState("");
@@ -32,6 +33,8 @@ const AddInquiryTask = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selection, setSelection] = useState("partner"); // Add this to track the radio button selection (partner, client, employee)
   const navigate = useNavigate();
+
+  const {id} = useParams();
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -63,7 +66,7 @@ const AddInquiryTask = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
     if (!taskPriority) newErrors.taskPriority = "Priority is required";
-    if (!taskAssignTo) newErrors.taskAssignTo = "Assign To is required";
+    // if (!taskAssignTo) newErrors.taskAssignTo = "Assign To is required";
     if (!taskType) newErrors.taskType = "Task Type is required";
     if (!taskStartingDate) newErrors.taskStartingDate = "Task Starting Date is required";
     setErrors(newErrors);
@@ -72,12 +75,15 @@ const AddInquiryTask = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
+    debugger;
     if (!validateForm()) return;
 
     const inquiryTaskData = {
+      inquiryRegistrationId: id,
       taskName,
-      departmentId: departmentId === "" ? null : departmentId,
+      departmentId,
       taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && employeeId !== "") ? employeeId : 
       (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
       (clientRegistrationId === "" && employeeId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,
@@ -86,13 +92,27 @@ const AddInquiryTask = () => {
       taskStartingDate,
       taskExpectedCompletionDate: taskExpectedCompletionDate === "" ? null : taskExpectedCompletionDate,
       taskDescription,
-      taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate, // Convert empty string to null
+      // taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate, // Convert empty string to null
       taskDocument, // Add the task document to the data
     };
 
-    setIsSubmitting(true);
+    const inquiryTaskDataToSend = new FormData();
+    Object.keys(inquiryTaskData).forEach((key) => {
+      inquiryTaskDataToSend.append(key, inquiryTaskData[key]);
+    });
+
+    // const formData = new FormData();
+    // if (file) {
+    //   formData.append("inquiryTaskAllocationVM.file", file);
+    // }
+    // formData.append("inquiryTaskAllocationVM.inquiryRegistrationId", inquiryTaskData.inquiryRegistrationId);
+    // formData.append("inquiryTaskAllocationVM.file", file);
+    // formData.append("inquiryTaskAllocationVM.file", file);
+    // formData.append("inquiryTaskAllocationVM.file", file);
+    // formData.append("inquiryTaskAllocationVM.file", file);
+
     try {
-      const response = await InquiryTaskService.addInquiryTask(inquiryTaskData);
+      const response = await InquiryTaskService.addInquiryTask(inquiryTaskDataToSend);
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
         navigate(-1);
@@ -203,7 +223,7 @@ const AddInquiryTask = () => {
                       partnerList.map((partnerItem) => (
                         <option
                           key={partnerItem.partnerRegistrationId}
-                          value={partnerItem.companyName}
+                          value={partnerItem.partnerRegistrationId}
                         >
                           {partnerItem.companyName}
                         </option>
@@ -236,7 +256,7 @@ const AddInquiryTask = () => {
                       clientCompanyList.map((clientItem) => (
                         <option
                           key={clientItem.clientRegistrationId}
-                          value={clientItem.companyName}
+                          value={clientItem.clientRegistrationId}
                         >
                           {clientItem.companyName}
                         </option>
@@ -406,4 +426,4 @@ const AddInquiryTask = () => {
   );
 };
 
-export default AddInquiryTask;
+export default AddInquiryTask;

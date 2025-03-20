@@ -3,6 +3,7 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { InquiryChatService } from "../../service/InquiryChatService";
 import { useParams } from "react-router-dom";
+import { debounce } from "lodash";
 
 const Chat = () => {
   const [messages, setMessages] = useState([]); // State to store messages
@@ -14,31 +15,25 @@ const Chat = () => {
   const loginId = sessionStorage.getItem("LoginUserId");
 
   // const senderId = loginId;
-
-  // Fetch initial chat data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
+  const fetchData = debounce(async () => {
+    try {
         const chatData = await InquiryChatService.getAdminChatInPartner(id);
 
-        // console.log(chatData.data)
-
-        // Map through the chat data and set the senderName to "You" if senderId matches loginId
         const updatedMessages = chatData.data.map((message) => {
-          if (message.senderId === loginId) {
-            return { ...message, senderName: "You" }; // Set senderName to "You" if senderId matches
-          }
-          return message; // Otherwise, return the message as is
+            if (message.senderId === loginId) {
+                return { ...message, senderName: "You" };
+            }
+            return message;
         });
 
-        setMessages(updatedMessages); // Update the state with the modified messages
-        // const chatData = await InquiryChatService.getChatInAdmin(id, senderId);
-        // setMessages(chatData.data);
-        // console.log(chatData);
-      } catch (error) {
+        setMessages(updatedMessages);
+    } catch (error) {
         console.error("Error fetching chat data:", error);
-      }
-    };
+    }
+}, 300); // Debounce interval in milliseconds
+  // Fetch initial chat data
+  useEffect(() => {
+    
     fetchData();
   }, [id]);
 
@@ -65,16 +60,14 @@ const Chat = () => {
 
     // Listen for the new message from SignalR
     newConnection.on("ReceiveMessage", (chatMessage) => {
+      fetchData();
+      // console.log("Received message:", chatMessage);
       if (newMessage.inquiryRegistrationId === id) {
         // Append the new message to the state
         // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
-        setMessages((prevMessages) => [...prevMessages, {
-          user: chatMessage.user,  // Ensure this matches what you're sending from the backend
-          message: chatMessage.message,
-          sentDate: chatMessage.sentDate,
-          file: chatMessage.file ? chatMessage.file : null,  // Ensure file handling if needed
-        }]); // Update the messages state with the new message      }
-  }});
+        setMessages((prevMessages) => [...prevMessages, chatMessage]);
+      }
+});
 
     setConnection(newConnection);
 

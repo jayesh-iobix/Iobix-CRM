@@ -3,6 +3,7 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { InquiryChatService } from "../../service/InquiryChatService";
 import { useParams } from "react-router-dom";
+import { debounce } from "lodash";
 
 const InquiryChat = ({ senderId }) => {
   const [messages, setMessages] = useState([]); // State to store messages
@@ -19,23 +20,22 @@ const InquiryChat = ({ senderId }) => {
   const loginId = sessionStorage.getItem("LoginUserId");
 
   // Fetch initial chat data
+  const fetchData = debounce(async () => {
+    const chatData = await InquiryChatService.getChatInAdmin(id, senderId);
+
+    // Map through the chat data and set the senderName to "You" if senderId matches loginId
+    const updatedMessages = chatData.data.map((message) => {
+      if (message.senderId === loginId) {
+        return { ...message, senderName: "You" }; // Set senderName to "You" if senderId matches
+      }
+      return message; // Otherwise, return the message as is
+    });
+
+     setMessages(updatedMessages); // Update the state with the modified messages
+  }, 300);
+  
   useEffect(() => {
-    const fetchData = async () => {
-      const chatData = await InquiryChatService.getChatInAdmin(id, senderId);
-
-      // Map through the chat data and set the senderName to "You" if senderId matches loginId
-      const updatedMessages = chatData.data.map((message) => {
-        if (message.senderId === loginId) {
-          return { ...message, senderName: "You" }; // Set senderName to "You" if senderId matches
-        }
-        return message; // Otherwise, return the message as is
-      });
-
-       setMessages(updatedMessages); // Update the state with the modified messages
-      // console.log(chatData.data.senderId)
-      // setMessages(chatData.data);
-      // console.log(chatData);
-    };
+    
     fetchData();
   }, [id, senderId]);
 
@@ -148,9 +148,9 @@ const InquiryChat = ({ senderId }) => {
           
           // Broadcast the message to other clients via SignalR
           // debugger;
-          // if (connection) {
-          //   connection.invoke("SendMessage", newMessageObj);  // Send the message to the SignalR Hub
-          // }
+          if (connection) {
+            connection.invoke("SendPrivateMessage", newMessageObj);  // Send the message to the SignalR Hub
+          }
           
           setMessages((prevMessages) => [
             ...prevMessages,

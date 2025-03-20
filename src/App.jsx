@@ -119,6 +119,8 @@ import ViewPartnerProject from './app/partner-panel/inquiry/ViewProject';
 import ViewProject from './app/admin-panel/project/ViewProject';
 import AddProject from './app/admin-panel/project/AddProject';
 import Chat from './app/partner-panel/inquiry/Chat';
+import InquiryTaskList from './app/admin-panel/inquiry-task/InquiryTaskList';
+import PartnerInquiryTaskList from './app/partner-panel/inquiry-task/PartnerInquiryTaskList';
 
 
 function App() {
@@ -275,6 +277,7 @@ function App() {
       <Route path="clientcompany-list/edit-clientcompany/:id" element={<EditClientCompany />} />
       <Route path="clientcompany-list/view-clientcompany/:id" element={<ViewClientCompany />} />
       <Route path="inquiry-chat" element={<ChatInquiry />} />
+      <Route path="partnerinquiry-list/inquiry-task/:id" element={<InquiryTaskList />} />
       <Route path="partnerinquiry-list/create-inquiry-task/:id" element={<AddInquiryTask />} />
       <Route path="received-project-list" element={<ProjectList />} />
       <Route path="created-project-list" element={<CreatedProjectList />} />
@@ -345,8 +348,8 @@ function App() {
     {/* <Route path="/partner/inquiry-list/view-inquiry/:id" element={<ViewInquiry/>} /> */}
     <Route path="/partner/project-list/view-project/:id" element={<ViewPartnerProject/>} />
     <Route path="/partner/project-list/edit-project/:id" element={<EditInquiry/>} />
-    <Route path="/partner/inquiry-chat" element={<Chat/>} />
-    {/* <Route path="/company/task-list" element={<UserTaskList/>} /> */}
+    <Route path="/partner/project-list" element={<InquiryList/>} />
+    <Route path="/partner/inquiry-task-list" element={<PartnerInquiryTaskList/>} />
     </Route>
   
   </Routes>

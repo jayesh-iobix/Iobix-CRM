@@ -17,7 +17,7 @@ const ProjectList = () => {
   const [filteredInquiries, setFilteredInquiries] = useState([]);
   const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry name or code
   const [categoryFilter, setCategoryFilter] = useState(""); // Filter for inquiry category
-  const [projectFilter, setProjectFilter] = useState(""); // Filter for project creaded by
+  const [projectFilter, setProjectFilter] = useState(""); // Filter for project created by
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId for deletion
   const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup for confirmation
   const [isSubmitting, setIsSubmitting] = useState(false); // Button loading state
