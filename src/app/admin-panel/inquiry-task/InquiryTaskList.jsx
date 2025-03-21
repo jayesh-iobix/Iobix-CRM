@@ -15,11 +15,12 @@ import { InquirySubTaskService } from "../../service/InquirySubTaskService";
 
 const InquiryTaskList = () => {
   const [tasks, setTasks] = useState([]);
-  const [taskAllocationId, setTaskAllocationId] = useState("");
-  const [subTaskAllocationId, setSubTaskAllocationId] = useState("");
+  const [inquiryTaskAllocationId, setInquiryTaskAllocationId] = useState("");
+  const [inquirySubTaskAllocationId, setInquirySubTaskAllocationId] = useState("");
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
   const [priorityFilter, setPriorityFilter] = useState(""); // State for priority filter
+  // const [userFilter, setUserFilter] = useState(""); // State for priority filter
   const [statusFilter, setStatusFilter] = useState(""); // State for status filter
   const [projectFilter, setProjectFilter] = useState(""); // Filter for project created for
   const [subTasks, setSubTasks] = useState([]); // Stores the sub-tasks for each task
@@ -44,7 +45,7 @@ const InquiryTaskList = () => {
   //#endregion
 
   //#region  Popup useState
-  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by taskAllocationId
+  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by inquiryTaskAllocationId
   const [activeSubTaskMenu, setActiveSubTaskMenu] = useState(null); // Track the active sub-task menu
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -135,10 +136,10 @@ const InquiryTaskList = () => {
     setIsPopupOpen(true); // Open popup
   };
 
-  const handleSubTaskDeleteClick = (subTaskAllocationId,inquiryTaskAllocationId) => {
+  const handleSubTaskDeleteClick = (inquirySubTaskAllocationId) => {
     // debugger;
     // event.preventDefault(); // Prevent the default action (page reload)
-    setDeleteSubTaskId(subTaskAllocationId);
+    setDeleteSubTaskId(inquirySubTaskAllocationId);
     setIsPopupOpen(true); // Open popup
   };
 
@@ -148,7 +149,7 @@ const InquiryTaskList = () => {
 
     if(deleteId) {
       try {
-        const response = await TaskService.deleteTask(
+        const response = await InquiryTaskService.deleteInquiryTask(
           deleteId
         );
         if (response.status === 1) {
@@ -157,29 +158,29 @@ const InquiryTaskList = () => {
               (task) => task.inquiryTaskAllocationId !== deleteId
             )
           );
-          toast.error("Task Deleted Successfully"); // Toast on success
+          toast.error("Inquiry Task Deleted Successfully"); // Toast on success
           setIsPopupOpen(false); // Close popup after deletion
           setDeleteId(null); // Reset eventTypeIdToDelete
         }
       } catch (error) {
-        console.error("Error deleting task", error);
-        alert("Failed to delete task");
+        console.error("Error deleting inquiry task", error);
+        alert("Failed to delete inquiry task");
       }
     } 
     else if (deleteSubTaskId){
       try {
-        const response = await SubTaskService.deleteSubTask(
+        const response = await InquirySubTaskService.deleteInquirySubTask(
           deleteSubTaskId
         );
         if (response.status === 1) {
           // fetchsubtaskdata(deleteSubTaskId)
-          toast.error("Sub Task Deleted Successfully"); // Toast on success
+          toast.error("Inquiry Sub Task Deleted Successfully"); // Toast on success
           setIsPopupOpen(false); // Close popup after deletion
           setDeleteSubTaskId(null); // Reset eventTypeIdToDelete
         }
       } catch (error) {
-        console.error("Error deleting sub task:", error);
-        alert("Failed to delete sub task");
+        console.error("Error deleting inquiry sub task:", error);
+        alert("Failed to delete inquiry sub task");
       }
     }
     else return;
@@ -253,7 +254,7 @@ const InquiryTaskList = () => {
     setFilteredTasks(filtered); // Update filtered tasks based on all filters
     setTotalItems(filtered.length); 
     setCurrentPage(1); // Reset to the first page when a new filter is applied
-  }, [employeeFilter, priorityFilter, statusFilter, tasks]);
+  }, [employeeFilter, priorityFilter, statusFilter, projectFilter, tasks]);
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -311,6 +312,7 @@ const InquiryTaskList = () => {
   const uniqueEmployees = [
     ...new Set(tasks.map((task) => task.taskAssignToName)),
   ];
+  const uniqueTaskFilter = [...new Set(tasks.map((task) => task.taskFilter))];
   const uniquePriorities = [...new Set(tasks.map((task) => task.taskPriority))];
   const uniqueStatuses = [
     ...new Set(tasks.map((task) => task.taskStatusName)),
@@ -322,8 +324,8 @@ const InquiryTaskList = () => {
   // Function to handle opening the popup and setting the current task
   const handleEyeClick = (task) => {
     setCurrentTask(task); // Set the selected task data
-    setTaskAllocationId(task.inquiryTaskAllocationId); // Set the selected task data
-    setSubTaskAllocationId(task.subTaskAllocationId); // Set the selected task data
+    setInquiryTaskAllocationId(task.inquiryTaskAllocationId); // Set the selected task data
+    setInquirySubTaskAllocationId(task.inquirySubTaskAllocationId); // Set the selected task data
     setTaskDate(formatDate(task.taskDate)); // Assuming taskDate is in a format we can directly display
     setTaskTimeIn(task.taskTimeIn);
     setTaskTimeOut(task.taskTimeOut);
@@ -379,10 +381,10 @@ const InquiryTaskList = () => {
     );
   };
 
-  const toggleSubTaskDropdown = (subTaskAllocationId) => {
+  const toggleSubTaskDropdown = (inquirySubTaskAllocationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenSubDropdown((prev) =>
-      prev === subTaskAllocationId ? null : subTaskAllocationId
+      prev === inquirySubTaskAllocationId ? null : inquirySubTaskAllocationId
     );
   };
 
@@ -411,9 +413,9 @@ const InquiryTaskList = () => {
     return { top: buttonRect.bottom - 5, left: buttonRect.left - 120 };
   };
 
-  const getDropdownPositionForSubTask = (subinquiryTaskAllocationId, isLastRow) => {
+  const getDropdownPositionForSubTask = (inquirySubTaskAllocationId, isLastRow) => {
     // debugger;
-    const button = buttonRefs.current[subTaskAllocationId]; // Get reference to the button
+    const button = buttonRefs.current[inquirySubTaskAllocationId]; // Get reference to the button
     if (!button) return { top: 0, left: 0 }; // Fallback if the button ref is not available
 
     const buttonRect = button.getBoundingClientRect(); // Get button's bounding box (position & size)
@@ -440,7 +442,7 @@ const InquiryTaskList = () => {
     };
     try {
       const response = await TaskService.updateTaskActualStartingDate(
-        taskAllocationId,
+        inquiryTaskAllocationId,
         taskData
       );
       if (response.status === 1) {
@@ -461,7 +463,7 @@ const InquiryTaskList = () => {
     };
     try {
       const response = await TaskService.updateTaskCompletionDate(
-        taskAllocationId,
+        inquiryTaskAllocationId,
         taskData
       );
       if (response.status === 1) {
@@ -482,7 +484,7 @@ const InquiryTaskList = () => {
     };
     try {
       const response = await SubTaskService.updateSubTaskActualStartingDate(
-        subTaskAllocationId,
+        inquirySubTaskAllocationId,
         taskData
       );
       if (response.status === 1) {
@@ -503,7 +505,7 @@ const InquiryTaskList = () => {
     };
     try {
       const response = await SubTaskService.updateSubTaskCompletionDate(
-        subTaskAllocationId,
+        inquirySubTaskAllocationId,
         taskData
       );
       if (response.status === 1) {
@@ -518,12 +520,12 @@ const InquiryTaskList = () => {
 
   // Function to handle opening the popup and setting the current task
   const handleTaskStartAndEndDate = (task) => {
-    setTaskAllocationId(task.inquiryTaskAllocationId); // Set the selected task data
+    setInquiryTaskAllocationId(task.inquiryTaskAllocationId); // Set the selected task data
     setStartDateIsPopupVisible(true); // Show the popup
   };
 
   const handleSubTaskStartAndEndDate = (subTask) => {
-    setSubTaskAllocationId(subTask.subTaskAllocationId); // Set the selected task data
+    setInquirySubTaskAllocationId(subTask.inquirySubTaskAllocationId); // Set the selected task data
     setSubStartDateIsPopupVisible(true); // Show the popup
   };
   
@@ -533,7 +535,7 @@ const InquiryTaskList = () => {
   };
  
   const handleSubTaskTransfer = (subTask) => {
-    setAllocationId(subTask.subTaskAllocationId); // Set the selected task data
+    setAllocationId(subTask.inquirySubTaskAllocationId); // Set the selected task data
     setSubTaskTransferIsPopupVisible(true); // Show the popup
   };
 
@@ -620,8 +622,8 @@ const InquiryTaskList = () => {
     // Convert taskDuration to the required time span format (hh:mm:ss)
 
     const taskNoteData = {
-      inquiryTaskAllocationId: taskAllocationId === "" ? null : taskAllocationId, // Convert empty string to null
-      subTaskAllocationId: subTaskAllocationId === "" ? null : subTaskAllocationId, // Convert empty string to null
+      inquiryTaskAllocationId: inquiryTaskAllocationId === "" ? null : inquiryTaskAllocationId, // Convert empty string to null
+      inquirySubTaskAllocationId: inquirySubTaskAllocationId === "" ? null : inquirySubTaskAllocationId, // Convert empty string to null
       taskDate,
       taskTimeIn: formattedTimeIn,
       taskTimeOut: formattedTimeOut,
@@ -711,8 +713,13 @@ const InquiryTaskList = () => {
           className="border border-gray-300 rounded p-2 w-fit border-active"
           >
             <option value="">All Assign To</option>
-            <option value="Partner">Partner</option>
-            <option value="Client">Client Company</option>
+            {uniqueTaskFilter.map((taskFilter) => (
+            <option key={taskFilter} value={taskFilter}>
+              {taskFilter}
+            </option>
+            ))}
+            {/* <option value="Partner">Partner</option>
+            <option value="Client">Client Company</option> */}
         </select>
       </div>
 
@@ -723,7 +730,7 @@ const InquiryTaskList = () => {
             <tr>
               {[
                 "",
-                "Inquiry Task Name",
+                "Task Name",
                 "Assigned By",
                 "Assigned To",
                 "Priority",
@@ -764,6 +771,7 @@ const InquiryTaskList = () => {
                       {/* <tr className="border-b hover:bg-gray-50"> */}
                       <td className="py-3 px-4 text-gray-700">
                         <button
+                          type="button"
                           onClick={() => toggleRow(item.inquiryTaskAllocationId)}
                           className="text-gray-500 hover:text-gray-700"
                         >
@@ -810,7 +818,7 @@ const InquiryTaskList = () => {
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <div className="flex gap-1">
+                        <div className="flex gap-2">
                             <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
@@ -830,58 +838,58 @@ const InquiryTaskList = () => {
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                to={`/task/edit-task/${item.taskAllocationId}`}
+                                to={`/task/edit-task/${item.inquiryTaskAllocationId}`}
                                 className="text-blue-500 hover:text-blue-700"
                               >
                                 <FaEdit size={24} />
                               </Link>
                             </motion.button> */}
 
-                            {/* <motion.button
+                            <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                to={`/task/tasknote-list/${item.taskAllocationId}`}
+                                to={`/partnerinquiry-list/inquiry-task/inquiry-task-note/${item.inquiryTaskAllocationId}`}
                                 className="text-yellow-500 hover:text-yellow-700"
                               >
                                 <IoTime size={24} />
                               </Link>
-                            </motion.button> */}
+                            </motion.button>
 
-                            {/* <motion.button
+                            <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                               onClick={() =>
-                                handleDeleteClick(item.taskAllocationId)
+                                handleDeleteClick(item.inquiryTaskAllocationId)
                               }
                               className="text-red-500 hover:text-red-700"
                             >
                               <FaTrash size={22} />
-                            </motion.button> */}
+                            </motion.button>
 
-                            {/* <motion.button
+                            <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                               onClick={() =>
-                                toggleDropdown(item.taskAllocationId)
+                                toggleDropdown(item.inquiryTaskAllocationId)
                               }
                               className="text-gray-500 hover:text-gray-700"
                               ref={(el) =>
-                                (buttonRefs.current[item.taskAllocationId] = el)
+                                (buttonRefs.current[item.inquiryTaskAllocationId] = el)
                               }
                             >
                               <FaEllipsisV size={24} />
-                            </motion.button> */}
+                            </motion.button>
                           
-                          {/* {openDropdown === item.taskAllocationId && (
+                          {openDropdown === item.inquiryTaskAllocationId && (
                             <div
                               className="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
                               style={getDropdownPosition(
-                                item.taskAllocationId,
+                                item.inquiryTaskAllocationId,
                                 isLastRow
                               )}
                               onMouseLeave={closeMenu}
@@ -1045,7 +1053,7 @@ const InquiryTaskList = () => {
                                 </form>
                               </div>
                             </div>
-                          )} */}
+                          )}
                         </div>
                       </td>
                       {/* </tr> */}
@@ -1088,7 +1096,7 @@ const InquiryTaskList = () => {
                                       subTasks[item.inquiryTaskAllocationId].length -
                                         1;
                                     return (
-                                      <tr key={subTask.subTaskAllocationId}>
+                                      <tr key={subTask.inquirySubTaskAllocationId}>
                                         <td className="py-2 px-4">
                                           {subTask.taskName}
                                         </td>
@@ -1126,79 +1134,83 @@ const InquiryTaskList = () => {
                                         </td>
                                         <td className="py-3 px-4">
                                           <div className="flex gap-2">
-                                            <button>
+                                            {/* <button> */}
                                               <motion.button
+                                                type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
                                               >
                                                 <Link
-                                                  to={`/task/edit-subtask/${subTask.subTaskAllocationId}`}
+                                                  to={`/task/edit-subtask/${subTask.inquirySubTaskAllocationId}`}
                                                   className="relative text-blue-500 hover:text-blue-700 group"
                                                 >
                                                   <FaEdit size={24} />
                                                 </Link>
                                               </motion.button>
-                                            </button>
+                                            {/* </button> */}
 
-                                            <button>
+                                            {/* <button> */}
                                               <motion.button
+                                                type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
                                               >
                                                 <Link
-                                                  to={`/task/tasknote-list/${subTask.subTaskAllocationId}`}
+                                                  to={`/task/tasknote-list/${subTask.inquirySubTaskAllocationId}`}
                                                   className="text-yellow-500 hover:text-yellow-700"
                                                 >
                                                   {/* <FaRegFileLines size={24} /> */}
                                                   <IoTime size={24} />
                                                 </Link>
                                               </motion.button>
-                                            </button>
+                                            {/* </button> */}
 
-                                            <button
-                                              onClick={(e) =>
-                                                handleSubTaskDeleteClick(
-                                                  subTask.subTaskAllocationId,
-                                                  subTask.inquiryTaskAllocationId
-                                                )
-                                              }
-                                              //  onClick={() => deleteSubTask(subTask.subTaskAllocationId,subTask.taskAllocationId)}
-                                              className="text-red-500 hover:text-red-700"
-                                            >
+                                            {/* <button> */}
                                               <motion.button
+                                                type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
+                                                onClick={(e) =>
+                                                  handleSubTaskDeleteClick(
+                                                    subTask.inquirySubTaskAllocationId,
+                                                    subTask.inquiryTaskAllocationId
+                                                  )
+                                                }
+                                                //  onClick={() => deleteSubTask(subTask.inquirySubTaskAllocationId,subTask.taskAllocationId)}
+                                                className="text-red-500 hover:text-red-700"
                                               >
                                                 <FaTrash size={22} />
                                               </motion.button>
-                                            </button>
-                                            <button
-                                              onClick={() =>
-                                                toggleSubTaskDropdown(
-                                                  subTask.subTaskAllocationId
-                                                )
-                                              }
-                                              className="text-gray-500 hover:text-gray-700"
-                                              ref={(el) =>
-                                                (buttonRefs.current[
-                                                  subTask.subTaskAllocationId
-                                                ] = el)
-                                              }
-                                            >
+                                            {/* </button> */}
+
+                                            {/* <button> */}
                                               <motion.button
+                                                type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
+                                                onClick={() =>
+                                                  toggleSubTaskDropdown(
+                                                    subTask.inquirySubTaskAllocationId
+                                                  )
+                                                }
+                                                className="text-gray-500 hover:text-gray-700"
+                                                ref={(el) =>
+                                                  (buttonRefs.current[
+                                                    subTask.inquirySubTaskAllocationId
+                                                  ] = el)
+                                                }
                                               >
                                                 <FaEllipsisV size={24} />
                                               </motion.button>
-                                            </button>
+                                            {/* </button> */}
+
                                             {/* Render dropdown above or below based on space */}
                                             {openSubDropdown ===
-                                              subTask.subTaskAllocationId && (
+                                              subTask.inquirySubTaskAllocationId && (
                                               <div
                                                 className="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
                                                 style={getDropdownPositionForSubTask(
-                                                  subTask.subTaskAllocationId,
+                                                  subTask.inquirySubTaskAllocationId,
                                                   isLastRow
                                                 )}
                                                 onMouseLeave={closeMenu}
@@ -1546,6 +1558,7 @@ const InquiryTaskList = () => {
       >
         <div className="flex flex-1 justify-between sm:hidden">
           <motion.button
+            type="button"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -1555,6 +1568,7 @@ const InquiryTaskList = () => {
             Previous
           </motion.button>
           <motion.button
+            type="button"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -1584,6 +1598,7 @@ const InquiryTaskList = () => {
               aria-label="Pagination"
             >
               <motion.button
+                type="button"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
@@ -1608,6 +1623,7 @@ const InquiryTaskList = () => {
               {/* Pagination Buttons */}
               {[...Array(totalPages)].map((_, index) => (
                 <motion.button
+                  type="button"
                   key={index}
                   onClick={() => handlePageChange(index + 1)}
                   className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
@@ -1623,6 +1639,7 @@ const InquiryTaskList = () => {
               ))}
 
               <motion.button
+                type="button"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"

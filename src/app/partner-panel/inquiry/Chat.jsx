@@ -16,8 +16,9 @@ const Chat = () => {
 
   // const senderId = loginId;
   const fetchData = debounce(async () => {
-    try {
+    // try {
         const chatData = await InquiryChatService.getAdminChatInPartner(id);
+        // debugger;
 
         const updatedMessages = chatData.data.map((message) => {
             if (message.senderId === loginId) {
@@ -27,13 +28,13 @@ const Chat = () => {
         });
 
         setMessages(updatedMessages);
-    } catch (error) {
-        console.error("Error fetching chat data:", error);
-    }
-}, 300); // Debounce interval in milliseconds
+    // } catch (error) {
+    //     console.error("Error fetching chat data:", error);
+    // }
+// }, 
+      },300); // Debounce interval in milliseconds
   // Fetch initial chat data
   useEffect(() => {
-    
     fetchData();
   }, [id]);
 
@@ -59,15 +60,16 @@ const Chat = () => {
       .catch((error) => console.error("Error while starting connection: " + error));
 
     // Listen for the new message from SignalR
-    newConnection.on("ReceiveMessage", (chatMessage) => {
+    newConnection.on("ReceiveUserMessage", (chatMessage) => {
       fetchData();
       // console.log("Received message:", chatMessage);
-      if (newMessage.inquiryRegistrationId === id) {
+      if (newMessage.senderId !== loginId && newMessage.inquiryRegistrationId === id) {
         // Append the new message to the state
         // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
         setMessages((prevMessages) => [...prevMessages, chatMessage]);
       }
-});
+      console.log(messages);
+    });
 
     setConnection(newConnection);
 
@@ -88,6 +90,7 @@ const Chat = () => {
       const newMessageObj = {
         inquiryRegistrationId: id,
         message: newMessage,
+        // sentDate: new Date().toISOString(),
         // receiverId: senderId,
       };
 
@@ -98,8 +101,9 @@ const Chat = () => {
       } else {
         formData.append("chatMessageVM.Message", newMessageObj.message);
       }
-
+      
       formData.append("chatMessageVM.InquiryRegistrationId", newMessageObj.inquiryRegistrationId);
+      // formData.append("chatMessageVM.SentDate", newMessageObj.sentDate);
       // formData.append("chatMessageVM.ReceiverId", newMessageObj.receiverId);
 
       try {
@@ -113,9 +117,9 @@ const Chat = () => {
           // }
 
           // Broadcast the message to other clients via SignalR
-          if (connection) {
-            connection.invoke("SendMessage", newMessageObj);  // Send the message to the SignalR Hub
-          }
+          // if (connection) {
+          //   connection.invoke("SendMessageToAdmin", newMessageObj);  // Send the message to the SignalR Hub
+          // }
 
 
           // Update the local messages state to include the new message
@@ -202,13 +206,14 @@ const Chat = () => {
                         />
                       ) : (
                         <div className="text-xs text-blue-500 mt-1">
-                          <a
-                            href={URL.createObjectURL(message.filePath)}
+                          <img
+                            src={URL.createObjectURL(message.filePath)}
+                            alt="file-preview"
                             target="_blank"
                             rel="noopener noreferrer"
-                          >
+                          />
                             {message.file.name}
-                          </a>
+                          {/* </a> */}
                         </div>
                       )}
                     </div>
@@ -287,7 +292,8 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default Chat;
+
 
 
 

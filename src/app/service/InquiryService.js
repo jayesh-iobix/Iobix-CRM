@@ -247,10 +247,21 @@ export const InquiryService = {
     }
   },
 
-  // Method to recived all project 
+  // Method to recived all project in admin
   receivedAllProjects: async () => {
     try {
       const response = await httpClient.get(`${api}/ReceiveAllInqInAdmin`); 
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch project', error);
+      throw error;
+    }
+
+   },
+  // Method to recived all project in employee
+  receivedAllProjectsInUser: async () => {
+    try {
+      const response = await httpClient.get(`${api}/ReceiveAllInqInEmployee`); 
       return response.data;
     } catch (error) {
       console.error('Failed to fetch project', error);

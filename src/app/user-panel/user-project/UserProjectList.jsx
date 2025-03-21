@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { format } from 'date-fns';
-import { InquiryService } from "../../../service/InquiryService";
-import { InquiryPermissionService } from "../../../service/InquiryPermissionService";
-import { DepartmentService } from "../../../service/DepartmentService";
-import { EmployeeService } from "../../../service/EmployeeService";
-import { InquiryFollowUpService } from "../../../service/InquiryFollowUpService";
+import { InquiryPermissionService } from "../../service/InquiryPermissionService";
+import { DepartmentService } from "../../service/DepartmentService";
+import { EmployeeService } from "../../service/EmployeeService";
+import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
+import { InquiryService } from "../../service/InquiryService";
 
 
-const ProjectList = () => {
+const UserProjectList = () => {
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
@@ -71,9 +71,9 @@ const ProjectList = () => {
     try {
 
       // Fetch Inquiry
-      const result = await InquiryService.receivedAllProjects();
+      const result = await InquiryService.receivedAllProjectsInUser();
       setInquiries(result.data);
-      console.log(result.data);
+    //   console.log(result.data);
       setFilteredInquiries(result.data);
       setTotalItems(result.data.length);
 
@@ -333,7 +333,7 @@ const ProjectList = () => {
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Project List</h1>
         <div className="flex">
-          {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
               to="/partnerinquiry-list/add-partnerinquiry"
               // to={navigateTo}
@@ -342,7 +342,7 @@ const ProjectList = () => {
               Add
               <FaPlus className="mt-[3px]" size={14} />
             </Link>
-          </motion.button> */}
+          </motion.button>
         </div>
       </div>
 
@@ -461,7 +461,7 @@ const ProjectList = () => {
                         whileTap={{ scale: 0.9 }}
                       >
                         <Link
-                          to={`/view-project/${item.inquiryRegistrationId}`}
+                          to={`/user/project-list/view-project/${item.inquiryRegistrationId}`}
                           className="text-green-500 hover:text-green-700"
                         >
                           <FaEye size={24} />
@@ -899,4 +899,4 @@ const ProjectList = () => {
   );
 };
 
-export default ProjectList;
+export default UserProjectList;

@@ -13,13 +13,14 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { InquirySubTaskService } from "../../service/InquirySubTaskService";
 
-const PartnerInquiryTaskList = () => {
+const UserInquiryTaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [inquiryTaskAllocationId, setInquiryTaskAllocationId] = useState("");
   const [inquirySubTaskAllocationId, setInquirySubTaskAllocationId] = useState("");
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
   const [priorityFilter, setPriorityFilter] = useState(""); // State for priority filter
+  // const [userFilter, setUserFilter] = useState(""); // State for priority filter
   const [statusFilter, setStatusFilter] = useState(""); // State for status filter
   const [projectFilter, setProjectFilter] = useState(""); // Filter for project created for
   const [subTasks, setSubTasks] = useState([]); // Stores the sub-tasks for each task
@@ -44,7 +45,7 @@ const PartnerInquiryTaskList = () => {
   //#endregion
 
   //#region  Popup useState
-  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by taskAllocationId
+  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by inquiryTaskAllocationId
   const [activeSubTaskMenu, setActiveSubTaskMenu] = useState(null); // Track the active sub-task menu
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -75,7 +76,6 @@ const PartnerInquiryTaskList = () => {
   const buttonRefs = useRef({}); // To store references to dropdown buttons
 
   const {id} = useParams();
-  const userId = sessionStorage.getItem("LoginUserId");
 
   // Function to fetch sub-tasks by task allocation ID
   const getInquirySubTasksByTaskId = async (inquiryTaskAllocationId) => {
@@ -100,7 +100,7 @@ const PartnerInquiryTaskList = () => {
 
   const fetchTasks = async () => {
     try {
-      const result = await InquiryTaskService.getInquiryTaskInPartner(id);
+      const result = await InquiryTaskService.getInquiryTaskInUser(id);
       setTasks(result.data);
       setFilteredTasks(result.data); // Initially show all tasks
       setTotalItems(result.data.length); // Set total items for pagination
@@ -136,7 +136,7 @@ const PartnerInquiryTaskList = () => {
     setIsPopupOpen(true); // Open popup
   };
 
-  const handleSubTaskDeleteClick = (inquirySubTaskAllocationId,inquiryTaskAllocationId) => {
+  const handleSubTaskDeleteClick = (inquirySubTaskAllocationId) => {
     // debugger;
     // event.preventDefault(); // Prevent the default action (page reload)
     setDeleteSubTaskId(inquirySubTaskAllocationId);
@@ -149,7 +149,7 @@ const PartnerInquiryTaskList = () => {
 
     if(deleteId) {
       try {
-        const response = await TaskService.deleteTask(
+        const response = await InquiryTaskService.deleteInquiryTask(
           deleteId
         );
         if (response.status === 1) {
@@ -158,29 +158,29 @@ const PartnerInquiryTaskList = () => {
               (task) => task.inquiryTaskAllocationId !== deleteId
             )
           );
-          toast.error("Task Deleted Successfully"); // Toast on success
+          toast.error("Inquiry Task Deleted Successfully"); // Toast on success
           setIsPopupOpen(false); // Close popup after deletion
           setDeleteId(null); // Reset eventTypeIdToDelete
         }
       } catch (error) {
-        console.error("Error deleting task", error);
-        alert("Failed to delete task");
+        console.error("Error deleting inquiry task", error);
+        alert("Failed to delete inquiry task");
       }
     } 
     else if (deleteSubTaskId){
       try {
-        const response = await SubTaskService.deleteSubTask(
+        const response = await InquirySubTaskService.deleteInquirySubTask(
           deleteSubTaskId
         );
         if (response.status === 1) {
           // fetchsubtaskdata(deleteSubTaskId)
-          toast.error("Sub Task Deleted Successfully"); // Toast on success
+          toast.error("Inquiry Sub Task Deleted Successfully"); // Toast on success
           setIsPopupOpen(false); // Close popup after deletion
           setDeleteSubTaskId(null); // Reset eventTypeIdToDelete
         }
       } catch (error) {
-        console.error("Error deleting sub task:", error);
-        alert("Failed to delete sub task");
+        console.error("Error deleting inquiry sub task:", error);
+        alert("Failed to delete inquiry sub task");
       }
     }
     else return;
@@ -254,7 +254,7 @@ const PartnerInquiryTaskList = () => {
     setFilteredTasks(filtered); // Update filtered tasks based on all filters
     setTotalItems(filtered.length); 
     setCurrentPage(1); // Reset to the first page when a new filter is applied
-  }, [employeeFilter, priorityFilter, statusFilter, tasks]);
+  }, [employeeFilter, priorityFilter, statusFilter, projectFilter, tasks]);
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -312,6 +312,7 @@ const PartnerInquiryTaskList = () => {
   const uniqueEmployees = [
     ...new Set(tasks.map((task) => task.taskAssignToName)),
   ];
+  const uniqueTaskFilter = [...new Set(tasks.map((task) => task.taskFilter))];
   const uniquePriorities = [...new Set(tasks.map((task) => task.taskPriority))];
   const uniqueStatuses = [
     ...new Set(tasks.map((task) => task.taskStatusName)),
@@ -380,7 +381,7 @@ const PartnerInquiryTaskList = () => {
     );
   };
 
-  const toggleSubTaskDropdown = (subinquiryTaskAllocationId) => {
+  const toggleSubTaskDropdown = (inquirySubTaskAllocationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenSubDropdown((prev) =>
       prev === inquirySubTaskAllocationId ? null : inquirySubTaskAllocationId
@@ -440,7 +441,7 @@ const PartnerInquiryTaskList = () => {
       actualStartingDate: newStartingDate,
     };
     try {
-      const response = await InquiryTaskService.updateInquiryTaskActualStartingDate(
+      const response = await TaskService.updateTaskActualStartingDate(
         inquiryTaskAllocationId,
         taskData
       );
@@ -461,7 +462,7 @@ const PartnerInquiryTaskList = () => {
       taskCompletionDate: newStartingDate,
     };
     try {
-      const response = await InquiryTaskService.updateInquiryTaskCompletionDate(
+      const response = await TaskService.updateTaskCompletionDate(
         inquiryTaskAllocationId,
         taskData
       );
@@ -470,7 +471,7 @@ const PartnerInquiryTaskList = () => {
         fetchTasks();
       }
     } catch (error) {
-      console.error("Error updating Completion Date:", error);
+      console.error("Error updating ActualStaringDate:", error);
     }
   };
 
@@ -712,8 +713,13 @@ const PartnerInquiryTaskList = () => {
           className="border border-gray-300 rounded p-2 w-fit border-active"
           >
             <option value="">All Assign To</option>
-            <option value="Partner">Partner</option>
-            <option value="Client">Client Company</option>
+            {uniqueTaskFilter.map((taskFilter) => (
+            <option key={taskFilter} value={taskFilter}>
+              {taskFilter}
+            </option>
+            ))}
+            {/* <option value="Partner">Partner</option>
+            <option value="Client">Client Company</option> */}
         </select>
       </div>
 
@@ -724,7 +730,7 @@ const PartnerInquiryTaskList = () => {
             <tr>
               {[
                 "",
-                "Inquiry Task Name",
+                "Task Name",
                 "Assigned By",
                 "Assigned To",
                 "Priority",
@@ -812,27 +818,27 @@ const PartnerInquiryTaskList = () => {
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <div className="flex gap-1">
+                        <div className="flex gap-2">
                             <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                to={`/partner/view-inquiry-task/${item.inquiryTaskAllocationId}`}
+                                to={`/view-inquiry-task/${item.inquiryTaskAllocationId}`}
                                 className="text-green-500 hover:text-green-700"
                               >
                                 <FaEye size={24} />
                               </Link>
                             </motion.button>
-                            
+
                             {/* <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                to={`/task/edit-task/${item.taskAllocationId}`}
+                                to={`/task/edit-task/${item.inquiryTaskAllocationId}`}
                                 className="text-blue-500 hover:text-blue-700"
                               >
                                 <FaEdit size={24} />
@@ -845,26 +851,24 @@ const PartnerInquiryTaskList = () => {
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                to={`/task/tasknote-list/${item.inquiryTaskAllocationId}`}
+                                to={`/partnerinquiry-list/inquiry-task/inquiry-task-note/${item.inquiryTaskAllocationId}`}
                                 className="text-yellow-500 hover:text-yellow-700"
                               >
                                 <IoTime size={24} />
                               </Link>
                             </motion.button>
 
-                            {/* {item.taskAssignBy === userId && (
-                              <motion.button
+                            <motion.button
                               type="button"
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                               onClick={() =>
-                                handleDeleteClick(item.taskAllocationId)
+                                handleDeleteClick(item.inquiryTaskAllocationId)
                               }
-                               className="text-red-500 hover:text-red-700"
-                              >
-                                <FaTrash size={22} />
-                              </motion.button>
-                            )} */}                          
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <FaTrash size={22} />
+                            </motion.button>
 
                             <motion.button
                               type="button"
@@ -909,14 +913,14 @@ const PartnerInquiryTaskList = () => {
                                     Daily Note
                                   </span>
                                 </li>
-                                {/* <li>
+                                <li>
                                   <span
                                     onClick={() => handleTaskTransfer(item)}
                                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                   >
                                     Task Transfer
                                   </span>
-                                </li> */}
+                                </li>
                               </ul>
                               {startDateIsPopupVisible && (
                                 <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
@@ -1130,8 +1134,9 @@ const PartnerInquiryTaskList = () => {
                                         </td>
                                         <td className="py-3 px-4">
                                           <div className="flex gap-2">
-                                            <button>
+                                            {/* <button> */}
                                               <motion.button
+                                                type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
                                               >
@@ -1142,10 +1147,11 @@ const PartnerInquiryTaskList = () => {
                                                   <FaEdit size={24} />
                                                 </Link>
                                               </motion.button>
-                                            </button>
+                                            {/* </button> */}
 
-                                            <button>
+                                            {/* <button> */}
                                               <motion.button
+                                                type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
                                               >
@@ -1157,45 +1163,47 @@ const PartnerInquiryTaskList = () => {
                                                   <IoTime size={24} />
                                                 </Link>
                                               </motion.button>
-                                            </button>
+                                            {/* </button> */}
 
-                                            <button
-                                              onClick={(e) =>
-                                                handleSubTaskDeleteClick(
-                                                  subTask.inquirySubTaskAllocationId,
-                                                  subTask.inquiryTaskAllocationId
-                                                )
-                                              }
-                                              //  onClick={() => deleteSubTask(subTask.subTaskAllocationId,subTask.taskAllocationId)}
-                                              className="text-red-500 hover:text-red-700"
-                                            >
+                                            {/* <button> */}
                                               <motion.button
+                                                type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
+                                                onClick={(e) =>
+                                                  handleSubTaskDeleteClick(
+                                                    subTask.inquirySubTaskAllocationId,
+                                                    subTask.inquiryTaskAllocationId
+                                                  )
+                                                }
+                                                //  onClick={() => deleteSubTask(subTask.inquirySubTaskAllocationId,subTask.taskAllocationId)}
+                                                className="text-red-500 hover:text-red-700"
                                               >
                                                 <FaTrash size={22} />
                                               </motion.button>
-                                            </button>
-                                            <button
-                                              onClick={() =>
-                                                toggleSubTaskDropdown(
-                                                  subTask.inquirySubTaskAllocationId
-                                                )
-                                              }
-                                              className="text-gray-500 hover:text-gray-700"
-                                              ref={(el) =>
-                                                (buttonRefs.current[
-                                                  subTask.inquirySubTaskAllocationId
-                                                ] = el)
-                                              }
-                                            >
+                                            {/* </button> */}
+
+                                            {/* <button> */}
                                               <motion.button
+                                                type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
+                                                onClick={() =>
+                                                  toggleSubTaskDropdown(
+                                                    subTask.inquirySubTaskAllocationId
+                                                  )
+                                                }
+                                                className="text-gray-500 hover:text-gray-700"
+                                                ref={(el) =>
+                                                  (buttonRefs.current[
+                                                    subTask.inquirySubTaskAllocationId
+                                                  ] = el)
+                                                }
                                               >
                                                 <FaEllipsisV size={24} />
                                               </motion.button>
-                                            </button>
+                                            {/* </button> */}
+
                                             {/* Render dropdown above or below based on space */}
                                             {openSubDropdown ===
                                               subTask.inquirySubTaskAllocationId && (
@@ -1660,4 +1668,4 @@ const PartnerInquiryTaskList = () => {
   );
 };
 
-export default PartnerInquiryTaskList;
+export default UserInquiryTaskList;

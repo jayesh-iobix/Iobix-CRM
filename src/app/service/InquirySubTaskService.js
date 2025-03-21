@@ -96,13 +96,13 @@ export const InquirySubTaskService = {
     }
   },
 
-   // Method to detete task
-   deleteSubTask: async (subTaskId) => {
+   // Method to detete inquiry sub task
+  deleteInquirySubTask: async (inquirySubTaskAllocationId) => {
     try {
-      const response = await httpClient.delete(`${api}/${subTaskId}`); 
+      const response = await httpClient.delete(`${api}/${inquirySubTaskAllocationId}`);
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch sub tasks:', error);
+      console.error("Failed to delete inquiry sub tasks:", error);
       throw error;
     }
   },

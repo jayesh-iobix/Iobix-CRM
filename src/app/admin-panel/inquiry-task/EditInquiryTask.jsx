@@ -9,20 +9,21 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { PartnerService } from "../../service/PartnerService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { InquiryTaskService } from "../../service/InquiryTaskService";
-import { id } from "date-fns/locale";
 
-const AddInquiryTask = () => {
+const EditInquiryTask = () => {
   const [taskName, setTaskName] = useState("");
   const [partnerRegistrationId, setPartnerRegistrationId] = useState("");
   const [clientRegistrationId, setClientRegistrationId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
+  const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
-  const [taskDocument, setTaskDocument] = useState("");
+  const [taskAssignBy, setTaskAssignBy] = useState("");
+  const [taskDocument, setTaskDocument] = useState(null);
   const [taskPriority, setTaskPriority] = useState("");
   const [taskType, setTaskType] = useState("");
   const [taskStartingDate, setTaskStartingDate] = useState("");
   const [taskExpectedCompletionDate, setTaskExpectedCompletionDate] = useState("");
-  const [taskCompletionDate, settaskCompletionDate] = useState("");
+  const [taskCompletionDate, setTaskCompletionDate] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [employeeList, setEmployeeList] = useState([]);
@@ -34,11 +35,45 @@ const AddInquiryTask = () => {
   const [selection, setSelection] = useState("partner"); // Add this to track the radio button selection (partner, client, employee)
   const navigate = useNavigate();
 
-  const {id} = useParams();
+  const { id } = useParams(); // Get the task ID from the URL parameters
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchTaskData = async () => {
       try {
+        const taskResponse = await InquiryTaskService.getInquiryTasksById(id);
+        const taskData = taskResponse.data;
+        // console.log(taskData)
+
+        setTaskName(taskData.taskName);
+        setPartnerRegistrationId(taskData.partnerRegistrationId || "");
+        setClientRegistrationId(taskData.clientRegistrationId || "");
+        setInquiryRegistrationId(taskData.inquiryRegistrationId || "");
+        setEmployeeId(taskData.employeeId || "");
+        setTaskAssignTo(taskData.taskAssignTo);
+        setTaskAssignBy(taskData.taskAssignBy);
+        setTaskPriority(taskData.taskPriority);
+        setTaskType(taskData.taskType);
+        setTaskStartingDate(taskData.taskStartingDate.slice(0, 10)); // Format as YYYY-MM-DD
+        setTaskExpectedCompletionDate(taskData.taskExpectedCompletionDate?.slice(0, 10) || ""); // Format as YYYY-MM-DD
+        setTaskCompletionDate(taskData.taskCompletionDate?.slice(0, 10) || "");
+        // setTaskCompletionDate(taskData.taskCompletionDate || "");
+        setTaskDescription(taskData.taskDescription);
+        setDepartmentId(taskData.departmentId !== null ? taskData.departmentId : "");
+
+
+         // Set the selection based on the taskAssignTo value
+         if (taskData.taskAssignTo && taskData.taskFilter === "Partner") {
+           setSelection("partner");
+           setPartnerRegistrationId(taskData.taskAssignTo);
+         } else if (taskData.taskAssignTo && taskData.taskFilter === "Client") {
+           setSelection("client");
+           setClientRegistrationId(taskData.taskAssignTo);
+         } else if (taskData.taskAssignTo && taskData.taskFilter === "Employee") {
+           setSelection("employee");
+           setEmployeeId(taskData.taskAssignTo);
+         }
+
+        // Fetch partner, client, and department data
         const partnerResult = await PartnerService.getPartner();
         setPartnerList(partnerResult.data.filter(item => item.isActive));
 
@@ -59,14 +94,13 @@ const AddInquiryTask = () => {
       }
     };
 
-    fetchEmployees();
-  }, [departmentId]);
+    fetchTaskData();
+  }, [id, departmentId]); // Fetch data when task ID or department ID changes
 
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
     if (!taskPriority) newErrors.taskPriority = "Priority is required";
-    // if (!taskAssignTo) newErrors.taskAssignTo = "Assign To is required";
     if (!taskType) newErrors.taskType = "Task Type is required";
     if (!taskStartingDate) newErrors.taskStartingDate = "Task Starting Date is required";
     setErrors(newErrors);
@@ -77,23 +111,27 @@ const AddInquiryTask = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // debugger;
     if (!validateForm()) return;
 
     const inquiryTaskData = {
-      inquiryRegistrationId: id,
+      inquiryRegistrationId,
       taskName,
       departmentId,
-      taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && employeeId !== "") ? employeeId : 
-      (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
-      (clientRegistrationId === "" && employeeId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,
+      taskAssignTo:
+        (partnerRegistrationId === "" &&
+        clientRegistrationId === "" &&
+        employeeId !== "")
+          ? employeeId
+          : partnerRegistrationId !== ""
+          ? partnerRegistrationId
+          : clientRegistrationId,
+      taskAssignBy,
       taskPriority,
       taskType,
       taskStartingDate,
-      taskExpectedCompletionDate: taskExpectedCompletionDate === "" ? null : taskExpectedCompletionDate,
+      taskExpectedCompletionDate: taskExpectedCompletionDate || null,
       taskDescription,
-      // taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate, // Convert empty string to null
-      taskDocument, // Add the task document to the data
+      taskDocument,
     };
 
     const inquiryTaskDataToSend = new FormData();
@@ -101,25 +139,15 @@ const AddInquiryTask = () => {
       inquiryTaskDataToSend.append(key, inquiryTaskData[key]);
     });
 
-    // const formData = new FormData();
-    // if (file) {
-    //   formData.append("inquiryTaskAllocationVM.file", file);
-    // }
-    // formData.append("inquiryTaskAllocationVM.inquiryRegistrationId", inquiryTaskData.inquiryRegistrationId);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-
     try {
-      const response = await InquiryTaskService.addInquiryTask(inquiryTaskDataToSend);
+      const response = await InquiryTaskService.updateInquiryTask(id, inquiryTaskDataToSend);
       if (response.status === 1) {
-        toast.success(response.message); // Toast on success
-        navigate(-1);
+        toast.success(response.message);
+        navigate(-1); // Navigate back
       }
     } catch (error) {
-      console.error("Error adding inquiry task:", error);
-      toast.error("Failed to add inquiry task.");
+      console.error("Error updating inquiry task:", error);
+      toast.error("Failed to update inquiry task.");
     } finally {
       setIsSubmitting(false);
     }
@@ -128,14 +156,14 @@ const AddInquiryTask = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setTaskDocument(file);  // Store the selected document
+      setTaskDocument(file); // Store the selected document
     }
   };
 
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Add Inquiry Task</h1>
+        <h1 className="font-semibold text-2xl">Edit Inquiry Task</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link
             onClick={() => navigate(-1)}
@@ -150,7 +178,6 @@ const AddInquiryTask = () => {
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
-
             {/* Radio buttons for Partner, Client Company, and Employee */}
             <div className="w-full mb-6 px-3">
               <label className="block text-base font-medium">Assign Task To:</label>
@@ -198,12 +225,9 @@ const AddInquiryTask = () => {
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
                 className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
-                autoFocus
               />
               {errors.taskName && <p className="text-red-500 text-xs">{errors.taskName}</p>}
             </div>
-
-            {/* Conditional rendering based on radio button selection */}
 
             {/* Partner Select */}
             {selection === "partner" && (
@@ -320,7 +344,6 @@ const AddInquiryTask = () => {
                       </option>
                     ))}
                   </select>
-                  {errors.taskAssignTo && <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>}
                 </div>
               </>
             )}
@@ -369,7 +392,7 @@ const AddInquiryTask = () => {
                 onChange={(e) => setTaskStartingDate(e.target.value)}
                 className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
-             {errors.taskStartingDate && <p className="text-red-500 text-xs">{errors.taskStartingDate}</p>}
+              {errors.taskStartingDate && <p className="text-red-500 text-xs">{errors.taskStartingDate}</p>}
             </div>
 
             {/* Expected Completion Date */}
@@ -384,39 +407,35 @@ const AddInquiryTask = () => {
               {errors.taskExpectedCompletionDate && <p className="text-red-500 text-xs">{errors.taskExpectedCompletionDate}</p>}
             </div>
 
-            {/* Task Document */}
-            <div className="w-full mb-2 px-3 md:w-1/3">
-              <label className="block text-base font-medium">Task Document</label>
-              <input
-                type="file"
-                onChange={handleFileChange}  // Handle file selection
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
-              />
-              {taskDocument && <p className="text-gray-500 text-xs">{taskDocument.name}</p>}
-            </div>
-
             {/* Task Description */}
             <div className="w-full mb-2 px-3">
               <label className="block text-base font-medium">Task Description</label>
               <textarea
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
-                rows="3"
                 className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
-              ></textarea>
+                placeholder="Describe the task"
+              />
             </div>
 
-            <div className="w-full px-3">
+            {/* Task Document Upload */}
+            <div className="w-full mb-6 px-3">
+              <label className="block text-base font-medium">Attach Document</label>
+              <input type="file" onChange={handleFileChange} />
+            </div>
+
+            {/* Submit Button */}
+            <div className="w-full mb-6 px-3">
               <motion.button
+                type="submit"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                type="submit"
                 className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                disabled={isSubmitting}
+                    isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Add Inquiry Task"}
+                {isSubmitting ? "Updating..." : "Update Task"}
               </motion.button>
             </div>
           </div>
@@ -426,4 +445,4 @@ const AddInquiryTask = () => {
   );
 };
 
-export default AddInquiryTask;
+export default EditInquiryTask;

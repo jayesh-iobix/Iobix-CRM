@@ -3,7 +3,7 @@ import httpClient from "./HttpClient";
 
 // Define the base URL for your API
 const api = environment.inquiryTask;
-const userApi = environment.userSubTask;
+// const userApi = environment.userSubTask;
 
 export const InquiryTaskService = {
   // Method to add a task
@@ -39,6 +39,17 @@ export const InquiryTaskService = {
     }
   },
 
+  // Method to get all inquiry tasks
+  getInquiryTaskInUser: async (inquiryRegistrationId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetInquiryTask/${inquiryRegistrationId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch inquiry tasks in partner:', error);
+      throw error;
+    }
+  },
+
   // Method to get inquiry tasks by inquiryTaskAllocationId
   getInquiryTasksById: async (inquiryTaskAllocationId) => {
     try {
@@ -50,45 +61,18 @@ export const InquiryTaskService = {
     }
   },
 
-  // Method to get all tasks
-  getSubTasksByTaskAllocationId: async (taskAllocationId) => {
+  // Method to update inquiry task by id
+  updateInquiryTask: async (inquiryTaskAllocationId, inquiryTaskData) => {
     try {
-      const response = await httpClient.get(
-        `${api}/GetByTaskAllocation/${taskAllocationId}`
-      ); // Update 'GetAll' with actual endpoint if different
+      // debugger;
+      const response = await httpClient.put(`${api}/${inquiryTaskAllocationId}`, inquiryTaskData);
       return response.data;
     } catch (error) {
-      console.error("Failed to fetch sub tasks:", error);
+      console.error("Failed to update inquiry sub tasks:", error);
       throw error;
     }
   },
-
-  // Method to get sub tasks which is assign by user own
-  getUserSubTaskByUser: async (taskAllocationId) => {
-    try {
-      const response = await httpClient.get(
-        `${api}/GetByTaskAllocationIdByTaskAssignBy/${taskAllocationId}`
-      ); // Update 'GetAll' with actual endpoint if different
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch sub tasks:", error);
-      throw error;
-    }
-  },
-
-  // Method to get sub tasks by main task which is assign by other
-  getUserSubTask: async (taskAllocationId) => {
-    try {
-      const response = await httpClient.get(
-        `${api}/GetByTaskAllocationIdByTaskAssignTo/${taskAllocationId}`
-      ); // Update 'GetAll' with actual endpoint if different
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch sub tasks:", error);
-      throw error;
-    }
-  },
-
+  
   // Method to get sub tasks by main task which is assign by other
   getUserSubTaskByEmployeeId: async (taskAllocationId, employeeId) => {
     try {
@@ -102,68 +86,122 @@ export const InquiryTaskService = {
     }
   },
 
+  // Method to detete inquiry task
+  deleteInquiryTask: async (inquiryTaskAllocationId) => {
+    try {
+      const response = await httpClient.delete(`${api}/${inquiryTaskAllocationId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to delete inquiry sub tasks:", error);
+      throw error;
+    }
+  },
+
+  //Method to update inquiry taskActualStartingDate
+  updateInquiryTaskActualStartingDate: async (inquiryTaskAllocationId, inquiryTaskData) => {
+    try {
+      // debugger;
+      const response = await httpClient.put(`${api}/InquiryTaskActualStartingDate/${inquiryTaskAllocationId}`, inquiryTaskData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to add ActualStartingDate:', error);
+      throw error;
+    }
+  },
+
+  //Method to update inquiry taskCompletionDate
+  updateInquiryTaskCompletionDate: async (inquiryTaskAllocationId, inquiryTaskData) => {
+    try {
+      // debugger;
+      const response = await httpClient.put(`${api}/InquiryTaskComplete/${inquiryTaskAllocationId}`, inquiryTaskData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to add TaskCompletionDate:', error);
+      throw error;
+    }
+  },
+
+  // Method to get all tasks
+  // getSubTasksByTaskAllocationId: async (taskAllocationId) => {
+  //   try {
+  //     const response = await httpClient.get(
+  //       `${api}/GetByTaskAllocation/${taskAllocationId}`
+  //     ); // Update 'GetAll' with actual endpoint if different
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Failed to fetch sub tasks:", error);
+  //     throw error;
+  //   }
+  // },
+
+  // Method to get sub tasks which is assign by user own
+  // getUserSubTaskByUser: async (taskAllocationId) => {
+  //   try {
+  //     const response = await httpClient.get(
+  //       `${api}/GetByTaskAllocationIdByTaskAssignBy/${taskAllocationId}`
+  //     ); // Update 'GetAll' with actual endpoint if different
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Failed to fetch sub tasks:", error);
+  //     throw error;
+  //   }
+  // },
+
+  // Method to get sub tasks by main task which is assign by other
+  // getUserSubTask: async (taskAllocationId) => {
+  //   try {
+  //     const response = await httpClient.get(
+  //       `${api}/GetByTaskAllocationIdByTaskAssignTo/${taskAllocationId}`
+  //     ); // Update 'GetAll' with actual endpoint if different
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Failed to fetch sub tasks:", error);
+  //     throw error;
+  //   }
+  // },
+
+
+
   // Method to get tasks by Id
-  getSubTaskById: async (subTaskId) => {
-    try {
-      const response = await httpClient.get(`${api}/${subTaskId}`);
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch sub tasks:", error);
-      throw error;
-    }
-  },
+  // getSubTaskById: async (subTaskId) => {
+  //   try {
+  //     const response = await httpClient.get(`${api}/${subTaskId}`);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Failed to fetch sub tasks:", error);
+  //     throw error;
+  //   }
+  // },
 
-  // Method to update task by id
-  updateSubTask: async (subTaskId, subTaskData) => {
-    try {
-      debugger;
-      const response = await httpClient.put(`${api}/${subTaskId}`, subTaskData);
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch sub tasks:", error);
-      throw error;
-    }
-  },
-
-  // Method to detete task
-  deleteSubTask: async (subTaskId) => {
-    try {
-      const response = await httpClient.delete(`${api}/${subTaskId}`);
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch sub tasks:", error);
-      throw error;
-    }
-  },
 
   //Method to update taskActualStartingDate
-  updateSubTaskActualStartingDate: async (subTaskId, taskData) => {
-    try {
-      debugger;
-      const response = await httpClient.put(
-        `${userApi}/SubTaskActualStartingDate/${subTaskId}`,
-        taskData
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch ActualStartingDate:", error);
-      throw error;
-    }
-  },
+  // updateSubTaskActualStartingDate: async (subTaskId, taskData) => {
+  //   try {
+  //     debugger;
+  //     const response = await httpClient.put(
+  //       `${userApi}/SubTaskActualStartingDate/${subTaskId}`,
+  //       taskData
+  //     );
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Failed to fetch ActualStartingDate:", error);
+  //     throw error;
+  //   }
+  // },
 
   //Method to update taskCompletionDate
-  updateSubTaskCompletionDate: async (subTaskId, taskData) => {
-    try {
-      debugger;
-      const response = await httpClient.put(
-        `${userApi}/SubTaskComplete/${subTaskId}`,
-        taskData
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch TaskCompletionDate:", error);
-      throw error;
-    }
-  },
+  // updateSubTaskCompletionDate: async (subTaskId, taskData) => {
+  //   try {
+  //     debugger;
+  //     const response = await httpClient.put(
+  //       `${userApi}/SubTaskComplete/${subTaskId}`,
+  //       taskData
+  //     );
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Failed to fetch TaskCompletionDate:", error);
+  //     throw error;
+  //   }
+  // },
 
 };

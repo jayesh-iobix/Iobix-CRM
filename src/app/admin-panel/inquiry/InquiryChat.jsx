@@ -35,7 +35,6 @@ const InquiryChat = ({ senderId }) => {
   }, 300);
   
   useEffect(() => {
-    
     fetchData();
   }, [id, senderId]);
 
@@ -60,15 +59,11 @@ const InquiryChat = ({ senderId }) => {
         console.log("Connected to SignalR Hub!");
       })
       .catch((error) => console.error("Error while starting connection: " + error));
-  
+  debugger;
     // Listen for incoming messages
-    newConnection.on("ReceiveMessage", (chatMessage) => {
-      setMessages((prevMessages) => [...prevMessages, {
-        user: chatMessage.user,  // Ensure this matches what you're sending from the backend
-        message: chatMessage.message,
-        sentDate: chatMessage.sentDate,
-        file: chatMessage.file ? chatMessage.file : null,  // Ensure file handling if needed
-      }]); // Update the messages state with the new message
+    newConnection.on("ReceiveAdminMessage", (chatMessage) => {
+      setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
+      console.log(messages);
     });
   
     setConnection(newConnection);
@@ -128,7 +123,10 @@ const InquiryChat = ({ senderId }) => {
         inquiryRegistrationId: id,
         message: newMessage,
         receiverId: senderId,
+        // sentDate: new Date().toISOString(),
       };
+
+      debugger;
 
       const formData = new FormData();
       if (file) {
@@ -140,6 +138,7 @@ const InquiryChat = ({ senderId }) => {
 
       formData.append("chatMessageVM.InquiryRegistrationId", newMessageObj.inquiryRegistrationId);
       formData.append("chatMessageVM.ReceiverId", newMessageObj.receiverId);
+      // formData.append("chatMessageVM.SentDate", newMessageObj.sentDate);
 
       try {
         const response = await InquiryChatService.addInquiryChat(formData);
@@ -148,9 +147,14 @@ const InquiryChat = ({ senderId }) => {
           
           // Broadcast the message to other clients via SignalR
           // debugger;
-          if (connection) {
-            connection.invoke("SendPrivateMessage", newMessageObj);  // Send the message to the SignalR Hub
-          }
+          // if (connection) {
+          //   connection.invoke("SendPrivateMessage", newMessageObj);  // Send the message to the SignalR Hub
+          // }
+
+          // if (connection) {
+          //   connection.invoke("SendMessageToUser", newMessageObj);  // Send the message to the SignalR Hub
+          // }
+
           
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -365,6 +369,7 @@ const InquiryChat = ({ senderId }) => {
 };
 
 export default InquiryChat;
+
 
 
 

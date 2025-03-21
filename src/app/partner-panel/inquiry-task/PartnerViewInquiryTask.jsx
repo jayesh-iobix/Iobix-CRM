@@ -7,7 +7,7 @@ import { InquirySubTaskService } from "../../service/InquirySubTaskService";
 import { SubTaskNoteService } from "../../service/SubTaskNoteService";
 
 
-const ViewInquiryTask = () => {
+const PartnerViewInquiryTask = () => {
   const userId = sessionStorage.getItem("LoginUserId");
   const role = sessionStorage.getItem("role")
 
@@ -36,6 +36,7 @@ const ViewInquiryTask = () => {
           if (taskResult?.data) {
             // console.log(taskResult.data)
             // If task is found, store in taskDetails
+            // console.log(taskResult.data)
             setTaskDetails(taskResult.data);
           } else {
             // If no task found, attempt to fetch from SubTaskService
@@ -140,7 +141,7 @@ const ViewInquiryTask = () => {
       taskUpdate,
     };
 
-    console.log("Submitting task note data:", taskNoteData); // Log the data before submitting
+    // console.log("Submitting task note data:", taskNoteData); // Log the data before submitting
 
 
     try {
@@ -179,7 +180,7 @@ const ViewInquiryTask = () => {
                   </Link>
                 </motion.button>
               )}
-              {(role === 'admin' || taskDetails.taskAssignTo === userId) && !(role === 'client' || role === 'partner') && (
+              {/* {(role === 'admin' || taskDetails.taskAssignTo === userId) && !(role === 'client' || role === 'partner') && (
                 <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <Link
                     to={`/partnerinquiry-list/create-inquiry-sub-task/${id}`}
@@ -188,7 +189,7 @@ const ViewInquiryTask = () => {
                     Add Inquiry Sub Task <span className="mt-[2px]"><FaPlus size={14} /></span>
                   </Link>
                 </motion.button>
-              )}
+              )} */}
               <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                 <Link
                   onClick={() => navigate(-1)} // Navigate back to previous page
@@ -228,4 +229,4 @@ const ViewInquiryTask = () => {
   
 };
 
-export default ViewInquiryTask;
+export default PartnerViewInquiryTask;

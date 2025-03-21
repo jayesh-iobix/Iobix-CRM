@@ -10,13 +10,15 @@ import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
 import { toast } from "react-toastify";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { PartnerService } from "../../service/PartnerService";
-import ApprovedClientInqry from "../approved-inquiry/ApprovedClientInqry";
-import ApprovedPartnerInqry from "../approved-inquiry/ApprovedPartnerInqry";
-import InquiryChat from "../inquiry/InquiryChat";
-import InquiryTaskList from "../inquiry-task/InquiryTaskList";
+// import ApprovedClientInqry from "../approved-inquiry/ApprovedClientInqry";
+// import ApprovedPartnerInqry from "../approved-inquiry/ApprovedPartnerInqry";
+import InquiryTaskList from "../../admin-panel/inquiry-task/InquiryTaskList";
+import InquiryChat from "../../admin-panel/inquiry/InquiryChat";
+// import InquiryChat from "../inquiry/InquiryChat";
+// import InquiryTaskList from "../inquiry-task/InquiryTaskList";
 // import ChatInquiry from "./ChatInquiry";
 
-const ViewProject = () => {
+const UserViewProject = () => {
 
   const [formData, setFormData] = useState({
     inquiryTitle: '',
@@ -68,6 +70,7 @@ const ViewProject = () => {
   const navigate = useNavigate();
 
   const role = sessionStorage.getItem("role");
+  const userId = sessionStorage.getItem("LoginUserId");
 
   const fetchData = async () => {
     try {
@@ -114,8 +117,6 @@ const ViewProject = () => {
       const forwardDetails = inquiryResult.data.map(item => item.inquiryForwardedDetais);
       setInquiryForwadedeData(forwardDetails);
       setInquiryTransferdData(transferDetails);
-      // console.log(inquiryResult.data);
-      // console.log(forwardDetails);
 
       // const inquiryToggle = await InquiryFollowUpService.hideInquirybutton(id);
       // debugger;
@@ -499,7 +500,7 @@ const ViewProject = () => {
                 <FaPlus size={16} />
               </Link>
             </motion.button>
-          {/* )} */}
+           {/* )}  */}
 
           {/* Forward Inquiry Button placed above the edit and back buttons */}
           {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -514,7 +515,7 @@ const ViewProject = () => {
           {inquiryHideShow === true && (
             <>
               {/* Forward Inquiry Button buttons */}
-              {formData.inquiryStatus !== 4 && (
+              {/* {formData.inquiryStatus !== 4 && (
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
@@ -526,7 +527,7 @@ const ViewProject = () => {
                     Forward Project
                   </button>
                 </motion.button>
-              )}
+              )} */}
 
               {/* Trabsfer Inquiry Button placed above the edit and back buttons  */}
               {formData.inquiryStatus === 4 && (
@@ -882,7 +883,7 @@ const ViewProject = () => {
               </div>
             </form>
           </div>
-           
+          
         </div>
       )}
 
@@ -899,8 +900,8 @@ const ViewProject = () => {
               >
                 {[
                   "Project Details",
-                  "Approved By Client",
-                  "Approved By Partner",
+                //   "Approved By Client",
+                //   "Approved By Partner",
                   "Inquiry Task",
                   "Chat",
                   // !hideTab && "Approved By Partner",
@@ -1015,10 +1016,10 @@ const ViewProject = () => {
                 </div>
               )}
 
-              {activeTab === 2 && <ApprovedClientInqry />}
-              {activeTab === 3 && <ApprovedPartnerInqry />}
-              {activeTab === 4 && <InquiryTaskList />}
-              {activeTab === 5 && (
+              {/* {activeTab === 2 && <ApprovedClientInqry />}
+              {activeTab === 3 && <ApprovedPartnerInqry />} */}
+              {activeTab === 2 && <InquiryTaskList />}
+              {activeTab === 3 && (
                 <InquiryChat
                   senderId={formData.senderId}
                   chatPersoneName={formData.senderName}
@@ -1069,4 +1070,4 @@ const ViewProject = () => {
   );
 };
 
-export default ViewProject;
+export default UserViewProject;
