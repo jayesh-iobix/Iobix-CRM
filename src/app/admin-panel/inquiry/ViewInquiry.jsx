@@ -989,10 +989,7 @@ const ViewInquiry = ({hideTab}) => {
               {activeTab === 2 && <ApprovedClientInqry />}
               {activeTab === 3 && <ApprovedPartnerInqry />}
               {activeTab === 4 && (
-                <InquiryChat
-                  senderId={formData.senderId}
-                  chatPersoneName={formData.senderName}
-                />
+                <InquiryChat />
               )}
             </div>
           </div>

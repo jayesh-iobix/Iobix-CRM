@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { InquirySubTaskService } from "../../service/InquirySubTaskService";
+import { InquiryTaskNoteService } from "../../service/InquiryTaskNoteService";
 
 const PartnerInquiryTaskList = () => {
   const [tasks, setTasks] = useState([]);
@@ -621,6 +622,7 @@ const PartnerInquiryTaskList = () => {
     // Convert taskDuration to the required time span format (hh:mm:ss)
 
     const taskNoteData = {
+      inquiryregistrationId: id,  
       inquiryTaskAllocationId: inquiryTaskAllocationId === "" ? null : inquiryTaskAllocationId, // Convert empty string to null
       inquirySubTaskAllocationId: inquirySubTaskAllocationId === "" ? null : inquirySubTaskAllocationId, // Convert empty string to null
       taskDate,
@@ -634,7 +636,7 @@ const PartnerInquiryTaskList = () => {
 
     try {
       // Call the API to add the task note
-      const response = await TaskNoteService.addTaskNote(taskNoteData);
+      const response = await InquiryTaskNoteService.addInquiryTaskNote(taskNoteData);
       if(response.status === 1){
         toast.success(response.message); // Toast on success
       }
@@ -711,9 +713,9 @@ const PartnerInquiryTaskList = () => {
           onChange={handleProjectFilterChange}
           className="border border-gray-300 rounded p-2 w-fit border-active"
           >
-            <option value="">All Assign To</option>
-            <option value="Partner">Partner</option>
-            <option value="Client">Client Company</option>
+            <option value="">All Assign By</option>
+            <option value="partner">Partner</option>
+            <option value="client">Client Company</option>
         </select>
       </div>
 
@@ -1130,7 +1132,7 @@ const PartnerInquiryTaskList = () => {
                                         </td>
                                         <td className="py-3 px-4">
                                           <div className="flex gap-2">
-                                            <button>
+                                            {/* <button>
                                               <motion.button
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
@@ -1142,7 +1144,7 @@ const PartnerInquiryTaskList = () => {
                                                   <FaEdit size={24} />
                                                 </Link>
                                               </motion.button>
-                                            </button>
+                                            </button> */}
 
                                             <button>
                                               <motion.button
@@ -1432,7 +1434,7 @@ const PartnerInquiryTaskList = () => {
         <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
             <h2 className="text-xl font-semibold mb-4">Task Details</h2>
-            <form onSubmit={handleSubmit}>
+            <form>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Task Date
@@ -1497,7 +1499,8 @@ const PartnerInquiryTaskList = () => {
                   Cancel
                 </button>
                 <button
-                  type="submit"
+                   type="button"
+                   onClick={handleSubmit}
                   className="px-4 py-2 bg-blue-500 text-white rounded border-active"
                 >
                   Submit

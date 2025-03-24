@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft, FaEdit } from "react-icons/fa";
+import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryService } from "../../service/InquiryService";
 import Chat from "./Chat";
 import InquiryChat from "../../admin-panel/inquiry/InquiryChat";
-import PartnerInquiryChat from "./PartnerInquiryChat";
+
 import PartnerInquiryTaskList from "../inquiry-task/PartnerInquiryTaskList";
+import CompanyInquiryChat from "../../company-panel/inquiry-chat/CompanyInquiryChat";
+import CreateInquiryTaskList from "../inquiry-task/CreateInquiryTaskList";
 
 const ViewProject = () => {
 
@@ -35,6 +37,7 @@ const ViewProject = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
+  const role = sessionStorage.getItem("role");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,6 +87,33 @@ const ViewProject = () => {
             </motion.button>
           )}
 
+          {(formData.inquiryStatus === 4) && (
+            <>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Link
+                  to={
+                    role === 'partner'
+                      ? `/partner/partnerinquiry-task-list/create-inquiry-task/${id}`
+                      : role === 'company'
+                        ? `/company/companyinquiry-list/create-inquiry-task/${id}`
+                        : null
+                  }
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+                >
+                  {/* <Link
+                          to={`/partnerinquiry-list/create-inquiry-task/${id}`}
+                          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+                        > */}
+                  Add Inquiry Task
+                  <FaPlus size={16} />
+                </Link>
+              </motion.button>
+            </>
+          )}
+
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <button
               onClick={() => navigate(-1)}
@@ -110,6 +140,7 @@ const ViewProject = () => {
                 {[
                   "Project Details",
                   "Inquiry Task",
+                  "Create Inquiry Task",
                   "Chat",
                   //   "Leave List",
                 ].map((tab, index) => (
@@ -220,7 +251,9 @@ const ViewProject = () => {
                 </div>
               )}
               {activeTab === 2 && <PartnerInquiryTaskList/>} 
-              {activeTab === 3 && <Chat/>}
+              {activeTab === 3 && <CreateInquiryTaskList/>} 
+              {activeTab === 4 && role === "partner" && <Chat />}
+              {activeTab === 4 && role === "company" && <CompanyInquiryChat />}
             </div>
           </div>
         </form>

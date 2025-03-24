@@ -492,7 +492,8 @@ const ViewProject = () => {
               whileTap={{ scale: 0.9 }}
             >
               <Link
-                to={`/partnerinquiry-list/create-inquiry-task/${id}`}
+                to={`/create-inquiry-task/${id}`}
+                // to={`/inquiry-task-list/create-inquiry-task/${id}`}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
               >
                 Add Inquiry Task

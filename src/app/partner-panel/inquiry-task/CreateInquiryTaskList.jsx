@@ -14,7 +14,7 @@ import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { InquirySubTaskService } from "../../service/InquirySubTaskService";
 import { InquiryTaskNoteService } from "../../service/InquiryTaskNoteService";
 
-const InquiryTaskList = () => {
+const CreateInquiryTaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [inquiryTaskAllocationId, setInquiryTaskAllocationId] = useState("");
   const [inquirySubTaskAllocationId, setInquirySubTaskAllocationId] = useState("");
@@ -75,8 +75,9 @@ const InquiryTaskList = () => {
   const [openDropdown, setOpenDropdown] = useState({}); // State to track which dropdown is open
   const [openSubDropdown, setOpenSubDropdown] = useState({}); // State to track which dropdown is open
   const buttonRefs = useRef({}); // To store references to dropdown buttons
-  const role = sessionStorage.getItem("role");
+
   const {id} = useParams();
+  const role = sessionStorage.getItem("role");
 
   // Function to fetch sub-tasks by task allocation ID
   const getInquirySubTasksByTaskId = async (inquiryTaskAllocationId) => {
@@ -101,7 +102,7 @@ const InquiryTaskList = () => {
 
   const fetchTasks = async () => {
     try {
-      const result = await InquiryTaskService.getInquiryTasks(id);
+      const result = await InquiryTaskService.getCreateInquiryTaskInPartner(id);
       setTasks(result.data);
       setFilteredTasks(result.data); // Initially show all tasks
       setTotalItems(result.data.length); // Set total items for pagination
@@ -675,6 +676,7 @@ const InquiryTaskList = () => {
 
       {/* Filters Section */}
       <div className="flex gap-4 my-4">
+        
         <input
           type="text"
           value={employeeFilter}
@@ -682,6 +684,7 @@ const InquiryTaskList = () => {
           placeholder="Search Assign To"
           className="p-2 outline-none rounded border border-gray-300"
         />
+
         <select
           value={priorityFilter}
           onChange={handlePriorityFilterChange}
@@ -722,6 +725,7 @@ const InquiryTaskList = () => {
             {/* <option value="Partner">Partner</option>
             <option value="Client">Client Company</option> */}
         </select>
+
       </div>
 
       {/* Task List Section */}
@@ -826,10 +830,13 @@ const InquiryTaskList = () => {
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                // to={role === "admin" 
-                                //  ? `/view-inquiry-task/${item.inquiryTaskAllocationId}` 
-                                //  : `/user/view-inquiry-task/${item.inquiryTaskAllocationId}`}
-                                to={`/view-inquiry-task/${item.inquiryTaskAllocationId}`}
+                                to={
+                                    role === 'partner'
+                                      ? `/partner/view-inquiry-task/${item.inquiryTaskAllocationId}`
+                                      : role === 'company'
+                                        ? `/company/view-inquiry-task/${item.inquiryTaskAllocationId}`
+                                        : null
+                                  }
                                 className="text-green-500 hover:text-green-700"
                               >
                                 <FaEye size={24} />
@@ -855,7 +862,7 @@ const InquiryTaskList = () => {
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                to={`/inquiry-tasknote-list/${item.inquiryTaskAllocationId}`}
+                                to={`/partnerinquiry-list/inquiry-task/inquiry-task-note/${item.inquiryTaskAllocationId}`}
                                 className="text-yellow-500 hover:text-yellow-700"
                               >
                                 <IoTime size={24} />
@@ -1139,44 +1146,36 @@ const InquiryTaskList = () => {
                                         </td>
                                         <td className="py-3 px-4">
                                           <div className="flex gap-2">
+                                            {/* <button> */}
                                               <motion.button
                                                 type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
                                               >
                                                 <Link
-                                                  to={`/view-inquiry-subtask/${subTask.inquirySubTaskAllocationId}`}
-                                                  className="relative text-green-500 hover:text-green-700 group"
-                                                >
-                                                  <FaEye size={24} />
-                                                </Link>
-                                              </motion.button>
-                                              {/* <motion.button
-                                                type="button"
-                                                whileHover={{ scale: 1.1 }}
-                                                whileTap={{ scale: 0.9 }}
-                                              >
-                                                <Link
-                                                  to={`/partnerinquiry-list/edit-inquiry-sub-task/${subTask.inquirySubTaskAllocationId}`}
+                                                  to={`/task/edit-subtask/${subTask.inquirySubTaskAllocationId}`}
                                                   className="relative text-blue-500 hover:text-blue-700 group"
                                                 >
                                                   <FaEdit size={24} />
                                                 </Link>
-                                              </motion.button> */}
+                                              </motion.button>
+                                            {/* </button> */}
 
+                                            {/* <button> */}
                                               <motion.button
                                                 type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
                                               >
                                                 <Link
-                                                  to={`/inquiry-subtasknote-list/${subTask.inquirySubTaskAllocationId}`}
+                                                  to={`/task/tasknote-list/${subTask.inquirySubTaskAllocationId}`}
                                                   className="text-yellow-500 hover:text-yellow-700"
                                                 >
                                                   {/* <FaRegFileLines size={24} /> */}
                                                   <IoTime size={24} />
                                                 </Link>
                                               </motion.button>
+                                            {/* </button> */}
 
                                             {/* <button> */}
                                               <motion.button
@@ -1682,4 +1681,4 @@ const InquiryTaskList = () => {
   );
 };
 
-export default InquiryTaskList;
+export default CreateInquiryTaskList;

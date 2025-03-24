@@ -32,4 +32,5 @@ export const environment = {
   inquiryChat: "https://localhost:7292/api/InquiryChat",
   inquiryTask: "https://localhost:7292/api/InquiryTask",
   inquirySubTask: "https://localhost:7292/api/InquirySubTask",
+  inquiryTaskNote: "https://localhost:7292/api/InquiryTaskNote",
 }

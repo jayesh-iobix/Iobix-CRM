@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { InquirySubTaskService } from "../../service/InquirySubTaskService";
+import { InquiryTaskNoteService } from "../../service/InquiryTaskNoteService";
 
 const UserInquiryTaskList = () => {
   const [tasks, setTasks] = useState([]);
@@ -435,13 +436,14 @@ const UserInquiryTaskList = () => {
   //#region Add Start And End Date of Task
   // Handle the start date change
   const handleStartDateChange = async (e) => {
+    // debugger;
     const newStartingDate = e.target.value; // Get the new date value
     setActualStartingDate(newStartingDate); // Set the date state
     const taskData = {
       actualStartingDate: newStartingDate,
     };
     try {
-      const response = await TaskService.updateTaskActualStartingDate(
+      const response = await InquiryTaskService.updateInquiryTaskActualStartingDate(
         inquiryTaskAllocationId,
         taskData
       );
@@ -462,7 +464,7 @@ const UserInquiryTaskList = () => {
       taskCompletionDate: newStartingDate,
     };
     try {
-      const response = await TaskService.updateTaskCompletionDate(
+      const response = await InquiryTaskService.updateInquiryTaskCompletionDate(
         inquiryTaskAllocationId,
         taskData
       );
@@ -622,6 +624,7 @@ const UserInquiryTaskList = () => {
     // Convert taskDuration to the required time span format (hh:mm:ss)
 
     const taskNoteData = {
+      inquiryRegistrationId: id,
       inquiryTaskAllocationId: inquiryTaskAllocationId === "" ? null : inquiryTaskAllocationId, // Convert empty string to null
       inquirySubTaskAllocationId: inquirySubTaskAllocationId === "" ? null : inquirySubTaskAllocationId, // Convert empty string to null
       taskDate,
@@ -635,7 +638,7 @@ const UserInquiryTaskList = () => {
 
     try {
       // Call the API to add the task note
-      const response = await TaskNoteService.addTaskNote(taskNoteData);
+      const response = await InquiryTaskNoteService.addInquiryTaskNote(taskNoteData);
       if(response.status === 1){
         toast.success(response.message); // Toast on success
       }
@@ -825,7 +828,7 @@ const UserInquiryTaskList = () => {
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                to={`/view-inquiry-task/${item.inquiryTaskAllocationId}`}
+                                to={`/user/view-inquiry-task/${item.inquiryTaskAllocationId}`}
                                 className="text-green-500 hover:text-green-700"
                               >
                                 <FaEye size={24} />
@@ -1044,6 +1047,7 @@ const UserInquiryTaskList = () => {
                                       Cancel
                                     </button>
                                     <button
+                                      type="button"
                                       onClick={handleTransferSubmit}
                                       className="px-4 py-2 bg-blue-500 text-white rounded border-active"
                                     >
@@ -1134,19 +1138,31 @@ const UserInquiryTaskList = () => {
                                         </td>
                                         <td className="py-3 px-4">
                                           <div className="flex gap-2">
+                                          <motion.button
+                                            type="button"
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.9 }}
+                                          >
+                                            <Link
+                                              to={`/user/view-inquiry-subtask/${subTask.inquirySubTaskAllocationId}`}
+                                              className="text-green-500 hover:text-green-700"
+                                            >
+                                              <FaEye size={24} />
+                                            </Link>
+                                          </motion.button>
                                             {/* <button> */}
-                                              <motion.button
+                                              {/* <motion.button
                                                 type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
                                               >
                                                 <Link
-                                                  to={`/task/edit-subtask/${subTask.inquirySubTaskAllocationId}`}
+                                                  to={`/user/userinquiry-list/edit-inquiry-sub-task/${subTask.inquirySubTaskAllocationId}`}
                                                   className="relative text-blue-500 hover:text-blue-700 group"
                                                 >
                                                   <FaEdit size={24} />
                                                 </Link>
-                                              </motion.button>
+                                              </motion.button> */}
                                             {/* </button> */}
 
                                             {/* <button> */}
@@ -1440,7 +1456,7 @@ const UserInquiryTaskList = () => {
         <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
             <h2 className="text-xl font-semibold mb-4">Task Details</h2>
-            <form onSubmit={handleSubmit}>
+            <form >
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Task Date
@@ -1505,7 +1521,9 @@ const UserInquiryTaskList = () => {
                   Cancel
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleSubmit}
+                  // type="submit"
                   className="px-4 py-2 bg-blue-500 text-white rounded border-active"
                 >
                   Submit

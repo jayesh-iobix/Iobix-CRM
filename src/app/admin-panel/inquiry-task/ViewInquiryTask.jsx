@@ -9,7 +9,8 @@ import { SubTaskNoteService } from "../../service/SubTaskNoteService";
 
 const ViewInquiryTask = () => {
   const userId = sessionStorage.getItem("LoginUserId");
-  const role = sessionStorage.getItem("role")
+  const role = sessionStorage.getItem("role");
+  // const navigateTo = role === "admin" ? `/partnerinquiry-list/edit-inquiry-task/${id}` : `/user/partnerinquiry-list/edit-inquiry-task/${id}`;
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -28,30 +29,30 @@ const ViewInquiryTask = () => {
   const [taskDuration, setTaskDuration] = useState("");
   const [taskUpdate, setTaskUpdate] = useState("");
 
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          // First try to fetch task data from TaskService
-          const taskResult = await InquiryTaskService.getInquiryTasksById(id);
-          if (taskResult?.data) {
-            // console.log(taskResult.data)
-            // If task is found, store in taskDetails
-            setTaskDetails(taskResult.data);
-          } else {
-            // If no task found, attempt to fetch from SubTaskService
-            const subTaskResult = await InquirySubTaskService.getInquirySubTasksById(id);
-            if (subTaskResult?.data) {
-              // If subtask is found, store in taskDetails
-              setTaskDetails(subTaskResult.data);
-            }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // First try to fetch task data from TaskService
+        const taskResult = await InquiryTaskService.getInquiryTasksById(id);
+        if (taskResult?.data) {
+          // console.log(taskResult.data)
+          // If task is found, store in taskDetails
+          setTaskDetails(taskResult.data);
+        } else {
+          // If no task found, attempt to fetch from SubTaskService
+          const subTaskResult = await InquirySubTaskService.getInquirySubTasksById(id);
+          if (subTaskResult?.data) {
+            // If subtask is found, store in taskDetails
+            setTaskDetails(subTaskResult.data);
           }
-        } catch (error) {
-          console.error("Error fetching data:", error);
         }
-      };
-  
-      fetchData();
-    }, [id]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   const getStatusColor = (status) => {
     const statusColors = {
@@ -169,20 +170,26 @@ const ViewInquiryTask = () => {
           <div className="flex flex-col md:flex-row justify-between items-center border-b pb-4">
             <h1 className="font-semibold text-2xl md:text-3xl">Inquiry Task Details</h1>
             <div className="flex space-x-2 mt-4 md:mt-0">
-              {taskDetails.taskAssignBy === userId && (
+              {(taskDetails.taskAssignBy === userId || role === 'admin') && (
                 <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <Link
-                    to={`/partnerinquiry-list/edit-inquiry-task/${id}`}
+                    to={role === "admin" 
+                      ? `/edit-inquiry-task/${id}` 
+                      : `/user/edit-inquiry-task/${id}`}
+                    // to={`/inquiry-task-list/edit-inquiry-task/${id}`}
                     className="bg-blue-600 hover:bg-blue-700 text-white flex gap-2 py-2 px-4 rounded hover:no-underline"
                   >
                     Edit Inquiry Task <span className="mt-[2px]"><FaEdit size={14} /></span>
                   </Link>
                 </motion.button>
               )}
-              {(role === 'admin' || taskDetails.taskAssignTo === userId) && !(role === 'client' || role === 'partner') && (
+              {(role === 'admin' || taskDetails.taskAssignTo === userId || taskDetails.taskAssignBy === userId) && !(role === 'client' || role === 'partner') && (
                 <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <Link
-                    to={`/partnerinquiry-list/create-inquiry-sub-task/${id}`}
+                    to={role === "admin" 
+                     ? `/create-inquiry-subtask/${id}` 
+                     : `/user/create-inquiry-subtask/${id}`}
+                    // to={`/partnerinquiry-list/create-inquiry-sub-task/${id}`}
                     className="bg-blue-600 hover:bg-blue-700 text-white flex gap-2 py-2 px-4 rounded hover:no-underline"
                   >
                     Add Inquiry Sub Task <span className="mt-[2px]"><FaPlus size={14} /></span>

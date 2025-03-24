@@ -4,8 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryService } from "../../service/InquiryService";
 import Chat from "./Chat";
-import InquiryChat from "../../admin-panel/inquiry/InquiryChat";
-import PartnerInquiryChat from "./PartnerInquiryChat";
+
 
 const ViewInquiry = () => {
 
@@ -224,10 +223,10 @@ const ViewInquiry = () => {
         </form>
       </section>
 
-      <PartnerInquiryChat 
+      {/* <PartnerInquiryChat 
       chatPersoneName={formData.senderName}
       senderId='3FA85F64-5717-4562-B3FC-2C963F66AFA6'
-      inquiryId='648b3f95-6699-4e60-bb25-ec4b8ba59894' />
+      inquiryId='648b3f95-6699-4e60-bb25-ec4b8ba59894' /> */}
     </>
   );
 };

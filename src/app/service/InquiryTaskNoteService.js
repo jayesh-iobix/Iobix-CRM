@@ -4,14 +4,14 @@ import httpClient from './HttpClient';
 // Define the base URL for your API
 // const api = environment.task;
 const userApi = environment.userTask;
-const api = environment.task;
+const api = environment.inquiryTaskNote;
 
 export const InquiryTaskNoteService = {
 
   // Method to add a inquiry task note
   addInquiryTaskNote: async (inquiryTaskNoteData) => {
     try {
-      const response = await httpClient.post(`${userApi}/AddTaskNote`, inquiryTaskNoteData);
+      const response = await httpClient.post(`${api}/AddTaskNote`, inquiryTaskNoteData);
       return response.data;
     } catch (error) {
       console.error('Failed to add inquiry task note:', error);
@@ -22,7 +22,7 @@ export const InquiryTaskNoteService = {
   // Method to get inquiry tasks note by task Id
   getInquiryTaskNoteByTaskId: async (inquiryTaskId) => {
     try {
-      const response = await httpClient.get(`${api}/GetInquiryTaskNote/${inquiryTaskId}`);
+      const response = await httpClient.get(`${api}/GetTaskNote/${inquiryTaskId}`);
       return response.data;
     } catch (error) {
       console.error("Failed to fetch inquiry task notes:", error);

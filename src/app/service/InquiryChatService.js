@@ -32,10 +32,22 @@ export const InquiryChatService = {
   },
 
   // Method to get all inquiryChat
-  getChatInAdmin: async (inquiryRegistrationId, receiverId) => {
+  getPartnerChatInAdmin: async (inquiryRegistrationId, receiverId) => {
     try {
       // debugger;
       const response = await httpClient.get(`${api}/GetChatWithPartnerInAdmin/${inquiryRegistrationId}/${receiverId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch Chat In Admin:', error);
+      throw error;
+    }
+   },
+
+  // Method to get all inquiryChat
+  getClientChatInAdmin: async (inquiryRegistrationId, receiverId) => {
+    try {
+      // debugger;
+      const response = await httpClient.get(`${api}/GetChatWithClientInAdmin/${inquiryRegistrationId}/${receiverId}`); // Update 'GetAll' with actual endpoint if different
       return response.data;
     } catch (error) {
       console.error('Failed to fetch Chat In Admin:', error);
@@ -48,6 +60,18 @@ export const InquiryChatService = {
     try {
       // debugger;
       const response = await httpClient.get(`${api}/GetChatWithPartnerInPartner/${inquiryRegistrationId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch Chat In Admin:', error);
+      throw error;
+    }
+   },
+
+  // Method to get all inquiryChat
+  getAdminChatInClient: async (inquiryRegistrationId) => {
+    try {
+      // debugger;
+      const response = await httpClient.get(`${api}/GetChatWithClientInClient/${inquiryRegistrationId}`); // Update 'GetAll' with actual endpoint if different
       return response.data;
     } catch (error) {
       console.error('Failed to fetch Chat In Admin:', error);

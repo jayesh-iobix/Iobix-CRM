@@ -3,8 +3,9 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { InquiryChatService } from "../../service/InquiryChatService";
 import { useParams } from "react-router-dom";
+import { debounce } from "lodash";
 
-const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
+const CompanyInquiryChat = () => {
   const [messages, setMessages] = useState([]); // State to store messages
   const [newMessage, setNewMessage] = useState(""); // State to store new message
   const [file, setFile] = useState(null); // State to store selected file
@@ -13,19 +14,30 @@ const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
   const { id } = useParams();
   const loginId = sessionStorage.getItem("LoginUserId");
 
+  // const senderId = loginId;
+  const fetchData = debounce(async () => {
+    // try {
+    
+        const chatData = await InquiryChatService.getAdminChatInClient(id);
+        // debugger;
+
+        const updatedMessages = chatData.data.map((message) => {
+            if (message.senderId === loginId) {
+                return { ...message, senderName: "You" };
+            }
+            return message;
+        });
+
+        setMessages(updatedMessages);
+    // } catch (error) {
+    //     console.error("Error fetching chat data:", error);
+    // }
+// }, 
+      },300); // Debounce interval in milliseconds
   // Fetch initial chat data
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const chatData = await InquiryChatService.getChatInAdmin(inquiryId, senderId);
-        setMessages(chatData.data);
-        // console.log(chatData);
-      } catch (error) {
-        console.error("Error fetching chat data:", error);
-      }
-    };
     fetchData();
-  }, [inquiryId, senderId]);
+  }, [id]);
 
   // Scroll to the bottom when messages change
   useEffect(() => {
@@ -37,23 +49,27 @@ const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
 
   // Set up SignalR connection
   useEffect(() => {
+
     const newConnection = new HubConnectionBuilder()
       .withUrl("https://localhost:7292/inquirychathub") // Your SignalR Hub URL
       .build();
 
     newConnection.start()
       .then(() => {
-        // console.log("Connected to SignalR Hub!");
+        console.log("Connected to SignalR Hub!");
       })
       .catch((error) => console.error("Error while starting connection: " + error));
 
     // Listen for the new message from SignalR
-    newConnection.on("ReceiveMessage", (messages) => {
-      if (newMessage.inquiryRegistrationId === inquiryId) {
+    newConnection.on("ReceiveUserMessage", (chatMessage) => {
+      fetchData();
+      // console.log("Received message:", chatMessage);
+      if (newMessage.senderId !== loginId && newMessage.inquiryRegistrationId === id) {
         // Append the new message to the state
         // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
-        setMessages((prevMessages) => [...prevMessages, messages]);
+        setMessages((prevMessages) => [...prevMessages, chatMessage]);
       }
+      console.log(messages);
     });
 
     setConnection(newConnection);
@@ -65,7 +81,7 @@ const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
       }
     };
 
-  }, [inquiryId, senderId]);
+  }, [id]);
 
   // Handle sending a message
   
@@ -73,9 +89,10 @@ const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
   const handleSendMessage = async () => {
     if (newMessage.trim() || file) {
       const newMessageObj = {
-        inquiryRegistrationId: inquiryId,
+        inquiryRegistrationId: id,
         message: newMessage,
-        receiverId: senderId,
+        // sentDate: new Date().toISOString(),
+        // receiverId: senderId,
       };
 
       const formData = new FormData();
@@ -85,21 +102,33 @@ const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
       } else {
         formData.append("chatMessageVM.Message", newMessageObj.message);
       }
-
+      
       formData.append("chatMessageVM.InquiryRegistrationId", newMessageObj.inquiryRegistrationId);
-      formData.append("chatMessageVM.ReceiverId", newMessageObj.receiverId);
+      // formData.append("chatMessageVM.SentDate", newMessageObj.sentDate);
+      // formData.append("chatMessageVM.ReceiverId", newMessageObj.receiverId);
 
       try {
         const response = await InquiryChatService.addPartnerInquiryChat(formData);
-        if (response.status === 1) {
-          console.log("Chat added successfully!");
-          
+          if (response.status === 1) {
+            console.log("Chat added successfully!");
+            
+          // Broadcast the message to other clients via SignalR
+          // if (connection) {
+          //   connection.invoke("SendMessage", newMessageObj);  // Send the message to the SignalR Hub
+          // }
+
+          // Broadcast the message to other clients via SignalR
+          // if (connection) {
+          //   connection.invoke("SendMessageToAdmin", newMessageObj);  // Send the message to the SignalR Hub
+          // }
+
+
           // Update the local messages state to include the new message
           setMessages((prevMessages) => [
             ...prevMessages,
-            { user: "You", message: newMessageObj.message, file: file ? file : null },
+            { senderName: "You", message: newMessageObj.message, sentDate: new Date().toISOString(), file: file ? file : null, },
           ]);
-
+          
           // Clear input fields after sending
           setNewMessage("");
           setFile(null);
@@ -142,7 +171,7 @@ const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
     <>
       {/* Chat Section */}
       <section className="bg-white rounded-lg shadow-lg mt-8 p-6">
-        <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Chat with {chatPersoneName}</h2>
+        <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Chat</h2>
 
         {/* Chat Window */}
         <div
@@ -155,16 +184,16 @@ const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
             messages.map((message, index) => (
               <div
                 key={index}
-                className={`flex ${message.user === "You" || message.senderId === loginId ? "justify-end" : "justify-start"}`}
+                className={`flex ${message.senderName === "You" || message.senderId === loginId ? "justify-end" : "justify-start"}`}
               >
                 <div
                   className={`max-w-xs p-3 rounded-lg text-sm shadow-md ${
-                    message.user === "You" || message.senderId === senderId
+                    message.senderName === "You" || message.senderId === loginId
                       ? "bg-blue-300 text-white rounded-br-none"
                       : "bg-gray-200 text-gray-700 rounded-bl-none"
                   }`}
                 >
-                  <div className="font-semibold text-sm">{message.user}</div>
+                  <div className="font-semibold text-sm">{message.senderName}</div>
                   <div className="text-black">{message.message}</div>
 
                   {/* File Preview */}
@@ -178,13 +207,14 @@ const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
                         />
                       ) : (
                         <div className="text-xs text-blue-500 mt-1">
-                          <a
-                            href={URL.createObjectURL(message.file)}
+                          <img
+                            src={URL.createObjectURL(message.filePath)}
+                            alt="file-preview"
                             target="_blank"
                             rel="noopener noreferrer"
-                          >
+                          />
                             {message.file.name}
-                          </a>
+                          {/* </a> */}
                         </div>
                       )}
                     </div>
@@ -249,6 +279,7 @@ const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
 
           {/* Send Button */}
           <motion.button
+            type="button"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleSendMessage}
@@ -262,4 +293,7 @@ const PartnerInquiryChat = ({ inquiryId, chatPersoneName, senderId }) => {
   );
 };
 
-export default PartnerInquiryChat;
+export default CompanyInquiryChat;
+
+
+

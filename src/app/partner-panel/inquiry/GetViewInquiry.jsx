@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft, FaEdit } from "react-icons/fa";
+import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryService } from "../../service/InquiryService";
 import { toast } from "react-toastify";
 import { InquiryApproveRejectService } from "../../service/InquiryApproveRejectService";
+import Chat from "./Chat";
+import CompanyInquiryChat from "../../company-panel/inquiry-chat/CompanyInquiryChat";
+import PartnerInquiryList from "../../admin-panel/partner-inquiry/PartnerInquiryList";
+import PartnerInquiryTaskList from "../inquiry-task/PartnerInquiryTaskList";
+import CreateInquiryTaskList from "../inquiry-task/CreateInquiryTaskList";
 
 const GetViewInquiry = () => {
 
@@ -31,7 +36,6 @@ const GetViewInquiry = () => {
   const [activeTab, setActiveTab] = useState(1);
   const role = sessionStorage.getItem("role");
   
-
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -67,7 +71,6 @@ const GetViewInquiry = () => {
       // Add your approval logic here
   
       // debugger;
-  
       const inquiryApproveRejectData = {
         inquiryRegistrationId: id,
         clientApprovedReject: role === 'company' ? status : null,  // Store status if the role is 'client'
@@ -99,31 +102,64 @@ const GetViewInquiry = () => {
           console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
         }
       }
-    };
+   };
     
-
   return (
     <>
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => handleApproveReject(1)} // Replace with your actual function for approval
-            className="bg-green-600 hover:bg-green-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-          >
-            Accept Project
-          </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => handleApproveReject(2)} // Replace with your actual function for rejection
-            className="bg-red-600 hover:bg-red-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-          >
-            Reject Project
-          </motion.button>
+          {formData.inquiryStatus !== 4 && (
+            <>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleApproveReject(1)} // Replace with your actual function for approval
+                className="bg-green-600 hover:bg-green-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+              >
+                Accept Project
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleApproveReject(2)} // Replace with your actual function for rejection
+                className="bg-red-600
+               hover:bg-red-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+              >
+                Reject Project
+              </motion.button>
+            </>
+          )}
+
+          {(formData.inquiryStatus === 4) && (
+              <>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Link
+                to={
+                  role === 'partner'
+                    ? `/partner/partnerinquiry-task-list/create-inquiry-task/${id}`
+                    : role === 'company'
+                    ? `/company/companyinquiry-list/create-inquiry-task/${id}`
+                    : null
+                }
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+              >
+              {/* <Link
+                to={`/partnerinquiry-list/create-inquiry-task/${id}`}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+              > */}
+                Add Inquiry Task
+                <FaPlus size={16} />
+              </Link>
+            </motion.button>
+            </>
+            
+          )}
 
           {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
@@ -143,6 +179,7 @@ const GetViewInquiry = () => {
               Back
             </button>
           </motion.button>
+
         </div>
       </div>
 
@@ -159,7 +196,9 @@ const GetViewInquiry = () => {
               >
                 {[
                   "Project Details",
-                  //   "Attendance List",
+                  "Inquiry Task",
+                  "Create Inquiry Task",
+                  "Chat",
                   //   "Leave List",
                 ].map((tab, index) => (
                   <button
@@ -268,7 +307,10 @@ const GetViewInquiry = () => {
                   </div>
                 </div>
               )}
-              {/* {activeTab === 2 && "Attendance List"} */}
+              {activeTab === 2 && <PartnerInquiryTaskList />}
+              {activeTab === 3 && <CreateInquiryTaskList/>} 
+              {activeTab === 4 && role === "partner" && <Chat />}
+              {activeTab === 4 && role === "company" && <CompanyInquiryChat />}
               {/* {activeTab === 3 && "Leave List"}  */}
             </div>
           </div>

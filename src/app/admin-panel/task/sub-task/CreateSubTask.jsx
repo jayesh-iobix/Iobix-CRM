@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { DepartmentService } from "../../../service/DepartmentService";
@@ -24,6 +24,8 @@ const CreateSubTask = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [manualNotification, setManualNotification] = useState(false);
+  const [notifications, setNotifications] = useState([{ reminderDateTime: ""}]);
   const navigate = useNavigate();
   const {id} = useParams();
   
@@ -76,15 +78,31 @@ const CreateSubTask = () => {
       taskExpectedCompletionDate,
       taskDescription,
       taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate, // Convert empty string to null
+      manualNotification,
+      taskReminderVM: manualNotification ? {
+        reminderDateTimes: notifications.map(notification => ({
+          reminderDateTime: notification.reminderDateTime, // Ensure it's a string (ISO8601 or other formats)
+        }))
+      } : {},
     };
-    console.log(subTaskData)
+    // console.log(subTaskData)
 
     setIsSubmitting(true);
     try {
       const response = await SubTaskService.addSubTask(subTaskData);
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
-        navigate("/task/task-list");
+        setTaskName('');
+        setTaskAssignTo('');
+        setTaskPriority('');
+        setTaskType('');
+        setTaskStartingDate('');
+        setTaskExpectedCompletionDate('');
+        setTaskDescription('');
+        setDepartmentId('');
+        setNotifications([{ reminderDateTime: "" }]); // Clear notifications
+        navigate(-1);
+        // navigate("/task/task-list");
       }
     } catch (error) {
       console.error("Error adding sub task:", error);
@@ -94,21 +112,36 @@ const CreateSubTask = () => {
     }
   };
 
+  const handleAddNotification = () => {
+    setNotifications([...notifications, { reminderDateTime: "" }]);
+  };
+
+  // Handle change in notification input fields
+  const handleNotificationChange = (index, field, value) => {
+    const updatedNotifications = notifications.map((notification, i) => 
+      i === index ? { ...notification, [field]: value } : notification
+    );
+    setNotifications(updatedNotifications);
+  };
+
+  // Handle removing a notification row
+  const handleRemoveNotification = (index) => {
+    const updatedNotifications = notifications.filter((_, i) => i !== index);
+    setNotifications(updatedNotifications);
+  };
+
   return (
     <>
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Sub Task</h1>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-        <Link
-          onClick={() => navigate(-1)} // Navigate back to previous page
-          className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
-        >
-          <FaArrowLeft size={16} />
-          Back
-        </Link>
+        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          <Link
+            onClick={() => navigate(-1)} // Navigate back to previous page
+            className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+          >
+            <FaArrowLeft size={16} />
+            Back
+          </Link>
         </motion.button>
       </div>
 
@@ -126,13 +159,17 @@ const CreateSubTask = () => {
                 onChange={(e) => setTaskName(e.target.value)}
                 className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
                 autoFocus
-             />
-              {errors.taskName && <p className="text-red-500 text-xs">{errors.taskName}</p>}
+              />
+              {errors.taskName && (
+                <p className="text-red-500 text-xs">{errors.taskName}</p>
+              )}
             </div>
 
             {/* Select Department */}
             <div className="w-full mb-2 px-3 md:w-1/2">
-              <label className="block text-base font-medium">Select Department</label>
+              <label className="block text-base font-medium">
+                Select Department
+              </label>
               <select
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
@@ -140,12 +177,17 @@ const CreateSubTask = () => {
               >
                 <option value="">--Select Department--</option>
                 {departments.map((department) => (
-                  <option key={department.departmentId} value={department.departmentId}>
+                  <option
+                    key={department.departmentId}
+                    value={department.departmentId}
+                  >
                     {department.departmentName}
                   </option>
                 ))}
               </select>
-              {errors.taskAssignTo && <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>}
+              {errors.taskAssignTo && (
+                <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>
+              )}
             </div>
 
             {/* Assign To */}
@@ -163,7 +205,9 @@ const CreateSubTask = () => {
                   </option>
                 ))}
               </select>
-              {errors.taskAssignTo && <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>}
+              {errors.taskAssignTo && (
+                <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>
+              )}
             </div>
 
             {/* Task Type */}
@@ -180,7 +224,9 @@ const CreateSubTask = () => {
                 <option value="Temporary">Temporary</option>
                 <option value="Recurring">Recurring</option>
               </select>
-              {errors.taskType && <p className="text-red-500 text-xs">{errors.taskType}</p>}
+              {errors.taskType && (
+                <p className="text-red-500 text-xs">{errors.taskType}</p>
+              )}
             </div>
 
             {/* Priority */}
@@ -198,36 +244,52 @@ const CreateSubTask = () => {
                 <option value="Medium">Medium</option>
                 <option value="High">High</option>
               </select>
-              {errors.taskPriority && <p className="text-red-500 text-xs">{errors.taskPriority}</p>}
+              {errors.taskPriority && (
+                <p className="text-red-500 text-xs">{errors.taskPriority}</p>
+              )}
             </div>
 
             {/* Starting Date */}
             <div className="w-full mb-2 px-3 md:w-1/2">
-              <label className="block text-base font-medium">Starting Date</label>
+              <label className="block text-base font-medium">
+                Starting Date
+              </label>
               <input
                 type="date"
                 value={taskStartingDate}
                 onChange={(e) => setTaskStartingDate(e.target.value)}
                 className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
-             {errors.taskStartingDate && <p className="text-red-500 text-xs">{errors.taskStartingDate}</p>}
+              {errors.taskStartingDate && (
+                <p className="text-red-500 text-xs">
+                  {errors.taskStartingDate}
+                </p>
+              )}
             </div>
 
             {/* Expected Completion Date */}
             <div className="w-full mb-2 px-3 md:w-1/2">
-              <label className="block text-base font-medium">Expected Completion Date</label>
+              <label className="block text-base font-medium">
+                Expected Completion Date
+              </label>
               <input
                 type="date"
                 value={taskExpectedCompletionDate}
                 onChange={(e) => setTaskExpectedCompletionDate(e.target.value)}
                 className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
-              {errors.taskExpectedCompletionDate && <p className="text-red-500 text-xs">{errors.taskExpectedCompletionDate}</p>}
+              {errors.taskExpectedCompletionDate && (
+                <p className="text-red-500 text-xs">
+                  {errors.taskExpectedCompletionDate}
+                </p>
+              )}
             </div>
 
             {/* Task Description */}
             <div className="w-full mb-2 px-3">
-              <label className="block text-base font-medium">Task Description</label>
+              <label className="block text-base font-medium">
+                Task Description
+              </label>
               <textarea
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
@@ -236,16 +298,99 @@ const CreateSubTask = () => {
               ></textarea>
             </div>
 
+            {/* Send Manual Notification */}
+            <div className="w-full mb-4 px-3">
+              <label className="block text-base font-medium">
+                Send Manual Notification
+              </label>
+              <div className="flex items-center gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="manualNotification"
+                    value="true"
+                    checked={manualNotification === true}
+                    onChange={() => setManualNotification(true)}
+                    className="me-1"
+                  />
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="manualNotification"
+                    value="false"
+                    checked={manualNotification === false}
+                    onChange={() => setManualNotification(false)}
+                    className="me-1"
+                  />
+                  No
+                </label>
+              </div>
+            </div>
+
+            {manualNotification && (
+              <div className="w-full px-3">
+                <button
+                  type="button"
+                  onClick={handleAddNotification}
+                  className="text-blue-500 font-medium"
+                >
+                  + Add Manual Notification
+                </button>
+
+                {notifications.map((notification, index) => (
+                  <div key={index} className="mt-4 flex flex-wrap gap-4">
+                    <div className="w-full md:w-1/2 mb-2">
+                      <label className="block text-base font-medium">
+                        Notification DateTime
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="datetime-local"
+                          value={notification.reminderDateTime}
+                          onChange={(e) =>
+                            handleNotificationChange(
+                              index,
+                              "reminderDateTime",
+                              e.target.value
+                            )
+                          }
+                          className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveNotification(index)}
+                          className="text-red-500"
+                        >
+                          <FaTimes size={18} />
+                        </button>
+                      </div>
+                    </div>
+                    {/* <div className="w-full md:w-1/2 mb-2">
+                      <label className="block text-base font-medium">Notification Message</label>
+                      <input
+                        type="text"
+                        value={notification.message}
+                        onChange={(e) => handleNotificationChange(index, "message", e.target.value)}
+                        className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                      />
+                    </div> */}
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="w-full px-3">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              type="submit"
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                type="submit"
                 className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isSubmitting}
-            >
+              >
                 {isSubmitting ? "Submitting..." : "Add Task"}
               </motion.button>
               {/* <button

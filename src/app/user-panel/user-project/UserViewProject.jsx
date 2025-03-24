@@ -14,6 +14,12 @@ import { PartnerService } from "../../service/PartnerService";
 // import ApprovedPartnerInqry from "../approved-inquiry/ApprovedPartnerInqry";
 import InquiryTaskList from "../../admin-panel/inquiry-task/InquiryTaskList";
 import InquiryChat from "../../admin-panel/inquiry/InquiryChat";
+import UserInquiryTaskList from "../user-inquiry-task/UserInquiryTaskList";
+import PartnerInquiryTaskList from "../../partner-panel/inquiry-task/PartnerInquiryTaskList";
+import CreateInquiryTaskList from "../../partner-panel/inquiry-task/CreateInquiryTaskList";
+import UserCreatedInquiryTaskList from "../user-inquiry-task/UserCreatedInquiryTaskList";
+import EmployeeChat from "../employee-chat/ChatComponent";
+import EmpInquiryChat from "../inquiry/EmpInquiryChat";
 // import InquiryChat from "../inquiry/InquiryChat";
 // import InquiryTaskList from "../inquiry-task/InquiryTaskList";
 // import ChatInquiry from "./ChatInquiry";
@@ -82,6 +88,7 @@ const UserViewProject = () => {
       const inquiry = await InquiryService.getByIdInquiry(id);
       setFormData(inquiry.data);
       const inquiryData = inquiry.data;
+      // console.log(inquiryData);
 
       if (inquiryData.inquiryStatus === 4) {
         setSelectedOption("employee");
@@ -487,20 +494,21 @@ const UserViewProject = () => {
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-          {/* {formData.inquiryStatus === 4 && ( */}
+
+          {formData.inquiryStatus === 4 && (
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
               <Link
-                to={`/partnerinquiry-list/create-inquiry-task/${id}`}
+                to={`/user/create-inquiry-task/${id}`}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
               >
                 Add Inquiry Task
                 <FaPlus size={16} />
               </Link>
             </motion.button>
-           {/* )}  */}
+          )} 
 
           {/* Forward Inquiry Button placed above the edit and back buttons */}
           {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -512,7 +520,7 @@ const UserViewProject = () => {
             </button>
           </motion.button> */}
 
-          {inquiryHideShow === true && (
+          {/* {inquiryHideShow === true && ( */}
             <>
               {/* Forward Inquiry Button buttons */}
               {/* {formData.inquiryStatus !== 4 && (
@@ -567,7 +575,7 @@ const UserViewProject = () => {
                 </Link>
               </motion.button> */}
             </>
-          )}
+          {/* )} */}
 
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <button
@@ -903,6 +911,7 @@ const UserViewProject = () => {
                 //   "Approved By Client",
                 //   "Approved By Partner",
                   "Inquiry Task",
+                  "Created Inquiry Task",
                   "Chat",
                   // !hideTab && "Approved By Partner",
                 ].map((tab, index) => (
@@ -1018,12 +1027,10 @@ const UserViewProject = () => {
 
               {/* {activeTab === 2 && <ApprovedClientInqry />}
               {activeTab === 3 && <ApprovedPartnerInqry />} */}
-              {activeTab === 2 && <InquiryTaskList />}
-              {activeTab === 3 && (
-                <InquiryChat
-                  senderId={formData.senderId}
-                  chatPersoneName={formData.senderName}
-                />
+              {activeTab === 2 && <UserInquiryTaskList />}
+              {activeTab === 3 && <UserCreatedInquiryTaskList />}
+              {activeTab === 4 && (
+                <EmpInquiryChat />
               )}
             </div>
           </div>

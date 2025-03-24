@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { TaskService } from "../../../service/TaskService";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
-
 
 const CreateTask = () => {
   const [taskName, setTaskName] = useState("");
@@ -22,23 +21,22 @@ const CreateTask = () => {
   const [departmentList, setDepartmentList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [manualNotification, setManualNotification] = useState(false);
+  const [notifications, setNotifications] = useState([{ reminderDateTime: ""}]);
+  // const [notifications, setNotifications] = useState([{ reminderDateTime: "", message: "" }]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-
         const departmentResult = await DepartmentService.getDepartments();
         const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
         setDepartmentList(activeDepartments);
 
-        if(departmentId)
-          {
-               // Fetch Employee from department
-               const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
-               setEmployeeList(employeeResult.data);
-          }
-
+        if(departmentId) {
+          const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
+          setEmployeeList(employeeResult.data);
+        }
       } catch (error) {
         console.error("Error fetching employee list:", error);
       }
@@ -54,15 +52,16 @@ const CreateTask = () => {
     if (!taskAssignTo) newErrors.taskAssignTo = "Assign To is required";
     if (!taskType) newErrors.taskType = "Task Type is required";
     if (!taskStartingDate) newErrors.taskStartingDate = "Task Starting Date is required";
-    // if (!taskExpectedCompletionDate) newErrors.taskExpectedCompletionDate = "Task ExpectedCompletion Date is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) return;
+  
+    // debugger;
 
     const taskData = {
       taskName,
@@ -70,18 +69,41 @@ const CreateTask = () => {
       taskPriority,
       taskType,
       taskStartingDate,
-      taskExpectedCompletionDate: taskExpectedCompletionDate === "" ? null: taskExpectedCompletionDate,
+      taskExpectedCompletionDate: taskExpectedCompletionDate === "" ? null : taskExpectedCompletionDate,
       taskDescription,
       departmentId,
-      taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate, // Convert empty string to null
+      taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate,
+      manualNotification,
+      taskReminderVM: manualNotification ? {
+        reminderDateTimes: notifications.map(notification => ({
+          reminderDateTime: notification.reminderDateTime, // Ensure it's a string (ISO8601 or other formats)
+        }))
+      } : {},
+
+      // taskReminderVM: manualNotification ? notifications.map(notification => ({
+      //   reminderDateTime: notification.reminderDateTime,  // This ensures we send reminderDateTime in the correct format
+      // })) : [], // Only include notifications if manualNotification is true
+      // taskReminderVM: manualNotification ? notifications : [], // Add manual notifications if selected
     };
 
+    console.log(taskData)
+  
     setIsSubmitting(true);
     try {
-      const response = await TaskService.addTask(taskData);
+      const response = await TaskService.addTask(taskData); // Make sure the service is configured to send data to your backend
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
-        navigate("/task/task-list");
+        setTaskName('');
+        setTaskAssignTo('');
+        setTaskPriority('');
+        setTaskType('');
+        setTaskStartingDate('');
+        setTaskExpectedCompletionDate('');
+        setTaskDescription('');
+        setDepartmentId('');
+        setNotifications([{ reminderDateTime: "" }]); // Clear notifications
+        navigate(-1);
+        // navigate("/task/task-list");
       }
     } catch (error) {
       console.error("Error adding task:", error);
@@ -89,6 +111,67 @@ const CreateTask = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+  
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!validateForm()) return;
+
+  //   debugger;
+
+  //   // Format the task reminder if manual notification is enabled
+  //   const formattedNotifications = manualNotification ? notifications.map(notification => ({
+  //     reminderDateTime: notification.reminderDateTime,
+  //     // message: notification.message || "", // Default empty message if not provided
+  //   })) : [];
+
+  //   const taskData = {
+  //     taskName,
+  //     taskAssignTo,
+  //     taskPriority,
+  //     taskType,
+  //     taskStartingDate,
+  //     taskExpectedCompletionDate: taskExpectedCompletionDate === "" ? null : taskExpectedCompletionDate,
+  //     taskDescription,
+  //     departmentId,
+  //     taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate,
+  //     taskReminderVM: formattedNotifications
+  //     // taskReminderVM: manualNotification ? notifications : [], // Add manual notifications if selected
+  //   };
+  //   console.log(taskData)
+  //   setIsSubmitting(true);
+  //   try {
+  //     const response = await TaskService.addTask(taskData);
+  //     if (response.status === 1) {
+  //       toast.success(response.message); // Toast on success
+  //       navigate("/task/task-list");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error adding task:", error);
+  //     toast.error("Failed to add task.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+  // Handle adding new notification row
+  const handleAddNotification = () => {
+    setNotifications([...notifications, { reminderDateTime: "" }]);
+  };
+
+  // Handle change in notification input fields
+  const handleNotificationChange = (index, field, value) => {
+    const updatedNotifications = notifications.map((notification, i) => 
+      i === index ? { ...notification, [field]: value } : notification
+    );
+    setNotifications(updatedNotifications);
+  };
+
+  // Handle removing a notification row
+  const handleRemoveNotification = (index) => {
+    const updatedNotifications = notifications.filter((_, i) => i !== index);
+    setNotifications(updatedNotifications);
   };
 
   return (
@@ -99,19 +182,20 @@ const CreateTask = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
-        <Link
-          to="/task/task-list"
-          className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
-        >
-          <FaArrowLeft size={16} />
-          Back
-        </Link>
+          <Link
+            to="/task/task-list"
+            className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+          >
+            <FaArrowLeft size={16} />
+            Back
+          </Link>
         </motion.button>
       </div>
 
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
+
             {/* Task Name */}
             <div className="w-full mb-2 px-3 md:w-1/3">
               <label className="block text-base font-medium">Task Name</label>
@@ -127,8 +211,8 @@ const CreateTask = () => {
               {errors.taskName && <p className="text-red-500 text-xs">{errors.taskName}</p>}
             </div>
 
-             {/* Department Select */}
-             <div className="w-full mb-2 px-3 md:w-1/3">
+            {/* Department Select */}
+            <div className="w-full mb-2 px-3 md:w-1/3">
               <label className="block text-base font-medium">
                 Department
               </label>
@@ -225,7 +309,7 @@ const CreateTask = () => {
                 onChange={(e) => setTaskStartingDate(e.target.value)}
                 className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               />
-             {errors.taskStartingDate && <p className="text-red-500 text-xs">{errors.taskStartingDate}</p>}
+              {errors.taskStartingDate && <p className="text-red-500 text-xs">{errors.taskStartingDate}</p>}
             </div>
 
             {/* Expected Completion Date */}
@@ -251,19 +335,84 @@ const CreateTask = () => {
               ></textarea>
             </div>
 
+            {/* Send Manual Notification */}
+            <div className="w-full mb-4 px-3">
+              <label className="block text-base font-medium">Send Manual Notification</label>
+              <div className="flex items-center gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="manualNotification"
+                    value="true"
+                    checked={manualNotification === true}
+                    onChange={() => setManualNotification(true)}
+                    className="me-1"
+                  />
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="manualNotification"
+                    value="false"
+                    checked={manualNotification === false}
+                    onChange={() => setManualNotification(false)}
+                    className="me-1"
+                  />
+                  No
+                </label>
+              </div>
+            </div>
+
+            {manualNotification && (
+              <div className="w-full px-3">
+                <button
+                  type="button"
+                  onClick={handleAddNotification}
+                  className="text-blue-500 font-medium"
+                >
+                  + Add Manual Notification
+                </button>
+
+                {notifications.map((notification, index) => (
+                  <div key={index} className="mt-4 flex flex-wrap gap-4">
+                    <div className="w-full md:w-1/2 mb-2">
+                      <label className="block text-base font-medium">Notification DateTime</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="datetime-local"
+                          value={notification.reminderDateTime}
+                          onChange={(e) => handleNotificationChange(index, "reminderDateTime", e.target.value)}
+                          className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveNotification(index)}
+                          className="text-red-500"
+                        >
+                          <FaTimes size={18} />
+                        </button>
+                      </div>
+                    </div>
+                    {/* <div className="w-full md:w-1/2 mb-2">
+                      <label className="block text-base font-medium">Notification Message</label>
+                      <input
+                        type="text"
+                        value={notification.message}
+                        onChange={(e) => handleNotificationChange(index, "message", e.target.value)}
+                        className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                      />
+                    </div> */}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Submit Button */}
             <div className="w-full px-3">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                disabled={isSubmitting}
-            >
-                {isSubmitting ? "Submitting..." : "Add Task"}
-              </motion.button>
-              {/* <button
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 type="submit"
                 className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
@@ -271,7 +420,7 @@ const CreateTask = () => {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Add Task"}
-              </button> */}
+              </motion.button>
             </div>
           </div>
         </form>
