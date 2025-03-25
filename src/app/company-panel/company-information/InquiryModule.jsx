@@ -241,12 +241,13 @@ const InquiryModule = () => {
     // };
     
      try {
-      console.log("Form Data:", formData);
+      // console.log("Form Data:", formData);
       const response = await ICPService.addICP(formData);
-      console.log("Response:", response);
+      // console.log("Response:", response);
       if (response.status === 1) {
         toast.success("Ideal Customer Profile added successfully!");
-        navigate(`/company-form/${response.message}`);
+        navigate(-1)
+        // navigate(`/company-form/${response.message}`);
       }
     }
     catch (error) {

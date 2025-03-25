@@ -73,7 +73,7 @@ const ProjectList = () => {
       // Fetch Inquiry
       const result = await InquiryService.receivedAllProjects();
       setInquiries(result.data);
-      console.log(result.data);
+      // console.log(result.data);
       setFilteredInquiries(result.data);
       setTotalItems(result.data.length);
 

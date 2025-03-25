@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { CommonService } from "../../service/CommonService";
-import FingerprintJS from "@fingerprintjs/fingerprintjs"; // For fingerprinting
-import { UAParser } from "ua-parser-js";
-import { messaging } from "../../../firebase/firebase";
-import { getToken } from "firebase/messaging";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquirySourceService } from "../../service/InquirySourceService";
 import { VendorService } from "../../service/VendorService";
 
 
-const AddVendor = () => {
+const EditVendor = () => {
   const [formData, setFormData] = useState({
     companyName: "",
     companyRegistrationNumber : "",
@@ -30,56 +26,39 @@ const AddVendor = () => {
     companyWebsite : "",
   });
 
+  const { id } = useParams();
   const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
   const [inquirySourceList, setInquirySourceList] = useState([]);
   
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [departmentList, setDepartmentList] = useState([]);
-  const [employeeLeaveTypeList, setEmployeeLeaveTypeList] = useState([]);
-  const [designationList, setDesignationList] = useState([]);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const navigate = useNavigate();
 
-  const [deviceId, setDeviceId] = useState(null); // State to store the device ID
-  const [deviceToken, setDeviceToken] = useState(null);
-
   useEffect(() => {
-    // Check for stored device token
-    const storedDeviceToken = sessionStorage.getItem("deviceToken");
-    if (storedDeviceToken) {
-      setDeviceToken(storedDeviceToken);
-    } 
-    else {
-      // Get the device token if not stored
-      const getDeviceToken = async () => {
+      const fetchData = async () => {
         try {
-          const currentToken = await getToken(messaging, { vapidKey: "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" });
-          if (currentToken) {
-            setDeviceToken(currentToken);
-            console.log(currentToken);
-            sessionStorage.setItem("deviceToken", currentToken);
-          } else {
-            console.log("No device token available.");
-          }
+          // Fetch Vendor
+          const vendor = await VendorService.getByIdVendor(id);
+          setFormData(vendor.data);
+          //   console.log(vendor.data);
+  
+          // Fetch Countries
+          const [countries] = await Promise.all([
+            CommonService.getCountry(),
+          ]);
+          setCountryList(countries.data);
         } catch (error) {
-          console.error("Error fetching device token:", error);
+          console.error("Error fetching data:", error);
+          alert("Error fetching data, please try again.");
         }
       };
-      getDeviceToken();
-    }
-
-    // Get the device ID using FingerprintJS
-    const getDeviceId = async () => {
-      const fp = await FingerprintJS.load();
-      const result = await fp.get();
-      setDeviceId(result.visitorId);
-    };
-    getDeviceId();
-  }, []);
+  
+      fetchData();
+    }, [id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,38 +105,20 @@ const AddVendor = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // debugger;
 
-    // Initialize UAParser to get device information
-     const parser = new UAParser();
-     const result = parser.getResult();
-     const { device, os } = result;    
-
-     // Collect device information
-     const deviceInfoVM = {
-      deviceId: deviceId || "Unknown Device ID",  // Include the device ID
-      deviceToken: deviceToken || "Unknown Device Token",
-      deviceName: device.model || "Unknown Device",
-      deviceType: device.type || "Unknown Type",
-      deviceOSName: os.name || "Unknown OS",
-      deviceOSVersion: os.version || "Unknown Version",
-     };
+    // debugger; 
 
     if (validateForm()) {
       setIsSubmitting(true);
       try {
         //debugger;
-        // Call the API to add the partner
-        const companyData = {
-            ...formData,
-            deviceInfoVM,
-        }
-        const response = await VendorService.addVendor(companyData); // Call the service
+        // Call the API to add the employee
+        const response = await VendorService.updateVendor(id, formData); // Call the service
         if (response.status === 1) {
-          toast.success("Registration successfully");
+          toast.success("Vendor updated successfully");
           navigate(-1);
         //   toast.success(response.message);
-        //   navigate("/clientcompany-list");
+        //   navigate("/vendor-list");
         }
         if (response.status === 0) {
           toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
@@ -198,7 +159,7 @@ const AddVendor = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Add Vendor</h1>
+        <h1 className="font-semibold text-2xl">Edit Vendor</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link
             onClick={() => navigate(-1)}
@@ -232,12 +193,12 @@ const AddVendor = () => {
                 type: "email",
                 placeholder: "Enter your email",
               },
-              {
-                label: "Password",
-                name: "password",
-                type: "password",
-                placeholder: "Enter your password",
-              },
+              // {
+              //   label: "Password",
+              //   name: "password",
+              //   type: "password",
+              //   placeholder: "Enter your password",
+              // },
               {
                 label: "Contact Person Name",
                 name: "contactPersonName",
@@ -280,6 +241,12 @@ const AddVendor = () => {
                 type: "url",
                 placeholder: "Enter Contact Person Linkedin",
               },
+            //   {
+            //     label: "Employee Code",
+            //     name: "employeecode",
+            //     type: "text",
+            //     placeholder: "Employee code",
+            //   },
             ].map(({ label, name, type, placeholder }) => (
               <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3" key={name}>
                 <label className="mb-2 block text-base font-medium">
@@ -457,7 +424,7 @@ const AddVendor = () => {
                 }`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Add Partner"}
+                {isSubmitting ? "Submitting..." : "Update Vendor"}
               </motion.button>
             </div>
           </div>
@@ -467,6 +434,4 @@ const AddVendor = () => {
   );
 };
 
-export default AddVendor;
-
-
+export default EditVendor;

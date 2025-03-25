@@ -20,6 +20,8 @@ import CreateInquiryTaskList from "../../partner-panel/inquiry-task/CreateInquir
 import UserCreatedInquiryTaskList from "../user-inquiry-task/UserCreatedInquiryTaskList";
 import EmployeeChat from "../employee-chat/ChatComponent";
 import EmpInquiryChat from "../inquiry/EmpInquiryChat";
+import InquiryChatCreated from "../../admin-panel/inquiry/InquiryChatCreated";
+import EmpInquiryChatCreated from "../inquiry/EmpInquiryChatCreated";
 // import InquiryChat from "../inquiry/InquiryChat";
 // import InquiryTaskList from "../inquiry-task/InquiryTaskList";
 // import ChatInquiry from "./ChatInquiry";
@@ -77,6 +79,7 @@ const UserViewProject = () => {
 
   const role = sessionStorage.getItem("role");
   const userId = sessionStorage.getItem("LoginUserId");
+  const [isCreatedAdmin, setIsCreatedAdmin] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -86,9 +89,10 @@ const UserViewProject = () => {
 
       // Fetch Inquiry
       const inquiry = await InquiryService.getByIdInquiry(id);
-      setFormData(inquiry.data);
       const inquiryData = inquiry.data;
-      // console.log(inquiryData);
+      setFormData(inquiryData);
+      setIsCreatedAdmin(inquiryData.isCreatedAdmin);
+      console.log(inquiryData);
 
       if (inquiryData.inquiryStatus === 4) {
         setSelectedOption("employee");
@@ -1030,8 +1034,15 @@ const UserViewProject = () => {
               {activeTab === 2 && <UserInquiryTaskList />}
               {activeTab === 3 && <UserCreatedInquiryTaskList />}
               {activeTab === 4 && (
-                <EmpInquiryChat />
+                isCreatedAdmin ? (
+                  <EmpInquiryChatCreated />
+                ) : (
+                  <EmpInquiryChat />
+                )
               )}
+              {/* {activeTab === 4 && (
+                <EmpInquiryChat />
+              )} */}
             </div>
           </div>
         </form>

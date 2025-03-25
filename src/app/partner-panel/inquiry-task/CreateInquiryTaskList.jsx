@@ -862,7 +862,8 @@ const CreateInquiryTaskList = () => {
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                to={`/partnerinquiry-list/inquiry-task/inquiry-task-note/${item.inquiryTaskAllocationId}`}
+                                to={`/partner/inquiry-tasknote-list/${item.inquiryTaskAllocationId}`}
+                                // to={`/partnerinquiry-list/inquiry-task/inquiry-task-note/${item.inquiryTaskAllocationId}`}
                                 className="text-yellow-500 hover:text-yellow-700"
                               >
                                 <IoTime size={24} />
@@ -1146,7 +1147,19 @@ const CreateInquiryTaskList = () => {
                                         </td>
                                         <td className="py-3 px-4">
                                           <div className="flex gap-2">
-                                            {/* <button> */}
+                                              <motion.button
+                                                type="button"
+                                                whileHover={{ scale: 1.1 }}
+                                                whileTap={{ scale: 0.9 }}
+                                              >
+                                                <Link
+                                                  to={`/partner/view-inquiry-subtask/${subTask.inquirySubTaskAllocationId}`}
+                                                  className="relative text-green-500 hover:text-green-700 group"
+                                                >
+                                                  <FaEye size={24} />
+                                                </Link>
+                                              </motion.button>
+
                                               <motion.button
                                                 type="button"
                                                 whileHover={{ scale: 1.1 }}
@@ -1159,7 +1172,6 @@ const CreateInquiryTaskList = () => {
                                                   <FaEdit size={24} />
                                                 </Link>
                                               </motion.button>
-                                            {/* </button> */}
 
                                             {/* <button> */}
                                               <motion.button
@@ -1168,7 +1180,14 @@ const CreateInquiryTaskList = () => {
                                                 whileTap={{ scale: 0.9 }}
                                               >
                                                 <Link
-                                                  to={`/task/tasknote-list/${subTask.inquirySubTaskAllocationId}`}
+                                                  to={
+                                                    role === 'partner'
+                                                      ? `/partner/view-inquiry-subtask/${subTask.inquirySubTaskAllocationId}`
+                                                      : role === 'company'
+                                                        ? `/company/view-inquiry-subtask/${subTask.inquirySubTaskAllocationId}`
+                                                        : null
+                                                  }
+                                                  // to={`/partner/inquiry-subtasknote-list/${subTask.inquirySubTaskAllocationId}`}
                                                   className="text-yellow-500 hover:text-yellow-700"
                                                 >
                                                   {/* <FaRegFileLines size={24} /> */}

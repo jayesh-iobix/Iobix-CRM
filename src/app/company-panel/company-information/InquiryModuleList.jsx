@@ -173,7 +173,8 @@ const InquiryModuleList = () => {
                 "Industries",
                 "CompanySize",
                 "TargetCustomer",
-                "MainBusiness",
+                "Average Deal Size",
+                // "MainBusiness",
                 "Actions",
               ].map((header) => (
                 <th
@@ -203,7 +204,8 @@ const InquiryModuleList = () => {
                 <td className="py-3 px-4 text-gray-700">{item.industries}</td>
                 <td className="py-3 px-4 text-gray-700">{item.companySize}</td>
                 <td className="py-3 px-4 text-gray-700">{item.targetCustomer}</td>
-                <td className="py-3 px-4 text-gray-700">{item.mainBusiness}</td>
+                <td className="py-3 px-4 text-gray-700">{item.averageDealSize}</td>
+                {/* <td className="py-3 px-4 text-gray-700">{item.mainBusiness}</td> */}
                 <td className="py-3 px-4">
                   <div className="flex gap-2">
                     <motion.button
@@ -224,7 +226,7 @@ const InquiryModuleList = () => {
                     >
                       <Link
                         className="text-blue-500 hover:text-blue-700"
-                        to={/employee-list/edit-employee/${item.partnerRegistrationId}}
+                        // to={`/employee-list/edit-employee/${item.partnerRegistrationId}`}
                       >
                         <FaEdit size={24} />
                       </Link>

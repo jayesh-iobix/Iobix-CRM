@@ -5,7 +5,7 @@ import { InquiryChatService } from "../../service/InquiryChatService";
 import { useParams } from "react-router-dom";
 import { debounce } from "lodash";
 
-const EmpInquiryChat = () => {
+const EmpInquiryChatCreated = () => {
   const [messages, setMessages] = useState([]); // State to store messages
   const [newMessage, setNewMessage] = useState(""); // State to store new message
   const [file, setFile] = useState(null); // State to store selected file
@@ -24,7 +24,7 @@ const EmpInquiryChat = () => {
   const fetchData = debounce(async () => {
     
     // debugger;
-    if (chatPersonType === "partner" && selectedPersonId != null) {
+    if (chatPersonType === "createInquiryForwardedToPartner" && selectedPersonId != null) {
       const chatData = await InquiryChatService.getPartnerChatInAdmin(id, selectedPersonId);
 
       // Map through the chat data and set the senderName to "You" if selectedPersonId matches loginId
@@ -37,7 +37,7 @@ const EmpInquiryChat = () => {
       setMessages(updatedMessages); // Update the state with the modified messages
     }
 
-    if (chatPersonType === "client" && selectedPersonId != null) {
+    if (chatPersonType === "createInquiryForwardedToClient" && selectedPersonId != null) {
       const chatData = await InquiryChatService.getClientChatInAdmin(id, selectedPersonId);
 
       // Map through the chat data and set the senderName to "You" if senderId matches loginId
@@ -83,18 +83,20 @@ const EmpInquiryChat = () => {
     // Listen for incoming messages
     
     newConnection.on("ReceiveUserMessage", (chatMessage) => {
-      if (chatMessage.senderId !== loginId && chatMessage.inquiryRegistrationId === id) {
+      if (chatMessage.senderId !== loginId && (chatMessage.receiverId === selectedPersonId || role === 'admin' || role === 'user') && chatMessage.inquiryRegistrationId === id) {
       setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
-      console.log(messages);
+      // console.log(messages);
       }
+      console.log(chatMessage);
     });
 
     newConnection.on("ReceiveAdminMessage", (chatMessage) => {
-      if (chatMessage.senderId !== loginId && (chatMessage.receiverId === loginId) && chatMessage.inquiryRegistrationId === id) {
+      if (chatMessage.senderId !== loginId && (chatMessage.receiverId === selectedPersonId || role === 'admin' || role === 'user') && chatMessage.inquiryRegistrationId === id) {
         // Append the new message to the state
         // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
         setMessages((prevMessages) => [...prevMessages, chatMessage]);
       }
+      console.log(chatMessage);
     });
   
     setConnection(newConnection);
@@ -245,9 +247,9 @@ const EmpInquiryChat = () => {
             onChange={handleChatPersonTypeChange}
           >
             <option value="">--Select Type--</option>
-            <option value="partner">Partner</option>
-            <option value="client">Client</option>
-            <option value="employee">Employee</option>
+            <option value="createInquiryForwardedToPartner">Partner</option>
+            <option value="createInquiryForwardedToClient">Client</option>
+            <option value="createInquiryForwardedToEmployee">Employee</option>
           </select>
         </div>
 
@@ -275,7 +277,6 @@ const EmpInquiryChat = () => {
       </div>
 
       {/* Chat Section */}
-      
       {selectedPerson ? (
       <section className="bg-white rounded-lg shadow-lg mt-8 p-6">
         <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Chat with {selectedPersonName}</h2>
@@ -401,16 +402,4 @@ const EmpInquiryChat = () => {
   );
 };
 
-export default EmpInquiryChat;
-
-
-
-
-
-
-
-
-
-
-
-
+export default EmpInquiryChatCreated;

@@ -106,7 +106,7 @@ const TaskList = () => {
       setDepartments(departmentResult.data); // Set the 'data' array to the state\
       // console.log(departmentId);
       if (departmentId) {
-        debugger;
+        // debugger;
         const employeeResult = await EmployeeService.getEmployeeByDepartment(
           departmentId
         );
@@ -814,8 +814,19 @@ const TaskList = () => {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
-                          <button>
                             <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <Link
+                                to={`/task/view-task/${item.taskAllocationId}`}
+                                className="text-green-500 hover:text-green-700"
+                              >
+                                <FaEye size={24} />
+                              </Link>
+                            </motion.button>
+
+                            {/* <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                             >
@@ -825,10 +836,8 @@ const TaskList = () => {
                               >
                                 <FaEdit size={24} />
                               </Link>
-                            </motion.button>
-                          </button>
+                            </motion.button> */}
 
-                          <button>
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
@@ -841,39 +850,32 @@ const TaskList = () => {
                                 <IoTime size={24} />
                               </Link>
                             </motion.button>
-                          </button>
 
-                          <button
-                            onClick={() =>
-                              handleDeleteClick(item.taskAllocationId)
-                            }
-                            // onClick={() => deleteTask(item.taskAllocationId)}
-                            className="text-red-500 hover:text-red-700"
-                          >
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
+                              onClick={() =>
+                                handleDeleteClick(item.taskAllocationId)
+                              }
+                              // onClick={() => deleteTask(item.taskAllocationId)}
+                              className="text-red-500 hover:text-red-700"
                             >
                               <FaTrash size={22} />
                             </motion.button>
-                          </button>
 
-                          <button
-                            onClick={() =>
-                              toggleDropdown(item.taskAllocationId)
-                            }
-                            className="text-gray-500 hover:text-gray-700"
-                            ref={(el) =>
-                              (buttonRefs.current[item.taskAllocationId] = el)
-                            }
-                          >
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
+                              onClick={() =>
+                                toggleDropdown(item.taskAllocationId)
+                              }
+                              className="text-gray-500 hover:text-gray-700"
+                              ref={(el) =>
+                                (buttonRefs.current[item.taskAllocationId] = el)
+                              }
                             >
                               <FaEllipsisV size={24} />
                             </motion.button>
-                          </button>
                           
                           {/* Render dropdown above or below based on space */}
                           {openDropdown === item.taskAllocationId && (

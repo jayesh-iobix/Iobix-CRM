@@ -173,7 +173,7 @@ const PartnerViewInquiryTask = () => {
               {taskDetails.taskAssignBy === userId && (
                 <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                   <Link
-                    to={`/partnerinquiry-list/edit-inquiry-task/${id}`}
+                    to={`/partner/partnerinquiry-task-list/edit-inquiry-task/${id}`}
                     className="bg-blue-600 hover:bg-blue-700 text-white flex gap-2 py-2 px-4 rounded hover:no-underline"
                   >
                     Edit Inquiry Task <span className="mt-[2px]"><FaEdit size={14} /></span>

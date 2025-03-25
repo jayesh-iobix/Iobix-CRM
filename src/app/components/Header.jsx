@@ -359,7 +359,7 @@ export default function Header() {
                     <strong className="text-gray-700 font-medium text-sm sm:text-base">
                       Notifications
                     </strong>
-                    <div className="mt-2 py-1 text-sm sm:text-base">
+                    <div className="mt-2 py-1 text-sm sm:text-base max-h-96 overflow-y-auto">
                     {notifications.length > 0 ? (
                         notifications.map((notification, index) => (
                           <div

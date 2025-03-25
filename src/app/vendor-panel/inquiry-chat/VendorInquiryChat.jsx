@@ -5,59 +5,41 @@ import { InquiryChatService } from "../../service/InquiryChatService";
 import { useParams } from "react-router-dom";
 import { debounce } from "lodash";
 
-const EmpInquiryChat = () => {
+const VendorInquiryChat = () => {
   const [messages, setMessages] = useState([]); // State to store messages
   const [newMessage, setNewMessage] = useState(""); // State to store new message
   const [file, setFile] = useState(null); // State to store selected file
   const [connection, setConnection] = useState(null); // For the SignalR connection
-  const [chatPersonType, setChatPersonType] = useState(""); // State for selected chat person type
-  const [chatPersonList, setChatPersonList] = useState([]); // State for list of chat persons
-  const [selectedPerson, setSelectedPerson] = useState(null); // State for selected partner/client/employee
-  const [selectedPersonName, setSelectedPersonName] = useState(""); // State for the selected partner/client/employee name
-  const [selectedPersonId, setSelectedPersonId] = useState(null); // State for the selected partner/client/employee ID
-  const [inquiries, setInquiries] = useState([]); // State for storing inquiries
+
   const { id } = useParams();
   const loginId = sessionStorage.getItem("LoginUserId");
-  const role = sessionStorage.getItem("role");
 
-  // Fetch initial chat data
+  // const senderId = loginId;
   const fetchData = debounce(async () => {
+    // try {
     
-    // debugger;
-    if (chatPersonType === "partner" && selectedPersonId != null) {
-      const chatData = await InquiryChatService.getPartnerChatInAdmin(id, selectedPersonId);
+        const chatData = await InquiryChatService.getAdminChatInClient(id);
+        // debugger;
 
-      // Map through the chat data and set the senderName to "You" if selectedPersonId matches loginId
-      const updatedMessages = chatData.data.map((message) => {
-        if (message.senderId === loginId) {
-          return { ...message, senderName: "You" }; // Set senderName to "You" if senderId matches
-        }
-        return message; // Otherwise, return the message as is
-      });
-      setMessages(updatedMessages); // Update the state with the modified messages
-    }
+        const updatedMessages = chatData.data.map((message) => {
+            if (message.senderId === loginId) {
+                return { ...message, senderName: "You" };
+            }
+            return message;
+        });
 
-    if (chatPersonType === "client" && selectedPersonId != null) {
-      const chatData = await InquiryChatService.getClientChatInAdmin(id, selectedPersonId);
-
-      // Map through the chat data and set the senderName to "You" if senderId matches loginId
-      const updatedMessages = chatData.data.map((message) => {
-        if (message.senderId === loginId) {
-          return { ...message, senderName: "You" }; // Set senderName to "You" if senderId matches
-        }
-        return message; // Otherwise, return the message as is
-      });
-      setMessages(updatedMessages); // Update the state with the modified messages
-    }
-  
-  }, 300);
-  
+        setMessages(updatedMessages);
+    // } catch (error) {
+    //     console.error("Error fetching chat data:", error);
+    // }
+// }, 
+      },300); // Debounce interval in milliseconds
+  // Fetch initial chat data
   useEffect(() => {
     fetchData();
-  }, [id, selectedPersonId]);
+  }, [id]);
 
   // Scroll to the bottom when messages change
- 
   useEffect(() => {
     const chatContainer = document.getElementById("chatContainer");
     if (chatContainer) {
@@ -68,98 +50,50 @@ const EmpInquiryChat = () => {
   // Set up SignalR connection
   useEffect(() => {
 
-    // Set up SignalR connection
     const newConnection = new HubConnectionBuilder()
       .withUrl("https://localhost:7292/inquirychathub") // Your SignalR Hub URL
       .build();
-  
+
     newConnection.start()
       .then(() => {
         console.log("Connected to SignalR Hub!");
       })
       .catch((error) => console.error("Error while starting connection: " + error));
 
-    debugger;
-    // Listen for incoming messages
-    
+    // Listen for the new message from SignalR
     newConnection.on("ReceiveUserMessage", (chatMessage) => {
-      if (chatMessage.senderId !== loginId && chatMessage.inquiryRegistrationId === id) {
-      setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
-      console.log(messages);
-      }
-    });
-
-    newConnection.on("ReceiveAdminMessage", (chatMessage) => {
-      if (chatMessage.senderId !== loginId && (chatMessage.receiverId === loginId) && chatMessage.inquiryRegistrationId === id) {
+      fetchData();
+      // console.log("Received message:", chatMessage);
+      if (newMessage.senderId !== loginId && newMessage.inquiryRegistrationId === id) {
         // Append the new message to the state
         // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
         setMessages((prevMessages) => [...prevMessages, chatMessage]);
       }
+      console.log(messages);
     });
-  
+
     setConnection(newConnection);
-  
+
     // Cleanup on unmount
     return () => {
       if (newConnection) {
         newConnection.stop();
       }
     };
-  }, []);
-  
 
-  // Fetch chat persons based on selected type (Partner, Client, Employee)
-  const handleChatPersonTypeChange = async (event) => {
-    const selectedType = event.target.value;
-    setChatPersonType(selectedType);
-    setSelectedPerson(null); // Reset selected person when inquiry type changes
-    setInquiries([]); // Clear inquiries on inquiry type change
-    setSelectedPersonId(null);
-    setSelectedPersonName("");
-    setMessages([]); // Clear messages on inquiry type change
-
-    if (!selectedType) {
-      setChatPersonList([]); // Clear list if no type selected
-      return;
-    }
-
-    try {
-      const response = await InquiryChatService.getPartnerClientEmployeeList(selectedType, id);
-      setChatPersonList(response.data); // Update the list with full person objects
-    } catch (error) {
-      console.error("Error fetching inquiries:", error);
-    }
-  };
-
-  // Handle selecting a person
-  const handlePersonSelect = async (person) => {
-
-    setSelectedPerson(person);
-    setSelectedPersonName(person.name);
-    setSelectedPersonId(person.userId);
-    fetchData();
-    // Fetch inquiries based on the selected person
-    try {
-      const response = await InquiryChatService.getPartnerClientEmployeeInquiry(
-        chatPersonType, person.userId
-      );
-      setInquiries(response.data); // Set inquiries for the sele  cted person
-    } catch (error) {
-      console.error("Error fetching inquiries:", error);
-    }
-  };
+  }, [id]);
 
   // Handle sending a message
+  
+  
   const handleSendMessage = async () => {
     if (newMessage.trim() || file) {
       const newMessageObj = {
         inquiryRegistrationId: id,
         message: newMessage,
-        receiverId: selectedPersonId,
         // sentDate: new Date().toISOString(),
+        // receiverId: senderId,
       };
-
-      debugger;
 
       const formData = new FormData();
       if (file) {
@@ -168,32 +102,33 @@ const EmpInquiryChat = () => {
       } else {
         formData.append("chatMessageVM.Message", newMessageObj.message);
       }
-
+      
       formData.append("chatMessageVM.InquiryRegistrationId", newMessageObj.inquiryRegistrationId);
-      formData.append("chatMessageVM.ReceiverId", newMessageObj.receiverId);
       // formData.append("chatMessageVM.SentDate", newMessageObj.sentDate);
+      // formData.append("chatMessageVM.ReceiverId", newMessageObj.receiverId);
 
       try {
-        const response = await InquiryChatService.addInquiryChat(formData);
-        if (response.status === 1) {
-          console.log("Chat added successfully!");
-          
+        const response = await InquiryChatService.addPartnerInquiryChat(formData);
+          if (response.status === 1) {
+            console.log("Chat added successfully!");
+            
           // Broadcast the message to other clients via SignalR
-          // debugger;
           // if (connection) {
-          //   connection.invoke("SendPrivateMessage", newMessageObj);  // Send the message to the SignalR Hub
+          //   connection.invoke("SendMessage", newMessageObj);  // Send the message to the SignalR Hub
           // }
 
+          // Broadcast the message to other clients via SignalR
           // if (connection) {
-          //   connection.invoke("SendMessageToUser", newMessageObj);  // Send the message to the SignalR Hub
+          //   connection.invoke("SendMessageToAdmin", newMessageObj);  // Send the message to the SignalR Hub
           // }
 
-          
+
+          // Update the local messages state to include the new message
           setMessages((prevMessages) => [
             ...prevMessages,
             { senderName: "You", message: newMessageObj.message, sentDate: new Date().toISOString(), file: file ? file : null, },
           ]);
-
+          
           // Clear input fields after sending
           setNewMessage("");
           setFile(null);
@@ -222,63 +157,21 @@ const EmpInquiryChat = () => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", {
-      weekday: 'short',
+      weekday: 'short', // Optional: to show weekday
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true,
+      hour12: true, // Optional: true for 12-hour format, false for 24-hour format
     });
   };
 
   return (
     <>
-      {/* Select Chat Person Type */}
-      <div className="mb-4 flex gap-4">
-        <div className="flex-1">
-          <label htmlFor="chatPersonType" className="block text-lg font-semibold">Select Chat Person</label>
-          <select
-            id="chatPersonType"
-            className="mt-2 p-2 border border-gray-300 rounded-lg w-full border-active"
-            value={chatPersonType}
-            onChange={handleChatPersonTypeChange}
-          >
-            <option value="">--Select Type--</option>
-            <option value="partner">Partner</option>
-            <option value="client">Client</option>
-            <option value="employee">Employee</option>
-          </select>
-        </div>
-
-        {/* Select Person based on Type */}
-        {chatPersonType && (
-          <div className="flex-1">
-            <label htmlFor="chatPerson" className="block text-lg font-semibold">Select {chatPersonType}</label>
-            <select
-              id="chatPerson"
-              className="mt-2 p-2 border border-gray-300 rounded-lg w-full border-active"
-              onChange={(e) => {
-                const selectedPerson = chatPersonList.find(
-                  (person) => person.name === e.target.value
-                );
-                handlePersonSelect(selectedPerson);
-              }}
-            >
-              <option value="">--Select {chatPersonType}--</option>
-              {chatPersonList.map((person) => (
-                <option key={person.userId} value={person.name}>{person.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
-
       {/* Chat Section */}
-      
-      {selectedPerson ? (
       <section className="bg-white rounded-lg shadow-lg mt-8 p-6">
-        <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Chat with {selectedPersonName}</h2>
+        <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Chat</h2>
 
         {/* Chat Window */}
         <div
@@ -291,12 +184,14 @@ const EmpInquiryChat = () => {
             messages.map((message, index) => (
               <div
                 key={index}
-                className={`flex ${message.senderName === "You" || message.selectedPersonId === loginId ? "justify-end" : "justify-start"}`}
+                className={`flex ${message.senderName === "You" || message.senderId === loginId ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-xs p-3 rounded-lg text-sm shadow-md ${message.senderName === "You" || message.selectedPersonId === loginId
-                    ? "bg-blue-300 text-white rounded-br-none"
-                    : "bg-gray-200 text-gray-700 rounded-bl-none"}`}
+                  className={`max-w-xs p-3 rounded-lg text-sm shadow-md ${
+                    message.senderName === "You" || message.senderId === loginId
+                      ? "bg-blue-300 text-white rounded-br-none"
+                      : "bg-gray-200 text-gray-700 rounded-bl-none"
+                  }`}
                 >
                   <div className="font-semibold text-sm">{message.senderName}</div>
                   <div className="text-black">{message.message}</div>
@@ -312,13 +207,14 @@ const EmpInquiryChat = () => {
                         />
                       ) : (
                         <div className="text-xs text-blue-500 mt-1">
-                          <a
-                            href={URL.createObjectURL(message.filePath)}
+                          <img
+                            src={URL.createObjectURL(message.filePath)}
+                            alt="file-preview"
                             target="_blank"
                             rel="noopener noreferrer"
-                          >
+                          />
                             {message.file.name}
-                          </a>
+                          {/* </a> */}
                         </div>
                       )}
                     </div>
@@ -368,7 +264,7 @@ const EmpInquiryChat = () => {
             onChange={handleFileChange}
           />
 
-          {/* Display the file name if selected */}
+          {/* Display the file name in the input field if a file is selected */}
           {file && (
             <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-md w-1/3">
               <span className="text-sm text-gray-700 truncate">{file.name}</span>
@@ -376,7 +272,7 @@ const EmpInquiryChat = () => {
                 onClick={clearFile}
                 className="text-xs text-gray-500 hover:text-red-500"
               >
-                &times;
+                &times; {/* 'X' icon to remove the file */}
               </button>
             </div>
           )}
@@ -387,30 +283,17 @@ const EmpInquiryChat = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleSendMessage}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition border-active"
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition"
           >
             Send
           </motion.button>
         </div>
       </section>
-      ) : (
-        <p>Please select an person to start the chat.</p>
-      )}
-        
     </>
   );
 };
 
-export default EmpInquiryChat;
-
-
-
-
-
-
-
-
-
+export default VendorInquiryChat;
 
 
 

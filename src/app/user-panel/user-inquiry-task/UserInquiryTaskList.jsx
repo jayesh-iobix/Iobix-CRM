@@ -854,7 +854,7 @@ const UserInquiryTaskList = () => {
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                to={`/partnerinquiry-list/inquiry-task/inquiry-task-note/${item.inquiryTaskAllocationId}`}
+                                to={`/user/inquiry-tasknote-list/${item.inquiryTaskAllocationId}`}
                                 className="text-yellow-500 hover:text-yellow-700"
                               >
                                 <IoTime size={24} />
@@ -1172,7 +1172,7 @@ const UserInquiryTaskList = () => {
                                                 whileTap={{ scale: 0.9 }}
                                               >
                                                 <Link
-                                                  to={`/task/tasknote-list/${subTask.inquirySubTaskAllocationId}`}
+                                                  to={`/user/inquiry-subtasknote-list/${subTask.inquirySubTaskAllocationId}`}
                                                   className="text-yellow-500 hover:text-yellow-700"
                                                 >
                                                   {/* <FaRegFileLines size={24} /> */}

@@ -847,7 +847,7 @@ const PartnerInquiryTaskList = () => {
                               whileTap={{ scale: 0.9 }}
                             >
                               <Link
-                                to={`/task/tasknote-list/${item.inquiryTaskAllocationId}`}
+                                to={`/partner/inquiry-tasknote-list/${item.inquiryTaskAllocationId}`}
                                 className="text-yellow-500 hover:text-yellow-700"
                               >
                                 <IoTime size={24} />
@@ -866,7 +866,7 @@ const PartnerInquiryTaskList = () => {
                               >
                                 <FaTrash size={22} />
                               </motion.button>
-                            )} */}                          
+                            )}                            */}
 
                             <motion.button
                               type="button"
@@ -1132,72 +1132,64 @@ const PartnerInquiryTaskList = () => {
                                         </td>
                                         <td className="py-3 px-4">
                                           <div className="flex gap-2">
-                                            {/* <button>
+
                                               <motion.button
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
                                               >
                                                 <Link
-                                                  to={`/task/edit-subtask/${subTask.inquirySubTaskAllocationId}`}
-                                                  className="relative text-blue-500 hover:text-blue-700 group"
+                                                  to={`/partner/view-inquiry-subtask/${subTask.inquirySubTaskAllocationId}`}
+                                                  className="text-green-500 hover:text-green-700"
                                                 >
-                                                  <FaEdit size={24} />
+                                                  <FaEye size={24} />
                                                 </Link>
                                               </motion.button>
-                                            </button> */}
 
-                                            <button>
                                               <motion.button
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
                                               >
                                                 <Link
-                                                  to={`/task/tasknote-list/${subTask.inquirySubTaskAllocationId}`}
+                                                  to={`/partner/inquiry-subtasknote-list/${subTask.inquirySubTaskAllocationId}`}
                                                   className="text-yellow-500 hover:text-yellow-700"
                                                 >
                                                   {/* <FaRegFileLines size={24} /> */}
                                                   <IoTime size={24} />
                                                 </Link>
                                               </motion.button>
-                                            </button>
 
-                                            <button
-                                              onClick={(e) =>
-                                                handleSubTaskDeleteClick(
-                                                  subTask.inquirySubTaskAllocationId,
-                                                  subTask.inquiryTaskAllocationId
-                                                )
-                                              }
-                                              //  onClick={() => deleteSubTask(subTask.subTaskAllocationId,subTask.taskAllocationId)}
-                                              className="text-red-500 hover:text-red-700"
-                                            >
                                               <motion.button
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
+                                                onClick={(e) =>
+                                                  handleSubTaskDeleteClick(
+                                                    subTask.inquirySubTaskAllocationId,
+                                                    subTask.inquiryTaskAllocationId
+                                                  )
+                                                }
+                                                //  onClick={() => deleteSubTask(subTask.subTaskAllocationId,subTask.taskAllocationId)}
+                                                className="text-red-500 hover:text-red-700"
                                               >
                                                 <FaTrash size={22} />
                                               </motion.button>
-                                            </button>
-                                            <button
-                                              onClick={() =>
-                                                toggleSubTaskDropdown(
-                                                  subTask.inquirySubTaskAllocationId
-                                                )
-                                              }
-                                              className="text-gray-500 hover:text-gray-700"
-                                              ref={(el) =>
-                                                (buttonRefs.current[
-                                                  subTask.inquirySubTaskAllocationId
-                                                ] = el)
-                                              }
-                                            >
+
                                               <motion.button
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
+                                                onClick={() =>
+                                                  toggleSubTaskDropdown(
+                                                    subTask.inquirySubTaskAllocationId
+                                                  )
+                                                }
+                                                className="text-gray-500 hover:text-gray-700"
+                                                ref={(el) =>
+                                                  (buttonRefs.current[
+                                                    subTask.inquirySubTaskAllocationId
+                                                  ] = el)
+                                                }
                                               >
                                                 <FaEllipsisV size={24} />
                                               </motion.button>
-                                            </button>
                                             {/* Render dropdown above or below based on space */}
                                             {openSubDropdown ===
                                               subTask.inquirySubTaskAllocationId && (

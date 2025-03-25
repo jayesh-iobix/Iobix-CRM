@@ -14,6 +14,7 @@ import ApprovedClientInqry from "../approved-inquiry/ApprovedClientInqry";
 import ApprovedPartnerInqry from "../approved-inquiry/ApprovedPartnerInqry";
 import InquiryChat from "../inquiry/InquiryChat";
 import InquiryTaskList from "../inquiry-task/InquiryTaskList";
+import InquiryChatCreated from "../inquiry/InquiryChatCreated";
 // import ChatInquiry from "./ChatInquiry";
 
 const ViewProject = () => {
@@ -51,6 +52,7 @@ const ViewProject = () => {
   const [inquiryForwadedeData, setInquiryForwadedeData] = useState(""); 
   const [inquiryTransferdData, setInquiryTransferdData] = useState("");
   
+  const [isCreatedAdmin, setIsCreatedAdmin] = useState(false);
   // const [name, setName] = useState("")
 
   const [departments, setDepartments] = useState([]);
@@ -77,8 +79,10 @@ const ViewProject = () => {
 
       // Fetch Inquiry
       const inquiry = await InquiryService.getByIdInquiry(id);
-      setFormData(inquiry.data);
       const inquiryData = inquiry.data;
+      setFormData(inquiryData);
+      setIsCreatedAdmin(inquiryData.isCreatedAdmin);
+      // console.log(inquiryData.isCreatedAdmin);
 
       if (inquiryData.inquiryStatus === 4) {
         setSelectedOption("employee");
@@ -1019,11 +1023,18 @@ const ViewProject = () => {
               {activeTab === 2 && <ApprovedClientInqry />}
               {activeTab === 3 && <ApprovedPartnerInqry />}
               {activeTab === 4 && <InquiryTaskList />}
-              {activeTab === 5 && (
+              {/* {activeTab === 5 && (
                 <InquiryChat
                   senderId={formData.senderId}
                   chatPersoneName={formData.senderName}
                 />
+              )} */}
+              {activeTab === 5 && (
+                isCreatedAdmin ? (
+                  <InquiryChatCreated />
+                ) : (
+                  <InquiryChat />
+                )
               )}
             </div>
           </div>

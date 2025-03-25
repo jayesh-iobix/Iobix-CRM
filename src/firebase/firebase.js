@@ -34,7 +34,7 @@ export const generateToken = async () => {
       "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" // Replace with your actual VAPID key
     });
     sessionStorage.setItem("deviceToken", deviceToken);
-    console.log("FCM Device Token: ", deviceToken);
+    // console.log("FCM Device Token: ", deviceToken);
     // return token;
   } else {
     console.error("Notification permission denied.");

@@ -70,6 +70,8 @@ const SignIn = ({ onLogin, setLoading }) => {
           navigate("/partner");
         } else if (decodedToken?.Client === "IsClient") {
           navigate("/company");
+        } else if (decodedToken?.Vendor === "IsVendor") {
+          navigate("/vendor");
         }
       } catch (err) {
         sessionStorage.clear();
@@ -108,6 +110,8 @@ const SignIn = ({ onLogin, setLoading }) => {
       return "partner";
     } else if (decodedToken?.Client) {
       return "company";
+    } else if (decodedToken?.Vendor) {
+      return "vendor";
     }
     return "user"; // Default to user
   };
@@ -173,6 +177,8 @@ const SignIn = ({ onLogin, setLoading }) => {
             navigate("/partner");  // Redirect to the partner page
           } else if (role === "company") {
             navigate("/company");  // Redirect to the company page
+          } else if (role === "vendor") {
+            navigate("/vendor");  // Redirect to the vendor page
           }
         } catch (err) {
           toast.error("Error decoding token");

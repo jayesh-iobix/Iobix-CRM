@@ -33,6 +33,7 @@ const GetInquiryList = () => {
       try {
         if (role === "partner") {
           const result = await InquiryService.getPartnerInquiryFromIbx();
+          console.log(result.data);
           setInquiries(result.data);
           setFilteredInquiries(result.data);
           setTotalItems(result.data.length);

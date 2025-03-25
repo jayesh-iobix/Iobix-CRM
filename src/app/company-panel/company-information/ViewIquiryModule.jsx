@@ -48,18 +48,19 @@ const ViewIquiryModule = () => {
           <div className="flex justify-between items-center border-b pb-4">
             <h1 className="font-semibold text-3xl">Ideal Cutomer Details</h1>
             <div className="flex">
-              {/* <motion.button
+              <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <Link
-                  to={`/user/edit-assign-task/${id}`}
+                  to={`/company/edit-icp/${id}`}
                   className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 me-2 rounded hover:no-underline"
                 >
-                   Edit Task
+                  Edit Ideal Cutomer Details
                   <FaEdit size={20} />
                 </Link>
-              </motion.button> */}
+              </motion.button>
+
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -75,7 +76,6 @@ const ViewIquiryModule = () => {
             </div>
           </div>
           <div className="space-y-5">
-            
             {/* Segmentation */}
             <div className="mb-6">
               <span className="text-2xl font-semibold mb-4">
@@ -306,7 +306,6 @@ const ViewIquiryModule = () => {
                 </p>
               </div>
             </div>
-
           </div>
         </div>
       </div>

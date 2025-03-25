@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService";
-import { PartnerService } from "../../service/PartnerService";
+import { VendorService } from "../../service/VendorService";
 
 const VendorList = () => {
-  const [partners, setPartners] = useState([]);
-  const [filteredPartners, setFilteredPartners] = useState([]);
+  const [vendors, setVendors] = useState([]);
+  const [filteredVendors, setFilteredVendors] = useState([]);
   const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
   const [departmentFilter, setDepartmentFilter] = useState(""); // State for department filter
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
@@ -22,19 +22,19 @@ const VendorList = () => {
   //#endregion
 
   useEffect(() => {
-    const fetchPartners = async () => {
+    const fetchVendors = async () => {
       try {
-        const result = await PartnerService.getPartner();
-        setPartners(result.data); // Set the 'data' array to the state
-        setFilteredPartners(result.data); // Initially show all partners
+        const result = await VendorService.getVendor();
+        setVendors(result.data); // Set the 'data' array to the state
+        setFilteredVendors(result.data); // Initially show all vendors
         setTotalItems(result.data.length); // Set total items for pagination
       } catch (error) {
-        console.error("Error fetching partner:", error);
-        setPartners([]); // Fallback to an empty array in case of an error
-        setFilteredPartners([]); // Fallback to an empty array in case of an error
+        console.error("Error fetching vendor:", error);
+        setVendors([]); // Fallback to an empty array in case of an error
+        setFilteredVendors([]); // Fallback to an empty array in case of an error
       }
     };
-    fetchPartners();
+    fetchVendors();
   }, []);
 
   // Function to filter tasks based on selected employee name
@@ -48,8 +48,8 @@ const VendorList = () => {
   };
 
 //   useEffect(() => {
-//     // Apply filters to the partners array
-//     let filtered = partners;
+//     // Apply filters to the vendors array
+//     let filtered = vendors;
 
 //     // Filter by employee name
 //     if (employeeFilter) {
@@ -65,32 +65,32 @@ const VendorList = () => {
 //       );
 //     }
 
-//     setFilteredPartners(filtered); // Update filtered partners based on all filters
+//     setFilteredVendors(filtered); // Update filtered vendors based on all filters
 //     setTotalItems(filtered.length); 
 //     setCurrentPage(1); // Reset to the first page when a new filter is applied
-//   }, [employeeFilter, departmentFilter, partners]);
+//   }, [employeeFilter, departmentFilter, vendors]);
 
 
-  const deletePartner = async () => {
+  const deleteVendor = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
-      const response = await PartnerService.deletePartner(deleteId);
+      const response = await VendorService.deleteVendor(deleteId);
       if (response.status === 1) {
-        setFilteredPartners((prevPartners) =>
-          prevPartners.filter((partner) => partner.partnerRegistrationId !== deleteId)
+        setFilteredVendors((prevVendors) =>
+          prevVendors.filter((vendor) => vendor.vendorRegistrationId !== deleteId)
         );
-        toast.error("Partner Deleted Successfully"); // Toast on success
+        toast.error("Vendor Deleted Successfully"); // Toast on success
         setIsPopupOpen(false); // Close popup after deletion
         setDeleteId(null); // Reset the ID
       }
     } catch (error) {
-      console.error("Error deleting partner:", error);
-      alert("Failed to delete partner");
+      console.error("Error deleting vendor:", error);
+      alert("Failed to delete vendor");
     }
   };
 
-  const handleDeleteClick = (partnerRegistrationId) => {
-    setDeleteId(partnerRegistrationId);
+  const handleDeleteClick = (vendorRegistrationId) => {
+    setDeleteId(vendorRegistrationId);
     setIsPopupOpen(true); // Open popup
   };
 
@@ -118,7 +118,7 @@ const VendorList = () => {
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredPartners.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredVendors.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -169,13 +169,13 @@ const VendorList = () => {
           {currentItems.length === 0 ? (
             <tr>
               <td colSpan="6" className="text-center py-3 px-4 text-gray-700">
-                No partners found.
+                No vendors found.
               </td>
             </tr>
           ) : (
             currentItems.map((item) => (
               <motion.tr
-                key={item.partnerRegistrationId}
+                key={item.vendorRegistrationId}
                 className="border-b hover:bg-gray-50"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -194,7 +194,7 @@ const VendorList = () => {
                     >
                       <Link
                         className="text-green-500 hover:text-green-700"
-                        to={`/partner-list/view-partner/${item.partnerRegistrationId}`}
+                        to={`/vendor-list/view-vendor/${item.vendorRegistrationId}`}
                       >
                         <FaEye size={24} />
                       </Link>
@@ -206,7 +206,7 @@ const VendorList = () => {
                     >
                       <Link
                         className="text-blue-500 hover:text-blue-700"
-                        to={`/employee-list/edit-employee/${item.partnerRegistrationId}`}
+                        to={`/employee-list/edit-employee/${item.vendorRegistrationId}`}
                       >
                         <FaEdit size={24} />
                       </Link>
@@ -215,7 +215,7 @@ const VendorList = () => {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => handleDeleteClick(item.partnerRegistrationId)}
+                      onClick={() => handleDeleteClick(item.vendorRegistrationId)}
                       className="text-red-500 hover:text-red-700"
                     >
                       <FaTrash size={22} />
@@ -253,7 +253,7 @@ const VendorList = () => {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={deletePartner}
+                onClick={deleteVendor}
                 className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200"
               >
                 Yes

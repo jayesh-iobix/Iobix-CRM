@@ -277,7 +277,6 @@ const InquiryChatCreated = () => {
       </div>
 
       {/* Chat Section */}
-      
       {selectedPerson ? (
       <section className="bg-white rounded-lg shadow-lg mt-8 p-6">
         <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Chat with {selectedPersonName}</h2>

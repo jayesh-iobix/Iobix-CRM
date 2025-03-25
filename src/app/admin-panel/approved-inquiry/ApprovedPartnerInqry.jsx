@@ -114,7 +114,7 @@ const ApprovedPartnerInqry = () => {
 
     // console.log(inquiryApproveRejectData);
     try {
-      const response = await InquiryApproveRejectService.addFinalInquiryApprove( inquiryApproveRejectData);
+      const response = await InquiryApproveRejectService.addFinalInquiryApproveReject( inquiryApproveRejectData);
       debugger;
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
