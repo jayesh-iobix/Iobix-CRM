@@ -3,7 +3,7 @@ import { environment } from '../../environment/environment';
 import httpClient from './HttpClient';
 
 // Define the base URL for your API
-const api = environment.partner;
+const api = environment.vendor;
 
 export const VendorService = {
 

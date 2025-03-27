@@ -33,4 +33,6 @@ export const environment = {
   inquiryTask: "https://localhost:7292/api/InquiryTask",
   inquirySubTask: "https://localhost:7292/api/InquirySubTask",
   inquiryTaskNote: "https://localhost:7292/api/InquiryTaskNote",
+  taskReminder: "https://localhost:7292/api/TaskReminder",
+  vendor: "https://localhost:7292/api/VendorRegistration",
 }

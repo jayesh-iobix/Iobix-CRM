@@ -113,7 +113,7 @@ const InquiryTaskList = () => {
       setDepartments(departmentResult.data); // Set the 'data' array to the state\
       // console.log(departmentId);
       if (departmentId) {
-        debugger;
+        // debugger;
         const employeeResult = await EmployeeService.getEmployeeByDepartment(
           departmentId
         );
@@ -545,7 +545,8 @@ const InquiryTaskList = () => {
 
     // debugger;
 
-    const taskTransferData = {
+    const transferInquiryTaskData = {
+      inquiryRegistrationId : id,
       allocationId,
       taskTransferTo,
     };
@@ -553,12 +554,12 @@ const InquiryTaskList = () => {
 
     try {
       // Call the API to add the task note
-      const response = await TaskService.transferTask(taskTransferData);
+      const response = await InquiryTaskService.transferInquiryTask(transferInquiryTaskData);
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
         fetchTasks();
       }
-      console.log("task transfer added successfully:", response);
+      // console.log("task transfer added successfully:", response);
 
       // Optionally, you can update the task state or show a success message here
       setTaskTransferIsPopupVisible(false); // Close the popup

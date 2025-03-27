@@ -1,29 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
-import { TaskService } from "../../../service/TaskService";
+import { SubTaskService } from "../../../service/SubTaskService";
 import { motion } from "framer-motion"; // Import framer-motion
-import { TaskReminderService } from "../../../service/TaskReminderService";
 // import ChatComponent from "../../employee-chat/ChatComponent";
 
 
-const ViewTask = () => {
+const ViewSubTask = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
   const [taskDetails, setTaskDetails] = useState({});
-  const [taskReminderDetails, setTaskReminderDetails] = useState({});
 
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const taskResult = await TaskService.getTaskById(id);
-            setTaskDetails(taskResult.data);
-
-          const taskReminderResult = await TaskReminderService.getTaskReminder(id);
-            setTaskReminderDetails(taskReminderResult.data);
-            console.log(taskReminderResult.data);
-            
+            const subTaskResult = await SubTaskService.getSubTaskById(id);
+            if (subTaskResult?.data) {
+              setTaskDetails(subTaskResult.data);
+            }
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -53,17 +48,17 @@ const ViewTask = () => {
       <div className="container mx-auto mb-10">
         <div className="bg-white px-10 p-8 rounded-lg shadow-lg space-y-8">
           <div className="flex justify-between items-center border-b pb-4">
-            <h1 className="font-semibold text-3xl">Task Details</h1>
+            <h1 className="font-semibold text-3xl">Sub Task Details</h1>
             <div className="flex">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <Link
-                  to={`/task/edit-task/${id}`}
+                  to={`/task/edit-subtask/${id}`}
                   className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 me-2 rounded hover:no-underline"
                 >
-                   Edit Task
+                   Edit Sub Task
                   <FaEdit size={20} />
                 </Link>
               </motion.button>
@@ -151,4 +146,4 @@ const ViewTask = () => {
   );
 };
 
-export default ViewTask;
+export default ViewSubTask;

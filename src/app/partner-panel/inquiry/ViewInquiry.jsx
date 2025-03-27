@@ -204,6 +204,19 @@ const ViewInquiry = () => {
                         name: "inquiryStatusName",
                         value: formData.inquiryStatusName,
                       },
+                      {
+                        label: "Inquiry Document", 
+                        value: formData.inquiryDocuments ? (
+                          <a 
+                            href={formData.inquiryDocuments} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-blue-500 underline"
+                          >
+                            Open Inquiry Document
+                          </a>
+                        ) : 'No document available'
+        },
                       // { label: "Key Responsibility", name: "keyResponsibility", value: formData.keyResponsibility },
                     ].map((field, idx) => (
                       <div key={idx} className="w-full px-2">

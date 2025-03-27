@@ -1128,8 +1128,19 @@ const TaskList = () => {
                                         </td>
                                         <td className="py-3 px-4">
                                           <div className="flex gap-2">
-                                            <button>
                                               <motion.button
+                                                whileHover={{ scale: 1.1 }}
+                                                whileTap={{ scale: 0.9 }}
+                                              >
+                                                <Link
+                                                  to={`/task/view-subtask/${subTask.subTaskAllocationId}`}
+                                                  className="relative text-green-500 hover:text-green-700 group"
+                                                >
+                                                  <FaEye size={24} />
+                                                </Link>
+                                              </motion.button>
+
+                                              {/* <motion.button
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
                                               >
@@ -1139,10 +1150,8 @@ const TaskList = () => {
                                                 >
                                                   <FaEdit size={24} />
                                                 </Link>
-                                              </motion.button>
-                                            </button>
+                                              </motion.button> */}
 
-                                            <button>
                                               <motion.button
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
@@ -1155,45 +1164,40 @@ const TaskList = () => {
                                                   <IoTime size={24} />
                                                 </Link>
                                               </motion.button>
-                                            </button>
 
-                                            <button
-                                              onClick={(e) =>
-                                                handleSubTaskDeleteClick(
-                                                  subTask.subTaskAllocationId,
-                                                  subTask.taskAllocationId
-                                                )
-                                              }
-                                              //  onClick={() => deleteSubTask(subTask.subTaskAllocationId,subTask.taskAllocationId)}
-                                              className="text-red-500 hover:text-red-700"
-                                            >
                                               <motion.button
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
+                                                onClick={(e) =>
+                                                  handleSubTaskDeleteClick(
+                                                    subTask.subTaskAllocationId,
+                                                    subTask.taskAllocationId
+                                                  )
+                                                }
+                                                //  onClick={() => deleteSubTask(subTask.subTaskAllocationId,subTask.taskAllocationId)}
+                                                className="text-red-500 hover:text-red-700"
                                               >
                                                 <FaTrash size={22} />
                                               </motion.button>
-                                            </button>
-                                            <button
-                                              onClick={() =>
-                                                toggleSubTaskDropdown(
-                                                  subTask.subTaskAllocationId
-                                                )
-                                              }
-                                              className="text-gray-500 hover:text-gray-700"
-                                              ref={(el) =>
-                                                (buttonRefs.current[
-                                                  subTask.subTaskAllocationId
-                                                ] = el)
-                                              }
-                                            >
+
                                               <motion.button
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
+                                                onClick={() =>
+                                                  toggleSubTaskDropdown(
+                                                    subTask.subTaskAllocationId
+                                                  )
+                                                }
+                                                className="text-gray-500 hover:text-gray-700"
+                                                ref={(el) =>
+                                                  (buttonRefs.current[
+                                                    subTask.subTaskAllocationId
+                                                  ] = el)
+                                                }
                                               >
                                                 <FaEllipsisV size={24} />
                                               </motion.button>
-                                            </button>
+
                                             {/* Render dropdown above or below based on space */}
                                             {openSubDropdown ===
                                               subTask.subTaskAllocationId && (

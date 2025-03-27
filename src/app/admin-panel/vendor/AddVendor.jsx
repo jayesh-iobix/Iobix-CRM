@@ -35,13 +35,9 @@ const AddVendor = () => {
   
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [departmentList, setDepartmentList] = useState([]);
-  const [employeeLeaveTypeList, setEmployeeLeaveTypeList] = useState([]);
-  const [designationList, setDesignationList] = useState([]);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
-  const [employeeList, setEmployeeList] = useState([]);
   const navigate = useNavigate();
 
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
@@ -113,8 +109,14 @@ const AddVendor = () => {
     if (!formData.companyName) newErrors.companyName = "Company Name is required";
     if (!formData.companyLinkedin) newErrors.companyLinkedin = "Company Linkedin is required";
     if (!formData.contactPersonName) newErrors.contactPersonName = "Contact Person Name is required";
-    if (!formData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
-    if (!formData.whatsAppNumber) newErrors.whatsAppNumber = "WhatsApp Number is required";
+    if (!formData.phoneNumber || !/^[0-9]{10}$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Please enter a valid 10-digit phone number";
+    }
+    if (!formData.whatsAppNumber || !/^[0-9]{10}$/.test(formData.whatsAppNumber)) {
+      newErrors.whatsAppNumber = "Please enter a valid 10-digit WhatsApp number";
+    }
+    // if (!formData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
+    // if (!formData.whatsAppNumber) newErrors.whatsAppNumber = "WhatsApp Number is required";
     if (!formData.email) newErrors.email = "Email name is required";
     if (!formData.contactPersonLinkedin) newErrors.contactPersonLinkedin = "Contact Person Linkedin is required";
     if (!formData.address) newErrors.address = "Address is required";
@@ -122,7 +124,6 @@ const AddVendor = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -192,8 +193,30 @@ const AddVendor = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Regex for 10-digit number validation
+    const phoneNumberRegex = /^[0-9]{10}$/;
+    
+    // If the field is either phoneNumber or whatsAppNumber, validate the input
+    if (name === "phoneNumber" || name === "whatsAppNumber") {
+      if (value && !phoneNumberRegex.test(value)) {
+        // Only allow 10 digits
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "Please enter a valid 10-digit number",
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "",
+        }));
+      }
+    }
+  
+    // Update form data for all fields
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+};
+
 
   return (
     <>

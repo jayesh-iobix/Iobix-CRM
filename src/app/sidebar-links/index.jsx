@@ -364,6 +364,25 @@ export const COMPANY_DASHBOARD_SIDEBAR_LINKS = [
   // },
 ];
 
+//Vendor Dashboard Sidebar Links
+export const VENDOR_DASHBOARD_SIDEBAR_LINKS = [
+  {
+    key: "dashboard",
+    label: "Dashboard",
+    path: "/vendor",
+    icon: <HiOutlineViewGrid />,
+  },
+  {
+    key: "project",
+    label: "Project",
+    icon: <HiOutlineQuestionMarkCircle />,
+    submenu: [
+      { label: "Send Project", path: "/vendor/project-list" },
+      { label: "Recived Project", path:"/vendor/get-project-list" },
+    ],
+  },
+];
+
 //Bottom Dashboard Sidebar Links
 export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
 	{

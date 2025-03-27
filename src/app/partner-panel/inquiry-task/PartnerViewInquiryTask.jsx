@@ -215,6 +215,7 @@ const PartnerViewInquiryTask = () => {
               { label: 'Actual Starting Date', value: taskDetails.actualStartingDate ? formatDate(taskDetails.actualStartingDate) : '' },
               { label: 'Task Completion Date', value: taskDetails.taskCompletionDate ? formatDate(taskDetails.taskCompletionDate) : '' },
               { label: 'Task Description', value: taskDetails.taskDescription },
+              { label: 'Task Document', value: taskDetails.taskDocument ? <a href={taskDetails.taskDocument} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Open Task Document</a> : 'No document available'},
             ].map((item, index) => (
               <div key={index} className="flex justify-between">
                 <p><strong className="mr-1">{item.label}:</strong> {item.value}</p>

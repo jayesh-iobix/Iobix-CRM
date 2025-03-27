@@ -115,8 +115,14 @@ const AddClientCompany = () => {
     if (!formData.companyName) newErrors.companyName = "Company Name is required";
     if (!formData.companyLinkedin) newErrors.companyLinkedin = "Company Linkedin is required";
     if (!formData.contactPersonName) newErrors.contactPersonName = "Contact Person Name is required";
-    if (!formData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
-    if (!formData.whatsAppNumber) newErrors.whatsAppNumber = "WhatsApp Number is required";
+    if (!formData.phoneNumber || !/^[0-9]{10}$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Please enter a valid 10-digit phone number";
+    }
+    if (!formData.whatsAppNumber || !/^[0-9]{10}$/.test(formData.whatsAppNumber)) {
+      newErrors.whatsAppNumber = "Please enter a valid 10-digit WhatsApp number";
+    }
+    // if (!formData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
+    // if (!formData.whatsAppNumber) newErrors.whatsAppNumber = "WhatsApp Number is required";
     if (!formData.email) newErrors.email = "Email name is required";
     if (!formData.contactPersonLinkedin) newErrors.contactPersonLinkedin = "Contact Person Linkedin is required";
     if (!formData.address) newErrors.address = "Address is required";
@@ -125,10 +131,9 @@ const AddClientCompany = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    debugger;
+    // debugger;
 
     // Initialize UAParser to get device information
      const parser = new UAParser();
@@ -195,6 +200,27 @@ const AddClientCompany = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Regex for 10-digit number validation
+    const phoneNumberRegex = /^[0-9]{10}$/;
+    
+    // If the field is either phoneNumber or whatsAppNumber, validate the input
+    if (name === "phoneNumber" || name === "whatsAppNumber") {
+      if (value && !phoneNumberRegex.test(value)) {
+        // Only allow 10 digits
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "Please enter a valid 10-digit number",
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "",
+        }));
+      }
+    }
+  
+    // Update form data for all fields
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 

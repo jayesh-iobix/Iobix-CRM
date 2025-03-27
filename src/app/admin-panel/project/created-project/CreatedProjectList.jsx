@@ -61,6 +61,7 @@ const CreatedProjectList = () => {
       setInquiries(result.data);
       setFilteredInquiries(result.data);
       setTotalItems(result.data.length);
+      
       const departmentResult = await DepartmentService.getDepartments();
       setDepartments(departmentResult.data); // Set the 'data' array to the state\
       // console.log(departmentId);
@@ -310,6 +311,7 @@ const CreatedProjectList = () => {
             <option value="">All Project</option>
             <option value="Partner">Partner</option>
             <option value="Client">Client Company</option>
+            <option value="Vendor">Vendor</option>
         </select>
       </div>
 

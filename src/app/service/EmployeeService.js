@@ -30,6 +30,17 @@ export const EmployeeService = {
     }
   },
 
+   // Method to get Inquiry Transfer Employee
+   getInquiryTransferEmployees: async (inquiryRegistrationId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetByInquiryTransferEmployee/${inquiryRegistrationId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch departments:', error);
+      throw error;
+    }
+  },
+
    // Methos to update Employee
    updateEmployee: async (employeeId, updatedEmployeeData) => {
     try {

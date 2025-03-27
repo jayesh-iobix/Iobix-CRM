@@ -188,6 +188,15 @@ const AddInquiry = () => {
           // console.log(result.data);
           // setErrors({ general: "Something went wrong, please try again later." });
         }
+      } else if (role === "vendor") {
+        const result = await InquiryService.addInquiryByVendor(formDataToSend);
+        if (result.status === 1) {
+          toast.success("Inquiry added successfully!");
+          navigate(-1);
+        } 
+        else {
+          toast.error("Faild to add inquiry!");
+        }
       } else {
         toast.error("You are not authorized to add inquiry!");
       }

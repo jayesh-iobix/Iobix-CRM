@@ -131,15 +131,15 @@ export const TaskService = {
     }
   },
 
-    // Method to transfer a task
-    transferTask: async (transferTaskData) => {
-      try {
-        const response = await httpClient.post(`${api}/TaskTransfer`, transferTaskData);
-        return response.data;
-      } catch (error) {
-        console.error('Failed to transfer task:', error);
-        throw error;
-      }
-    },
+  // Method to transfer a task
+  transferTask: async (transferTaskData) => {
+    try {
+      const response = await httpClient.post(`${api}/TaskTransfer`, transferTaskData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to transfer task:', error);
+      throw error;
+    }
+  },
 
 };

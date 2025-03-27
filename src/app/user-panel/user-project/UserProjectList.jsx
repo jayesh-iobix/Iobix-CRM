@@ -333,7 +333,7 @@ const UserProjectList = () => {
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Project List</h1>
         <div className="flex">
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
               to="/partnerinquiry-list/add-partnerinquiry"
               // to={navigateTo}
@@ -342,7 +342,7 @@ const UserProjectList = () => {
               Add
               <FaPlus className="mt-[3px]" size={14} />
             </Link>
-          </motion.button>
+          </motion.button> */}
         </div>
       </div>
 
@@ -375,6 +375,7 @@ const UserProjectList = () => {
             <option value="">All Project</option>
             <option value="Partner">Partner</option>
             <option value="Client">Client Company</option>
+            <option value="Client">Vendor</option>
         </select>
       </div>
 

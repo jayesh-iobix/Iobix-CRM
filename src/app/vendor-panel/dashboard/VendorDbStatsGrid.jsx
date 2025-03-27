@@ -17,13 +17,13 @@ const VendorDbStatsGrid = () => {
   useEffect(() => {
     const fetchDashbordCount = async () => {
       try {
-        const result = await DashboardService.getDashboardCount();
-        setTotalEmployeeCount(result.data.totalEmployeeCount);
-        setTotalDepartmentCount(result.data.totalDepartmentCount);
-        setTotalTaskCount(result.data.totalTaskCount);
-        setPendingTaskCount(result.data.pendingTaskCount);
-        setInProgressTaskCount(result.data.inProgressTaskCount);
-        setCompletedTaskCount(result.data.completedTaskCount);
+        // const result = await DashboardService.getDashboardCount();
+        // setTotalEmployeeCount(result.data.totalEmployeeCount);
+        // setTotalDepartmentCount(result.data.totalDepartmentCount);
+        // setTotalTaskCount(result.data.totalTaskCount);
+        // setPendingTaskCount(result.data.pendingTaskCount);
+        // setInProgressTaskCount(result.data.inProgressTaskCount);
+        // setCompletedTaskCount(result.data.completedTaskCount);
       } catch (error) {
         console.error("Error fetching Count:", error);
       }

@@ -10,11 +10,13 @@ import { PartnerService } from "../../service/PartnerService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { id } from "date-fns/locale";
+import { CommonService } from "../../service/CommonService";
 
 const AddPartnerInquiryTask = () => {
   const [taskName, setTaskName] = useState("");
   const [partnerRegistrationId, setPartnerRegistrationId] = useState("");
   const [clientRegistrationId, setClientRegistrationId] = useState("");
+  const [adminId, setAdminId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
   const [taskDocument, setTaskDocument] = useState("");
@@ -27,6 +29,7 @@ const AddPartnerInquiryTask = () => {
   const [departmentId, setDepartmentId] = useState("");
   const [employeeList, setEmployeeList] = useState([]);
   const [partnerList, setPartnerList] = useState([]);
+  const [adminList, setAdminList] = useState([]);
   const [clientCompanyList, setClientCompanyList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [errors, setErrors] = useState({});
@@ -45,15 +48,21 @@ const AddPartnerInquiryTask = () => {
         const clientCompanyResult = await ClientCompanyService.getClientCompany();
         setClientCompanyList(clientCompanyResult.data.filter(item => item.isActive));
 
-        const departmentResult = await DepartmentService.getDepartments();
-        const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
-        setDepartmentList(activeDepartments);
+        const adminResult = await CommonService.getAdmin();
+        setAdminList(adminResult.data);
 
-        if (departmentId) {
-          // Fetch Employee from department
-          const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
-          setEmployeeList(employeeResult.data);
-        }
+        const employeeResult = await EmployeeService.getInquiryTransferEmployees(id);
+        setEmployeeList(employeeResult.data);
+
+        // const departmentResult = await DepartmentService.getDepartments();
+        // const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
+        // setDepartmentList(activeDepartments);
+
+        // if (departmentId) {
+        //   // Fetch Employee from department
+        //   const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
+        //   setEmployeeList(employeeResult.data);
+        // }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -83,7 +92,7 @@ const AddPartnerInquiryTask = () => {
     const inquiryTaskData = {
       inquiryRegistrationId: id,
       taskName,
-      departmentId,
+      departmentId: departmentId === "" ? null : departmentId,
       taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && employeeId !== "") ? employeeId : 
       (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
       (clientRegistrationId === "" && employeeId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,
@@ -155,7 +164,7 @@ const AddPartnerInquiryTask = () => {
             <div className="w-full mb-6 px-3">
               <label className="block text-base font-medium">Assign Task To:</label>
               <div className="flex gap-4">
-                <label className="flex items-center">
+                {/* <label className="flex items-center">
                   <input
                     type="radio"
                     name="assignTo"
@@ -174,6 +183,16 @@ const AddPartnerInquiryTask = () => {
                     onChange={() => setSelection("client")}
                   />
                   <span className="ml-2">Client Company</span>
+                </label> */}
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="assignTo"
+                    value="admin"
+                    checked={selection === "admin"}
+                    onChange={() => setSelection("admin")}
+                  />
+                  <span className="ml-2">Admin</span>
                 </label>
                 <label className="flex items-center">
                   <input
@@ -205,8 +224,41 @@ const AddPartnerInquiryTask = () => {
 
             {/* Conditional rendering based on radio button selection */}
 
+            {/* Admin Select */}
+            {selection === "admin" && (
+              <div className="w-full mb-2 px-3 md:w-1/3">
+                <label className="block text-base font-medium">Admin</label>
+                <div className="relative z-20">
+                  <select
+                    value={adminId}
+                    onChange={(e) => setAdminId(e.target.value)}
+                    name="partnerRegistrationId"
+                    className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+                  >
+                    <option value="" className="text-gray-400">
+                      --Select Admin--
+                    </option>
+                    {adminList.length > 0 ? (
+                      adminList.map((adminItem) => (
+                        <option
+                          key={adminItem.adminId}
+                          value={adminItem.adminId}
+                        >
+                          {adminItem.firstName + " " + (adminItem.middleName || '')}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No Admin available
+                      </option>
+                    )}
+                  </select>
+                </div>
+              </div>
+            )}
+
             {/* Partner Select */}
-            {selection === "partner" && (
+            {/* {selection === "partner" && (
               <div className="w-full mb-2 px-3 md:w-1/3">
                 <label className="block text-base font-medium">Partner</label>
                 <div className="relative z-20">
@@ -236,10 +288,10 @@ const AddPartnerInquiryTask = () => {
                   </select>
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Client Company Select */}
-            {selection === "client" && (
+            {/* {selection === "client" && (
               <div className="w-full mb-2 px-3 md:w-1/3">
                 <label className="block text-base font-medium">Client Company</label>
                 <div className="relative z-20">
@@ -269,13 +321,13 @@ const AddPartnerInquiryTask = () => {
                   </select>
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Employee Select */}
             {selection === "employee" && (
               <>
                 {/* Department Select */}
-                <div className="w-full mb-2 px-3 md:w-1/3">
+                {/* <div className="w-full mb-2 px-3 md:w-1/3">
                   <label className="block text-base font-medium">Department</label>
                   <div className="relative z-20">
                     <select
@@ -303,7 +355,7 @@ const AddPartnerInquiryTask = () => {
                       )}
                     </select>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Employee Select */}
                 <div className="w-full mb-2 px-3 md:w-1/3">
@@ -316,7 +368,8 @@ const AddPartnerInquiryTask = () => {
                     <option value="">--Select Employee--</option>
                     {employeeList.map((employee) => (
                       <option key={employee.employeeId} value={employee.employeeId}>
-                        {employee.firstName + ' ' + employee.lastName}
+                        {employee.name}
+                        {/* {employee.firstName + ' ' + employee.lastName} */}
                       </option>
                     ))}
                   </select>

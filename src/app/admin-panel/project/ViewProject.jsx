@@ -70,6 +70,7 @@ const ViewProject = () => {
   const navigate = useNavigate();
 
   const role = sessionStorage.getItem("role");
+  const loginId = sessionStorage.getItem("LoginUserId");
 
   const fetchData = async () => {
     try {
@@ -490,7 +491,7 @@ const ViewProject = () => {
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-          {/* {formData.inquiryStatus === 4 && ( */}
+          {formData.inquiryStatus === 4 && (
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -504,7 +505,23 @@ const ViewProject = () => {
                 <FaPlus size={16} />
               </Link>
             </motion.button>
-          {/* )} */}
+          )} 
+
+          {/* Edit Inquiry */}
+          {isCreatedAdmin && (
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Link
+              to={`/created-project-list/edit-project/${id}`}
+              className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+            >
+              Edit Inquiry
+              <FaEdit size={16} />
+            </Link>
+          </motion.button>
+          )}
 
           {/* Forward Inquiry Button placed above the edit and back buttons */}
           {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -1007,6 +1024,19 @@ const ViewProject = () => {
                         name: "inquiryStatusName",
                         value: formData.inquiryStatusName,
                       },
+                      {
+                        label: "Inquiry Document", 
+                        value: formData.inquiryDocuments ? (
+                          <a 
+                            href={formData.inquiryDocuments} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-blue-500 underline"
+                          >
+                            Open Inquiry Document
+                          </a>
+                        ) : 'No document available'
+        },
                       // { label: "Key Responsibility", name: "keyResponsibility", value: formData.keyResponsibility },
                     ].map((field, idx) => (
                       <div key={idx} className="w-full px-2">

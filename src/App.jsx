@@ -140,6 +140,10 @@ import AddVendor from './app/admin-panel/vendor/AddVendor';
 import EditVendor from './app/admin-panel/vendor/EditVendor';
 import ViewVendor from './app/admin-panel/vendor/ViewVendor';
 import ViewTask from './app/admin-panel/task/task/ViewTask';
+import ViewSubTask from './app/admin-panel/task/sub-task/ViewSubTask';
+import VendorProjectList from './app/vendor-panel/vendor-project/VendorProjectList';
+import VendorGetProjectList from './app/vendor-panel/vendor-project/VendorGetProjectList';
+import EditProject from './app/admin-panel/project/EditProject';
 
 
 function App() {
@@ -276,6 +280,7 @@ function App() {
       <Route path="task/view-task/:id" element={<ViewTask/>} />
       <Route path="task/create-subtask/:id" element={<CreateSubTask/>} />
       <Route path="task/edit-subtask/:id" element={<EditSubTask/>} />
+      <Route path="task/view-subtask/:id" element={<ViewSubTask/>} />
       <Route path="task/tasknote-list/:id" element={<TaskNoteList/>} />
       <Route path="partnerinquiry-list" element={<PartnerInquiryList />} />
       <Route path="partnerinquiry-list/add-partnerinquiry" element={<AddPartnerInquiry />} />
@@ -314,6 +319,7 @@ function App() {
       <Route path="received-project-list" element={<ProjectList />} />
       <Route path="created-project-list" element={<CreatedProjectList />} />
       <Route path="created-project-list/create-project" element={<AddProject />} />
+      <Route path="created-project-list/edit-project/:id" element={<EditProject />} />
       <Route path="view-project/:id" element={<ViewProject />} />
       <Route path="view-inquiry-task/:id" element={<ViewInquiryTask />} />
       <Route path="view-inquiry-subtask/:id" element={<ViewInquirySubTask />} />
@@ -418,10 +424,10 @@ function App() {
     <Route path="/vendor/add-icp" element={<InquiryModule/>} />
     <Route path="/vendor/edit-icp/:id" element={<EditInquiryModule/>} />
     <Route path="/vendor/view-icp/:id" element={<ViewIquiryModule/>} />
-    <Route path="/vendor/project-list" element={<InquiryList/>} />
+    <Route path="/vendor/project-list" element={<VendorProjectList/>} />
     <Route path="/vendor/project-list/add-project" element={<AddInquiry/>} />
     <Route path="/vendor/project-list/view-project/:id" element={<ViewInquiry/>} />
-    <Route path="/vendor/get-project-list" element={<GetInquiryList/>} />
+    <Route path="/vendor/get-project-list" element={<VendorGetProjectList/>} />
     <Route path="/vendor/get-project-list/view-project/:id" element={<GetViewInquiry/>} />
     <Route path="/vendor/vendorinquiry-list/create-inquiry-task/:id" element={<AddPartnerInquiryTask />} />
     <Route path="/vendor/vendorinquiry-list/edit-inquiry-task/:id" element={<EditPartnerInquiryTask />} />

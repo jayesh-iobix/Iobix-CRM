@@ -70,6 +70,18 @@ export const InquiryService = {
     }
   },
 
+  // Method to add a Inquiry by client company
+  addInquiryByVendor: async (inquiryData) => {
+    try {
+      const response = await httpClient.post(`${api}/addFromVendor`, inquiryData);
+      // debugger
+      return response.data;
+    } catch (error) {
+      console.error('Failed to add Inquiry:', error);
+      throw error;
+    }
+  },
+
   // Method to add a Inquiry by admin for partner or client
   addInquiryByAdmin: async (inquiryData) => {
     try {
@@ -104,6 +116,17 @@ export const InquiryService = {
    }
   },
 
+  // Method to get Inquiry in client vendor list
+  getVendorInquiry: async () => {
+   try {
+     const response = await httpClient.get(`${api}/GetVendorSent`); // Update 'GetAll' with actual endpoint if different
+     return response.data;
+   } catch (error) {
+     console.error('Failed to fetch Inquiry', error);
+     throw error;
+   }
+  },
+
   // Method to get all Inquiry in partner by admin
   getPartnerInquiryFromIbx: async () => {
    try {
@@ -119,6 +142,17 @@ export const InquiryService = {
   getCompanyInquiryFromIbx: async () => {
    try {
      const response = await httpClient.get(`${api}/GetClientReceived`); // Update 'GetAll' with actual endpoint if different
+     return response.data;
+   } catch (error) {
+     console.error('Failed to fetch Inquiry', error);
+     throw error;
+   }
+  },
+
+  // Method to get all Inquiry in vendor by admin
+  receivedAllProjectsInVendor: async () => {
+   try {
+     const response = await httpClient.get(`${api}/ReceiveAllInqInVendor`); // Update 'GetAll' with actual endpoint if different
      return response.data;
    } catch (error) {
      console.error('Failed to fetch Inquiry', error);
@@ -215,15 +249,15 @@ export const InquiryService = {
   },
 
   // Methos to update Inquiry
-    updateInquiry: async (inquiryRegistrationId, inquiryData) => {
-     try {
-       const response = await httpClient.put(`${api}/${inquiryRegistrationId}`,inquiryData); 
-       return response.data;
-     } catch (error) {
-       console.error('Failed to Update Inquiry:', error);
-       throw error;
-     }
-    },
+  updateInquiry: async (inquiryRegistrationId, inquiryData) => {
+   try {
+     const response = await httpClient.put(`${api}/${inquiryRegistrationId}`,inquiryData); 
+     return response.data;
+   } catch (error) {
+     console.error('Failed to Update Inquiry:', error);
+     throw error;
+   }
+  },
 
   // Methos to delete Inquiry
   deleteInquiry: async (inquiryRegistrationId) => {
