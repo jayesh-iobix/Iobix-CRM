@@ -183,9 +183,9 @@ const EmployeeLeaveTypeList = () => {
               <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
                 Leave Type Name
               </th>
-              <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
+              {/* <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
                 Total Days of Leave
-              </th>
+              </th> */}
               <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
                 Active
               </th>
@@ -216,9 +216,9 @@ const EmployeeLeaveTypeList = () => {
                   <td className="py-3 pl-8 text-gray-700">
                     {item.leaveTypeName}
                   </td>
-                  <td className="py-3 pl-8 text-gray-700">
+                  {/* <td className="py-3 pl-8 text-gray-700">
                     {item.totalDaysofLeave}
-                  </td>
+                  </td> */}
                   <td className="py-3 pl-8 text-right text-gray-700">
                     <label className="flex ms-3 items-center cursor-pointer">
                       <input

@@ -159,3 +159,26 @@ body {
     background-color: #dc3545;
   } */
   
+
+
+  /* Custom Scrollbar for the Sidebar */
+.sidebar-container::-webkit-scrollbar {
+  height: 8px; /* Height of the horizontal scrollbar */
+}
+
+.sidebar-container::-webkit-scrollbar-thumb {
+  background-color: #5ec8f2; /* Scrollbar thumb color */
+  border-radius: 10px;
+  border: 2px solid #042e45; /* Border around the thumb */
+}
+
+.sidebar-container::-webkit-scrollbar-track {
+  background-color: #031b29; /* Background of the track */
+  border-radius: 10px;
+}
+
+/* For Firefox */
+.sidebar-container {
+  scrollbar-width: thin; /* Thickness of the scrollbar */
+  scrollbar-color: #5ec8f2 #031b29; /* Thumb and track color */
+}

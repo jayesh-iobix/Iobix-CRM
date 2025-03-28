@@ -63,7 +63,7 @@ const AddPartner = () => {
           const currentToken = await getToken(messaging, { vapidKey: "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" });
           if (currentToken) {
             setDeviceToken(currentToken);
-            console.log(currentToken);
+            // console.log(currentToken);
             sessionStorage.setItem("deviceToken", currentToken);
           } else {
             console.log("No device token available.");
@@ -301,7 +301,7 @@ const AddPartner = () => {
               {
                 label: "Contact Person WhatsApp No.",
                 name: "whatsAppNumber",
-                type: "text",
+                type: "number",
                 placeholder: "Enter WhatsApp Number",
               },
               {

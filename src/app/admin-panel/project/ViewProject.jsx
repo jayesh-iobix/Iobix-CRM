@@ -15,6 +15,7 @@ import ApprovedPartnerInqry from "../approved-inquiry/ApprovedPartnerInqry";
 import InquiryChat from "../inquiry/InquiryChat";
 import InquiryTaskList from "../inquiry-task/InquiryTaskList";
 import InquiryChatCreated from "../inquiry/InquiryChatCreated";
+import ApprovedVendorInqry from "../approved-inquiry/ApprovedVendorInqry";
 // import ChatInquiry from "./ChatInquiry";
 
 const ViewProject = () => {
@@ -923,6 +924,7 @@ const ViewProject = () => {
                   "Project Details",
                   "Approved By Client",
                   "Approved By Partner",
+                  "Approved By Vendor",
                   "Inquiry Task",
                   "Chat",
                   // !hideTab && "Approved By Partner",
@@ -1025,7 +1027,7 @@ const ViewProject = () => {
                         value: formData.inquiryStatusName,
                       },
                       {
-                        label: "Inquiry Document", 
+                        label: "Project Document", 
                         value: formData.inquiryDocuments ? (
                           <a 
                             href={formData.inquiryDocuments} 
@@ -1033,10 +1035,10 @@ const ViewProject = () => {
                             rel="noopener noreferrer" 
                             className="text-blue-500 underline"
                           >
-                            Open Inquiry Document
+                            Open Project Document
                           </a>
                         ) : 'No document available'
-        },
+                      },
                       // { label: "Key Responsibility", name: "keyResponsibility", value: formData.keyResponsibility },
                     ].map((field, idx) => (
                       <div key={idx} className="w-full px-2">
@@ -1052,14 +1054,15 @@ const ViewProject = () => {
 
               {activeTab === 2 && <ApprovedClientInqry />}
               {activeTab === 3 && <ApprovedPartnerInqry />}
-              {activeTab === 4 && <InquiryTaskList />}
+              {activeTab === 4 && <ApprovedVendorInqry />}
+              {activeTab === 5 && <InquiryTaskList />}
               {/* {activeTab === 5 && (
                 <InquiryChat
                   senderId={formData.senderId}
                   chatPersoneName={formData.senderName}
                 />
               )} */}
-              {activeTab === 5 && (
+              {activeTab === 6 && (
                 isCreatedAdmin ? (
                   <InquiryChatCreated />
                 ) : (

@@ -300,7 +300,7 @@ const AddClientCompany = () => {
               {
                 label: "Contact Person WhatsApp No.",
                 name: "whatsAppNumber",
-                type: "text",
+                type: "number",
                 placeholder: "Enter WhatsApp Number",
               },
               {
@@ -309,12 +309,12 @@ const AddClientCompany = () => {
                 type: "url",
                 placeholder: "Enter Contact Person Linkedin",
               },
-            //   {
-            //     label: "Employee Code",
-            //     name: "employeecode",
-            //     type: "text",
-            //     placeholder: "Employee code",
-            //   },
+              // {
+              //   label: "Employee Code",
+              //   name: "employeecode",
+              //   type: "text",
+              //   placeholder: "Employee code",
+              // },
             ].map(({ label, name, type, placeholder }) => (
               <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3" key={name}>
                 <label className="mb-2 block text-base font-medium">

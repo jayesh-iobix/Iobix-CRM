@@ -11,7 +11,7 @@ import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
 import { InquiryService } from "../../service/InquiryService";
 
 
-const VendorGetProjectList = () => {
+const ViewVendorProject = () => {
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
@@ -71,9 +71,9 @@ const VendorGetProjectList = () => {
     try {
 
       // Fetch Inquiry
-      const result = await InquiryService.receivedAllProjectsInVendor();
+      const result = await InquiryService.receivedAllProjectsInUser();
       setInquiries(result.data);
-    //   console.log(result.data);
+      // console.log(result.data);
       setFilteredInquiries(result.data);
       setTotalItems(result.data.length);
 
@@ -386,7 +386,7 @@ const VendorGetProjectList = () => {
               {[
                 "Date of Inquiry",
                 "Project Title",
-                // "Project Send By",
+                "Project Send By",
                 "Project Location",
                 "Project Type",
                 "Priority Level",
@@ -431,9 +431,9 @@ const VendorGetProjectList = () => {
                   <td className="py-3 px-4 text-gray-700">
                     {item.inquiryTitle}
                   </td>
-                  {/* <td className="py-3 px-4 text-gray-700">
+                  <td className="py-3 px-4 text-gray-700">
                     {item.senderName}
-                  </td> */}
+                  </td>
                   <td className="py-3 px-4 text-gray-700">
                     {item.inquiryLocation}
                   </td>
@@ -462,7 +462,10 @@ const VendorGetProjectList = () => {
                         whileTap={{ scale: 0.9 }}
                       >
                         <Link
-                          to={`/user/project-list/view-project/${item.inquiryRegistrationId}`}
+                          to={item.inquiryFilterStatus === 0 
+                          ? `/vendor/project-list/view-assigntask-project/${item.inquiryRegistrationId}`
+                          : `/vendor/project-list/view-project/${item.inquiryRegistrationId}`}
+                          // to={`/user/project-list/view-project/${item.inquiryRegistrationId}`}
                           className="text-green-500 hover:text-green-700"
                         >
                           <FaEye size={24} />
@@ -900,4 +903,4 @@ const VendorGetProjectList = () => {
   );
 };
 
-export default VendorGetProjectList;
+export default ViewVendorProject;

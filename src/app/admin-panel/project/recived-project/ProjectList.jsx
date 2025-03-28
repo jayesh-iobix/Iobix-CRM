@@ -362,8 +362,9 @@ const ProjectList = () => {
           >
             <option value="">All Status</option>
             <option value="Pending">Pending</option>
-            <option value="Open">Open</option>
-            <option value="Close">Close</option>
+            {/* <option value="Open">Open</option>
+            <option value="Close">Close</option> */}
+            <option value="Cancle">Cancle</option>
             <option value="FinalApproval">FinalApproval</option>
         </select>
 
@@ -469,7 +470,7 @@ const ProjectList = () => {
                         </Link>
                       </motion.button>
 
-                      <motion.button
+                      {/* <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() =>
@@ -478,7 +479,7 @@ const ProjectList = () => {
                         className="text-red-500 hover:text-red-700"
                       >
                         <FaTrash size={22} />
-                      </motion.button>
+                      </motion.button> */}
 
                         {/* <motion.button
                           type="button"

@@ -131,4 +131,15 @@ export const InquirySubTaskService = {
       }
     },
 
+    // Method to transfer a task
+  transferInquirySubTask: async (transferInquiryTaskData) => {
+    try {
+      const response = await httpClient.post(`${api}/InquirySubTaskTransfer`, transferInquiryTaskData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to transfer inquirytask:', error);
+      throw error;
+    }
+  },
+
 };

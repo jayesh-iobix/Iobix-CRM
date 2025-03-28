@@ -4,32 +4,18 @@ import { Link, useParams } from "react-router-dom";
 import { InquiryService } from "../../service/InquiryService"; // Assuming you have an InquiryService for API calls
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { ReportService } from "../../service/ReportService"; // Assuming you have a ReportService for downloading reports
-import { DepartmentService } from "../../service/DepartmentService";
-import { EmployeeService } from "../../service/EmployeeService";
-import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
 import { InquiryApproveRejectService } from "../../service/InquiryApproveRejectService";
 
 const ApprovedPartnerInqry = () => {
   const [inquiries, setInquiries] = useState([]);
-  const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
   const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry name or code
   const [categoryFilter, setCategoryFilter] = useState(""); // Filter for inquiry category
-  const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId for deletion
-  const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup for confirmation
-  const [isSubmitting, setIsSubmitting] = useState(false); // Button loading state
-
-  const buttonRefs = useRef({}); // To store references to dropdown buttons
-  const [openDropdown, setOpenDropdown] = useState({}); // State to track which dropdown is open
-  const [forwardPopupVisible, setForwardPopupVisible] = useState(false);
-  const [transferPopupVisible, setTransferPopupVisible] = useState(false);
-  const [departments, setDepartments] = useState([]);
-  const [employeeList, setEmployeeList] = useState([]);
-  const [departmentId, setDepartmentId] = useState("");
-  const [inquiryForwardedTo, setInquiryForwardedTo] = useState("");  
-  const [inquiryTransferTo, setInquiryTransferTo] = useState("");  
-  const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState("");  
+  const [isApprovePopupOpen, setIsApprovePopupOpen] = useState(false); // Popup for confirmation
+  const [isCancelPopupOpen, setIsCancelPopupOpen] = useState(false); // Popup for confirmation
+  const [cancelId, setCancelId] = useState(null); // Store the eventTypeId for deletion
+  const [approveId, setApproveId] = useState(null); // Store the eventTypeId for deletion
+  const [inquiryGivenTo, setInquiryGivenTo] = useState(null); // Store the inquiryGivenTo 
   
   //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,20 +35,10 @@ const ApprovedPartnerInqry = () => {
     try {
         const result = await InquiryApproveRejectService.getInquiryApproveRejectPartner(id);
         setInquiries(result.data);
-        console.log(result.data);
+        // console.log(result.data);
         setFilteredInquiries(result.data);
         setTotalItems(result.data.length);
 
-      const departmentResult = await DepartmentService.getDepartments();
-      setDepartments(departmentResult.data); // Set the 'data' array to the state\
-      // console.log(departmentId);
-      if (departmentId) {
-        // debugger;
-        const employeeResult = await EmployeeService.getEmployeeByDepartment(
-          departmentId
-        );
-        setEmployeeList(employeeResult.data);
-      }
     } catch (error) {
       console.error("Error fetching inquiries:", error);
 
@@ -71,8 +47,8 @@ const ApprovedPartnerInqry = () => {
 
   useEffect(() => {
     fetchInquiries();
-  }, [departmentId]);
-  
+  }, []);
+
   const handleInquiryFilterChange = (event) => {
     setInquiryFilter(event.target.value);
   };
@@ -80,7 +56,7 @@ const ApprovedPartnerInqry = () => {
   const handleCategoryFilterChange = (event) => {
     setCategoryFilter(event.target.value);
   };
-  
+
   useEffect(() => {
     let filtered = inquiries;
 
@@ -99,23 +75,70 @@ const ApprovedPartnerInqry = () => {
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
 
-  const handleApprove = async (item, status) => {
-    // Add your approval logic here
+  // Function to set the color based on the leave status
+  const getStatusColor = (finalApproval) => {
+    switch (finalApproval) {
+      case 0:
+        return ""; 
+      case 1:
+        return "text-green-500 bg-green-100"; // Green for Approved
+      case "Rejected":
+        return "text-red-500 bg-red-100"; // Red for Rejected
+      default:
+        return "text-gray-500 bg-gray-100"; // Default color
+    }
+  };
+
+  const handleApproveClick = (item) => {
+    setApproveId(item.inquiryRegistrationId);
+    setInquiryGivenTo(item.inquiryApprovedBy);
+    setIsApprovePopupOpen(true);
+  };
+
+  const handleCancelClick = (item) => {
+    setCancelId(item.inquiryRegistrationId);
+    setInquiryGivenTo(item.inquiryApprovedBy);
+    setIsCancelPopupOpen(true);
+  };
+
+  const approveInquiry = async (status) => {
+    if (!approveId) return;
 
     // debugger;
+    const inquiryApproveRejectData = {
+      inquiryRegistrationId: id,
+      inquiryGivenTo,
+      finalApproval: status
+    };
+    
+    try {
+      const response = await InquiryApproveRejectService.addFinalInquiryApproveReject(inquiryApproveRejectData);
+      if (response.status === 1) {
+        toast.success(response.message); // Toast on success
+        fetchInquiries();
+      } else if (response.status === 2) {
+        toast.error(response.message); // Toast on error
+      } else {
+        toast.error(response.message); // Toast on error
+      }
+      setIsApprovePopupOpen(false)
+    } catch (error) {
+      console.error("Error approving inquiry:", error);
+      toast.error("Failed to approve inquiry.");
+    }
+  };
+  
+  const cancelInquiry = async (status) => {
+    if (!cancelId) return;
 
     const inquiryApproveRejectData = {
       inquiryRegistrationId: id,
-      inquiryGivenTo: item.inquiryApprovedBy,
-      clientApprovedReject: null, // Store status if the role is 'client'
-      partnerApprovedReject: null, // Store status if the role is 'partner'
-      finalApproval: status
+      inquiryCancleTo: inquiryGivenTo,
+      finalApprovalCancle: status
     };
-
-    // console.log(inquiryApproveRejectData);
+    
     try {
-      const response = await InquiryApproveRejectService.addFinalInquiryApproveReject( inquiryApproveRejectData);
-      debugger;
+      const response = await InquiryApproveRejectService.cancleFinalInquiryApprove(inquiryApproveRejectData);
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
         // fetchInquiries();
@@ -124,61 +147,24 @@ const ApprovedPartnerInqry = () => {
       } else {
         toast.error(response.message); // Toast on error
       }
+      setIsCancelPopupOpen(false)
     } catch (error) {
-      console.error("Error:", error.response?.data || error.message);
-      if (error.response?.data?.errors) {
-        console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-      }
+      console.error("Error canceling inquiry:", error);
+      toast.error("Failed to cancel inquiry.");
     }
   };
 
-  const handleCancle = async (item, status) => {
-    // Add your approval logic here
-
-    // debugger;
-
-    const inquiryApproveRejectData = {
-      inquiryRegistrationId: id,
-      inquiryCancleTo: item.inquiryApprovedBy,
-      finalApprovalCancle: status
-    };
-
-    // console.log(inquiryApproveRejectData);
-    try {
-      const response = await InquiryApproveRejectService.cancleFinalInquiryApprove(inquiryApproveRejectData);
-      debugger;
-      if (response.status === 1) {
-        toast.error(response.message); // Toast on success
-        // fetchInquiries();
-      } else if (response.status === 2) {
-        toast.error(response.message); // Toast on error
-      } else {
-        toast.error(response.message); // Toast on error
-      }
-    } catch (error) {
-      console.error("Error:", error.response?.data || error.message);
-      if (error.response?.data?.errors) {
-        console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-      }
-    }
+  const handleApprovePopupClose = () => {
+    setIsApprovePopupOpen(false);
+    setInquiryGivenTo("");
+    // setDeleteId(null);
   };
 
-  
-  
-  // Function to set the color based on the leave status
-  // const getStatusColor = (inquiryStatusName) => {
-  //   switch (inquiryStatusName) {
-  //     case "Pending":
-  //       return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
-  //     case "Approved":
-  //       return "text-green-500 bg-green-100"; // Green for Approved
-  //     case "Rejected":
-  //       return "text-red-500 bg-red-100"; // Red for Rejected
-  //     default:
-  //       return "text-gray-500 bg-gray-100"; // Default color
-  //   }
-  // };
-
+  const handleCancelPopupClose = () => {
+    setIsCancelPopupOpen(false);
+    setInquiryGivenTo("");
+    // setDeleteId(null);
+  };
 
 
   //#region Pagination logic
@@ -196,19 +182,7 @@ const ApprovedPartnerInqry = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Approved Partner Inquiry List</h1>
-        {/* <div className="flex">
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <Link
-              to="/clientinquiry-list/add-clientinquiry"
-              // to={navigateTo}
-              className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-            >
-              Add
-              <FaPlus className="mt-[3px]" size={14} />
-            </Link>
-          </motion.button>
-        </div> */}
+        <h1 className="font-semibold text-2xl">Approved Partner Project List</h1>
       </div>
 
       {/* <div className="flex gap-4 my-4">
@@ -246,12 +220,12 @@ const ApprovedPartnerInqry = () => {
           {currentItems.length === 0 ? (
             <tr>
               <td colSpan="5" className="text-center py-3 px-4 text-gray-700">
-                No partner approved inquiries found.
+                No partner approved projects found.
               </td>
             </tr>
           ) : (
             currentItems.map((item, index) => {
-              const isLastRow = index === inquiries.length - 1;
+              // const isLastRow = index === inquiries.length - 1;
               return (
                 <motion.tr
                   key={item.id}
@@ -270,7 +244,7 @@ const ApprovedPartnerInqry = () => {
                         type="button"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => handleApprove(item, 1)} 
+                        onClick={() => handleApproveClick(item, 1)} 
                         // onClick={(e) => {
                         //   handelApproveRejectLeave(leave, 1, e);
                         // }}
@@ -285,9 +259,10 @@ const ApprovedPartnerInqry = () => {
                         type="button"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        // onClick={(e) => {
-                        //   handelApproveRejectLeave(leave, 2, e);
-                        // }}
+                        onClick={() => {
+                          handleCancelClick(item);
+                          // handleCancelClick(item.inquiryRegistrationId);
+                        }}
                         className="bg-red-600 text-white py-2 px-4 flex gap-2 rounded-md"
                       >
                         Cancle
@@ -302,6 +277,77 @@ const ApprovedPartnerInqry = () => {
         </table>
       </div>
 
+      {/* Approve Confirmation Popup */}
+      {isApprovePopupOpen && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
+            <div className="flex justify-center mb-4">
+              <div className="bg-green-100 p-5 rounded-full">
+                <FaCheck className="text-green-600 text-4xl" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+              Are you sure you want to approve this project?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={handleApprovePopupClose}
+                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500"
+              >
+                No
+              </motion.button>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => approveInquiry(1)}
+                className="flex items-center gap-2 bg-green-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-green-700"
+              >
+                Yes
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Confirmation Popup */}
+      {isCancelPopupOpen && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
+            <div className="flex justify-center mb-4">
+              <div className="bg-red-100 p-5 rounded-full">
+                <FaTimes className="text-red-600 text-4xl" />
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+              Are you sure you want to cancel this project?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={handleCancelPopupClose}
+                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500"
+              >
+                No
+              </motion.button>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => cancelInquiry(true)}
+                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700"
+              >
+                Yes
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Pagination Section */}
       <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">

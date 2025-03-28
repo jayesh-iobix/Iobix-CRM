@@ -125,7 +125,7 @@ const AddInquiryTask = () => {
 
     if (taskDocument) {
       inquiryTaskDataToSend.append('taskDocument', taskDocument);
-  }
+    }
 
 
     // const inquiryTaskData = {

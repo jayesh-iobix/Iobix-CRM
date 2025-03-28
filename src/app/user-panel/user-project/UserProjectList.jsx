@@ -73,7 +73,7 @@ const UserProjectList = () => {
       // Fetch Inquiry
       const result = await InquiryService.receivedAllProjectsInUser();
       setInquiries(result.data);
-    //   console.log(result.data);
+      // console.log(result.data);
       setFilteredInquiries(result.data);
       setTotalItems(result.data.length);
 
@@ -462,7 +462,10 @@ const UserProjectList = () => {
                         whileTap={{ scale: 0.9 }}
                       >
                         <Link
-                          to={`/user/project-list/view-project/${item.inquiryRegistrationId}`}
+                          to={item.inquiryFilterStatus === 0 
+                          ? `/user/project-list/view-assigntask-project/${item.inquiryRegistrationId}`
+                          : `/user/project-list/view-project/${item.inquiryRegistrationId}`}
+                          // to={`/user/project-list/view-project/${item.inquiryRegistrationId}`}
                           className="text-green-500 hover:text-green-700"
                         >
                           <FaEye size={24} />

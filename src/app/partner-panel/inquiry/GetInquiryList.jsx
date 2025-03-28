@@ -42,6 +42,11 @@ const GetInquiryList = () => {
           setInquiries(result.data);
           setFilteredInquiries(result.data);
           setTotalItems(result.data.length);
+        } else if (role === "vendor") {
+          const result = await InquiryService.receivedAllProjectsInVendor();
+          setInquiries(result.data);
+          setFilteredInquiries(result.data);
+          setTotalItems(result.data.length);
         } else {
           toast.error("Faild to get inquiry!");
         }
@@ -291,6 +296,8 @@ const GetInquiryList = () => {
                             ? `/partner/get-project-list/view-project/${item.inquiryRegistrationId}`
                             : role === 'company'
                             ? `/company/get-project-list/view-project/${item.inquiryRegistrationId}`
+                            : role === 'vendor'
+                            ? `/vendor/get-project-list/view-project/${item.inquiryRegistrationId}`
                             : `/none` // Fallback URL for any other role
                           }
                           // to={`/partner/inquiry-list/view-inquiry/${item.inquiryRegistrationId}`}

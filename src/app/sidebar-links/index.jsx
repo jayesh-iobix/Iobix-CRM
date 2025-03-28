@@ -25,15 +25,16 @@ export const DASHBOARD_SIDEBAR_LINKS = [
       { label: "Designation", path: "/master/designation-list" },
       { label: "Leave Type", path: "/master/leave-type-list" },
       { label: "Employee Leave Type", path: "/master/employee-leavetype-list" },
-      { label: "Employee Permission", path: "/master/employeepermission-list" },
+      // { label: "Employee Permission", path: "/master/employeepermission-list" },
       { label: "Holiday", path: "/master/holiday-list" },
       { label: "Inquiry Type", path: "/master/inquirytype-list" },
       { label: "Inquiry Source", path: "/master/inquirysource-list" },
-      { label: "Inquiry Origin", path: "/master/inquiryorigin-list" },
+      // { label: "Inquiry Origin", path: "/master/inquiryorigin-list" },
       { label: "User Inquiry Permission", path: "/master/userinquirypermission-list" },
       { label: "Admin Inquiry Permissi", path: "/master/inquirypermission-list" },
     ],
   },
+  
   // {
   //   key: "master",
   //   label: "Master",
@@ -120,12 +121,12 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     path: "/clientcompany-list",
     icon: <FaBusinessTime />,
   },
-  // {
-  //   key: "vendor",
-  //   label: "Vendors",
-  //   path: "/vendor-list",
-  //   icon: <FaVenusDouble />,
-  // },
+  {
+    key: "vendor",
+    label: "Vendors",
+    path: "/vendor-list",
+    icon: <FaVenusDouble />,
+  },
 
   // {
   //   key: "inquiry-chat",

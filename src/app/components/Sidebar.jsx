@@ -9,7 +9,8 @@ import { jwtDecode } from "jwt-decode";
 import { DASHBOARD_SIDEBAR_BOTTOM_LINKS, DASHBOARD_SIDEBAR_LINKS, USER_DASHBOARD_SIDEBAR_LINKS, COMPANY_DASHBOARD_SIDEBAR_LINKS, PARTNER_DASHBOARD_SIDEBAR_LINKS, IT_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS, BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS, VENDOR_DASHBOARD_SIDEBAR_LINKS } from "../sidebar-links";
 import { DepartmentService } from "../service/DepartmentService";
 import { AuthService } from "../service/AuthService";
-// import {
+import '../../../src/App.css';
+// import { 
 //   DASHBOARD_SIDEBAR_BOTTOM_LINKS,
 //   DASHBOARD_SIDEBAR_LINKS,
 //   USER_DASHBOARD_SIDEBAR_LINKS,
@@ -122,7 +123,7 @@ export default function Sidebar() {
       {/* Sidebar */}
       <div
         className={classNames(
-          "fixed inset-y-0 left-0 z-40 bg-[#031B29] w-60 p-3 flex flex-col h-screen lg:static lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 bg-[#031B29] w-62 p-3 flex flex-col h-screen lg:static lg:translate-x-0 overflow-x-auto sidebar-container",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >

@@ -144,6 +144,9 @@ import ViewSubTask from './app/admin-panel/task/sub-task/ViewSubTask';
 import VendorProjectList from './app/vendor-panel/vendor-project/VendorProjectList';
 import VendorGetProjectList from './app/vendor-panel/vendor-project/VendorGetProjectList';
 import EditProject from './app/admin-panel/project/EditProject';
+import ViewVendorProject from './app/vendor-panel/vendor-project/ViewVendorProject';
+import UserViewTaskProject from './app/user-panel/user-project/UserViewTaskProject';
+import VendorRegistration from './app/components/VendorRegistration';
 
 
 function App() {
@@ -232,6 +235,7 @@ function App() {
     <Route path="/company-form" element={<CompanyForm/>} />
     <Route path="/company-registration" element={<CompanyRegistration/>} />
     <Route path="/partner-registration" element={<PartnerRegistration/>} />
+    <Route path="/vendor-registration" element={<VendorRegistration/>} />
 
     {/* Admin dashboard Routes */}
     <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
@@ -365,12 +369,13 @@ function App() {
     <Route path="/user/inquiry-tasknote-list/:id" element={<InquiryTaskNoteList />} />
     <Route path="/user/inquiry-subtasknote-list/:id" element={<InquiryTaskNoteList />} />
     <Route path="/user/project-list/view-project/:id" element={<UserViewProject />} />
+    <Route path="/user/project-list/view-assigntask-project/:id" element={<UserViewTaskProject />} />
     <Route path="/user/create-inquiry-task/:id" element={<AddInquiryTask />} />
     <Route path="/user/edit-inquiry-task/:id" element={<EditInquiryTask />} />
     <Route path="/user/create-inquiry-subtask/:id" element={<AddInquirySubTask />} />
     <Route path="/user/edit-inquiry-subtask/:id" element={<EditInquirySubTask />} />
     <Route path="/user/view-inquiry-task/:id" element={<ViewInquiryTask/>} />
-    <Route path="/user/view-inquiry-subtask/:id" element={<ViewInquiryTask/>} />
+    <Route path="/user/view-inquiry-subtask/:id" element={<ViewInquirySubTask/>} />
     </Route>
 
     {/* Company dashboard route */}
@@ -427,8 +432,9 @@ function App() {
     <Route path="/vendor/project-list" element={<VendorProjectList/>} />
     <Route path="/vendor/project-list/add-project" element={<AddInquiry/>} />
     <Route path="/vendor/project-list/view-project/:id" element={<ViewInquiry/>} />
+    <Route path="/vendor/project-list/view-assigntask-project/:id" element={<UserViewTaskProject />} />
     <Route path="/vendor/get-project-list" element={<VendorGetProjectList/>} />
-    <Route path="/vendor/get-project-list/view-project/:id" element={<GetViewInquiry/>} />
+    <Route path="/vendor/get-project-list/view-project/:id" element={<ViewVendorProject/>} />
     <Route path="/vendor/vendorinquiry-list/create-inquiry-task/:id" element={<AddPartnerInquiryTask />} />
     <Route path="/vendor/vendorinquiry-list/edit-inquiry-task/:id" element={<EditPartnerInquiryTask />} />
     <Route path="/vendor/vendorinquiry-list/create-inquiry-sub-task/:id" element={<AddInquirySubTask />} />

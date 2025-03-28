@@ -298,8 +298,9 @@ const CreatedProjectList = () => {
           >
             <option value="">All Status</option>
             <option value="Pending">Pending</option>
-            <option value="Open">Open</option>
-            <option value="Close">Close</option>
+            {/* <option value="Open">Open</option>
+            <option value="Close">Close</option> */}
+            <option value="Cancle">Cancle</option>
             <option value="FinalApproval">FinalApproval</option>
         </select>
 

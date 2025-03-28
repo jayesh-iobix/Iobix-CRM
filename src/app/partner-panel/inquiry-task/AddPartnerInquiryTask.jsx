@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { EmployeeService } from "../../service/EmployeeService";
 import { TaskService } from "../../service/TaskService";
@@ -34,7 +34,9 @@ const AddPartnerInquiryTask = () => {
   const [departmentList, setDepartmentList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selection, setSelection] = useState("partner"); // Add this to track the radio button selection (partner, client, employee)
+  const [selection, setSelection] = useState("employee"); // Add this to track the radio button selection (partner, client, employee)
+  const [manualNotification, setManualNotification] = useState(false);
+  const [notifications, setNotifications] = useState([{ reminderDateTime: ""}]);
   const navigate = useNavigate();
 
   const {id} = useParams();
@@ -48,7 +50,7 @@ const AddPartnerInquiryTask = () => {
         const clientCompanyResult = await ClientCompanyService.getClientCompany();
         setClientCompanyList(clientCompanyResult.data.filter(item => item.isActive));
 
-        const adminResult = await CommonService.getAdmin();
+        const adminResult = await CommonService.getAdminWithoutSA();
         setAdminList(adminResult.data);
 
         const employeeResult = await EmployeeService.getInquiryTransferEmployees(id);
@@ -103,22 +105,34 @@ const AddPartnerInquiryTask = () => {
       taskDescription,
       // taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate, // Convert empty string to null
       taskDocument, // Add the task document to the data
+      manualNotification,
+      taskReminderVM: manualNotification ? {
+        reminderDateTimes: notifications.map(notification => ({
+          reminderDateTime: notification.reminderDateTime
+        }))
+      } : {}
     };
 
     const inquiryTaskDataToSend = new FormData();
-    Object.keys(inquiryTaskData).forEach((key) => {
-      inquiryTaskDataToSend.append(key, inquiryTaskData[key]);
+    Object.keys(inquiryTaskData).forEach(key => {
+      if (key === 'taskReminderVM' && inquiryTaskData[key] && Object.keys(inquiryTaskData[key]).length > 0) {
+        const taskReminderVMString = JSON.stringify(inquiryTaskData[key]);
+        inquiryTaskDataToSend.append("taskReminderJson", taskReminderVMString);
+        console.log(`Appended taskReminderJson: ${taskReminderVMString}`);
+      } else {
+        inquiryTaskDataToSend.append(key, inquiryTaskData[key]);
+      }
     });
 
-    // const formData = new FormData();
-    // if (file) {
-    //   formData.append("inquiryTaskAllocationVM.file", file);
-    // }
-    // formData.append("inquiryTaskAllocationVM.inquiryRegistrationId", inquiryTaskData.inquiryRegistrationId);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-    // formData.append("inquiryTaskAllocationVM.file", file);
+    if (taskDocument) {
+      inquiryTaskDataToSend.append('taskDocument', taskDocument);
+    }
+
+    // const inquiryTaskDataToSend = new FormData();
+    // Object.keys(inquiryTaskData).forEach((key) => {
+    //   inquiryTaskDataToSend.append(key, inquiryTaskData[key]);
+    // });
+
 
     try {
       const response = await InquiryTaskService.addInquiryTask(inquiryTaskDataToSend);
@@ -139,6 +153,25 @@ const AddPartnerInquiryTask = () => {
     if (file) {
       setTaskDocument(file);  // Store the selected document
     }
+  };
+
+  // Handle adding new notification row
+  const handleAddNotification = () => {
+    setNotifications([...notifications, { reminderDateTime: "" }]);
+  };
+
+  // Handle change in notification input fields
+  const handleNotificationChange = (index, field, value) => {
+    const updatedNotifications = notifications.map((notification, i) => 
+      i === index ? { ...notification, [field]: value } : notification
+    );
+    setNotifications(updatedNotifications);
+  };
+
+  // Handle removing a notification row
+  const handleRemoveNotification = (index) => {
+    const updatedNotifications = notifications.filter((_, i) => i !== index);
+    setNotifications(updatedNotifications);
   };
 
   return (
@@ -458,6 +491,79 @@ const AddPartnerInquiryTask = () => {
                 className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               ></textarea>
             </div>
+
+            {/* Send Manual Notification */}
+            <div className="w-full mb-4 px-3">
+              <label className="block text-base font-medium">Send Manual Notification</label>
+              <div className="flex items-center gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="manualNotification"
+                    value="true"
+                    checked={manualNotification === true}
+                    onChange={() => setManualNotification(true)}
+                    className="me-1"
+                  />
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="manualNotification"
+                    value="false"
+                    checked={manualNotification === false}
+                    onChange={() => setManualNotification(false)}
+                    className="me-1"
+                  />
+                  No
+                </label>
+              </div>
+            </div>
+
+            {manualNotification && (
+              <div className="w-full px-3">
+                <button
+                  type="button"
+                  onClick={handleAddNotification}
+                  className="text-blue-500 font-medium"
+                >
+                  + Add Manual Notification
+                </button>
+
+                {notifications.map((notification, index) => (
+                  <div key={index} className="mt-4 flex flex-wrap gap-4">
+                    <div className="w-full md:w-1/2 mb-2">
+                      <label className="block text-base font-medium">Notification DateTime</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="datetime-local"
+                          value={notification.reminderDateTime}
+                          onChange={(e) => handleNotificationChange(index, "reminderDateTime", e.target.value)}
+                          className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveNotification(index)}
+                          className="text-red-500"
+                        >
+                          <FaTimes size={18} />
+                        </button>
+                      </div>
+                    </div>
+                    {/* <div className="w-full md:w-1/2 mb-2">
+                      <label className="block text-base font-medium">Notification Message</label>
+                      <input
+                        type="text"
+                        value={notification.message}
+                        onChange={(e) => handleNotificationChange(index, "message", e.target.value)}
+                        className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                      />
+                    </div> */}
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="w-full px-3">
               <motion.button

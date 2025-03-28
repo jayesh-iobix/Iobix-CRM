@@ -3,11 +3,9 @@ import { FaCheck, FaTimes } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { DepartmentService } from "../../service/DepartmentService";
-import { EmployeeService } from "../../service/EmployeeService";
 import { InquiryApproveRejectService } from "../../service/InquiryApproveRejectService";
 
-const ApprovedClientInqry = () => {
+const ApprovedVendorInqry = () => {
   const [inquiries, setInquiries] = useState([]);
   const [filteredInquiries, setFilteredInquiries] = useState([]);
   const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry name or code
@@ -29,14 +27,10 @@ const ApprovedClientInqry = () => {
 
   // console.log(role);
 
-  // const navigateTo = role === 'partner' 
-  // ? '/partner/inquiry-list/add-inquiry' 
-  // : '/company/inquiry-list/add-inquiry';
-
   const fetchInquiries = async () => {
     try {
       const result =
-      await InquiryApproveRejectService.getInquiryApproveRejectClient(id);
+      await InquiryApproveRejectService.getInquiryApproveRejectVendor(id);
       setInquiries(result.data);
       console.log(result.data);
 
@@ -159,70 +153,6 @@ const ApprovedClientInqry = () => {
     }
   };
 
-  // const handleApprove = async (item, status) => {
-  //   // Add your approval logic here
-
-  //   // debugger;
-
-  //   const inquiryApproveRejectData = {
-  //     inquiryRegistrationId: id,
-  //     inquiryGivenTo: item.inquiryApprovedBy,
-  //     clientApprovedReject: null, // Store status if the role is 'client'
-  //     partnerApprovedReject: null, // Store status if the role is 'partner'
-  //     finalApproval: status
-  //   };
-
-  //   // console.log(inquiryApproveRejectData);
-  //   try {
-  //     const response = await InquiryApproveRejectService.addFinalInquiryApprove( inquiryApproveRejectData);
-  //     debugger;
-  //     if (response.status === 1) {
-  //       toast.success(response.message); // Toast on success
-  //       // fetchInquiries();
-  //     } else if (response.status === 2) {
-  //       toast.error(response.message); // Toast on error
-  //     } else {
-  //       toast.error(response.message); // Toast on error
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error.response?.data || error.message);
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-  // };
-
-  // const handleCancle = async (item, status) => {
-  //   // Add your approval logic here
-
-  //   // debugger;
-
-  //   const inquiryApproveRejectData = {
-  //     inquiryRegistrationId: id,
-  //     inquiryCancleTo: item.inquiryApprovedBy,
-  //     finalApprovalCancle: status
-  //   };
-
-  //   // console.log(inquiryApproveRejectData);
-  //   try {
-  //     const response = await InquiryApproveRejectService.cancleFinalInquiryApprove(inquiryApproveRejectData);
-  //     debugger;
-  //     if (response.status === 1) {
-  //       toast.error(response.message); // Toast on success
-  //       // fetchInquiries();
-  //     } else if (response.status === 2) {
-  //       toast.error(response.message); // Toast on error
-  //     } else {
-  //       toast.error(response.message); // Toast on error
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error.response?.data || error.message);
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-  // };
-
   
   const handleApprovePopupClose = () => {
     setIsApprovePopupOpen(false);
@@ -251,7 +181,7 @@ const ApprovedClientInqry = () => {
   return (
     <>
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Approved Client Project List</h1>
+        <h1 className="font-semibold text-2xl">Approved Vendor Project List</h1>
       </div>
 
       {/* <div className="flex gap-4 my-4">
@@ -279,7 +209,7 @@ const ApprovedClientInqry = () => {
           <thead className="bg-gray-900 border-b">
             <tr>
               <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
-                Client Company Name
+                Vendor Name
               </th>
               <th className="text-right py-3 pr-24 uppercase font-semibold text-sm text-[#939393]">
                 Action
@@ -289,7 +219,7 @@ const ApprovedClientInqry = () => {
           {currentItems.length === 0 ? (
             <tr>
               <td colSpan="5" className="text-center py-3 px-4 text-gray-700">
-                No client company approved projects found.
+                No vendor approved projects found.
               </td>
             </tr>
           ) : (
@@ -541,11 +471,4 @@ const ApprovedClientInqry = () => {
   );
 };
 
-export default ApprovedClientInqry;
-  
-  // In the above code, we have created a function to approve and cancel the inquiry. We have also created a function to fetch the inquiries and filter them based on the inquiry name and category. 
-  // We have also created a function to set the color based on the final approval status. 
-  // We have also created a function to handle the pagination logic. 
-  // Conclusion 
-  // In this tutorial, we have learned how to approve and cancel the inquiry in the React application. We have also learned how to filter the inquiries based on the inquiry name and category. 
-  // Save my name, email, and website in this browser for the next time I comment.
+export default ApprovedVendorInqry;

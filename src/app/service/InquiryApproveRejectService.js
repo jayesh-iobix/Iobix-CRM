@@ -61,6 +61,17 @@ export const InquiryApproveRejectService = {
     }
   },
 
+   // Method to get all GetApprovalListofVendor
+   getInquiryApproveRejectVendor: async (inquiryRegistrationId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetApprovalListofVendor/${inquiryRegistrationId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch InquiryFollowUp:', error);
+      throw error;
+    }
+  },
+
    
 
  

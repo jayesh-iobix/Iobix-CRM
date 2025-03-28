@@ -22,6 +22,17 @@ export const CommonService = {
       }
   },
 
+  // Method to get all AdminMaster 
+  getAdminWithoutSA: async () => {
+    try {
+        const response = await httpClient.get(`${adminapi}/GetAdmin`); // Update 'GetAll' with actual endpoint if different
+        return response.data;
+      } catch (error) {
+        console.error('Failed to fetch Admin:', error);
+        throw error;
+      }
+  },
+
   // Method to get all Country 
   getCountry: async () => {
     try {

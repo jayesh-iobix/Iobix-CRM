@@ -90,7 +90,7 @@ const EmpInquiryChat = () => {
     });
 
     newConnection.on("ReceiveAdminMessage", (chatMessage) => {
-      if (chatMessage.senderId !== loginId && (chatMessage.receiverId === loginId) && chatMessage.inquiryRegistrationId === id) {
+      if (chatMessage.senderId === selectedPersonId && (chatMessage.receiverId === loginId) && chatMessage.inquiryRegistrationId === id) {
         // Append the new message to the state
         // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
         setMessages((prevMessages) => [...prevMessages, chatMessage]);
@@ -105,7 +105,48 @@ const EmpInquiryChat = () => {
         newConnection.stop();
       }
     };
-  }, []);
+  }, [selectedPersonId]);
+
+  // useEffect(() => {
+
+  //   // Set up SignalR connection
+  //   const newConnection = new HubConnectionBuilder()
+  //     .withUrl("https://localhost:7292/inquirychathub") // Your SignalR Hub URL
+  //     .build();
+  
+  //   newConnection.start()
+  //     .then(() => {
+  //       console.log("Connected to SignalR Hub!");
+  //     })
+  //     .catch((error) => console.error("Error while starting connection: " + error));
+
+  //   debugger;
+  //   // Listen for incoming messages
+    
+  //   newConnection.on("ReceiveUserMessage", (chatMessage) => {
+  //     if (chatMessage.senderId !== loginId && chatMessage.inquiryRegistrationId === id) {
+  //     setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
+  //     console.log(messages);
+  //     }
+  //   });
+
+  //   newConnection.on("ReceiveAdminMessage", (chatMessage) => {
+  //     if (chatMessage.senderId !== loginId && (chatMessage.receiverId === loginId) && chatMessage.inquiryRegistrationId === id) {
+  //       // Append the new message to the state
+  //       // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
+  //       setMessages((prevMessages) => [...prevMessages, chatMessage]);
+  //     }
+  //   });
+  
+  //   setConnection(newConnection);
+  
+  //   // Cleanup on unmount
+  //   return () => {
+  //     if (newConnection) {
+  //       newConnection.stop();
+  //     }
+  //   };
+  // }, []);
   
 
   // Fetch chat persons based on selected type (Partner, Client, Employee)

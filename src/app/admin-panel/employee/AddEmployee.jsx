@@ -8,6 +8,10 @@ import { EmployeeService } from "../../service/EmployeeService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { EmployeeLeaveTypeService } from "../../service/EmployeeLeaveTypeService";
+import { messaging } from "../../../firebase/firebase";
+import { getToken } from "firebase/messaging";
+import FingerprintJS from "@fingerprintjs/fingerprintjs"; // For fingerprinting
+import { UAParser } from "ua-parser-js";
 
 
 const AddEmployee = () => {
@@ -46,6 +50,43 @@ const AddEmployee = () => {
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const navigate = useNavigate();
+
+  const [deviceId, setDeviceId] = useState(null); // State to store the device ID
+  const [deviceToken, setDeviceToken] = useState(null);
+
+  useEffect(() => {
+    // Check for stored device token
+    const storedDeviceToken = sessionStorage.getItem("deviceToken");
+    if (storedDeviceToken) {
+      setDeviceToken(storedDeviceToken);
+    } 
+    else {
+      // Get the device token if not stored
+      const getDeviceToken = async () => {
+        try {
+          const currentToken = await getToken(messaging, { vapidKey: "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" });
+          if (currentToken) {
+            setDeviceToken(currentToken);
+            // console.log(currentToken);
+            sessionStorage.setItem("deviceToken", currentToken);
+          } else {
+            console.log("No device token available.");
+          }
+        } catch (error) {
+          console.error("Error fetching device token:", error);
+        }
+      };
+      getDeviceToken();
+    }
+
+    // Get the device ID using FingerprintJS
+    const getDeviceId = async () => {
+      const fp = await FingerprintJS.load();
+      const result = await fp.get();
+      setDeviceId(result.visitorId);
+    };
+    getDeviceId();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,39 +160,88 @@ const AddEmployee = () => {
   ]); // Watch country, state, departmentfrom and employeecode formData
 
   const validateForm = () => {
-    const requiredFields = [
-      "firstName",
-      "middleName",
-      "lastName",
-      "employeecode",
-      "email",
-      "password",
-      "departmentId",
-      "designationId",
-      "gender",
-      "mobileNumber",
-      "emergencyMobileNumber",
-      "birthDate",
-      "dateOfJoining",
-      "countryId",
-      "stateId",
-      "cityId",
-      "bloodgroup",
-      "address",
-      "keyResponsibility",
-      "onProbation",
-    ];
     const newErrors = {};
-    requiredFields.forEach((field) => {
-      if (!formData[field]) newErrors[field] = `${field} is required`;
-    });
+  
+    if (!formData.firstName) newErrors.firstName = "First Name is required";
+    if (!formData.middleName) newErrors.middleName = "Middle Name is required";
+    if (!formData.lastName) newErrors.lastName = "Last Name is required";
+    if (!formData.employeecode) newErrors.employeecode = "Employee Code is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.password) newErrors.password = "Password is required";
+    if (!formData.departmentId) newErrors.departmentId = "Department is required";
+    if (!formData.designationId) newErrors.designationId = "Designation is required";
+    if (!formData.gender) newErrors.gender = "Gender is required";
+    if (!formData.mobileNumber || !/^[0-9]{10}$/.test(formData.mobileNumber)) {
+      newErrors.mobileNumber = "Please enter a valid 10-digit mobile number";
+    }
+    if (!formData.emergencyMobileNumber || !/^[0-9]{10}$/.test(formData.emergencyMobileNumber)) {
+      newErrors.emergencyMobileNumber = "Emergency Mobile Number is required";
+    }
+    // if (!formData.emergencyMobileNumber) newErrors.emergencyMobileNumber = "Emergency Mobile Number is required";
+    if (!formData.birthDate) newErrors.birthDate = "Birth Date is required";
+    if (!formData.dateOfJoining) newErrors.dateOfJoining = "Date of Joining is required";
+    if (!formData.countryId) newErrors.countryId = "Country is required";
+    // if (!formData.stateId) newErrors.stateId = "State is required";
+    // if (!formData.cityId) newErrors.cityId = "City is required";
+    if (!formData.bloodgroup) newErrors.bloodgroup = "Bloodgroup is required";
+    if (!formData.address) newErrors.address = "Address is required";
+    if (!formData.keyResponsibility) newErrors.keyResponsibility = "Key Responsibility is required";
+    if (formData.onProbation === undefined) newErrors.onProbation = "On Probation status is required";
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
+  // const validateForm = () => {
+  //   const requiredFields = [
+  //     "firstName",
+  //     "middleName",
+  //     "lastName",
+  //     "employeecode",
+  //     "email",
+  //     "password",
+  //     "departmentId",
+  //     "designationId",
+  //     "gender",
+  //     "mobileNumber",
+  //     "emergencyMobileNumber",
+  //     "birthDate",
+  //     "dateOfJoining",
+  //     "countryId",
+  //     "stateId",
+  //     "cityId",
+  //     "bloodgroup",
+  //     "address",
+  //     "keyResponsibility",
+  //     "onProbation",
+  //   ];
+  //   const newErrors = {};
+  //   requiredFields.forEach((field) => {
+  //     if (!formData[field]) newErrors[field] = `${field} is required`;
+  //   });
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
+
 
   const handleSubmit = async (e) => {
-    debugger;
+    // debugger;
     e.preventDefault();
+
+    // Initialize UAParser to get device information
+    const parser = new UAParser();
+    const result = parser.getResult();
+    const { device, os } = result;    
+    // Collect device information
+    const deviceInfoVM = {
+     deviceId: deviceId || "Unknown Device ID",  // Include the device ID
+     deviceToken: deviceToken || "Unknown Device Token",
+     deviceName: device.model || "Unknown Device",
+     deviceType: device.type || "Unknown Type",
+     deviceOSName: os.name || "Unknown OS",
+     deviceOSVersion: os.version || "Unknown Version",
+    };
+
     if (validateForm()) {
       setIsSubmitting(true);
       try {
@@ -159,12 +249,15 @@ const AddEmployee = () => {
         // Call the API to add the employee
         const employeeData = {
           ...formData,
+          stateId: formData.stateId === "" ? 0 : formData.stateId, // Convert empty string to null
+          cityId: formData.cityId === "" ? 0 : formData.cityId, // Convert empty string to null
           reportingTo:
             formData.reportingTo === "" ? null : formData.reportingTo, // Convert empty string to null
           probationPeriod:
             formData.probationPeriod === "" ? 0 : formData.probationPeriod, // Convert empty string to 0
           employeeLeaveTypeId:
             formData.employeeLeaveTypeId === "" ? null : formData.employeeLeaveTypeId, // Convert empty string to null
+          deviceInfoVM: deviceInfoVM, // Include the device information,
         };
         const response = await EmployeeService.addEmployee(employeeData); // Call the service
         if (response.status === 1) {
@@ -523,7 +616,7 @@ const AddEmployee = () => {
                 className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
-                  --Select Employee--
+                  --Select Reporting To--
                 </option>
                 {employeeList.length > 0 ? (
                   employeeList.map((employee) => (
@@ -696,5 +789,3 @@ const AddEmployee = () => {
 };
 
 export default AddEmployee;
-
-

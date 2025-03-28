@@ -77,6 +77,8 @@ const UserInquiryTaskList = () => {
   const buttonRefs = useRef({}); // To store references to dropdown buttons
 
   const {id} = useParams();
+  const loginId = sessionStorage.getItem("LoginUserId");
+  const role = sessionStorage.getItem("role");
 
   // Function to fetch sub-tasks by task allocation ID
   const getInquirySubTasksByTaskId = async (inquiryTaskAllocationId) => {
@@ -848,45 +850,52 @@ const UserInquiryTaskList = () => {
                               </Link>
                             </motion.button> */}
 
-                            <motion.button
-                              type="button"
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                            >
-                              <Link
-                                to={`/user/inquiry-tasknote-list/${item.inquiryTaskAllocationId}`}
-                                className="text-yellow-500 hover:text-yellow-700"
-                              >
-                                <IoTime size={24} />
-                              </Link>
-                            </motion.button>
+                          {(item.taskAssignTo === loginId && 
+                                  <>
+                                  <motion.button
+                                    type="button"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                  >
+                                    <Link
+                                      to={`/user/inquiry-tasknote-list/${item.inquiryTaskAllocationId}`}
+                                      className="text-yellow-500 hover:text-yellow-700"
+                                    >
+                                      <IoTime size={24} />
+                                    </Link>
+                                  </motion.button>
 
-                            <motion.button
-                              type="button"
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() =>
-                                handleDeleteClick(item.inquiryTaskAllocationId)
-                              }
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <FaTrash size={22} />
-                            </motion.button>
+                                  {item.taskAssignByName === loginId && role === 'admin' && (                      
+                                    <motion.button
+                                      type="button"
+                                      whileHover={{ scale: 1.1 }}
+                                      whileTap={{ scale: 0.9 }}
+                                      onClick={() =>
+                                        handleDeleteClick(item.inquiryTaskAllocationId)
+                                      }
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <FaTrash size={22} />
+                                    </motion.button>
+                                  )}
 
-                            <motion.button
-                              type="button"
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() =>
-                                toggleDropdown(item.inquiryTaskAllocationId)
-                              }
-                              className="text-gray-500 hover:text-gray-700"
-                              ref={(el) =>
-                                (buttonRefs.current[item.inquiryTaskAllocationId] = el)
-                              }
-                            >
-                              <FaEllipsisV size={24} />
-                            </motion.button>
+                                  <motion.button
+                                    type="button"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    onClick={() =>
+                                      toggleDropdown(item.inquiryTaskAllocationId)
+                                    }
+                                    className="text-gray-500 hover:text-gray-700"
+                                    ref={(el) =>
+                                      (buttonRefs.current[item.inquiryTaskAllocationId] = el)
+                                    }
+                                  >
+                                    <FaEllipsisV size={24} />
+                                  </motion.button>
+                                  </>
+                          )}
+
                           
                           {openDropdown === item.inquiryTaskAllocationId && (
                             <div
@@ -1164,8 +1173,7 @@ const UserInquiryTaskList = () => {
                                                 </Link>
                                               </motion.button> */}
                                             {/* </button> */}
-
-                                            {/* <button> */}
+                                            {(subTask.taskAssignTo === loginId && <>
                                               <motion.button
                                                 type="button"
                                                 whileHover={{ scale: 1.1 }}
@@ -1179,10 +1187,8 @@ const UserInquiryTaskList = () => {
                                                   <IoTime size={24} />
                                                 </Link>
                                               </motion.button>
-                                            {/* </button> */}
 
-                                            {/* <button> */}
-                                              <motion.button
+                                              {/* <motion.button
                                                 type="button"
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
@@ -1196,10 +1202,8 @@ const UserInquiryTaskList = () => {
                                                 className="text-red-500 hover:text-red-700"
                                               >
                                                 <FaTrash size={22} />
-                                              </motion.button>
-                                            {/* </button> */}
+                                              </motion.button> */}
 
-                                            {/* <button> */}
                                               <motion.button
                                                 type="button"
                                                 whileHover={{ scale: 1.1 }}
@@ -1218,7 +1222,7 @@ const UserInquiryTaskList = () => {
                                               >
                                                 <FaEllipsisV size={24} />
                                               </motion.button>
-                                            {/* </button> */}
+                                              </> )}
 
                                             {/* Render dropdown above or below based on space */}
                                             {openSubDropdown ===

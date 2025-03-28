@@ -587,10 +587,10 @@ const InquiryTaskList = () => {
     };
 
     //console.log("Submitting task transfer data:", transferSubTask); // Log the data before submitting
-
+    // debugger;
     try {
       // Call the API to add the task note
-      const response = await SubTaskService.transferSubTask(transferSubTask);
+      const response = await InquirySubTaskService.transferInquirySubTask(transferSubTask);
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
         fetchTasks();
@@ -598,7 +598,7 @@ const InquiryTaskList = () => {
       // console.log("Transfer Sub Task Successfully:", response);
 
       // Optionally, you can update the task state or show a success message here
-      setSubStartDateIsPopupVisible(false); // Close the popup
+      setSubTaskTransferIsPopupVisible(false); // Close the popup
     } catch (error) {
       toast.error(
         "Error tranfering sub task",

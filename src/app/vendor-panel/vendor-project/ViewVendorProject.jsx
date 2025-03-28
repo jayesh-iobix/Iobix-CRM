@@ -5,13 +5,14 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryService } from "../../service/InquiryService";
 import { toast } from "react-toastify";
 import { InquiryApproveRejectService } from "../../service/InquiryApproveRejectService";
-import Chat from "./Chat";
 import CompanyInquiryChat from "../../company-panel/inquiry-chat/CompanyInquiryChat";
 import PartnerInquiryList from "../../admin-panel/partner-inquiry/PartnerInquiryList";
-import PartnerInquiryTaskList from "../inquiry-task/PartnerInquiryTaskList";
-import CreateInquiryTaskList from "../inquiry-task/CreateInquiryTaskList";
 
-const GetViewInquiry = () => {
+import Chat from "../../partner-panel/inquiry/Chat";
+import PartnerInquiryTaskList from "../../partner-panel/inquiry-task/PartnerInquiryTaskList";
+import CreateInquiryTaskList from "../../partner-panel/inquiry-task/CreateInquiryTaskList";
+
+const ViewVendorProject = () => {
 
   const [formData, setFormData] = useState({
     inquiryTitle: '',
@@ -35,7 +36,6 @@ const GetViewInquiry = () => {
 
   const [activeTab, setActiveTab] = useState(1);
   const role = sessionStorage.getItem("role");
-  const [isClosed, setIsClosed] = useState(false);
   
   const { id } = useParams();
   const navigate = useNavigate();
@@ -45,29 +45,9 @@ const GetViewInquiry = () => {
       try {
         // Fetch Inquiry
         const inquiry = await InquiryService.getByIdInquiry(id);
-        // const formattedClientCompany = {
-        //   ...clientCompany.data,
-        //   birthDate: clientCompany.data.birthDate ? clientCompany.data.birthDate.split("T")[0] : "",
-        //   dateOfJoining: clientCompany.data.dateOfJoining ? clientCompany.data.dateOfJoining.split("T")[0] : "",
-        // };
 
-        const inquiryData = inquiry.data;
         setFormData(inquiry.data);
-
-        if(role === 'company')
-          {
-            setIsClosed(inquiryData.clientFinalApproval);
-          }
-          if(role === 'partner')
-          {
-            setIsClosed(inquiryData.partnerFinalApproval);
-          }
-          if(role === 'vendor')
-          {
-            setIsClosed(inquiryData.vendorFinalApproval);
-          }
-        // setFormData(formattedClientCompany);
-        // console.log(inquiry)
+        // console.log(inquiry.data)
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -91,6 +71,7 @@ const GetViewInquiry = () => {
         inquiryRegistrationId: id,
         clientApprovedReject: role === 'company' ? status : null,  // Store status if the role is 'client'
         partnerApprovedReject: role === 'partner' ? status : null, // Store status if the role is 'partner'
+        partnerApprovedReject: role === 'vendor' ? status : null, // Store status if the role is 'partner'
         // clientApprovedReject : status,
         // partnerApprovedReject: status,
       };
@@ -149,7 +130,7 @@ const GetViewInquiry = () => {
             </>
           )}
 
-          {formData.inquiryStatus === 4 && isClosed && (
+          {(formData.inquiryStatus === 4) && (
               <>
             <motion.button
               whileHover={{ scale: 1.1 }}
@@ -318,7 +299,7 @@ const GetViewInquiry = () => {
                             Open Project Document
                           </a>
                         ) : 'No document available'
-                      },
+          },
                       // { label: "Key Responsibility", name: "keyResponsibility", value: formData.keyResponsibility },
                     ].map((field, idx) => (
                       <div key={idx} className="w-full px-2">
@@ -335,7 +316,6 @@ const GetViewInquiry = () => {
               {activeTab === 3 && <CreateInquiryTaskList/>} 
               {activeTab === 4 && role === "partner" && <Chat />}
               {activeTab === 4 && role === "company" && <CompanyInquiryChat />}
-              {/* {activeTab === 3 && "Leave List"}  */}
             </div>
           </div>
         </form>
@@ -344,4 +324,4 @@ const GetViewInquiry = () => {
   );
 };
 
-export default GetViewInquiry;
+export default ViewVendorProject;

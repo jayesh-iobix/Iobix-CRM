@@ -129,9 +129,9 @@ const UserViewProject = () => {
       setInquiryForwadedeData(forwardDetails);
       setInquiryTransferdData(transferDetails);
 
-      // const inquiryToggle = await InquiryFollowUpService.hideInquirybutton(id);
+      const inquiryToggle = await InquiryFollowUpService.hideInquirybutton(id);
       // debugger;
-      // setInquiryHideShow(inquiryToggle.data);
+      setInquiryHideShow(inquiryToggle.data);
 
       const departmentResult = await DepartmentService.getDepartments();
       setDepartments(departmentResult.data); // Set the 'data' array to the state\
@@ -499,7 +499,7 @@ const UserViewProject = () => {
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
 
-          {formData.inquiryStatus === 4 && (
+          {formData.inquiryStatus === 4 && inquiryHideShow && (
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -542,7 +542,7 @@ const UserViewProject = () => {
               )} */}
 
               {/* Trabsfer Inquiry Button placed above the edit and back buttons  */}
-              {formData.inquiryStatus === 4 && (
+              {formData.inquiryStatus === 4 &&  inquiryHideShow && (
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
@@ -571,7 +571,7 @@ const UserViewProject = () => {
                 whileTap={{ scale: 0.9 }}
               >
                 <Link
-                  to={`/partner/inquiry-list/edit-inquiry/${id}`}
+                  to={/partner/inquiry-list/edit-inquiry/${id}}
                   className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
                 >
                   Edit Inquiry

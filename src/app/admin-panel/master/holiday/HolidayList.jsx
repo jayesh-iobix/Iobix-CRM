@@ -124,7 +124,14 @@ const HolidayList = () => {
             </tr>
           </thead>
           <tbody>
-            {holidays.map((item) => (
+          {currentItems.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="text-center py-3 px-4 text-gray-700">
+                  No holidays found.
+                </td>
+              </tr>
+            ) : (
+              currentItems.map((item) => (
               <motion.tr
               key={item.holidayId}
               className="border-b hover:bg-gray-50"
@@ -175,7 +182,8 @@ const HolidayList = () => {
                   </div>
                 </td>
               </motion.tr>
-            ))}
+            ))
+            )}
           </tbody>
         </table>
       </div>

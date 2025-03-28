@@ -49,9 +49,15 @@ const InquiryList = () => {
   const role = sessionStorage.getItem("role");
   // console.log(role);
 
-  const navigateTo = role === 'partner' 
+  const navigateTo = 
+  role === 'partner' 
   ? '/partner/project-list/add-project' 
-  : '/company/project-list/add-project';
+  : role === 'vendor' 
+  ? '/vendor/project-list/add-project' 
+  : role === 'company' 
+  ? '/company/project-list/add-project' 
+  : '/default/project-list/add-project'; // Optional default route if role is unknown
+
 
   useEffect(() => {
     const fetchInquiries = async () => {
@@ -64,6 +70,11 @@ const InquiryList = () => {
           setTotalItems(result.data.length);
         } else if (role === "company") {
           const result = await InquiryService.getCompanyInquiry();
+          setInquiries(result.data);
+          setFilteredInquiries(result.data);
+          setTotalItems(result.data.length);
+        } else if (role === "vendor") {
+          const result = await InquiryService.getVendorInquiry();
           setInquiries(result.data);
           setFilteredInquiries(result.data);
           setTotalItems(result.data.length);
