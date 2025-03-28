@@ -262,12 +262,12 @@ const AddPartner = () => {
                 type: "email",
                 placeholder: "Enter your email",
               },
-              {
-                label: "Password",
-                name: "password",
-                type: "password",
-                placeholder: "Enter your password",
-              },
+              // {
+              //   label: "Password",
+              //   name: "password",
+              //   type: "password",
+              //   placeholder: "Enter your password",
+              // },
               {
                 label: "Contact Person Name",
                 name: "contactPersonName",
