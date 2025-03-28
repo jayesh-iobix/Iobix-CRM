@@ -120,9 +120,9 @@ const CompanyRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    debugger;
+    // debugger;
     
-    // if (!validateForm()) return;
+    if (!validateForm()) return;
 
     // Initialize UAParser to get device information
     const parser = new UAParser();
@@ -143,6 +143,8 @@ const CompanyRegistration = () => {
     
     const companyData = {
       ...formData,
+      stateId: formData.stateId === "" ? 0 : formData.stateId, // Convert empty string to 0
+      cityId: formData.cityId === "" ? 0 : formData.cityId, // Convert empty string to 0
       deviceInfoVM,
       // role: "IsClient",
     }
@@ -192,7 +194,7 @@ const CompanyRegistration = () => {
             >
               <div>
                 <p className="text-[#F9A01B] text-2xl font-bold text-center flex justify-center">
-                  Company Registration Form
+                  Client Company Registration Form
                 </p>
               </div>
 

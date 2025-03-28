@@ -116,6 +116,7 @@ const PartnerRegistration = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
   // const validateForm = () => {
   //   const newErrors = {};
   //   if (!formData.companyName) newErrors.companyName = "Company Name is required";
@@ -130,8 +131,9 @@ const PartnerRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    debugger;
-    // if (!validateForm()) return;
+    // debugger;
+    
+    if (!validateForm()) return;
 
     // Initialize UAParser to get device information
     const parser = new UAParser();
@@ -152,6 +154,8 @@ const PartnerRegistration = () => {
     
     const partnerData = {
       ...formData,
+      stateId: formData.stateId === "" ? 0 : formData.stateId, // Convert empty string to 0
+      cityId: formData.cityId === "" ? 0 : formData.cityId, // Convert empty string to 0
       deviceInfoVM
     }
     

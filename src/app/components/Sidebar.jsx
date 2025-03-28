@@ -143,9 +143,9 @@ export default function Sidebar() {
 
         {/* Bottom Sidebar Links */}
         <div className="flex flex-col gap-0.5 pt-2 pb-4 border-t border-neutral-700">
-          {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((link) => (
+          {/* {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((link) => (
             <SidebarLink key={link.key} link={link} />
-          ))}
+          ))} */}
           <div
             className={classNames(linkClass, "cursor-pointer text-red-500")}
             onClick={handleLogout}

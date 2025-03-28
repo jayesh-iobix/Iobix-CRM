@@ -158,6 +158,8 @@ const GetInquiryList = () => {
         return "text-green-500 bg-green-100"; // Blue for FinalApproval
       case "Close":
         return "text-red-500 bg-red-100"; // Red for Rejected
+      case "Rejected":
+        return "text-red-500 bg-red-100"; // Red for Rejected
       default:
         return "text-gray-500 bg-gray-100"; // Default color
     }
