@@ -42,8 +42,9 @@ const AddInquiryType = () => {
         try {
           const response = await InquiryTypeService.addInquiryType(inquiryTypeData);
           if (response.status === 1) {
-            navigate('/master/inquirytype-list');
+            navigate(-1);
             toast.success(response.message); // Toast on success
+            // navigate('/master/inquirytype-list');
           }
           // Reset the form
           setInquiryTypeName('');

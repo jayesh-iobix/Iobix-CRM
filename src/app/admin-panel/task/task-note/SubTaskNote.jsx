@@ -140,20 +140,6 @@ export const SubTaskNoteList = () => {
                 <FaTrash size={22} />
               </button>
                 </motion.button>
-                {/* <FaTrash/> */}
-                {/* <div className="flex gap-3">
-                  <Link
-                    to={/user/task-list/${item.taskAllocationId}}
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    <FaEdit size={24} />
-                  </Link>
-                  <FaEye
-                    size={24}
-                    className="text-green-500 hover:text-green-700"
-                    onClick={() => handleEyeClick(item)}
-                  /> */}
-                {/* </div> */}
               </td>
             </tr>
           ))}

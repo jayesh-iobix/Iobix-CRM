@@ -167,7 +167,7 @@ const AddClientCompany = () => {
         //   toast.success(response.message);
         //   navigate("/clientcompany-list");
         }
-        if (response.status === 0) {
+        if (response.status === 2) {
           toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
         }
 

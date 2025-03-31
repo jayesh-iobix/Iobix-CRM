@@ -24,7 +24,7 @@ const AdminInqryPermiList = () => {
       try {
         const result = await InquiryPermissionService.getInquiryPermissionForAdmin();
         setInquiryPermissionList(result.data); // Set the 'data' array to the state
-        console.log(result.data); // Set the 'data' array to the state
+        // console.log(result.data); // Set the 'data' array to the state
         setTotalItems(result.data.length); // Set total items for pagination
         setCurrentPage(1); // Reset to the first page when a new filter is applied
       } catch (error) {
@@ -70,22 +70,25 @@ const AdminInqryPermiList = () => {
       const updatedInquiryPermission = inquiryPermissionList.map((item) =>
         item.inquiryPermissionId  === inquiryPermissionId  ? { ...item, isActive: checked } : item
       );
+
+      console.log(item)
       
       setInquiryPermissionList(updatedInquiryPermission); // Update the state immediately
-  
       try {
         // Prepare the data for the API call
         const inquiryPermissionData = {
-          departmentId : item.departmentId ,
-          inquiryOriginName : item.inquiryOriginName,
+          userId : item.userId,
+          userName : item.userName,
+          inquiryTypeId : item.inquiryTypeId,
+          inquiryTypeIds: item.inquiryTypeIds,  // Send inquiryTypeIds as well
           isActive: checked , // Only update the isActive field
         };
-  
+        
         //console.log(inquiryPermissionData)
-  
+        debugger;
         // Call the update API to update the `isActive` field on the server
         const updatedInquiryPermission = await InquiryPermissionService.updateInquiryPermission(
-          inquiryPermissionId ,
+          inquiryPermissionId,
           inquiryPermissionData
         );
         //console.log(updatedInquiryPermission); // If successful, log the response
@@ -143,9 +146,9 @@ const AdminInqryPermiList = () => {
               <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
                 Inquiry Type Name
               </th>
-              <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
+              {/* <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
                 Active
-              </th>
+              </th> */}
               <th className="text-right py-3 pr-8 uppercase font-semibold text-sm text-[#939393]">
                 Actions
               </th>
@@ -174,7 +177,7 @@ const AdminInqryPermiList = () => {
                   <td className="py-3 pl-8 text-gray-700">
                     {item.inquiryTypeName}
                   </td>
-                  <td className="py-3 pl-8 text-gray-700">
+                  {/* <td className="py-3 pl-8 text-gray-700">
                     <label className="inline-flex ms-3 items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -191,7 +194,7 @@ const AdminInqryPermiList = () => {
                       <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                       <span className="ms-3 w-[86px] text-sm font-medium text-gray-900 dark:text-gray-300"></span>
                     </label>
-                  </td>
+                  </td> */}
                   <td className="py-3 pr-8 text-right">
                     <div className="flex justify-end">
                       {/* {item.isActive ? ("") : ( <span className="px-2 py-1 mr-4 rounded-lg font-medium text-red-500 bg-red-100">Not Active</span> )} */}

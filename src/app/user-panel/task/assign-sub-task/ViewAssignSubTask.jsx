@@ -111,6 +111,16 @@ const ViewAssignSubTask = () => {
             </div>
             <div className="flex justify-between">
               <p>
+                <strong className="mr-1">Start Date:</strong>{" "}
+                {formatDate(taskDetails.taskStartingDate)}
+              </p>
+              <p>
+                <strong className="mr-1">Expected Completion:</strong>{" "}
+                {formatDate(taskDetails.taskExpectedCompletionDate)}
+              </p>
+            </div>
+            <div className="flex justify-between">
+              <p>
                 <strong className="mr-1">Priority:</strong>{" "}
                 {taskDetails.taskPriority}
               </p>
@@ -121,14 +131,14 @@ const ViewAssignSubTask = () => {
             </div>
             <div className="flex justify-between">
               <p>
-                <strong className="mr-1">Start Date:</strong>{" "}
-                {formatDate(taskDetails.taskStartingDate)}
+                <strong className="mr-1">Actual Starting Date:</strong>{" "}
+                {formatDate(taskDetails.actualStartingDate)}
               </p>
               <p>
-                <strong className="mr-1">Expected Completion:</strong>{" "}
-                {formatDate(taskDetails.taskExpectedCompletionDate)}
+                <strong className="mr-1">Task Completion Date:</strong>{" "}
+                {formatDate(taskDetails.taskCompletionDate)}
               </p>
-            </div>
+            </div>  
             <div className="flex justify-between">
               <p>
                 <strong className="mr-1">Status:</strong>{" "}

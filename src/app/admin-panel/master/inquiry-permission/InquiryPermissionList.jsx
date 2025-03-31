@@ -24,7 +24,7 @@ const InquiryPermissionList = () => {
       try {
         const result = await InquiryPermissionService.getInquiryPermissionForUser();
         setInquiryPermissionList(result.data); // Set the 'data' array to the state
-        console.log(result.data); // Set the 'data' array to the state
+        // console.log(result.data);
         setTotalItems(result.data.length); // Set total items for pagination
         setCurrentPage(1); // Reset to the first page when a new filter is applied
       } catch (error) {
@@ -76,7 +76,7 @@ const InquiryPermissionList = () => {
       try {
         // Prepare the data for the API call
         const inquiryOriginData = {
-          departmentId : item.departmentId ,
+          userId : item.userId ,
           inquiryOriginName : item.inquiryOriginName ,
           isActive: checked , // Only update the isActive field
         };

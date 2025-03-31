@@ -158,71 +158,6 @@ const ApprovedClientInqry = () => {
       toast.error("Failed to cancel inquiry.");
     }
   };
-
-  // const handleApprove = async (item, status) => {
-  //   // Add your approval logic here
-
-  //   // debugger;
-
-  //   const inquiryApproveRejectData = {
-  //     inquiryRegistrationId: id,
-  //     inquiryGivenTo: item.inquiryApprovedBy,
-  //     clientApprovedReject: null, // Store status if the role is 'client'
-  //     partnerApprovedReject: null, // Store status if the role is 'partner'
-  //     finalApproval: status
-  //   };
-
-  //   // console.log(inquiryApproveRejectData);
-  //   try {
-  //     const response = await InquiryApproveRejectService.addFinalInquiryApprove( inquiryApproveRejectData);
-  //     debugger;
-  //     if (response.status === 1) {
-  //       toast.success(response.message); // Toast on success
-  //       // fetchInquiries();
-  //     } else if (response.status === 2) {
-  //       toast.error(response.message); // Toast on error
-  //     } else {
-  //       toast.error(response.message); // Toast on error
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error.response?.data || error.message);
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-  // };
-
-  // const handleCancle = async (item, status) => {
-  //   // Add your approval logic here
-
-  //   // debugger;
-
-  //   const inquiryApproveRejectData = {
-  //     inquiryRegistrationId: id,
-  //     inquiryCancleTo: item.inquiryApprovedBy,
-  //     finalApprovalCancle: status
-  //   };
-
-  //   // console.log(inquiryApproveRejectData);
-  //   try {
-  //     const response = await InquiryApproveRejectService.cancleFinalInquiryApprove(inquiryApproveRejectData);
-  //     debugger;
-  //     if (response.status === 1) {
-  //       toast.error(response.message); // Toast on success
-  //       // fetchInquiries();
-  //     } else if (response.status === 2) {
-  //       toast.error(response.message); // Toast on error
-  //     } else {
-  //       toast.error(response.message); // Toast on error
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error.response?.data || error.message);
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-  // };
-
   
   const handleApprovePopupClose = () => {
     setIsApprovePopupOpen(false);
@@ -253,26 +188,6 @@ const ApprovedClientInqry = () => {
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Approved Client Project List</h1>
       </div>
-
-      {/* <div className="flex gap-4 my-4">
-          <input
-            type="text"
-            value={inquiryFilter}
-            onChange={handleInquiryFilterChange}
-            placeholder="Search Inquiry"
-            className="p-2 outline-none rounded border border-gray-300"
-          />
-          <select
-            value={categoryFilter}
-            onChange={handleCategoryFilterChange}
-            className="border border-gray-300 rounded p-2"
-          >
-            <option value="">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Close">Close</option>
-          </select>
-      </div> */}
 
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">

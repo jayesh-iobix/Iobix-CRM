@@ -199,22 +199,6 @@ const AddInquiryPermission = () => {
                 }
                 placeholder="Select Inquiry Type"
               />
-
-              {/* <select
-                value={inquiryTypeId}
-                onChange={(e) => setInquiryTypeId(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
-              >
-                <option value="">--Select Inquiry Type--</option>
-                {inquiryTypeList.map((inquiryType) => (
-                  <option
-                    key={inquiryType.inquiryTypeId}
-                    value={inquiryType.inquiryTypeId}
-                  >
-                    {inquiryType.inquiryTypeName}
-                  </option>
-                ))}
-              </select> */}
               {errors.inquiryTypeIds && (
                 <p className="text-red-500 text-xs">{errors.inquiryTypeIds}</p>
               )}

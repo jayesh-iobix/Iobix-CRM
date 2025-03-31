@@ -44,7 +44,8 @@ const AddDepartment = () => {
       try {
         const response = await DepartmentService.addDepartment(departmentData);
         if (response.status === 1) {
-          navigate('/master/department-list');
+          navigate(-1);
+          // navigate('/master/department-list');
           // console.log('Department added successfully:', response);
           toast.success(response.message); // Toast on success
         }
@@ -104,16 +105,6 @@ const AddDepartment = () => {
             >
                 {isSubmitting ? "Submitting..." : "Add"}
               </motion.button>
-            {/* <button
-                type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 
-                  ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Add"}
-              </button> */}
             </div>
           </div>
         </form>

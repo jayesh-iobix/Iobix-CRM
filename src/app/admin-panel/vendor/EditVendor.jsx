@@ -290,42 +290,6 @@ const EditVendor = () => {
               </div>
             ))}
 
-            {/* Department Select */}
-            {/* <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
-              <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
-                Department
-              </label>
-              <div className="relative z-20">
-                <select
-                  value={formData.departmentId}
-                  onChange={handleChange}
-                  name="departmentId"
-                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
-                >
-                  <option value="" className="text-gray-400">
-                    --Select Department--
-                  </option>
-                  {departmentList.length > 0 ? (
-                    departmentList.map((departmentItem) => (
-                      <option
-                        key={departmentItem.departmentId}
-                        value={departmentItem.departmentId}
-                      >
-                        {departmentItem.departmentName}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No Department available
-                    </option>
-                  )}
-                </select>
-              </div>
-              {errors.department && (
-                <p className="text-red-500 text-xs">{errors.department}</p>
-              )}
-            </div> */}
-
             {/* Country Select */}
             <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">

@@ -180,20 +180,8 @@ const ForwardPartnerInqryList = () => {
         return "text-red-500 bg-red-100"; // Red for Rejected
       default:
         return "text-gray-500 bg-gray-100"; // Default color
-    }
-  };
-  // const getStatusColor = (inquiryStatusName) => {
-  //   switch (inquiryStatusName) {
-  //     case "Pending":
-  //       return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
-  //     case "Approved":
-  //       return "text-green-500 bg-green-100"; // Green for Approved
-  //     case "Rejected":
-  //       return "text-red-500 bg-red-100"; // Red for Rejected
-  //     default:
-  //       return "text-gray-500 bg-gray-100"; // Default color
-  //   }
-  // };
+    }
+  };
   
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {

@@ -167,7 +167,7 @@ const AddEmployee = () => {
     if (!formData.lastName) newErrors.lastName = "Last Name is required";
     if (!formData.employeecode) newErrors.employeecode = "Employee Code is required";
     if (!formData.email) newErrors.email = "Email is required";
-    if (!formData.password) newErrors.password = "Password is required";
+    // if (!formData.password) newErrors.password = "Password is required";
     if (!formData.departmentId) newErrors.departmentId = "Department is required";
     if (!formData.designationId) newErrors.designationId = "Designation is required";
     if (!formData.gender) newErrors.gender = "Gender is required";
@@ -261,8 +261,12 @@ const AddEmployee = () => {
         };
         const response = await EmployeeService.addEmployee(employeeData); // Call the service
         if (response.status === 1) {
-          toast.success(response.message);
-          navigate("/employee-list");
+          toast.success("Employee Created Successfully"); // Toast on success
+          navigate(-1);
+          // navigate("/employee-list");
+        }
+        if (response.status === 2) {
+          toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
         }
 
         // Reset the form after successful submission
@@ -348,14 +352,14 @@ const AddEmployee = () => {
                 label: "Email",
                 name: "email",
                 type: "email",
-                placeholder: "Enter your middle name",
+                placeholder: "Enter your email",
               },
-              {
-                label: "Password",
-                name: "password",
-                type: "password",
-                placeholder: "Enter your password",
-              },
+              // {
+              //   label: "Password",
+              //   name: "password",
+              //   type: "password",
+              //   placeholder: "Enter your password",
+              // },
               {
                 label: "Mobile Number",
                 name: "mobileNumber",

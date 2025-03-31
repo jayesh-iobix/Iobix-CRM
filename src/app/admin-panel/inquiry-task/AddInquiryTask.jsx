@@ -127,45 +127,6 @@ const AddInquiryTask = () => {
       inquiryTaskDataToSend.append('taskDocument', taskDocument);
     }
 
-
-    // const inquiryTaskData = {
-    //   inquiryRegistrationId: id,
-    //   taskName,
-    //   departmentId,
-    //   taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && vendorId === "" && employeeId !== "") ? employeeId : 
-    //   (partnerRegistrationId === "" && employeeId === "" && vendorId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
-    //   (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId === "" && vendorId !== "") ? vendorId : 
-    //   (clientRegistrationId === "" && employeeId === "" && vendorId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,
-    //   taskPriority,
-    //   taskType,
-    //   taskStartingDate,
-    //   taskExpectedCompletionDate: taskExpectedCompletionDate === "" ? null : taskExpectedCompletionDate,
-    //   taskDescription,
-    //   taskDocument, // Add the task document to the data,
-    //   manualNotification,
-    //   taskReminderVM: manualNotification ? {
-    //     reminderDateTimes: notifications.map(notification => ({
-    //       reminderDateTime: notification.reminderDateTime, // Ensure it's a string (ISO8601 or other formats)
-    //     }))
-    //   } : {}, // Add the manual notification data
-    //   // taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate, // Convert empty string to null
-    // };
-
-    // const inquiryTaskDataToSend = new FormData();
-    // Object.keys(inquiryTaskData).forEach((key) => {
-    //   inquiryTaskDataToSend.append(key, inquiryTaskData[key]);
-    // });
-
-    // const formData = new FormData();
-    // if (file) {
-    //   formData.append("inquiryTaskAllocationVM.file", file);
-    // }
-    // formData.append("inquiryTaskAllocationVM.inquiryRegistrationId", inquiryTaskData.inquiryRegistrationId);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-    // formData.append("inquiryTaskAllocationVM.file", file);
-
     try {
       const response = await InquiryTaskService.addInquiryTask(inquiryTaskDataToSend);
       if (response.status === 1) {
@@ -609,6 +570,7 @@ const AddInquiryTask = () => {
                 {isSubmitting ? "Submitting..." : "Add Inquiry Task"}
               </motion.button>
             </div>
+            
           </div>
         </form>
       </section>

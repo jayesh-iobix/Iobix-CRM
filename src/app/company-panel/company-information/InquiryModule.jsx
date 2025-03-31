@@ -179,66 +179,9 @@ const InquiryModule = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Validation function
-  // const validate = () => {
-  //   let tempErrors = {};
-  //   let isValid = true;
-
-  //   // Required fields validation
-  //   if (!formData.countryId) {
-  //     tempErrors.countryId = "*Country is required";
-  //     isValid = false;
-  //   }
-  //   if (!formData.industries) {
-  //     tempErrors.industries = "*Industries are required";
-  //     isValid = false;
-  //   }
-  //   if (!formData.companySize) {
-  //     tempErrors.companySize = "*Company size is required";
-  //     isValid = false;
-  //   }
-  //   if (!formData.targetCustomer) {
-  //     tempErrors.targetCustomer = "*Target customer is required";
-  //     isValid = false;
-  //   }
-  //   if (!formData.averageDealSize) {
-  //     tempErrors.averageDealSize = "*Average deal size is required";
-  //     isValid = false;
-  //   }
-  //   if (!formData.searchKeywords) {
-  //     tempErrors.searchKeywords = "*Search keywords are required";
-  //     isValid = false;
-  //   }
-  //   if (!formData.customerSearchKeywords) {
-  //     tempErrors.customerSearchKeywords = "*Customer search keywords are required";
-  //     isValid = false;
-  //   }
-  //   if (!formData.coreOfferings) {
-  //     tempErrors.coreOfferings = "*Core offerings are required";
-  //     isValid = false;
-  //   }
-  //   if (!formData.forumsWebsites) {
-  //     tempErrors.forumsWebsites = "*Forums/Websites are required";
-  //     isValid = false;
-  //   }
-
-  //   setErrors(tempErrors);
-  //   return isValid;
-  // };
-
-//   const handleChange = (e) => {
-//     setFormData({
-//       ...formData,
-//       [e.target.name]: e.target.value,
-//     });
-//   };
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // const icpData = {
-    //   formData,
-    // };
     
      try {
       // console.log("Form Data:", formData);

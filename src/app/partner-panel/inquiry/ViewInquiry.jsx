@@ -236,10 +236,6 @@ const ViewInquiry = () => {
         </form>
       </section>
 
-      {/* <PartnerInquiryChat 
-      chatPersoneName={formData.senderName}
-      senderId='3FA85F64-5717-4562-B3FC-2C963F66AFA6'
-      inquiryId='648b3f95-6699-4e60-bb25-ec4b8ba59894' /> */}
     </>
   );
 };

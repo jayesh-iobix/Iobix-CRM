@@ -193,8 +193,8 @@ const EditProject = () => {
 
     try {
       const result = await InquiryService.updateInquiry(id, formDataToSend);
+      toast.success("Project updated successfully!");
       if (result.status === 1) {
-        toast.success("Project updated successfully!");
         navigate(-1);
       } else {
         toast.error("Failed to update Project!");

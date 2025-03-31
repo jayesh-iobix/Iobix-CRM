@@ -29,7 +29,7 @@ const ChatInquiry = () => {
     reasonForClosure: '', 
     senderName:'',
     senderId:'',
-  });
+  });
 
   const [inquiryForwadedeData, setInquiryForwadedeData] = useState(""); 
   const [inquiryTransferdData, setInquiryTransferdData] = useState("");
@@ -208,53 +208,31 @@ const handleIsViewInquiryPopUp = (inquiryRegistrationId) => {
         <div className="w-1/3 bg-white p-4 border-r">
           <h2 className="font-semibold mb-2">Inquiries</h2>
           {inquiries.map((inquiry) => (
-            
-            <div key={inquiry.inquiryRegistrationId} className="flex justify-between">
-              <div
-              // key={inquiry.inquiryRegistrationId}
-              onClick={() => handleInquirySelect(inquiry)}
-              className="cursor-pointer item-center w-full p-2 border-b"
+            <div
+              key={inquiry.inquiryRegistrationId}
+              className="flex justify-between"
             >
-              {inquiry.inquiryTitle}
-              
-            </div>
-
-            <div className="mt-2">
-            <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => handleIsViewInquiryPopUp(inquiry.inquiryRegistrationId)}
-                className="text-green-500 hover:text-green-700"
-                // onClick={() => fetchData(inquiry.inquiryRegistrationId)}
+              <div
+                // key={inquiry.inquiryRegistrationId}
+                onClick={() => handleInquirySelect(inquiry)}
+                className="cursor-pointer item-center w-full p-2 border-b"
               >
-                {/* <Link
-                  to={`/inquiry-chat/viewchat-inquiry/${inquiry.inquiryRegistrationId}`}
-                  className="text-green-500 hover:text-green-700"
-                > */}
-                  <FaEye size={24} />
-                {/* </Link> */}
-              </motion.button>
-            </div>
+                {inquiry.inquiryTitle}
+              </div>
 
+              <div className="mt-2">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() =>
+                    handleIsViewInquiryPopUp(inquiry.inquiryRegistrationId)
+                  }
+                  className="text-green-500 hover:text-green-700"
+                >
+                  <FaEye size={24} />
+                </motion.button>
+              </div>
             </div>
-            // <div
-            //   key={inquiry.inquiryRegistrationId}
-            //   onClick={() => handleInquirySelect(inquiry)}
-            //   className="cursor-pointer p-2 border-b"
-            // >
-            //   {inquiry.inquiryTitle}
-            //   <motion.button
-            //     whileHover={{ scale: 1.1 }}
-            //     whileTap={{ scale: 0.9 }}
-            //   >
-            //     <Link
-            //       to={/partnerinquiry-list/view-partnerinquiry/${inquiry.inquiryRegistrationId}}
-            //       className="text-green-500 hover:text-green-700"
-            //     >
-            //       <FaEye size={24} />
-            //     </Link>
-            //   </motion.button>
-            // </div>
           ))}
         </div>
 
@@ -262,11 +240,13 @@ const handleIsViewInquiryPopUp = (inquiryRegistrationId) => {
         <div className="w-2/3 p-4">
           {selectedInquiry ? (
             <div>
-              <h2 className="font-semibold mb-2">Chat for {selectedInquiry.inquiryTitle}</h2>
+              <h2 className="font-semibold mb-2">
+                Chat for {selectedInquiry.inquiryTitle}
+              </h2>
               <InquiryChat
                 senderId={selectedPersonId}
                 chatPersoneName={selectedPersonName}
-                inquiryId = {selectedInquiry.inquiryRegistrationId}
+                inquiryId={selectedInquiry.inquiryRegistrationId}
               />
             </div>
           ) : (
@@ -275,289 +255,159 @@ const handleIsViewInquiryPopUp = (inquiryRegistrationId) => {
         </div>
       </div>
 
-
-{/* View Inquiry Details Popup */}
-{isViewInquiryPopUp && (
-  <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-50">
-    <div className="bg-white p-3 rounded-lg shadow-lg max-w-[90%] sm:max-w-[90%] md:max-w-[90%] lg:max-w-[90%] xl:max-w-[90%] w-full h-auto max-h-[80vh] overflow-auto relative">
-      
-      {/* Close button at the top-right */}
-      <button
-        onClick={() => setIsViewInquiryPopUp(false)} // This assumes you have a state like this to toggle the popup
-        className="absolute me-3 top-2 right-2 text-5xl text-red-500 hover:text-red-700"
-      >
-        &times; {/* This is the "X" symbol */}
-      </button>
-
-      <section className="m-1 p-4 sm:p-8">
-        <form className="container mb-6">
-          <div className="md:px-2 lg:px-2 px-7">
-            <div className="mt-3">
-              <div
-                id="card-type-tab-preview"
-                role="tabpanel"
-                className="mt-7"
-                aria-labelledby="card-type-tab-item-1"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {[
-                    {
-                      label: "Inquiry Title",
-                      name: "inquiryTitle",
-                      value: formData.inquiryTitle,
-                    },
-                    {
-                      label: "Inquiry Location",
-                      name: "inquiryLocation",
-                      value: formData.inquiryLocation,
-                    },
-                    {
-                      label: "Inquiry Type",
-                      name: "inquiryTypeName",
-                      value: formData.inquiryTypeName,
-                    },
-                    {
-                      label: "Inquiry Source",
-                      name: "inquirySourceName",
-                      value: formData.inquirySourceName,
-                    },
-                    {
-                      label: "Customer Name",
-                      name: "customerName",
-                      value: formData.customerName,
-                    },
-                    {
-                      label: "Customer Contact Info",
-                      name: "customerContactInfo",
-                      value: formData.customerContactInfo,
-                    },
-                    {
-                      label: "Estimated Value",
-                      name: "estimatedValue",
-                      value: formData.estimatedValue,
-                    },
-                    {
-                      label: "Priority Level",
-                      name: "priorityLevelName",
-                      value: formData.priorityLevelName,
-                    },
-                    {
-                      label: "Inquiry Document",
-                      name: "inquiryDocuments",
-                      value: formData.inquiryDocuments,
-                    },
-                    {
-                      label: "Inquiry Description",
-                      name: "inquiryDescription",
-                      value: formData.inquiryDescription,
-                    },
-                    {
-                      label: "Special Notes",
-                      name: "specialNotes",
-                      value: formData.specialNotes,
-                    },
-                    {
-                      label: "Reason For Closure",
-                      name: "reasonForClosure",
-                      value: formData.reasonForClosure,
-                    },
-                    {
-                      label: "Inquiry Status",
-                      name: "inquiryStatusName",
-                      value: formData.inquiryStatusName,
-                    },
-                  ].map((field, idx) => (
-                    <div key={idx} className="w-full px-2">
-                      <label className="font-semibold text-gray-700 me-2">
-                        {field.label}:
-                      </label>
-                      {/* If the field is "inquiryDocuments", make it clickable */}
-                      {field.name === "inquiryDocuments" ? (
-                        <a
-                          href={field.value} // Assuming field.value is the document URL or path
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          Open Document
-                        </a>
-                      ) : (
-                        <span className="text-gray-600">{field.value}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
-        <hr style={{ borderTop: '1px solid #aaa' }} />
-        <div className="md:px-2 lg:px-2 px-7 mt-6">
-          <div className="flex">
-            <div className="text-base me-2 text-l">Inquiry Forwarded:</div>
-            <div className="text-red-500">
-              {inquiryForwadedeData && inquiryForwadedeData.length > 0 ? (
-                inquiryForwadedeData.map((data, index) => (
-                  <div key={index}>{data}</div> // Each item will be rendered in a new line
-                ))
-              ) : (
-                <span>No data available</span> // Fallback if there's no data
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="md:px-2 lg:px-2 px-7">
-          <div className="flex">
-            <div className="text-base me-2 text-l">Inquiry Transferred:</div>
-            <div className="text-red-500">
-              {inquiryTransferdData && inquiryTransferdData.length > 0 ? (
-                inquiryTransferdData.map((data, index) => (
-                  <div key={index}>{data}</div> // Each item will be rendered in a new line
-                ))
-              ) : (
-                <span>No data available</span> // Fallback if there's no data
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
-)}
-
-
-
       {/* View Inquiry Details Popup */}
-            {/* {isViewInquiryPopUp && (
-              <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-50">
-                <div className="bg-white p-5 rounded-lg shadow-lg max-w-full sm:max-w-lg md:max-w-lg lg:max-w-md xl:max-w-lg w-11/12">
-                <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
-        <form className="container">
-          <div className="md:px-2 lg:px-2 px-7">
-            <div className="mt-3">
-              <div
-                id="card-type-tab-preview"
-                role="tabpanel"
-                className="mt-7"
-                aria-labelledby="card-type-tab-item-1"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {[
-                    {
-                      label: "Inquiry Title",
-                      name: "inquiryTitle",
-                      value: formData.inquiryTitle,
-                    },
-                    {
-                      label: "Inquiry Location",
-                      name: "inquiryLocation",
-                      value: formData.inquiryLocation,
-                    },
-                    {
-                      label: "Inquiry Type",
-                      name: "inquiryTypeName",
-                      value: formData.inquiryTypeName,
-                    },
-                    {
-                      label: "Inquiry Source",
-                      name: "inquirySourceName",
-                      value: formData.inquirySourceName,
-                    },
-                    {
-                      label: "Customer Name",
-                      name: "customerName",
-                      value: formData.customerName,
-                    },
-                    {
-                      label: "Customer Contact Info",
-                      name: "customerContactInfo",
-                      value: formData.customerContactInfo,
-                    },
-                    {
-                      label: "Estimated Value",
-                      name: "estimatedValue",
-                      value: formData.estimatedValue,
-                    },
-                    {
-                      label: "Priority Level",
-                      name: "priorityLevelName",
-                      value: formData.priorityLevelName,
-                    },
-                    {
-                      label: "Inquiry Document",
-                      name: "inquiryDocuments",
-                      value: formData.inquiryDocuments,
-                    },
-                    {
-                      label: "Inquiry Description",
-                      name: "inquiryDescription",
-                      value: formData.inquiryDescription,
-                    },
-                    {
-                      label: "Special Notes",
-                      name: "specialNotes",
-                      value: formData.specialNotes,
-                    },
-                    {
-                      label: "Reason For Closure",
-                      name: "reasonForClosure",
-                      value: formData.reasonForClosure,
-                    },
-                    {
-                      label: "Inquiry Status",
-                      name: "inquiryStatusName",
-                      value: formData.inquiryStatusName,
-                    },
-                    // { label: "Key Responsibility", name: "keyResponsibility", value: formData.keyResponsibility },
-                  ].map((field, idx) => (
-                    <div key={idx} className="w-full px-2">
-                      <label className="font-semibold text-gray-700 me-2">
-                        {field.label}:
-                      </label>
-                      <span className="text-gray-600">{field.value}</span>
+      {isViewInquiryPopUp && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-50">
+          <div className="bg-white p-3 rounded-lg shadow-lg max-w-[90%] sm:max-w-[90%] md:max-w-[90%] lg:max-w-[90%] xl:max-w-[90%] w-full h-auto max-h-[80vh] overflow-auto relative">
+            {/* Close button at the top-right */}
+            <button
+              onClick={() => setIsViewInquiryPopUp(false)} // This assumes you have a state like this to toggle the popup
+              className="absolute me-3 top-2 right-2 text-5xl text-red-500 hover:text-red-700"
+            >
+              &times; {/* This is the "X" symbol */}
+            </button>
+
+            <section className="m-1 p-4 sm:p-8">
+              <form className="container mb-6">
+                <div className="md:px-2 lg:px-2 px-7">
+                  <div className="mt-3">
+                    <div
+                      id="card-type-tab-preview"
+                      role="tabpanel"
+                      className="mt-7"
+                      aria-labelledby="card-type-tab-item-1"
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {[
+                          {
+                            label: "Inquiry Title",
+                            name: "inquiryTitle",
+                            value: formData.inquiryTitle,
+                          },
+                          {
+                            label: "Inquiry Location",
+                            name: "inquiryLocation",
+                            value: formData.inquiryLocation,
+                          },
+                          {
+                            label: "Inquiry Type",
+                            name: "inquiryTypeName",
+                            value: formData.inquiryTypeName,
+                          },
+                          {
+                            label: "Inquiry Source",
+                            name: "inquirySourceName",
+                            value: formData.inquirySourceName,
+                          },
+                          {
+                            label: "Customer Name",
+                            name: "customerName",
+                            value: formData.customerName,
+                          },
+                          {
+                            label: "Customer Contact Info",
+                            name: "customerContactInfo",
+                            value: formData.customerContactInfo,
+                          },
+                          {
+                            label: "Estimated Value",
+                            name: "estimatedValue",
+                            value: formData.estimatedValue,
+                          },
+                          {
+                            label: "Priority Level",
+                            name: "priorityLevelName",
+                            value: formData.priorityLevelName,
+                          },
+                          {
+                            label: "Inquiry Document",
+                            name: "inquiryDocuments",
+                            value: formData.inquiryDocuments,
+                          },
+                          {
+                            label: "Inquiry Description",
+                            name: "inquiryDescription",
+                            value: formData.inquiryDescription,
+                          },
+                          {
+                            label: "Special Notes",
+                            name: "specialNotes",
+                            value: formData.specialNotes,
+                          },
+                          {
+                            label: "Reason For Closure",
+                            name: "reasonForClosure",
+                            value: formData.reasonForClosure,
+                          },
+                          {
+                            label: "Inquiry Status",
+                            name: "inquiryStatusName",
+                            value: formData.inquiryStatusName,
+                          },
+                        ].map((field, idx) => (
+                          <div key={idx} className="w-full px-2">
+                            <label className="font-semibold text-gray-700 me-2">
+                              {field.label}:
+                            </label>
+                            {/* If the field is "inquiryDocuments", make it clickable */}
+                            {field.name === "inquiryDocuments" ? (
+                              <a
+                                href={field.value} // Assuming field.value is the document URL or path
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 hover:text-blue-700"
+                              >
+                                Open Document
+                              </a>
+                            ) : (
+                              <span className="text-gray-600">
+                                {field.value}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
+                  </div>
+                </div>
+              </form>
+              <hr style={{ borderTop: "1px solid #aaa" }} />
+              <div className="md:px-2 lg:px-2 px-7 mt-6">
+                <div className="flex">
+                  <div className="text-base me-2 text-l">
+                    Inquiry Forwarded:
+                  </div>
+                  <div className="text-red-500">
+                    {inquiryForwadedeData && inquiryForwadedeData.length > 0 ? (
+                      inquiryForwadedeData.map((data, index) => (
+                        <div key={index}>{data}</div> // Each item will be rendered in a new line
+                      ))
+                    ) : (
+                      <span>No data available</span> // Fallback if there's no data
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </form>
-      </section>
-
-      <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
-        <div className="md:px-2 lg:px-2 px-7">
-          <div className="flex">
-            <div className="test-base me-2 text-l">Inquiry Forwarded:</div>
-            <div className="text-red-500">
-              {inquiryForwadedeData && inquiryForwadedeData.length > 0 ? (
-                inquiryForwadedeData.map((data, index) => (
-                  <div key={index}>{data}</div> // Each item will be rendered in a new line
-                ))
-              ) : (
-                <span>No data available</span> // Fallback if there's no data
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="md:px-2 lg:px-2 px-7">
-          <div className="flex">
-            <div className="test-base me-2 text-l">Inquiry Transferd:</div>
-            <div className="text-red-500">
-              {inquiryTransferdData && inquiryTransferdData.length > 0 ? (
-                inquiryTransferdData.map((data, index) => (
-                  <div key={index}>{data}</div> // Each item will be rendered in a new line
-                ))
-              ) : (
-                <span>No data available</span> // Fallback if there's no data
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
+              <div className="md:px-2 lg:px-2 px-7">
+                <div className="flex">
+                  <div className="text-base me-2 text-l">
+                    Inquiry Transferred:
+                  </div>
+                  <div className="text-red-500">
+                    {inquiryTransferdData && inquiryTransferdData.length > 0 ? (
+                      inquiryTransferdData.map((data, index) => (
+                        <div key={index}>{data}</div> // Each item will be rendered in a new line
+                      ))
+                    ) : (
+                      <span>No data available</span> // Fallback if there's no data
+                    )}
+                  </div>
                 </div>
               </div>
-            )} */}
+            </section>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

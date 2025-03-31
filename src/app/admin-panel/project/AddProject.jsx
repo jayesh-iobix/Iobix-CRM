@@ -200,8 +200,8 @@ const AddProject = () => {
     try {
       const result = await InquiryService.addInquiryByAdmin(formDataToSend);
       if (result.status === 1) {
-        toast.success("Project added successfully!");
         navigate(-1);
+        toast.success("Project added successfully!");
       } else {
         toast.error("Faild to add Project!");
         // console.log(result.data);

@@ -284,45 +284,6 @@ const PartnerInquiryList = () => {
     setTransferPopupVisible(true); // Show the popup
   };
 
-  // const handleTransferSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   // debugger;
-
-  //   const inquiryTransferData = {
-  //     inquiryRegistrationId,
-  //     inquiryForwardedTo,
-  //     inquiryFollowUpDescription
-  //     // taskTransferTo,
-  //   };
-  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-
-  //   try {
-  //     // Call the API to add the task note
-  //     const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryTransferData);
-  //     if (response.status === 1) {
-  //       toast.success("Inquiry Forwarded Successfully."); // Toast on success
-  //       // toast.success(response.message); // Toast on success
-  //       fetchInquiries();
-  //     }
-  //     console.log("task transfer added successfully:", response);
-
-  //     // Optionally, you can update the task state or show a success message here
-  //     setForwardPopupVisible(false); // Close the popup
-  //   } catch (error) {
-  //     console.error(
-  //       "Error adding task note:",
-  //       error.response?.data || error.message
-  //     );
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-  
-  //     // Close the popup after submission
-  //     // setIsPopupVisible(false);
-  // };
-
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;

@@ -55,8 +55,8 @@ const EditLeaveType = () => {
         const response = await LeaveTypeService.updateLeaveTypes(id,leaveTypeData);
         if (response.status === 1) {
           navigate(-1);
-        //   navigate('/master/leave-type-list');
           toast.success("Leave Type Edit successfully"); // Toast on success
+          // navigate('/master/leave-type-list');
         }
         // Reset the form
         setLeaveTypeName('');

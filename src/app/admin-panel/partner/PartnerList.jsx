@@ -47,29 +47,6 @@ const PartnerList = () => {
     setDepartmentFilter(event.target.value);
   };
 
-//   useEffect(() => {
-//     // Apply filters to the partners array
-//     let filtered = partners;
-
-//     // Filter by employee name
-//     if (employeeFilter) {
-//       filtered = filtered.filter((employee) =>
-//         employee.name.toLowerCase().includes(employeeFilter.toLowerCase())
-//       );
-//     }
-
-//     // Filter by department
-//     if (departmentFilter) {
-//       filtered = filtered.filter(
-//         (employee) => employee.departmentName === departmentFilter
-//       );
-//     }
-
-//     setFilteredPartners(filtered); // Update filtered partners based on all filters
-//     setTotalItems(filtered.length); 
-//     setCurrentPage(1); // Reset to the first page when a new filter is applied
-//   }, [employeeFilter, departmentFilter, partners]);
-
 
   const deletePartner = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
@@ -98,23 +75,7 @@ const PartnerList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
-
-//   const handleDownloadReport = async () => {
-//     setIsSubmitting(true);
-//     try {
-//       // Wait for the report download to complete
-//       await ReportService.downloadEmployeeReport();
-//       // Optionally, add a success message or additional logic after the download
-//       toast.success("Report downloaded successfully!");
-//     } catch (error) {
-//       console.error("Error downloading report:", error);
-//       toast.error("Failed to download report.");
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   }
   
-
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -132,16 +93,6 @@ const PartnerList = () => {
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Partners List</h1>
         <div className="flex">
-        {/* <motion.button 
-          whileHover={{ scale: 1.1 }} 
-          whileTap={{ scale: 0.9 }}
-          onClick={handleDownloadReport }
-          className ={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
-            ${isSubmitting ? "opacity-50 cursor-not-allowed" : "" }`}
-          disabled={isSubmitting}
-          >
-            {isSubmitting ? "Downloading..." : "Download Report"}
-        </motion.button> */}
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link
             to="/partner-list/add-partner"
@@ -221,18 +172,6 @@ const PartnerList = () => {
                       </Link>
                     </motion.button>
 
-                    {/* <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <Link
-                        className="text-blue-500 hover:text-blue-700"
-                        to={`/employee-list/edit-employee/${item.partnerRegistrationId}`}
-                      >
-                        <FaEdit size={24} />
-                      </Link>
-                    </motion.button> */}
-
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
@@ -246,7 +185,6 @@ const PartnerList = () => {
               </motion.tr>
             ))
           )}
-          {/* </motion.tbody> */}
         </table>
       </div>
 

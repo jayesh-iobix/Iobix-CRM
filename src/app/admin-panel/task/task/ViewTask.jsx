@@ -60,6 +60,17 @@ const ViewTask = () => {
                 whileTap={{ scale: 0.9 }}
               >
                 <Link
+                  to={`/task/create-subtask/${id}`}
+                  className="bg-blue-600 hover:bg-blue-700 text-white flex gap-2 mx-2 py-2 px-4 rounded hover:no-underline"
+                >
+                  Add Sub Task <span className="mt-[2px]"> <FaPlus size={14} /></span>
+                </Link>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Link
                   to={`/task/edit-task/${id}`}
                   className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 me-2 rounded hover:no-underline"
                 >
@@ -104,6 +115,16 @@ const ViewTask = () => {
             </div>
             <div className="flex justify-between">
               <p>
+                <strong className="mr-1">Start Date:</strong>{" "}
+                {formatDate(taskDetails.taskStartingDate)}
+              </p>
+              <p>
+                <strong className="mr-1">Expected Completion:</strong>{" "}
+                {formatDate(taskDetails.taskExpectedCompletionDate)}
+              </p>
+            </div>
+            <div className="flex justify-between">
+              <p>
                 <strong className="mr-1">Priority:</strong>{" "}
                 {taskDetails.taskPriority}
               </p>
@@ -114,14 +135,14 @@ const ViewTask = () => {
             </div>
             <div className="flex justify-between">
               <p>
-                <strong className="mr-1">Start Date:</strong>{" "}
-                {formatDate(taskDetails.taskStartingDate)}
+                <strong className="mr-1">Actual Starting Date:</strong>{" "}
+                {formatDate(taskDetails.actualStartingDate)}
               </p>
               <p>
-                <strong className="mr-1">Expected Completion:</strong>{" "}
-                {formatDate(taskDetails.taskExpectedCompletionDate)}
+                <strong className="mr-1">Task Completion Date:</strong>{" "}
+                {formatDate(taskDetails.taskCompletionDate)}
               </p>
-            </div>
+            </div>          
             <div className="flex justify-between">
               <p>
                 <strong className="mr-1">Status:</strong>{" "}

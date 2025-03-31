@@ -70,19 +70,6 @@ const EmployeeList = () => {
     setCurrentPage(1); // Reset to the first page when a new filter is applied
   }, [employeeFilter, departmentFilter, employees]);
 
-  // const deleteEmployee = async (employeeId) => {
-  //   try {
-  //     const response = await EmployeeService.deleteEmployee(employeeId);
-  //     if (response.status === 1) {
-  //       setFilteredEmployees((prevEmployees) =>
-  //         prevEmployees.filter((employee) => employee.employeeId !== employeeId)
-  //       );
-  //       alert(response.message);
-  //     }
-  //   } catch (error) {
-  //     alert("Failed to delete employee");
-  //   }
-  // };
 
   const deleteEmployee = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
@@ -233,14 +220,6 @@ const EmployeeList = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: item * 0.1 }}
               >
-                {/* <motion.tr
-                  key={item.employeeId}
-                  className="border-b hover:bg-gray-50"
-                  initial={{ opacity: 0, y: 20 }}
-				          animate={{ opacity: 1, y: 0 }}
-				          transition={{ duration: 0.5, delay: item * 0.1 }}
-                  exit={{ opacity: 0 }}
-                > */}
                 <td className="py-3 px-4 text-gray-700">{item.name}</td>
                 <td className="py-3 px-4 text-gray-700">{item.employeeCode}</td>
                 <td className="py-3 px-4 text-gray-700">{item.email}</td>
@@ -265,18 +244,6 @@ const EmployeeList = () => {
                       </Link>
                     </motion.button>
 
-                    {/* <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <Link
-                        className="text-blue-500 hover:text-blue-700"
-                        to={`/employee-list/edit-employee/${item.employeeId}`}
-                      >
-                        <FaEdit size={24} />
-                      </Link>
-                    </motion.button> */}
-
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
@@ -290,7 +257,6 @@ const EmployeeList = () => {
               </motion.tr>
             ))
           )}
-          {/* </motion.tbody> */}
         </table>
       </div>
 

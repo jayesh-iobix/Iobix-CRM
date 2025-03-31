@@ -70,22 +70,19 @@ const EditDesignation = () => {
       isActive
     };
 
-    console.log("Submitted Data:", designationData);
+    // console.log("Submitted Data:", designationData);
 
     if (validateForm()) {
       try {
-        // setAdminId("3FA85F64-5717-4562-B3FC-2C963F66AFA6");
         const response = await DesignationService.updateDesignation(
           id,
           designationData
         );
         if (response.status === 1) {
-          navigate("/master/designation-list");
+          navigate(-1);
           toast.success(response.message); // Toast on success
+          // navigate("/master/designation-list");
         }
-        // Reset the form
-        // setDesignationName('');
-        // setDepartmentId('');
       } catch (error) {
         console.error("Error editing designation:", error);
         alert("Failed to edit designation.");
@@ -190,16 +187,6 @@ const EditDesignation = () => {
             >
                 {isSubmitting ? "Submitting..." : "Update"}
               </motion.button>
-            {/* <button
-                type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300
-                  ${
-                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Update"}
-              </button> */}
             </div>
           </div>
         </form>

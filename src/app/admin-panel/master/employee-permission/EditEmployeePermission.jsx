@@ -111,14 +111,6 @@ const EditEmployeePermission = () => {
             >
                 {isSubmitting ? "Submitting..." : "Update"}
               </motion.button>
-              {/* <button
-                type="submit"
-                className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300
-                  ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Update"}
-              </button> */}
             </div>
           </div>
         </form>

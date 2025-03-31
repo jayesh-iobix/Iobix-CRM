@@ -44,8 +44,9 @@ const EditInquirySource = () => {
       try {
         const response = await InquirySourceService.updateInquirySource(id, inquirySourceData);
         if (response.status === 1) {
-          navigate('/master/inquirySource-list');
+          navigate(-1);
           toast.success(response.message); // Toast on success
+          // navigate('/master/inquirySource-list');
         }
         setInquirySourceName('');
       } catch (error) {

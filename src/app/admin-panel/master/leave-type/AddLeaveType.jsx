@@ -42,9 +42,10 @@ const AddLeaveType = () => {
       try {
         const response = await LeaveTypeService.addLeaveType(leaveTypeData);
         if (response.status === 1) {
-          navigate('/master/leave-type-list');
-          // console.log('Leave Type added successfully', response);
+          navigate(-1);
           toast.success(response.message); // Toast on success
+          // navigate('/master/leave-type-list');
+          // console.log('Leave Type added successfully', response);
         }
         // Reset the form
         setLeaveTypeName('');

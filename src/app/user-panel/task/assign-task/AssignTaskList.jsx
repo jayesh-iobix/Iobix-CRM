@@ -25,6 +25,7 @@ import { motion } from "framer-motion"; // Import framer-motion
 
 
 const AssignTaskList = () => {
+  const userId = sessionStorage.getItem("LoginUserId")
   const [tasks, setTasks] = useState([]);
   const [taskAllocationId, setTaskAllocationId] = useState("");
   const [subTaskAllocationId, setSubTaskAllocationId] = useState("");
@@ -119,7 +120,6 @@ const AssignTaskList = () => {
       setDepartments(departmentResult.data); // Set the 'data' array to the state\
       // console.log(departmentId);
       if (departmentId) {
-        debugger;
         const employeeResult = await EmployeeService.getEmployeeByDepartment(
           departmentId
         );
@@ -152,8 +152,6 @@ const AssignTaskList = () => {
 
   const deleteTask = async (event) => {
     event.preventDefault(); // Prevent the default action (page reload)
-    // debugger;
-
     if (deleteId) {
       try {
         const response = await TaskService.deleteTask(deleteId);
@@ -190,35 +188,6 @@ const AssignTaskList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
-
-  // const deleteTask = async (taskId) => {
-  //   try {
-  //     const response = await TaskService.deleteTask(taskId);
-  //     if (response.status === 1) {
-  //       setFilteredTasks((prevTasks) =>
-  //         prevTasks.filter((task) => task.taskAllocationId !== taskId)
-  //       );
-  //       alert(response.message);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting task:", error);
-  //     alert("Failed to delete task");
-  //   }
-  // };
-
-  // const deleteSubTask = async (subTaskId,taskAllocationId) => {
-  //   try {
-  //     const response = await SubTaskService.deleteSubTask(subTaskId);
-  //     if (response.status === 1) {
-  //       fetchsubtaskdata(taskAllocationId);
-  //       alert(response.message);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting subtask:", error);
-  //     alert("Failed to delete subtask");
-  //   }
-  // };
-
 
   const toggleRow = async (taskAllocationId) => {
     const newExpandedRows = { ...expandedRows };
@@ -426,7 +395,6 @@ const AssignTaskList = () => {
   };
 
   const getDropdownPositionForSubTask = (subTaskAllocationId, isLastRow) => {
-    debugger;
     const button = buttonRefs.current[subTaskAllocationId]; // Get reference to the button
     if (!button) return { top: 0, left: 0 }; // Fallback if the button ref is not available
 
@@ -559,16 +527,17 @@ const AssignTaskList = () => {
       taskTransferTo,
     };
 
-    console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
+    // console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
 
     try {
       // Call the API to add the task note
       const response = await TaskService.transferTask(taskTransferData);
       if (response.status === 1) {
-        toast.success(response.message); // Toast on success
+        toast.success("Transfered Sub Task Successfully"); // Toast on success
+        // toast.success(response.message); // Toast on success
         fetchTasks();
       }
-      console.log("task transfer added successfully:", response);
+      // console.log("task transfer added successfully:", response);
 
       // Optionally, you can update the task state or show a success message here
       setTaskTransferIsPopupVisible(false); // Close the popup
@@ -594,19 +563,20 @@ const AssignTaskList = () => {
       taskTransferTo,
     };
 
-    console.log("Submitting task transfer data:", transferSubTask); // Log the data before submitting
+    // console.log("Submitting task transfer data:", transferSubTask); // Log the data before submitting
 
     try {
       // Call the API to add the task note
       const response = await SubTaskService.transferSubTask(transferSubTask);
       if (response.status === 1) {
-        toast.success(response.message); // Toast on success
+        toast.success("Transfered Sub Task Successfully"); // Toast on success
+        // toast.success(response.message); // Toast on success
         fetchTasks();
       }
       // console.log("Transfer Sub Task Successfully:", response);
 
       // Optionally, you can update the task state or show a success message here
-      setSubStartDateIsPopupVisible(false); // Close the popup
+      setSubTaskTransferIsPopupVisible(false); // Close the popup
     } catch (error) {
       console.error(
         "Error tranfering sub task",
@@ -824,7 +794,7 @@ const AssignTaskList = () => {
                               <FaEye size={24} />
                             </Link>
                           </motion.button>
-                          {/* <button> */}
+
                           {/* <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
@@ -838,7 +808,6 @@ const AssignTaskList = () => {
                             </motion.button> */}
                           {/* </button> */}
 
-                          {/* <button> */}
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -851,9 +820,7 @@ const AssignTaskList = () => {
                               <IoTime size={24} />
                             </Link>
                           </motion.button>
-                          {/* </button> */}
 
-                          {/* <button> */}
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -864,8 +831,7 @@ const AssignTaskList = () => {
                           >
                             <FaTrash size={22} />
                           </motion.button>
-                          {/* </button> */}
-                          {/* <button> */}
+
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -879,7 +845,7 @@ const AssignTaskList = () => {
                           >
                             <FaEllipsisV size={24} />
                           </motion.button>
-                          {/* </button> */}
+
                           {/* Render dropdown above or below based on space */}
                           {openDropdown === item.taskAllocationId && (
                             <div
@@ -909,6 +875,7 @@ const AssignTaskList = () => {
                                     Daily Note
                                   </span>
                                 </li>
+                                {item.taskAssignBy === userId && (
                                 <li>
                                   <span
                                     onClick={() => handleTaskTransfer(item)}
@@ -917,6 +884,7 @@ const AssignTaskList = () => {
                                     Task Transfer
                                   </span>
                                 </li>
+                                )}
                               </ul>
                               {startDateIsPopupVisible && (
                                 <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
@@ -1645,147 +1613,3 @@ const AssignTaskList = () => {
 };
 
 export default AssignTaskList;
-
-
-
-
-
-// {/* Confirmation Popup */}
-// {isPopupOpen && (
-//   <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
-//     <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
-//       <div className="flex justify-center mb-4">
-//         <div className="bg-red-100 p-5 rounded-full">
-//           <FaTrashAlt className="text-red-600 text-4xl" />
-//         </div>
-//       </div>
-//       <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-//         Are you sure you want to delete ?
-//       </h3>
-//       <div className="flex justify-end gap-4">
-//         <motion.button
-//           whileHover={{ scale: 1.1 }}
-//           whileTap={{ scale: 0.9 }}
-//           onClick={(event) => handlePopupClose(event)}
-//           className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200"
-//         >
-//           No
-//         </motion.button>
-//         <motion.button
-//           whileHover={{ scale: 1.1 }}
-//           whileTap={{ scale: 0.9 }}
-//           onClick={(event) => deleteTask(event)}
-//           className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200"
-//         >
-//           Yes
-//         </motion.button>
-//       </div>
-//     </div>
-//   </div>
-// )}
-
-// {/* Pagination Section */}
-// <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
-//   <div className="flex flex-1 justify-between sm:hidden">
-//     <motion.button
-//       onClick={() => handlePageChange(currentPage - 1)}
-//       disabled={currentPage === 1}
-//       className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-//       whileHover={{ scale: 1.1 }}
-//       whileTap={{ scale: 0.9 }}
-//     >
-//       Previous
-//     </motion.button>
-//     <motion.button
-//       onClick={() => handlePageChange(currentPage + 1)}
-//       disabled={currentPage === totalPages}
-//       className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-//       whileHover={{ scale: 1.1 }}
-//       whileTap={{ scale: 0.9 }}
-//     >
-//       Next
-//     </motion.button>
-//   </div>
-//   <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-//     <div>
-//       <p className="text-sm text-gray-700">
-//         Showing
-//         <span className="font-semibold mx-1">{indexOfFirstItem + 1}</span>
-//         to
-//         <span className="font-semibold mx-1">
-//           {Math.min(indexOfLastItem, totalItems)}
-//         </span>
-//         of
-//         <span className="font-semibold mx-1">{totalItems}</span>
-//         results
-//       </p>
-//     </div>
-//     <div>
-//       <nav
-//         className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-//         aria-label="Pagination"
-//       >
-//         <motion.button
-//           onClick={() => handlePageChange(currentPage - 1)}
-//           disabled={currentPage === 1}
-//           className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-//           whileHover={{ scale: 1.1 }}
-//           whileTap={{ scale: 0.9 }}
-//         >
-//           <span className="sr-only">Previous</span>
-//           <svg
-//             className="size-5"
-//             viewBox="0 0 20 20"
-//             fill="currentColor"
-//             aria-hidden="true"
-//           >
-//             <path
-//               fillRule="evenodd"
-//               d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
-//               clipRule="evenodd"
-//             />
-//           </svg>
-//         </motion.button>
-
-//         {/* Pagination Buttons */}
-//         {[...Array(totalPages)].map((_, index) => (
-//           <motion.button
-//             key={index}
-//             onClick={() => handlePageChange(index + 1)}
-//             className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
-//               currentPage === index + 1
-//                 ? "bg-indigo-600"
-//                 : "bg-gray-200 text-gray-700"
-//             }`}
-//             whileHover={{ scale: 1.1 }}
-//             whileTap={{ scale: 0.9 }}
-//           >
-//             {index + 1}
-//           </motion.button>
-//         ))}
-
-//         <motion.button
-//           onClick={() => handlePageChange(currentPage + 1)}
-//           disabled={currentPage === totalPages}
-//           className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-//           whileHover={{ scale: 1.1 }}
-//           whileTap={{ scale: 0.9 }}
-//         >
-//           <span className="sr-only">Next</span>
-//           <svg
-//             className="size-5"
-//             viewBox="0 0 20 20"
-//             fill="currentColor"
-//             aria-hidden="true"
-//           >
-//             <path
-//               fillRule="evenodd"
-//               d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
-//               clipRule="evenodd"
-//             />
-//           </svg>
-//         </motion.button>
-//       </nav>
-//     </div>
-//   </div>
-// </div>

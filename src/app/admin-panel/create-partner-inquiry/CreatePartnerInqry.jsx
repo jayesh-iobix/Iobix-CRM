@@ -273,19 +273,6 @@ const CreatePartnerInqry = () => {
               error={errors.inquiryDocuments}
               className="md:w-1/3"
             />
-
-            {/* <SelectField
-              label="Inquiry Status"
-              value={formData.inquiryStatus}
-              onChange={handleInputChange}
-              name="inquiryStatus"
-              options={[
-                { id: '1', name: 'Open' },
-                { id: '2', name: 'Close' },
-                { id: '3', name: 'Pending' },
-              ]}
-              error={errors.inquiryStatus}
-            /> */}
             <InputField
               label="Inquiry Description"
               value={formData.inquiryDescription}

@@ -32,23 +32,6 @@ const DesignationList = () => {
     fetchDesignations();
   }, []);
 
-  // const deleteDesignation = async (designationId) => {
-  //   try {
-  //     const response = await DesignationService.deleteDesignation(designationId);
-  //     if (response.status === 1) {
-  //       setFilteredDesignation((prevDesignation) =>
-  //         prevDesignation.filter(
-  //           (designation) => designation.designationId !== designationId
-  //         )
-  //       );
-  //       toast.error(response.message); // Toast on success
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting designation:", error);
-  //     alert("Failed to delete designation");
-  //   }
-  // };
-
   const deleteDesignation = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {

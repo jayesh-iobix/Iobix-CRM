@@ -9,10 +9,9 @@ import { getToken } from "firebase/messaging";
 import { EmployeeService } from "../../service/EmployeeService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
-import { EmployeeLeaveTypeService } from "../../service/EmployeeLeaveTypeService";
 import { InquirySourceService } from "../../service/InquirySourceService";
-import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { PartnerService } from "../../service/PartnerService";
+import { DepartmentService } from "../../service/DepartmentService";
 
 
 const AddPartner = () => {
@@ -33,6 +32,8 @@ const AddPartner = () => {
     companyWebsite : "",
   });
 
+  const [departmentId, setDepartmentId] = useState(""); // State for Department ID
+  const [taskAssignTo, setTaskAssignTo] = useState("");
   const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
   const [inquirySourceList, setInquirySourceList] = useState([]);
   
@@ -47,6 +48,7 @@ const AddPartner = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const navigate = useNavigate();
 
+  const [employeeAssignTo, setEmployeeAssignTo] = useState(false);
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
 
@@ -86,6 +88,18 @@ const AddPartner = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+
+      //#region Fetch Employee By Department
+       const departmentResult = await DepartmentService.getDepartments();
+       const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
+       setDepartmentList(activeDepartments); 
+       if (departmentId) {
+         // Fetch Employee from department
+         const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
+         setEmployeeList(employeeResult.data);
+       }
+      //#endregion Fetch Employee By Department
+
       //#region Fetch Inqiry Source
       const inquirySourceResult = await InquirySourceService.getInquirySource();
       const activeInquirySource = inquirySourceResult.data.filter(inquirySource => inquirySource.isActive === true);
@@ -109,7 +123,7 @@ const AddPartner = () => {
       //#endregion Fetch Country, State, and City Source
     };
     fetchData();
-    }, [formData.countryId, formData.stateId])
+  }, [formData.countryId, formData.stateId, departmentId])
 
   const validateForm = () => {
     const newErrors = {};
@@ -163,12 +177,12 @@ const AddPartner = () => {
         }
         const response = await PartnerService.addPartner(companyData); // Call the service
         if (response.status === 1) {
-          toast.success("Registration successfully");
           navigate(-1);
+          toast.success("Registration successfully");
         //   toast.success(response.message);
         //   navigate("/clientcompany-list");
         }
-        if (response.status === 0) {
+        if (response.status === 2) {
           toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
         }
 
@@ -243,6 +257,34 @@ const AddPartner = () => {
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-4 dark:bg-dark">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
+            {/* Select Employee Assign To */}
+            <div className="w-full mb-4 px-3">
+              <label className="block text-base font-medium">Employee Assign To Partner ?</label>
+              <div className="flex items-center gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="employeeAssignTo"
+                    value="true"
+                    checked={employeeAssignTo === true}
+                    onChange={() => setEmployeeAssignTo(true)}
+                    className="me-1"
+                  />
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="employeeAssignTo"
+                    value="false"
+                    checked={employeeAssignTo === false}
+                    onChange={() => setEmployeeAssignTo(false)}
+                    className="me-1"
+                  />
+                  No
+                </label>
+              </div>
+            </div>
             {[
               {
                 label: "Company Name",
@@ -334,41 +376,71 @@ const AddPartner = () => {
               </div>
             ))}
 
-            {/* Department Select */}
-            {/* <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
-              <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
-                Department
-              </label>
-              <div className="relative z-20">
-                <select
-                  value={formData.departmentId}
-                  onChange={handleChange}
-                  name="departmentId"
-                  className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
-                >
-                  <option value="" className="text-gray-400">
-                    --Select Department--
-                  </option>
-                  {departmentList.length > 0 ? (
-                    departmentList.map((departmentItem) => (
-                      <option
-                        key={departmentItem.departmentId}
-                        value={departmentItem.departmentId}
-                      >
-                        {departmentItem.departmentName}
+            {employeeAssignTo && (
+              <>
+                {/* Department Select */}
+                <div className="w-full mb-4 px-3 md:w-1/3 lg:w-1/3">
+                  <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
+                    Department
+                  </label>
+                  <div className="relative z-20">
+                    <select
+                      value={departmentId}
+                      onChange={(e) => setDepartmentId(e.target.value)}
+                      name="departmentId"
+                      className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+                    >
+                      <option value="" className="text-gray-400">
+                        --Select Department--
                       </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No Department available
-                    </option>
+                      {departmentList.length > 0 ? (
+                        departmentList.map((departmentItem) => (
+                          <option
+                            key={departmentItem.departmentId}
+                            value={departmentItem.departmentId}
+                          >
+                            {departmentItem.departmentName}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="" disabled>
+                          No Department available
+                        </option>
+                      )}
+                    </select>
+                  </div>
+                  {errors.department && (
+                    <p className="text-red-500 text-xs">{errors.department}</p>
                   )}
-                </select>
-              </div>
-              {errors.department && (
-                <p className="text-red-500 text-xs">{errors.department}</p>
-              )}
-            </div> */}
+                </div>
+            
+                {/* Assign To */}
+                <div className="w-full mb-2 px-3 md:w-1/3">
+                  <label className="block text-base font-medium">Assign To</label>
+                  <select
+                    value={taskAssignTo}
+                    onChange={(e) => setTaskAssignTo(e.target.value)}
+                    className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                  >
+                    <option value="">--Select Employee--</option>
+                    {employeeList.length > 0 ? (
+                      employeeList.map((employee) => (
+                        <option key={employee.employeeId} value={employee.employeeId}>
+                          {employee.firstName + ' ' + employee.lastName}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No Employees available
+                      </option>
+                    )}
+                  </select>
+                  {errors.taskAssignTo && (
+                    <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>
+                  )}
+                </div>
+              </>
+            )}
 
             {/* Country Select */}
             <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">

@@ -311,24 +311,6 @@ const CompanyRegistration = () => {
                       <p className="text-red-500 text-xs">{errors.companyLinkedin}</p>
                     )}
                   </div>
-
-                  {/* Company Linkedin */}
-                  {/* <div className="w-full flex flex-col gap-1">
-                    <label htmlFor="company linkedin" className="text-slate-700 m-2">
-                      Company Linkedin
-                    </label>
-                    <input
-                      type="url"
-                      value={formData.companyLinkedin}
-                      placeholder="Enter Company Linkedin"
-                      onChange={handleChange}
-                      className="bg-transparent px-3 py-2.5 2xl:py-3 border border-gray-300 placeholder-gray-400 text-gray-900 outline-none text-base focus:ring-2 ring-blue-300 w-full rounded-full"
-                    />
-                    {errors.companyLinkedin && (
-                      <p className="text-red-500 text-xs">{errors.companyLinkedin}</p>
-                    )}
-                  </div> */}
-
                 </div>
 
                 {/* Phone Number and WhatsApp Number (two columns) */}
@@ -390,44 +372,6 @@ const CompanyRegistration = () => {
                     <p className="text-red-500 text-xs">{errors.contactPersonLinkedin}</p>
                   )}
                   </div>
-
-                  {/* Inquiry Source Dropdown */}
-                  {/* <div className="w-full flex flex-col gap-1">
-                    <label
-                      htmlFor="inquirySource"
-                      className="text-slate-700 m-2"
-                    >
-                      Inquiry Source
-                    </label>
-                    <select
-                      value={inquirySource}
-                      onChange={(e) => setInquirySource(e.target.value)}
-                      className="bg-transparent px-3 py-2.5 2xl:py-3 border border-gray-300 placeholder-gray-400 text-gray-900 outline-none text-base focus:ring-2 ring-blue-300 w-full rounded-full"
-                    >
-                      <option className="text-grey" value="">
-                        --Select Inquiry Source--
-                      </option>
-                      {inquirySourceList.length > 0 ? (
-                        inquirySourceList.map((inquirySourceItem) => (
-                          <option
-                            key={inquirySourceItem.inquirySourceId}
-                            value={inquirySourceItem.inquirySourceId}
-                          >
-                            {inquirySourceItem.inquirySourceName}
-                          </option>
-                        ))
-                      ) : (
-                        <option value="" disabled>
-                          No Inuiry Source available
-                        </option>
-                      )}
-                    </select>
-                    {errors.inquirySource && (
-                      <p className="text-red-500 text-xs">
-                        {errors.inquirySource}
-                      </p>
-                    )}
-                  </div>   */}
 
                   {/* Country */}
                   <div className="w-full flex flex-col gap-1">

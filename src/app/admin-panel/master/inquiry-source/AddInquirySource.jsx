@@ -41,8 +41,9 @@ const AddInquirySource = () => {
         try {
           const response = await InquirySourceService.addInquirySource(inquirySourceData);
           if (response.status === 1) {
-            navigate('/master/inquirysource-list');
+            navigate(-1);
             toast.success(response.message); // Toast on success
+            // navigate('/master/inquirysource-list');
           }
           // Reset the form
           setInquirySourceName ('');

@@ -120,4 +120,15 @@ export const SubTaskService = {
       }
     },
 
+    // Method to transfer a subtask
+    transferSubTask: async (transferSubTaskData) => {
+      try {
+        const response = await httpClient.post(`${api}/SubTaskTransfer`, transferSubTaskData);
+        return response.data;
+      } catch (error) {
+        console.error('Failed to transfer subtask:', error);
+        throw error;
+      }
+    },
+
 };
