@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquirySourceService } from "../../service/InquirySourceService";
 import { VendorService } from "../../service/VendorService";
+import { DepartmentService } from "../../service/DepartmentService";
+import { EmployeeService } from "../../service/EmployeeService";
 
 
 const AddVendor = () => {
@@ -28,8 +30,10 @@ const AddVendor = () => {
     cityId: "",
     whatsAppNumber: "",
     companyWebsite : "",
+    relationalManagerId : "",
   });
 
+  const [departmentId, setDepartmentId] = useState(""); // State for Department ID
   const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
   const [inquirySourceList, setInquirySourceList] = useState([]);
   
@@ -38,8 +42,11 @@ const AddVendor = () => {
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
+  const [employeeList, setEmployeeList] = useState([]);
+  const [departmentList, setDepartmentList] = useState([]);
   const navigate = useNavigate();
 
+  const [employeeAssignTo, setEmployeeAssignTo] = useState(false);
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
 
@@ -79,6 +86,18 @@ const AddVendor = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+
+      //#region Fetch Employee By Department
+       const departmentResult = await DepartmentService.getDepartments();
+       const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
+       setDepartmentList(activeDepartments); 
+       if (departmentId) {
+         // Fetch Employee from department
+         const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
+         setEmployeeList(employeeResult.data);
+       }
+      //#endregion Fetch Employee By Department
+
       //#region Fetch Inqiry Source
       const inquirySourceResult = await InquirySourceService.getInquirySource();
       const activeInquirySource = inquirySourceResult.data.filter(inquirySource => inquirySource.isActive === true);
@@ -102,7 +121,7 @@ const AddVendor = () => {
       //#endregion Fetch Country, State, and City Source
     };
     fetchData();
-    }, [formData.countryId, formData.stateId])
+    }, [formData.countryId, formData.stateId, departmentId])
 
   const validateForm = () => {
     const newErrors = {};
@@ -180,6 +199,7 @@ const AddVendor = () => {
           cityId: "",
           whatsAppNumber: "",
           companyWebsite : "",
+          relationalManagerId : "",
         });
         setErrors({});
       } catch (error) {
@@ -236,6 +256,93 @@ const AddVendor = () => {
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-4 dark:bg-dark">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
+            {/* Select Employee Assign To */}
+            <div className="w-full mb-4 px-3">
+              <label className="block text-base font-medium">Relational Manager Assign To Vendor ?</label>
+              <div className="flex items-center gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="employeeAssignTo"
+                    value="true"
+                    checked={employeeAssignTo === true}
+                    onChange={() => setEmployeeAssignTo(true)}
+                    className="me-1"
+                  />
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="employeeAssignTo"
+                    value="false"
+                    checked={employeeAssignTo === false}
+                    onChange={() => setEmployeeAssignTo(false)}
+                    className="me-1"
+                  />
+                  No
+                </label>
+              </div>
+            </div>
+            {employeeAssignTo && (
+              <>
+                {/* Department Select */}
+                <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
+                  <label className="mb-2 block text-base font-medium">
+                    Department
+                  </label>
+                    <select
+                      value={departmentId}
+                      onChange={(e) => setDepartmentId(e.target.value)}
+                      name="departmentId"
+                      className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
+                    >
+                      <option value="" className="text-gray-400">
+                        --Select Department--
+                      </option>
+                      {departmentList.length > 0 ? (
+                        departmentList.map((departmentItem) => (
+                          <option
+                            key={departmentItem.departmentId}
+                            value={departmentItem.departmentId}
+                          >
+                            {departmentItem.departmentName}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="" disabled>
+                          No Department available
+                        </option>
+                      )}
+                    </select>
+                  </div>
+            
+                {/* Relational Manager */}
+                <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
+                  <label className="mb-2 block text-base font-medium">Assign To</label>
+                  <select
+                    value={formData.relationalManagerId}
+                    onChange={handleChange}
+                    name="relationalManagerId"
+                    className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition" 
+                  >
+                    <option value="">--Select Employee--</option>
+                    {employeeList.length > 0 ? (
+                      employeeList.map((employee) => (
+                        <option key={employee.employeeId} value={employee.employeeId}>
+                          {employee.firstName + ' ' + employee.lastName}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No Employees available
+                      </option>
+                    )}
+                  </select>
+                </div>
+              </>
+            )}
+
             {[
               {
                 label: "Company Name",
@@ -321,16 +428,18 @@ const AddVendor = () => {
               </div>
             ))}
 
+            
+
             {/* Country Select */}
             <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
-              <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
+              <label className="mb-2 block text-base font-medium">
                 Country
               </label>
               <select
                 value={formData.countryId}
                 onChange={handleChange}
                 name="countryId"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select Country--
@@ -361,7 +470,7 @@ const AddVendor = () => {
                 value={formData.stateId}
                 onChange={handleChange}
                 name="stateId"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select State--
@@ -392,7 +501,7 @@ const AddVendor = () => {
                 value={formData.cityId}
                 onChange={handleChange}
                 name="cityId"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select City--
@@ -415,7 +524,7 @@ const AddVendor = () => {
             </div>
 
             {/* Address Input and KeyResponsibility Input */}
-            <div className="w-full mb-2 px-3">
+            <div className="w-full mb-2">
               {/* Address Input */}
               <div className="w-full mb-2 px-3">
                 <label className="mb-2 block text-base font-medium text-dark dark:text-white">

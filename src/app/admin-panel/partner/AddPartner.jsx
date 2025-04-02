@@ -30,22 +30,23 @@ const AddPartner = () => {
     cityId: "",
     whatsAppNumber: "",
     companyWebsite : "",
+    departmentId : "",
+    relationalManagerId : "",
   });
 
-  const [departmentId, setDepartmentId] = useState(""); // State for Department ID
-  const [taskAssignTo, setTaskAssignTo] = useState("");
+  // const [departmentId, setDepartmentId] = useState(""); // State for Department ID
   const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
   const [inquirySourceList, setInquirySourceList] = useState([]);
   
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [departmentList, setDepartmentList] = useState([]);
   const [employeeLeaveTypeList, setEmployeeLeaveTypeList] = useState([]);
   const [designationList, setDesignationList] = useState([]);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
+  const [departmentList, setDepartmentList] = useState([]);
   const navigate = useNavigate();
 
   const [employeeAssignTo, setEmployeeAssignTo] = useState(false);
@@ -93,9 +94,9 @@ const AddPartner = () => {
        const departmentResult = await DepartmentService.getDepartments();
        const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
        setDepartmentList(activeDepartments); 
-       if (departmentId) {
+       if (formData.departmentId) {
          // Fetch Employee from department
-         const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
+         const employeeResult = await EmployeeService.getEmployeeByDepartment(formData.departmentId);
          setEmployeeList(employeeResult.data);
        }
       //#endregion Fetch Employee By Department
@@ -123,7 +124,7 @@ const AddPartner = () => {
       //#endregion Fetch Country, State, and City Source
     };
     fetchData();
-  }, [formData.countryId, formData.stateId, departmentId])
+  }, [formData.countryId, formData.stateId, formData.departmentId])
 
   const validateForm = () => {
     const newErrors = {};
@@ -145,7 +146,6 @@ const AddPartner = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -188,6 +188,8 @@ const AddPartner = () => {
 
         // Reset the form after successful submission
         setFormData({
+          departmentId : "",
+          relationalManagerId : "",
           companyName: "",
           companyRegistrationNumber : "",
           companyGSTNumber : "",
@@ -259,7 +261,9 @@ const AddPartner = () => {
           <div className="-mx-4 px-10 mt- flex flex-wrap">
             {/* Select Employee Assign To */}
             <div className="w-full mb-4 px-3">
-              <label className="block text-base font-medium">Employee Assign To Partner ?</label>
+              <label className="block text-base font-medium">
+                Relational Manager Assign To Partner ?
+              </label>
               <div className="flex items-center gap-4">
                 <label>
                   <input
@@ -285,6 +289,71 @@ const AddPartner = () => {
                 </label>
               </div>
             </div>
+            {employeeAssignTo && (
+              <>
+                {/* Department Select */}
+                <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
+                  <label className="mb-2 block text-base font-medium">
+                    Department
+                  </label>
+                  <select
+                    value={formData.departmentId}
+                    onChange={handleChange}
+                    // onChange={(e) => setDepartmentId(e.target.value)}
+                    name="departmentId"
+                    className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
+                  >
+                    <option value="" className="text-gray-400">
+                      --Select Department--
+                    </option>
+                    {departmentList.length > 0 ? (
+                      departmentList.map((departmentItem) => (
+                        <option
+                          key={departmentItem.departmentId}
+                          value={departmentItem.departmentId}
+                        >
+                          {departmentItem.departmentName}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No Department available
+                      </option>
+                    )}
+                  </select>
+                </div>
+
+                {/* Relational Manager */}
+                <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
+                  <label className="mb-2 block text-base font-medium">
+                    Assign To
+                  </label>
+                  <select
+                    value={formData.relationalManagerId}
+                    onChange={handleChange}
+                    name="relationalManagerId"
+                    className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
+                  >
+                    <option value="">--Select Employee--</option>
+                    {employeeList.length > 0 ? (
+                      employeeList.map((employee) => (
+                        <option
+                          key={employee.employeeId}
+                          value={employee.employeeId}
+                        >
+                          {employee.firstName + " " + employee.lastName}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No Employees available
+                      </option>
+                    )}
+                  </select>
+                </div>
+              </>
+            )}
+
             {[
               {
                 label: "Company Name",
@@ -343,7 +412,7 @@ const AddPartner = () => {
               {
                 label: "Contact Person WhatsApp No.",
                 name: "whatsAppNumber",
-                type: "number",
+                type: "text",
                 placeholder: "Enter WhatsApp Number",
               },
               {
@@ -352,12 +421,6 @@ const AddPartner = () => {
                 type: "url",
                 placeholder: "Enter Contact Person Linkedin",
               },
-            //   {
-            //     label: "Employee Code",
-            //     name: "employeecode",
-            //     type: "text",
-            //     placeholder: "Employee code",
-            //   },
             ].map(({ label, name, type, placeholder }) => (
               <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3" key={name}>
                 <label className="mb-2 block text-base font-medium">
@@ -369,89 +432,26 @@ const AddPartner = () => {
                   placeholder={placeholder}
                   value={formData[name]}
                   onChange={handleChange}
-                  className={"w-full mb-2 rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"} />
-                  {errors[name] && (
+                  className={
+                    "w-full mb-2 rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                  }
+                />
+                {errors[name] && (
                   <p className="text-red-500 text-xs">{errors[name]}</p>
-                  )}
+                )}
               </div>
             ))}
 
-            {employeeAssignTo && (
-              <>
-                {/* Department Select */}
-                <div className="w-full mb-4 px-3 md:w-1/3 lg:w-1/3">
-                  <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
-                    Department
-                  </label>
-                  <div className="relative z-20">
-                    <select
-                      value={departmentId}
-                      onChange={(e) => setDepartmentId(e.target.value)}
-                      name="departmentId"
-                      className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
-                    >
-                      <option value="" className="text-gray-400">
-                        --Select Department--
-                      </option>
-                      {departmentList.length > 0 ? (
-                        departmentList.map((departmentItem) => (
-                          <option
-                            key={departmentItem.departmentId}
-                            value={departmentItem.departmentId}
-                          >
-                            {departmentItem.departmentName}
-                          </option>
-                        ))
-                      ) : (
-                        <option value="" disabled>
-                          No Department available
-                        </option>
-                      )}
-                    </select>
-                  </div>
-                  {errors.department && (
-                    <p className="text-red-500 text-xs">{errors.department}</p>
-                  )}
-                </div>
-            
-                {/* Assign To */}
-                <div className="w-full mb-2 px-3 md:w-1/3">
-                  <label className="block text-base font-medium">Assign To</label>
-                  <select
-                    value={taskAssignTo}
-                    onChange={(e) => setTaskAssignTo(e.target.value)}
-                    className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
-                  >
-                    <option value="">--Select Employee--</option>
-                    {employeeList.length > 0 ? (
-                      employeeList.map((employee) => (
-                        <option key={employee.employeeId} value={employee.employeeId}>
-                          {employee.firstName + ' ' + employee.lastName}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>
-                        No Employees available
-                      </option>
-                    )}
-                  </select>
-                  {errors.taskAssignTo && (
-                    <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>
-                  )}
-                </div>
-              </>
-            )}
-
             {/* Country Select */}
             <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
-              <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
+              <label className="mb-2 block text-base font-medium">
                 Country
               </label>
               <select
                 value={formData.countryId}
                 onChange={handleChange}
                 name="countryId"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select Country--
@@ -482,7 +482,7 @@ const AddPartner = () => {
                 value={formData.stateId}
                 onChange={handleChange}
                 name="stateId"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select State--
@@ -513,7 +513,7 @@ const AddPartner = () => {
                 value={formData.cityId}
                 onChange={handleChange}
                 name="cityId"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
                   --Select City--
@@ -536,10 +536,10 @@ const AddPartner = () => {
             </div>
 
             {/* Address Input and KeyResponsibility Input */}
-            <div className="w-full mb-2 px-3">
+            <div className="w-full mb-2">
               {/* Address Input */}
               <div className="w-full mb-2 px-3">
-                <label className="mb-2 block text-base font-medium text-dark dark:text-white">
+                <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
                   Address
                 </label>
                 <textarea
@@ -547,7 +547,7 @@ const AddPartner = () => {
                   value={formData.address}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
+                  className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
                 ></textarea>
                 {errors.address && (
                   <p className="text-red-500 text-xs">{errors.address}</p>

@@ -43,6 +43,7 @@ const ViewVendor = () => {
     const fetchData = async () => {
       try {
         // Fetch Vendor
+         //debugger;
         const vendor = await VendorService.getByIdVendor(id);
         // const formattedClientCompany = {
         //   ...clientCompany.data,
@@ -159,7 +160,7 @@ const ViewVendor = () => {
                         <label className="font-semibold text-gray-700 me-2">
                           {field.label}:
                         </label>
-                        <span className="text-gray-600">{field.value}</span>
+                        <span className="text-gray-600 break-words">{field.value}</span>
                       </div>
                     ))}
                   </div>

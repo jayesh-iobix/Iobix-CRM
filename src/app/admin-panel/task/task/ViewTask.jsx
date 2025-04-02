@@ -22,7 +22,7 @@ const ViewTask = () => {
 
           const taskReminderResult = await TaskReminderService.getTaskReminder(id);
             setTaskReminderDetails(taskReminderResult.data);
-            console.log(taskReminderResult.data);
+            // console.log(taskReminderResult.data);
             
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -51,10 +51,10 @@ const ViewTask = () => {
   return (
     <>
       <div className="container mx-auto mb-10">
-        <div className="bg-white px-10 p-8 rounded-lg shadow-lg space-y-8">
-          <div className="flex justify-between items-center border-b pb-4">
-            <h1 className="font-semibold text-3xl">Task Details</h1>
-            <div className="flex">
+        <div className="bg-white px-4 sm:px-6 md:px-10 p-6 md:p-8 rounded-lg shadow-lg space-y-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center border-b pb-4">
+            <h1 className="font-semibold text-3xl sm:text-4xl">Task Details</h1>
+            <div className="flex flex-wrap justify-center sm:justify-end gap-2 mt-4 sm:mt-0">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -66,18 +66,20 @@ const ViewTask = () => {
                   Add Sub Task <span className="mt-[2px]"> <FaPlus size={14} /></span>
                 </Link>
               </motion.button>
+
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <Link
                   to={`/task/edit-task/${id}`}
-                  className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 me-2 rounded hover:no-underline"
+                  className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
                 >
                    Edit Task
                   <FaEdit size={20} />
                 </Link>
               </motion.button>
+
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -93,75 +95,66 @@ const ViewTask = () => {
             </div>
           </div>
           <div className="space-y-5">
-            <div className="flex justify-between">
-              <p>
-                <strong className="mr-1">Task Name:</strong>{" "}
-                {taskDetails.taskName}
-              </p>
-              <p>
-                <strong className="mr-1">Designation:</strong>{" "}
-                {taskDetails.designationName}
-              </p>
+              <div className="flex flex-wrap justify-between gap-4">
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Task Name:</strong> {taskDetails.taskName}
+                </p>
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Designation:</strong> {taskDetails.designationName}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap justify-between gap-4">
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Assign By:</strong> {taskDetails.taskAssignByName}
+                </p>
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Assign To:</strong> {taskDetails.taskAssignToName}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap justify-between gap-4">
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Start Date:</strong> {formatDate(taskDetails.taskStartingDate)}
+                </p>
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Expected Completion:</strong> {formatDate(taskDetails.taskExpectedCompletionDate)}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap justify-between gap-4">
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Priority:</strong> {taskDetails.taskPriority}
+                </p>
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Task Type:</strong> {taskDetails.taskType}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap justify-between gap-4">
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Actual Starting Date:</strong> {formatDate(taskDetails.actualStartingDate)}
+                </p>
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Task Completion Date:</strong> {formatDate(taskDetails.taskCompletionDate)}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap justify-between gap-4">
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Status:</strong>
+                  <span className={`px-3 py-1 rounded-lg font-semibold ${getStatusColor(taskDetails.taskStatusName)}`}>
+                    {taskDetails.taskStatusName}
+                  </span>
+                </p>
+              </div>
+
+              <div className="flex flex-wrap justify-between gap-4">
+                <p className="w-full sm:w-auto">
+                  <strong className="mr-1">Task Description:</strong> {taskDetails.taskDescription}
+                </p>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <p>
-                <strong className="mr-1">Assign By:</strong>{" "}
-                {taskDetails.taskAssignByName}
-              </p>
-              <p>
-                <strong className="mr-1">Assign To:</strong>{" "}
-                {taskDetails.taskAssignToName}
-              </p>
-            </div>
-            <div className="flex justify-between">
-              <p>
-                <strong className="mr-1">Start Date:</strong>{" "}
-                {formatDate(taskDetails.taskStartingDate)}
-              </p>
-              <p>
-                <strong className="mr-1">Expected Completion:</strong>{" "}
-                {formatDate(taskDetails.taskExpectedCompletionDate)}
-              </p>
-            </div>
-            <div className="flex justify-between">
-              <p>
-                <strong className="mr-1">Priority:</strong>{" "}
-                {taskDetails.taskPriority}
-              </p>
-              <p>
-                <strong className="mr-1">Task Type:</strong>{" "}
-                {taskDetails.taskType}
-              </p>
-            </div>
-            <div className="flex justify-between">
-              <p>
-                <strong className="mr-1">Actual Starting Date:</strong>{" "}
-                {formatDate(taskDetails.actualStartingDate)}
-              </p>
-              <p>
-                <strong className="mr-1">Task Completion Date:</strong>{" "}
-                {formatDate(taskDetails.taskCompletionDate)}
-              </p>
-            </div>          
-            <div className="flex justify-between">
-              <p>
-                <strong className="mr-1">Status:</strong>{" "}
-                <span
-                  className={`px-3 py-1 rounded-lg font-semibold ${getStatusColor(
-                    taskDetails.taskStatusName
-                  )}`}
-                >
-                  {taskDetails.taskStatusName}
-                </span>
-              </p>
-            </div>
-            <div className="flex justify-between">
-              <p>
-                <strong className="mr-1">Task Description:</strong>{" "}
-                {taskDetails.taskDescription}
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Chat Component */}

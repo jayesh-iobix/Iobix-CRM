@@ -5,9 +5,24 @@ import Header from './Header'
 
 const Layout = () => {
   // debugger;
+  const role = sessionStorage.getItem('role');
   
+  const getBgColor = (role) => {
+    switch (role) {
+      case 'admin':
+        return '#F0FAFE'; // Color for admin
+      case 'user':
+        return '#F0FAFE'; // Color for user
+      default:
+        return '#EDF4F8'; // Default color
+    }
+  };
   return (
-    <div className='flex flex-row bg-[#F0FAFE] h-screen w-screen overflow-hidden'>
+
+     <div 
+      className={`flex flex-row h-screen w-screen overflow-hidden`}
+      style={{ backgroundColor: getBgColor(role) }}
+    >
         <Sidebar />
         <div className="flex flex-col flex-1">
 				<Header />

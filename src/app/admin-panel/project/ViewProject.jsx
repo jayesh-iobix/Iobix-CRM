@@ -204,7 +204,7 @@ const ViewProject = () => {
         return; // Prevent form submission
     }
 
-    debugger;
+    // debugger;
 
     const inquiryData = {
       inquiryRegistrationId: id,
@@ -228,7 +228,7 @@ const ViewProject = () => {
     try {
       // Call the API to add the task note
       const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryData);
-      console.log(response.status);
+      // console.log(response.status);
       if (response.status === 1) {
          toast.success("Inquiry Forwarded Successfully."); // Toast on success
         // if(inquiryForwardedTo === null || "") {
@@ -489,7 +489,7 @@ const ViewProject = () => {
 
   return (
     <>
-      <div className="flex flex-wrap justify-between items-center my-3">
+      <div className="flex flex-wrap justify-between items-center my-3 flex-col md:flex-row ">
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
           {formData.inquiryStatus === 4 && (

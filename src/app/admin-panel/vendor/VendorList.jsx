@@ -194,7 +194,7 @@ const VendorList = () => {
                     >
                       <Link
                         className="text-green-500 hover:text-green-700"
-                        to={`/vendor-list/view-vendor/${item.vendorRegistrationId}`}
+                        to={`/vendor-list/view-vendor/${item.vendorId}`}
                       >
                         <FaEye size={24} />
                       </Link>

@@ -69,33 +69,33 @@ const LeaveTypeList = () => {
 
   const handleCheckboxChange = async (checked, leaveTypeId, item) => {
     // Optimistically update the UI by changing the `isActive` for the current row
-    const updatedEventTypes = leaveTypeList.map((item) =>
+    const updatedLeaveTypes = leaveTypeList.map((item) =>
       item.leaveTypeId === leaveTypeId ? { ...item, isActive: checked } : item
     );
     
-    setLeaveTypeList(updatedEventTypes); // Update the state immediately
+    setLeaveTypeList(updatedLeaveTypes); // Update the state immediately
 
     try {
       // Prepare the data for the API call
-      const eventTypeData = {
+      const leaveTypeData = {
         leaveTypeName: item.leaveTypeName,
         isActive: checked, // Only update the isActive field
       };
 
-      //console.log(eventTypeData)
+      //console.log(leaveTypeData)
 
       // Call the update API to update the `isActive` field on the server
       const updatedEventType = await LeaveTypeService.updateLeaveTypes(
         leaveTypeId,
-        eventTypeData
+        leaveTypeData
       );
       //console.log(updatedEventType); // If successful, log the response
 
       // Check the response from the API and display a success message
       if (updatedEventType) {
-        toast.success("Event Type updated successfully.");
+        toast.success("Leave Type Updated Successfully.");
       } else {
-        throw new Error("Failed to update event type.");
+        throw new Error("Failed to update leave type.");
       }
     } catch (error) {
       console.error(

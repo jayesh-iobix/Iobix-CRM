@@ -23,7 +23,7 @@ const InquiryChat = () => {
   // Fetch initial chat data
   const fetchData = debounce(async () => {
     
-    debugger;
+    // debugger;
     if (chatPersonType === "partner" && selectedPersonId != null) {
       const chatData = await InquiryChatService.getPartnerChatInAdmin(id, selectedPersonId);
 
@@ -79,7 +79,7 @@ const InquiryChat = () => {
       })
       .catch((error) => console.error("Error while starting connection: " + error));
 
-    debugger;
+    // debugger;
     // Listen for incoming messages
     
     newConnection.on("ReceiveUserMessage", (chatMessage) => {
@@ -87,7 +87,7 @@ const InquiryChat = () => {
       setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
       // console.log(messages);
       }
-      console.log(chatMessage);
+      // console.log(chatMessage);
     });
 
     newConnection.on("ReceiveAdminMessage", (chatMessage) => {
@@ -96,7 +96,7 @@ const InquiryChat = () => {
         // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
         setMessages((prevMessages) => [...prevMessages, chatMessage]);
       }
-      console.log(chatMessage);
+      // console.log(chatMessage);
     });
   
     setConnection(newConnection);
@@ -247,7 +247,7 @@ const InquiryChat = () => {
         // sentDate: new Date().toISOString(),
       };
 
-      debugger;
+      // debugger;
 
       const formData = new FormData();
       if (file) {
@@ -264,7 +264,7 @@ const InquiryChat = () => {
       try {
         const response = await InquiryChatService.addInquiryChat(formData);
         if (response.status === 1) {
-          console.log("Chat added successfully!");
+          // console.log("Chat added successfully!");
           
           // Broadcast the message to other clients via SignalR
           // debugger;
@@ -365,7 +365,7 @@ const InquiryChat = () => {
       {/* Chat Section */}
       
       {selectedPerson ? (
-      <section className="bg-white rounded-lg shadow-lg mt-8 p-6">
+      <section className="bg-white rounded-lg shadow-lg mt-8 p-6 md:p-8 lg:p-10">
         <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Chat with {selectedPersonName}</h2>
 
         {/* Chat Window */}
@@ -390,7 +390,32 @@ const InquiryChat = () => {
                   <div className="text-black">{message.message}</div>
 
                   {/* File Preview */}
-                  {message.file && (
+                  {message.file || message.filePath ? (
+                    <div className="mt-2">
+                      {/* If the file is an image, display it */}
+                      {message.file && message.file.type.includes("image") ? (
+                        <img
+                          src={URL.createObjectURL(message.file)}  // Local file URL for uploaded image
+                          alt="file-preview"
+                          className="w-20 h-20 object-cover rounded-md"
+                        />
+                      ) : (
+                        // If message.filePath is present, use the file path received from the API
+                        <div className="text-xs text-blue-500 mt-1">
+                          <a
+                            href={message.filePath || URL.createObjectURL(message.file)} // Fallback to the uploaded file URL if filePath is not available
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="cursor-pointer hover:underline"
+                          >
+                            {message.file ? message.file.name : message.filePath.split('/').pop()} {/* Display file name */}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
+
+                  {/* {message.file && (
                     <div className="mt-2">
                       {message.file.type.includes("image") ? (
                         <img
@@ -410,7 +435,7 @@ const InquiryChat = () => {
                         </div>
                       )}
                     </div>
-                  )}
+                  )} */}
 
                   <div className="text-xs text-gray-600 mt-2">{formatDate(message.sentDate)}</div>
                 </div>
@@ -420,7 +445,7 @@ const InquiryChat = () => {
         </div>
 
         {/* Message Input Section */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           {/* Input Field */}
           <input
             type="text"
@@ -430,6 +455,7 @@ const InquiryChat = () => {
             onChange={(e) => setNewMessage(e.target.value)}
           />
 
+          <div className="flex flex-col items-start sm:flex-row sm:items-center gap-4">
           {/* File Upload Button */}
           <label htmlFor="file-upload" className="cursor-pointer">
             <span className="inline-block bg-gray-200 p-3 rounded-full hover:bg-gray-300 transition">
@@ -458,7 +484,7 @@ const InquiryChat = () => {
 
           {/* Display the file name if selected */}
           {file && (
-            <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-md w-1/3">
+            <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-md w-full sm:w-auto">
               <span className="text-sm text-gray-700 truncate">{file.name}</span>
               <button
                 onClick={clearFile}
@@ -479,6 +505,7 @@ const InquiryChat = () => {
           >
             Send
           </motion.button>
+          </div>
         </div>
       </section>
       ) : (

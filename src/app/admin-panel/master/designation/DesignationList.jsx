@@ -23,6 +23,7 @@ const DesignationList = () => {
       try {
         const result = await DesignationService.getDesignation();
         setDesignation(result.data);
+        // console.log(result.data);
         setFilteredDesignation(result.data); // Set initial data without filtering
         setTotalItems(result.data.length); // Set total items for pagination
       } catch (error) {
@@ -83,6 +84,53 @@ const DesignationList = () => {
     setCurrentPage(1);
   };
 
+  const handleCheckboxChange = async (checked, designationId, item) => {
+  
+      // debugger;
+      // Optimistically update the UI by changing the `isActive` for the current row
+      const updatedDesignation = filteredDesignation.map((item) =>
+        item.designationId === designationId ? { ...item, isActive: checked }: item
+      );
+      
+      setFilteredDesignation(updatedDesignation); // Update the state immediately
+  
+      try {
+        // Prepare the data for the API call
+        const designationData = {
+          // leaveTypeName : item.leaveTypeName ,
+          departmentId: item.departmentId,
+          departmentName: item.departmentName,
+          designationName: item.designationName,
+          // totalDaysofLeave: item.totalDaysofLeave,
+          isActive: checked, // Only update the isActive field,
+        };
+  
+        //console.log(designationData)
+  
+        // Call the update API to update the `isActive` field on the server
+        const updatedDesignation =
+          await DesignationService.updateDesignation(
+            designationId,
+            designationData
+          );
+        //console.log(updatedEventType); // If successful, log the response
+  
+        // Check the response from the API and display a success message
+        if (updatedDesignation) {
+          toast.success("Designation Updated Successfully.");
+        } else {
+          throw new Error("Failed to update designation.");
+        }
+      } catch (error) {
+        console.error(
+          "Error updating designation:",
+          error.response?.data || error.message
+        );
+        toast.error("Error updating designation.");
+        // Revert UI change if needed
+      }
+    };
+
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -124,7 +172,7 @@ const DesignationList = () => {
       </div>
 
       <div className="grid overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
+        <table className="min-w-full bg-white ">
           <thead className="bg-gray-900 border-b">
             <tr>
               <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
@@ -132,6 +180,9 @@ const DesignationList = () => {
               </th>
               <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
                 Department Name
+              </th>
+              <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
+                Active
               </th>
               <th className="text-right py-3 pr-8 uppercase font-semibold text-sm text-[#939393]">
                 Actions
@@ -148,31 +199,45 @@ const DesignationList = () => {
             ) : (
               currentItems.map((item) => (
                 <motion.tr
-                  key={item.employeeId}
+                  key={item.designationId}
                   className="border-b hover:bg-gray-50"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: item * 0.1 }}
                 >
-                  {/* <tr
-                    key={item.designationId}
-                    className="border-b hover:bg-gray-50"
-                  > */}
                   <td className="py-3 pl-8 text-gray-700">
                     {item.designationName}
                   </td>
                   <td className="py-3 pl-8 text-gray-700">
                     {item.departmentName}
                   </td>
+                  <td className="py-3 pl-8 text-gray-700">
+                    <label className="flex ms-3 items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={item.isActive} // Use item's active state
+                        onChange={(e) =>
+                          handleCheckboxChange(
+                            e.target.checked,
+                            item.designationId,
+                            item
+                          )
+                        } // Handle checkbox change
+                        className="sr-only peer"
+                      />
+                      <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      <span className="ms-3 w-[86px] text-sm font-medium text-gray-900 dark:text-gray-300"></span>
+                    </label>
+                  </td>
                   <td className="py-3 pr-8 text-right">
                     <div className="flex justify-end">
-                      {item.isActive ? (
+                      {/* {item.isActive ? (
                         ""
                       ) : (
                         <span className="px-2 py-1 mr-4 rounded-lg font-medium text-red-500 bg-red-100">
                           Not Active
                         </span>
-                      )}
+                      )} */}
                       <button className="text-blue-500 hover:text-blue-700 pr-3">
                         <motion.button
                           whileHover={{ scale: 1.1 }}
@@ -213,7 +278,6 @@ const DesignationList = () => {
                         <FaTrash size={24} />
                       </button> */}
                   </td>
-                  {/* </tr> */}
                 </motion.tr>
               ))
             )}

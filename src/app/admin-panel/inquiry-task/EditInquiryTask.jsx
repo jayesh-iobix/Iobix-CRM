@@ -9,11 +9,13 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { PartnerService } from "../../service/PartnerService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { InquiryTaskService } from "../../service/InquiryTaskService";
+import { VendorService } from "../../service/VendorService";
 
 const EditInquiryTask = () => {
   const [taskName, setTaskName] = useState("");
   const [partnerRegistrationId, setPartnerRegistrationId] = useState("");
   const [clientRegistrationId, setClientRegistrationId] = useState("");
+  const [vendorId, setVendorId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
@@ -29,6 +31,7 @@ const EditInquiryTask = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [partnerList, setPartnerList] = useState([]);
   const [clientCompanyList, setClientCompanyList] = useState([]);
+  const [vendorList, setVendorList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,9 +48,10 @@ const EditInquiryTask = () => {
         // console.log(taskData)
 
         setTaskName(taskData.taskName);
+        setInquiryRegistrationId(taskData.inquiryRegistrationId || "");
         setPartnerRegistrationId(taskData.partnerRegistrationId || "");
         setClientRegistrationId(taskData.clientRegistrationId || "");
-        setInquiryRegistrationId(taskData.inquiryRegistrationId || "");
+        setVendorId(taskData.vendorId || "");
         setEmployeeId(taskData.employeeId || "");
         setTaskAssignTo(taskData.taskAssignTo);
         setTaskAssignBy(taskData.taskAssignBy);
@@ -71,6 +75,9 @@ const EditInquiryTask = () => {
          } else if (taskData.taskAssignTo && taskData.taskFilter === "Employee") {
            setSelection("employee");
            setEmployeeId(taskData.taskAssignTo);
+         } else if (taskData.taskAssignTo && taskData.taskFilter === "Vendor") {
+           setSelection("vendor");
+           setEmployeeId(taskData.taskAssignTo);
          }
 
         // Fetch partner, client, and department data
@@ -79,6 +86,9 @@ const EditInquiryTask = () => {
 
         const clientCompanyResult = await ClientCompanyService.getClientCompany();
         setClientCompanyList(clientCompanyResult.data.filter(item => item.isActive));
+
+        const vendorResult = await VendorService.getVendor();
+        setVendorList(vendorResult.data.filter(item => item.isActive));
 
         const departmentResult = await DepartmentService.getDepartments();
         const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
@@ -117,14 +127,10 @@ const EditInquiryTask = () => {
       inquiryRegistrationId,
       taskName,
       departmentId,
-      taskAssignTo:
-        (partnerRegistrationId === "" &&
-        clientRegistrationId === "" &&
-        employeeId !== "")
-          ? employeeId
-          : partnerRegistrationId !== ""
-          ? partnerRegistrationId
-          : clientRegistrationId,
+      taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && vendorId === "" && employeeId !== "") ? employeeId : 
+      (partnerRegistrationId === "" && employeeId === "" && vendorId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
+      (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId === "" && vendorId !== "") ? vendorId : 
+      (clientRegistrationId === "" && employeeId === "" && vendorId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,
       taskAssignBy,
       taskPriority,
       taskType,
@@ -211,6 +217,16 @@ const EditInquiryTask = () => {
                     onChange={() => setSelection("employee")}
                   />
                   <span className="ml-2">Employee</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="assignTo"
+                    value="vendor"
+                    checked={selection === "vendor"}
+                    onChange={() => setSelection("vendor")}
+                  />
+                  <span className="ml-2">Vendor</span>
                 </label>
               </div>
             </div>
@@ -346,6 +362,39 @@ const EditInquiryTask = () => {
                   </select>
                 </div>
               </>
+            )}
+
+            {/* Vendor Select */}
+            {selection === "vendor" && (
+              <div className="w-full mb-2 px-3 md:w-1/3">
+                <label className="block text-base font-medium">Vendor</label>
+                <div className="relative z-20">
+                  <select
+                    value={vendorId}
+                    onChange={(e) => setVendorId(e.target.value)}
+                    name="vendorId"
+                    className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+                  >
+                    <option value="" className="text-gray-400">
+                      --Select Vendor--
+                    </option>
+                    {vendorList.length > 0 ? (
+                      vendorList.map((vendorItem) => (
+                        <option
+                          key={vendorItem.vendorId}
+                          value={vendorItem.vendorId}
+                        >
+                          {vendorItem.companyName}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No Vendor available
+                      </option>
+                    )}
+                  </select>
+                </div>
+              </div>
             )}
 
             {/* Task Type */}

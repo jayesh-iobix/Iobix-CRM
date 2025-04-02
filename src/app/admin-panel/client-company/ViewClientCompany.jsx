@@ -159,7 +159,7 @@ const ViewClientCompany = () => {
                         <label className="font-semibold text-gray-700 me-2">
                           {field.label}:
                         </label>
-                        <span className="text-gray-600">{field.value}</span>
+                        <span className="text-gray-600 break-words">{field.value}</span>
                       </div>
                     ))}
                   </div>

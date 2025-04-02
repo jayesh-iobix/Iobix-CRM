@@ -17,13 +17,22 @@ import '../../../src/App.css';
 // } from "../../lib/constants";
 
 const linkClass =
-  "flex items-center gap-2 font-light px-3 py-2 hover:bg-[#042E45] hover:no-underline active:bg-[#042E45] rounded-lg text-base";
+  "flex items-center gap-2 font-light px-3 py-2 hover:bg-[#558989] hover:no-underline active:bg-[#558989] rounded-lg text-base"
+
+  const adminLinkClass =
+  "flex items-center gap-2 font-light px-3 py-2 hover:bg-[#042E45] hover:no-underline active:bg-[#042E45] rounded-lg text-base";;
+
+
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State to manage sidebar visibility
   const [departmentName, setDepartmentName] = useState(""); // State to manage sidebar visibility
   const role = sessionStorage.getItem("role");
+  
+  
+
+// Use linkClass in your component
 
   // debugger;
   const sidebarLinks =
@@ -121,31 +130,118 @@ export default function Sidebar() {
       </div>
 
       {/* Sidebar */}
-      <div
+      
+      <div>
+  {/* Sidebar for admin and user roles */}
+  {(role === 'admin' || role === 'user') && (
+    <div
+      className={classNames(
+        "fixed inset-y-0 left-0 z-40 bg-[#031B29] w-62 p-3 flex flex-col h-screen lg:static lg:translate-x-0 overflow-x-auto sidebar-container",
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+      )}
+    >
+      {/* Logo Section */}
+      <div className="flex items-center gap-2 px-1 py-3">
+        <span className="text-neutral-200 text-lg cursor-pointer">
+          <img className="w-44" src={logo} alt="Logo" />
+        </span>
+      </div>
+
+      {/* Sidebar Links */}
+      <div className="py-8 flex flex-1 flex-col gap-0.5">
+        {sidebarLinks.map((link) => (
+          <SidebarLink key={link.key} link={link} />
+        ))}
+      </div>
+
+      {/* Bottom Sidebar Links */}
+      <div className="flex flex-col gap-0.5 pt-2 pb-4 border-t border-neutral-700">
+        <div
+          className={classNames(adminLinkClass, "cursor-pointer text-red-500")}
+          onClick={handleLogout}
+        >
+          <span className="text-xl">
+            <HiOutlineLogout />
+          </span>
+          Logout
+        </div>
+      </div>
+    </div>
+  )}
+
+  {/* Sidebar for other roles (non-admin/user) */}
+  {(role !== 'admin' && role !== 'user') && (
+    <div
+    className={classNames(
+      "fixed inset-y-0 left-0 z-40 bg-[#264443] w-62 p-3 flex flex-col h-screen lg:static lg:translate-x-0 overflow-x-auto sidebar-container",
+      isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+    )}
+  >
+      {/* Logo Section */}
+      <div className="flex items-center gap-2 px-1 py-3">
+        <span className="text-neutral-200 text-lg cursor-pointer">
+          <img className="w-44" src={logo} alt="Logo" />
+        </span>
+      </div>
+
+      {/* Sidebar Links */}
+      <div className="py-8 flex flex-1 flex-col gap-0.5">
+        {sidebarLinks.map((link) => (
+          <SidebarLink key={link.key} link={link} />
+        ))}
+      </div>
+
+      {/* Bottom Sidebar Links */}
+      {/* <div className="flex flex-col gap-0.5 pt-2 pb-4 border-t border-neutral-800">
+        <div
+          className={classNames(linkClass, "cursor-pointer text-red-500")}
+          onClick={handleLogout}
+        >
+          <span className="text-xl">
+            <HiOutlineLogout />
+          </span>
+          Logout
+        </div>
+      </div> */}
+    </div>
+  )}
+
+  {/* Overlay for smaller screens */}
+  {isSidebarOpen && (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+      onClick={toggleSidebar}
+    ></div>
+  )}
+</div>
+
+
+
+     
+      {/* <div
         className={classNames(
           "fixed inset-y-0 left-0 z-40 bg-[#031B29] w-62 p-3 flex flex-col h-screen lg:static lg:translate-x-0 overflow-x-auto sidebar-container",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Logo Section */}
+    
+       
         <div className="flex items-center gap-2 px-1 py-3">
           <span className="text-neutral-200 text-lg cursor-pointer">
             <img className="w-44" src={logo} alt="Logo" />
           </span>
         </div>
 
-        {/* Sidebar Links */}
+       
         <div className="py-8 flex flex-1 flex-col gap-0.5">
           {sidebarLinks.map((link) => (
             <SidebarLink key={link.key} link={link} />
           ))}
         </div>
 
-        {/* Bottom Sidebar Links */}
+        
         <div className="flex flex-col gap-0.5 pt-2 pb-4 border-t border-neutral-700">
-          {/* {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((link) => (
-            <SidebarLink key={link.key} link={link} />
-          ))} */}
+         
           <div
             className={classNames(linkClass, "cursor-pointer text-red-500")}
             onClick={handleLogout}
@@ -156,20 +252,22 @@ export default function Sidebar() {
             Logout
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Overlay for smaller screens */}
-      {isSidebarOpen && (
+      {/* {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
           onClick={toggleSidebar}
         ></div>
-      )}
+      )} */}
+      
     </div>
   );
 }
 
 function SidebarLink({ link }) {
+  const role = sessionStorage.getItem("role");
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -185,44 +283,99 @@ function SidebarLink({ link }) {
 
   return (
     <div>
-      <Link
-        to={link.path}
-        className={classNames(
-          isActive
-            ? "bg-[#042E45] border-l-2 border-l-[#5ec8f2] border-solid text-white"
-            : "text-neutral-400",
-          linkClass,
-          link.submenu && "cursor-pointer"
-        )}
-        onClick={toggleSubmenu}
-      >
-        <span className="text-xl">{link.icon}</span>
-        {link.label}
-        {link.submenu && (
-          <span className="ml-auto text-xl transform transition-transform duration-300">
-            {isOpen ? <IoIosArrowDown /> : <IoIosArrowForward />}
-          </span>
-        )}
-      </Link>
+  <Link
+    to={link.path}
+    className={classNames(
+      isActive
+        ? role === 'admin' || role === 'user'
+          ? "bg-[#042E45] border-l-2 border-l-[#5ec8f2] border-solid text-white" // Default color for admin and user
+          : "bg-[#558989] text-[#0a2323] font-semibold" // Color for other roles like partner, company, vendor
+          // : "bg-[#0b3131] text-[#ffffff] font-semibold" // Color for other roles like partner, company, vendor
+          // : "bg-[#e0cffa] text-purple-900 font-semibold" // Color for other roles like partner, company, vendor
+        : role === 'admin' || role === 'user'
+        ? "text-neutral-400" // Default inactive color for admin and user
+        : "text-neutral-100", // Color for other roles when inactive
+      (role === "admin" || role === "user") ? adminLinkClass : linkClass,
+      link.submenu && "cursor-pointer"
+    )}
+    onClick={toggleSubmenu}
+  >
+    <span className="text-xl">{link.icon}</span>
+    {link.label}
+    {link.submenu && (
+      <span className="ml-auto text-xl transform transition-transform duration-300">
+        {isOpen ? <IoIosArrowDown /> : <IoIosArrowForward />}
+      </span>
+    )}
+  </Link>
 
-      {link.submenu && isOpen && (
-        <div className="pl-6 mt-2">
-          {link.submenu.map((sub, index) => (
-            <Link
-              key={index}
-              to={sub.path}
-              className={classNames(
-                pathname === sub.path
-                  ? "bg-[#042E45] text-white"
-                  : "text-neutral-400",
-                "flex items-center gap-2 px-3 py-2 hover:bg-[#042E45] rounded-lg text-sm hover:no-underline"
-              )}
-            >
-              {sub.label}
-            </Link>
-          ))}
-        </div>
-      )}
+  {link.submenu && isOpen && (
+    <div className="pl-6 mt-2">
+      {link.submenu.map((sub, index) => (
+        <Link
+          key={index}
+          to={sub.path}
+          className={classNames(
+            pathname === sub.path
+              ? role === 'admin' || role === 'user'
+                ? "bg-[#042E45] text-white" // Active link color for admin and user
+                : "bg-[#558989] text-[#0a2323] font-semibold" // Active link color for other roles
+                // : "bg-[#0b3131] text-[#ffffff] font-semibold" // Active link color for other roles
+              : role === 'admin' || role === 'user'
+              ? "text-neutral-400" // Inactive link color for admin and user
+              : "text-white", // Inactive link color for other roles
+              (role === "admin" || role === "user") 
+              ? "flex items-center gap-2 px-3 py-2 hover:bg-[#042E45] rounded-lg text-sm hover:no-underline" 
+              : "flex items-center gap-2 px-3 py-2 hover:bg-[#558989] rounded-lg text-sm hover:no-underline"
+            
+          )}
+        >
+          {sub.label}
+        </Link>
+      ))}
     </div>
+  )}
+</div>
+
+    // <div>
+    //   <Link
+    //     to={link.path}
+    //     className={classNames(
+    //       isActive
+    //         ? "bg-[#042E45] border-l-2 border-l-[#5ec8f2] border-solid text-white"
+    //         : "text-neutral-400",
+    //       linkClass,
+    //       link.submenu && "cursor-pointer"
+    //     )}
+    //     onClick={toggleSubmenu}
+    //   >
+    //     <span className="text-xl">{link.icon}</span>
+    //     {link.label}
+    //     {link.submenu && (
+    //       <span className="ml-auto text-xl transform transition-transform duration-300">
+    //         {isOpen ? <IoIosArrowDown /> : <IoIosArrowForward />}
+    //       </span>
+    //     )}
+    //   </Link>
+
+    //   {link.submenu && isOpen && (
+    //     <div className="pl-6 mt-2">
+    //       {link.submenu.map((sub, index) => (
+    //         <Link
+    //           key={index}
+    //           to={sub.path}
+    //           className={classNames(
+    //             pathname === sub.path
+    //               ? "bg-[#042E45] text-white"
+    //               : "text-neutral-400",
+    //             "flex items-center gap-2 px-3 py-2 hover:bg-[#042E45] rounded-lg text-sm hover:no-underline"
+    //           )}
+    //         >
+    //           {sub.label}
+    //         </Link>
+    //       ))}
+    //     </div>
+    //   )}
+    // </div>
   );
 }

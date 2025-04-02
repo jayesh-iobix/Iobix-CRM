@@ -330,7 +330,7 @@ const ProjectList = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center my-3">
+      <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">Project List</h1>
         <div className="flex">
           {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -346,7 +346,7 @@ const ProjectList = () => {
         </div>
       </div>
 
-      <div className="flex gap-4 my-4">
+      <div className="flex gap-4 flex-wrap my-4">
         <input
           type="text"
           value={inquiryFilter}

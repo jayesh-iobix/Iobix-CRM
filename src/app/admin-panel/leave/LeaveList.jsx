@@ -165,8 +165,8 @@ const fetchLeaveRecords = async () => {
 
   return (
     <div className="mt-4">
-      <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Leave Records for {year}</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-center my-3">
+        <h1 className="font-semibold text-2xl sm:text-3xl">Leave Records for {year}</h1>
 
         {/* Apply Leave Button */}
         {/* <motion.button
@@ -233,7 +233,7 @@ const fetchLeaveRecords = async () => {
       {/* Display Leave Records for the Selected Month */}
       {selectedMonth !== null && (
         <section className="m-1 p-4 sm:p-8">
-          <div className="overflow-x-auto">
+          <div className="grid overflow-x-auto">
             <table className="min-w-full table-auto border-collapse">
               <thead className="bg-gray-900 border-b">
                 <tr>

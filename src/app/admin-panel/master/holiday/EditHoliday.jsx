@@ -173,13 +173,13 @@ useEffect(() => {
             </div>
 
             {/* Total Holiday Days */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Total Holiday Days</label>
+            <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
+              <label className="mb-[10px] block text-base font-medium">Total Holiday Days</label>
               <input
                 type="text"
                 value={totalHolidayDays}
                 disabled
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                className="block mb-2 w-full p-2 border border-gray-300 rounded-md"
               />
              {errors.totalHolidayDays && <p className="text-red-500 text-xs">{errors.totalHolidayDays}</p>}
             </div>

@@ -148,7 +148,7 @@ const AddAdminInqryPermi = () => {
                   handleSelectChange(selectedOption, "inquiryTypeId")
                 }
                 placeholder="Select Inquiry Type"
-                className=""
+                className="w-full mb-2 text-lg" // Adjust width, padding, and font size
               />
               {errors.inquiryTypeIds && (
                 <p className="text-red-500 text-xs">{errors.inquiryTypeIds}</p>

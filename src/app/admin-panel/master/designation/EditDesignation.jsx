@@ -166,14 +166,14 @@ const EditDesignation = () => {
             </div>
 
             {/* Is Active Checkbox */}
-             <div className='w-full mt-3 mb-2 px-3 md:w-1/3 lg:w-1/3'>
+             {/* <div className='w-full mt-3 mb-2 px-3 md:w-1/3 lg:w-1/3'>
               <input
                 type="checkbox"
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
                 className='w-5 mt-8 h-5 border-active'
               />
-            </div>
+            </div> */}
 
             <div className="w-full flex px-3">
             <motion.button

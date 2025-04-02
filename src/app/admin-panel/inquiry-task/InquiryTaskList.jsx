@@ -661,7 +661,7 @@ const InquiryTaskList = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center my-3 ">
+      <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">Inquiry Task List</h1>
         {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link
@@ -675,7 +675,7 @@ const InquiryTaskList = () => {
       </div>
 
       {/* Filters Section */}
-      <div className="flex gap-4 my-4">
+      <div className="flex gap-4 my-4 flex-wrap">
         <input
           type="text"
           value={employeeFilter}

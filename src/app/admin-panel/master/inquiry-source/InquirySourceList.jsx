@@ -89,7 +89,7 @@ const InquirySourceList = () => {
   
         // Check the response from the API and display a success message
         if (updatedInquirySource) {
-          toast.success("Inquiry Source updated successfully.");
+          toast.success("Inquiry Source Updated Successfully.");
         } else {
           throw new Error("Failed to update inquiry source.");
         }
@@ -131,7 +131,7 @@ const InquirySourceList = () => {
       </div>
 
       <div className="grid overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+        <table className="min-w-full bg-white">
           <thead className="bg-gray-900 border-b">
             <tr>
               <th className="text-left w-full py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">

@@ -94,7 +94,7 @@ const AddPartnerInquiryTask = () => {
     const inquiryTaskData = {
       inquiryRegistrationId: id,
       taskName,
-      departmentId: departmentId === "" ? null : departmentId,
+      departmentId,
       taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && employeeId !== "") ? employeeId : 
       (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
       (clientRegistrationId === "" && employeeId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,

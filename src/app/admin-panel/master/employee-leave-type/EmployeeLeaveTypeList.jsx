@@ -27,7 +27,7 @@ const EmployeeLeaveTypeList = () => {
         const result = await EmployeeLeaveTypeService.getLeaveEmployeeTypes();
         setEmployeeLeaveTypeList(result.data);
         setFilteredEmployeeLeaveTypeList(result.data); // Set initial data without filtering
-        console.log(result.data); 
+        // console.log(result.data); 
         setTotalItems(result.data.length); // Set total items for pagination
       } catch (error) {
         console.error("Error fetching designations:", error);
@@ -68,7 +68,7 @@ const EmployeeLeaveTypeList = () => {
 
   const handleCheckboxChange = async (checked, employeeLeaveTypeId, item) => {
 
-    debugger;
+    // debugger;
     // Optimistically update the UI by changing the `isActive` for the current row
     const updatedEmployeeLeaveType = employeeLeaveTypeList.map((item) =>
       item.employeeLeaveTypeId === employeeLeaveTypeId ? { ...item, isActive: checked }: item
@@ -174,7 +174,7 @@ const EmployeeLeaveTypeList = () => {
       </div> */}
 
       <div className="grid overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
+        <table className="min-w-full bg-white">
           <thead className="bg-gray-900 border-b">
             <tr>
               <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
@@ -219,7 +219,7 @@ const EmployeeLeaveTypeList = () => {
                   {/* <td className="py-3 pl-8 text-gray-700">
                     {item.totalDaysofLeave}
                   </td> */}
-                  <td className="py-3 pl-8 text-right text-gray-700">
+                  <td className="py-3 pl-8 text-gray-700">
                     <label className="flex ms-3 items-center cursor-pointer">
                       <input
                         type="checkbox"

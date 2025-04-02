@@ -90,7 +90,7 @@ const InquiryTypeList = () => {
   
         // Check the response from the API and display a success message
         if (updatedInquiryType) {
-          toast.success("Inquiry Type updated successfully.");
+          toast.success("Inquiry Type Updated Successfully.");
         } else {
           throw new Error("Failed to update inquiry type.");
         }
@@ -132,7 +132,7 @@ const InquiryTypeList = () => {
       </div>
 
       <div className="grid overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+        <table className="min-w-full bg-white rounded-lg">
           <thead className="bg-gray-900 border-b">
             <tr>
               <th className="text-left w-full py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">

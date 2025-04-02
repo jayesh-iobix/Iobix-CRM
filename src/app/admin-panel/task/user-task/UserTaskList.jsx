@@ -244,7 +244,7 @@ const uniqueMonths = [
 
   return (
     <>
-      <div className="flex justify-between items-center my-3 ">
+      <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">User Task List</h1>
 
         {/* Download Report Button */}

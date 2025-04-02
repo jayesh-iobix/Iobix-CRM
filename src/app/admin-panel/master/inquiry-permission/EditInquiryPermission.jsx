@@ -33,7 +33,7 @@ const EditInquiryPermission = () => {
         // Fetch Inquiry Permission
         const inquiryPermissionResult = await InquiryPermissionService.getByIdInquiryPermission(id);
         const inquiryPermissionData = inquiryPermissionResult.data;
-        console.log(inquiryPermissionData);
+        // console.log(inquiryPermissionData);
         setUserId(inquiryPermissionData.userId);
         setDepartmentId(inquiryPermissionData.departmentId);
         setInquiryTypeIds(inquiryPermissionData.inquiryTypeIds);
@@ -212,6 +212,7 @@ const EditInquiryPermission = () => {
                   handleSelectChange(selectedOption, "inquiryTypeId")
                 }
                 placeholder="Select Inquiry Type"
+                className="w-full mb-2 text-lg" // Adjust width, padding, and font size
               />
 
               {errors.inquiryTypeIds && (

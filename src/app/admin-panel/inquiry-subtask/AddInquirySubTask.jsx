@@ -16,7 +16,7 @@ const AddInquirySubTask = () => {
   const [inquiryTaskAllocationId, setInquiryTaskAllocationId] = useState("");
   const [partnerRegistrationId, setPartnerRegistrationId] = useState("");
   const [clientRegistrationId, setClientRegistrationId] = useState("");
-  const [vendorId,, setVendorId] = useState("");
+  const [vendorId, setVendorId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [taskName, setTaskName] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
@@ -91,12 +91,16 @@ const AddInquirySubTask = () => {
     if (!validateForm()) return;
     setInquiryTaskAllocationId(id);
 
+    debugger;
 
     const inquirySubTaskData = {
-      InquiryTaskAllocationId: id,
+      inquiryTaskAllocationId: id,
       taskName,
       departmentId,
-      taskAssignTo,
+      taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && vendorId === "" && employeeId !== "") ? employeeId : 
+      (partnerRegistrationId === "" && employeeId === "" && vendorId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
+      (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId === "" && vendorId !== "") ? vendorId : 
+      (clientRegistrationId === "" && employeeId === "" && vendorId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,
       taskPriority,
       taskType,
       taskStartingDate,

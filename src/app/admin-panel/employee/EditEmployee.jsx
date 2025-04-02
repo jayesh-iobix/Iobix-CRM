@@ -54,7 +54,7 @@ const EditEmployee = () => {
       try {
         // Fetch Employee
         const employee = await EmployeeService.getByIdEmployee(id);
-        console.log(employee.data);
+        // console.log(employee.data);
         const formattedEmployee = {
           ...employee.data,
           birthDate: employee.data.birthDate ? employee.data.birthDate.split("T")[0] : "",

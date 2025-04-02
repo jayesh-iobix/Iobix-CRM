@@ -10,12 +10,14 @@ import { PartnerService } from "../../service/PartnerService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { InquirySubTaskService } from "../../service/InquirySubTaskService";
+import { VendorService } from "../../service/VendorService";
 
 const EditInquirySubTask = () => {
   const [taskName, setTaskName] = useState("");
   const [partnerRegistrationId, setPartnerRegistrationId] = useState("");
   const [clientRegistrationId, setClientRegistrationId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
+  const [vendorId, setVendorId] = useState("");
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [inquiryTaskAllocationId, setInquiryTaskAllocationId] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
@@ -30,6 +32,7 @@ const EditInquirySubTask = () => {
   const [departmentId, setDepartmentId] = useState("");
   const [employeeList, setEmployeeList] = useState([]);
   const [partnerList, setPartnerList] = useState([]);
+  const [vendorList, setVendorList] = useState([]);
   const [clientCompanyList, setClientCompanyList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [errors, setErrors] = useState({});
@@ -83,6 +86,9 @@ const EditInquirySubTask = () => {
         const clientCompanyResult = await ClientCompanyService.getClientCompany();
         setClientCompanyList(clientCompanyResult.data.filter(item => item.isActive));
 
+        const vendorResult = await VendorService.getVendor();
+        setVendorList(vendorResult.data.filter(item => item.isActive));
+
         const departmentResult = await DepartmentService.getDepartments();
         const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
         setDepartmentList(activeDepartments);
@@ -122,14 +128,10 @@ const EditInquirySubTask = () => {
       inquiryRegistrationId,
       taskName,
       departmentId,
-      taskAssignTo:
-        (partnerRegistrationId === "" &&
-        clientRegistrationId === "" &&
-        employeeId !== "")
-          ? employeeId
-          : partnerRegistrationId !== ""
-          ? partnerRegistrationId
-          : clientRegistrationId,
+      taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && vendorId === "" && employeeId !== "") ? employeeId : 
+      (partnerRegistrationId === "" && employeeId === "" && vendorId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
+      (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId === "" && vendorId !== "") ? vendorId : 
+      (clientRegistrationId === "" && employeeId === "" && vendorId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,
       taskAssignBy,
       taskPriority,
       taskType,
@@ -351,6 +353,39 @@ const EditInquirySubTask = () => {
                   </select>
                 </div>
               </>
+            )}
+
+             {/* Vendor Select */}
+             {selection === "vendor" && (
+              <div className="w-full mb-2 px-3 md:w-1/3">
+                <label className="block text-base font-medium">Vendor</label>
+                <div className="relative z-20">
+                  <select
+                    value={vendorId}
+                    onChange={(e) => setVendorId(e.target.value)}
+                    name="vendorId"
+                    className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+                  >
+                    <option value="" className="text-gray-400">
+                      --Select Vendor--
+                    </option>
+                    {vendorList.length > 0 ? (
+                      vendorList.map((vendorItem) => (
+                        <option
+                          key={vendorItem.vendorId}
+                          value={vendorItem.vendorId}
+                        >
+                          {vendorItem.companyName}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No Vendor available
+                      </option>
+                    )}
+                  </select>
+                </div>
+              </div>
             )}
 
             {/* Task Type */}

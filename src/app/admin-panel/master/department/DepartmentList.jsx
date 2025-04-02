@@ -62,6 +62,47 @@ const DepartmentList = () => {
     setDeleteId(null); // Reset the ID
   };
 
+  const handleCheckboxChange = async (checked, departmentId, item) => {
+    // Optimistically update the UI by changing the `isActive` for the current row
+    const updatedDepartments = departments.map((item) =>
+      item.departmentId === departmentId ? { ...item, isActive: checked } : item
+    );
+
+    setDepartments(updatedDepartments); // Update the state immediately
+
+    try {
+      // Prepare the data for the API call
+      const departmentData = {
+        departmentName: item.departmentName,
+        isActive: checked, // Only update the isActive field
+      };
+
+      //console.log(departmentData)
+      // debugger;
+
+      // Call the update API to update the `isActive` field on the server
+      const updatedDepartment = await DepartmentService.updateDepartments(
+        departmentId,
+        departmentData
+      );
+      //console.log(updatedDepartment); // If successful, log the response
+
+      // Check the response from the API and display a success message
+      if (updatedDepartment) {
+        toast.success("Department Updated Successfully.");
+      } else {
+        throw new Error("Failed to update inquiry source.");
+      }
+    } catch (error) {
+      console.error(
+        "Error updating department:",
+        error.response?.data || error.message
+      );
+      toast.error("Error updating department.");
+      // Revert UI change if needed
+    }
+  };
+
    //#region Pagination logic
    const indexOfLastItem = currentPage * itemsPerPage;
    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -93,11 +134,14 @@ const DepartmentList = () => {
       </div>
 
       <div className="grid overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+        <table className="min-w-full bg-white rounded-lg">
           <thead className="bg-gray-900 border-b">
             <tr>
-              <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
+              <th className="text-left w-full py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
                 Department
+              </th>
+              <th className="text-left py-3 pl-7 uppercase font-semibold text-sm text-[#939393]">
+                Active
               </th>
               <th className="text-right py-3 pr-8 uppercase font-semibold text-sm text-[#939393]">
                 Actions
@@ -117,9 +161,26 @@ const DepartmentList = () => {
                 <td className="py-3 pl-8 text-gray-700">
                   {item.departmentName}
                 </td>
+                <td className="py-3 pl-8 text-gray-700">
+                    <label className="inline-flex ms-3 items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={item.isActive} // Use item's active state
+                        onChange={(e) =>
+                          handleCheckboxChange(
+                            e.target.checked,
+                            item.departmentId ,
+                            item
+                          )
+                        } // Handle checkbox change
+                        className="sr-only peer"
+                      />
+                      <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                      <span className="ms-3 w-[86px] text-sm font-medium text-gray-900 dark:text-gray-300"></span>
+                    </label>
+                  </td>
                 <td className="py-3 pr-8 text-right">
                   <div className="flex justify-end">
-                    {item.isActive?"":<span className="px-2 py-1 mr-4 rounded-lg font-medium text-red-500 bg-red-100">Not Active</span>}
                   <button className="pr-2">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
