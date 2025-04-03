@@ -1441,9 +1441,9 @@ const TaskList = () => {
 
       {/* Popup for task details */}
       {isPopupVisible && (
-        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50 overflow-x-auto">
           <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
-            <h2 className="text-xl font-semibold mb-4">Task Details</h2>
+            <h2 className="text-xl font-semibold mb-4 text-center sm:text-left">Task Details</h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">

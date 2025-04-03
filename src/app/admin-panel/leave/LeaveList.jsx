@@ -182,7 +182,7 @@ const fetchLeaveRecords = async () => {
 
       {/* Card for Year and Month Dropdown */}
       {/* <div className=" shadow-lg rounded-lg p-4"> */}
-      <div className="-mx-4 px-10 flex flex-wrap">
+      <div className="-mx-4 px-10 flex gap-3 flex-wrap">
         <div className="w-full px-3 md:w-1/4">
           <label htmlFor="year" className="mr-2">
             Year:

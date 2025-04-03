@@ -86,7 +86,7 @@ const CreateTask = () => {
       // taskReminderVM: manualNotification ? notifications : [], // Add manual notifications if selected
     };
 
-    console.log(taskData)
+    // console.log(taskData)
   
     setIsSubmitting(true);
     try {

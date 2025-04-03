@@ -132,7 +132,7 @@ const ClientCompanyList = () => {
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Client Company List</h1>
         <div className="flex">
-        {/* <motion.button 
+          {/* <motion.button 
           whileHover={{ scale: 1.1 }} 
           whileTap={{ scale: 0.9 }}
           onClick={handleDownloadReport }
@@ -142,15 +142,15 @@ const ClientCompanyList = () => {
           >
             {isSubmitting ? "Downloading..." : "Download Report"}
         </motion.button> */}
-        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <Link
-            to="/clientcompany-list/add-clientcompany"
-            className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-          >
-            Add
-            <FaPlus className="mt-[3px]" size={14} />
-          </Link>
-        </motion.button>
+          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <Link
+              to="/clientcompany-list/add-clientcompany"
+              className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+            >
+              Add
+              <FaPlus className="mt-[3px]" size={14} />
+            </Link>
+          </motion.button>
         </div>
       </div>
 
@@ -202,10 +202,13 @@ const ClientCompanyList = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: item * 0.1 }}
               >
- 
                 <td className="py-3 px-4 text-gray-700">{item.companyName}</td>
-                <td className="py-3 px-4 text-gray-700">{item.companyRegistrationNumber}</td>
-                <td className="py-3 px-4 text-gray-700">{item.contactPersonName}</td>
+                <td className="py-3 px-4 text-gray-700">
+                  {item.companyRegistrationNumber}
+                </td>
+                <td className="py-3 px-4 text-gray-700">
+                  {item.contactPersonName}
+                </td>
                 <td className="py-3 px-4 text-gray-700">{item.email}</td>
                 <td className="py-3 px-4 text-gray-700">{item.phoneNumber}</td>
                 <td className="py-3 px-4">
@@ -237,7 +240,9 @@ const ClientCompanyList = () => {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => handleDeleteClick(item.clientRegistrationId)}
+                      onClick={() =>
+                        handleDeleteClick(item.clientRegistrationId)
+                      }
                       className="text-red-500 hover:text-red-700"
                     >
                       <FaTrash size={22} />
@@ -253,8 +258,8 @@ const ClientCompanyList = () => {
 
       {/* Confirmation Popup */}
       {isPopupOpen && (
-        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
-          <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg max-w-full sm:max-w-lg md:max-w-lg lg:max-w-md xl:max-w-lg w-11/12">
             <div className="flex justify-center mb-4">
               <div className="bg-red-100 p-5 rounded-full">
                 <FaTrashAlt className="text-red-600 text-4xl" />
@@ -263,12 +268,12 @@ const ClientCompanyList = () => {
             <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
               Are you sure you want to delete ?
             </h3>
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={handlePopupClose}
-                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200"
+                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200 w-full sm:w-auto"
               >
                 No
               </motion.button>
@@ -276,7 +281,7 @@ const ClientCompanyList = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={deleteClientCompany}
-                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200"
+                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200 w-full sm:w-auto"
               >
                 Yes
               </motion.button>
@@ -286,7 +291,11 @@ const ClientCompanyList = () => {
       )}
 
       {/* Pagination Section */}
-      <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
+      <div
+        className={`flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg ${
+          isPopupOpen ? "hidden" : ""
+        }`}
+      >
         <div className="flex flex-1 justify-between sm:hidden">
           <motion.button
             onClick={() => handlePageChange(currentPage - 1)}

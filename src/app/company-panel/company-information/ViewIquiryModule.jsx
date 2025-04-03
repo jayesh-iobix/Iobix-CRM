@@ -43,9 +43,9 @@ const ViewIquiryModule = () => {
 
   return (
     <>
-      <div className="container mx-auto mb-10">
-        <div className="bg-white px-10 p-8 rounded-lg shadow-lg space-y-8">
-          <div className="flex justify-between items-center border-b pb-4">
+      <div className="container mx-auto mb-10 flex-wrap">
+        <div className="bg-white px-4 sm:px-10 p-8 rounded-lg shadow-lg space-y-8">
+          <div className="flex items-center lg:justify-between border-b justify-center pb-4 flex-wrap gap-3">
             <h1 className="font-semibold text-3xl">Ideal Cutomer Details</h1>
             <div className="flex">
               <motion.button
@@ -56,7 +56,9 @@ const ViewIquiryModule = () => {
                   to={`/company/edit-icp/${id}`}
                   className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 me-2 rounded hover:no-underline"
                 >
-                  Edit Ideal Cutomer Details
+                  Edit {/* Show always */}
+                  <span className="hidden sm:inline">Ideal Customer Details</span> {/* Hide on sm and below */}
+                  {/* Edit Ideal Cutomer Details */}
                   <FaEdit size={20} />
                 </Link>
               </motion.button>

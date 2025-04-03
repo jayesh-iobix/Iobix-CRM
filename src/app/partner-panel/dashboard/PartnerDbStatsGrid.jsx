@@ -7,30 +7,36 @@ import { DashboardService } from "../../service/DashboardService ";
 // import { DashboardService } from "../../service/DashboardService ";
 
 const PartnerDbStatsGrid = () => {
-  const [totalEmployeeCount, setTotalEmployeeCount] = useState("");
-  const [totalDepartmentCount, setTotalDepartmentCount] = useState("");
+  const [totalReceiveProjectCount, setTotalReceiveProjectCount] = useState("");
+  const [totalCreateProjectCount, setTotalCreateProjectCount] = useState("");
+  const [totalProjectCount, setTotalProjectCount] = useState("");
+
   const [totalTaskCount, setTotalTaskCount] = useState("");
   const [pendingTaskCount, setPendingTaskCount] = useState("");
   const [inProgressTaskCount, setInProgressTaskCount] = useState("");
   const [completedTaskCount, setCompletedTaskCount] = useState("");
 
-  // useEffect(() => {
-  //   const fetchDashbordCount = async () => {
-  //     try {
-  //       const result = await DashboardService.getDashboardCount();
-  //       console.log(result.data);
-  //       setTotalEmployeeCount(result.data.totalEmployeeCount);
-  //       setTotalDepartmentCount(result.data.totalDepartmentCount);
-  //       setTotalTaskCount(result.data.totalTaskCount);
-  //       setPendingTaskCount(result.data.pendingTaskCount);
-  //       setInProgressTaskCount(result.data.inProgressTaskCount);
-  //       setCompletedTaskCount(result.data.completedTaskCount);
-  //     } catch (error) {
-  //       console.error("Error fetching Count:", error);
-  //     }
-  //   };
-  //   fetchDashbordCount();
-  // }, []);
+  useEffect(() => {
+    const fetchDashbordCount = async () => {
+      try {
+        const result = await DashboardService.getDashboardCount();
+        console.log(result.data);
+        const dashboardCount = result.data;
+
+        setTotalReceiveProjectCount(dashboardCount.receiveProjectCount);
+        setTotalCreateProjectCount(dashboardCount.sentProjectCount);
+        setTotalProjectCount(dashboardCount.totalProjectCount);
+
+        // setTotalTaskCount(dashboardCount.totalTaskCount);
+        // setPendingTaskCount(dashboardCount.pendingTaskCount);
+        // setInProgressTaskCount(dashboardCount.inProgressTaskCount);
+        // setCompletedTaskCount(dashboardCount.completedTaskCount);
+      } catch (error) {
+        console.error("Error fetching Count:", error);
+      }
+    };
+    fetchDashbordCount();
+  }, []);
 
   return (
       <div className="flex flex-col md:flex-row w-full md:h-[150px] md:w-full gap-4">
@@ -57,8 +63,8 @@ const PartnerDbStatsGrid = () => {
               Total Projects
             </span>
             <div className="flex items-center">
-              <strong className="text-xl text-gray-700 font-semibold">18</strong>
-              {/* <strong className="text-xl text-gray-700 font-semibold">{totalDepartmentCount}</strong> */}
+              <strong className="text-xl text-gray-700 font-semibold">{totalProjectCount}</strong>
+              {/* <strong className="text-xl text-gray-700 font-semibold">18</strong> */}
             </div>
           </div>
         </div>
@@ -72,8 +78,8 @@ const PartnerDbStatsGrid = () => {
                Total Created Projects
             </span>
             <div className="flex items-center">
-              <strong className="text-xl text-gray-700 font-semibold">28</strong>
-              {/* <strong className="text-xl text-gray-700 font-semibold">{totalTaskCount}</strong> */}
+              <strong className="text-xl text-gray-700 font-semibold">{totalCreateProjectCount}</strong>
+              {/* <strong className="text-xl text-gray-700 font-semibold">28</strong> */}
             </div>
           </div>
         </div>
@@ -87,8 +93,8 @@ const PartnerDbStatsGrid = () => {
             Total Received Projects
             </span>
             <div className="flex items-center">
-              <strong className="text-xl text-gray-700 font-semibold">28</strong>
-              {/* <strong className="text-xl text-gray-700 font-semibold">{inProgressTaskCount}</strong> */}
+              <strong className="text-xl text-gray-700 font-semibold">{totalReceiveProjectCount}</strong>
+              {/* <strong className="text-xl text-gray-700 font-semibold">28</strong> */}
             </div>
           </div>
         </div>

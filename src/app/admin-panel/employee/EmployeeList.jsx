@@ -132,25 +132,25 @@ const EmployeeList = () => {
       <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">Employee List</h1>
         <div className="flex flex-wrap gap-2 mt-2 md:mt-1 lg:mt-1 xl:mt-1">
-        <motion.button 
-          whileHover={{ scale: 1.1 }} 
-          whileTap={{ scale: 0.9 }}
-          onClick={handleDownloadReport }
-          className ={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
-            ${isSubmitting ? "opacity-50 cursor-not-allowed" : "" }`}
-          disabled={isSubmitting}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleDownloadReport}
+            className={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
+            ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={isSubmitting}
           >
             {isSubmitting ? "Downloading..." : "Download Report"}
-        </motion.button>
-        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <Link
-            to="/employee-list/add-employee"
-            className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-          >
-            Add
-            <FaPlus className="mt-[3px]" size={14} />
-          </Link>
-        </motion.button>
+          </motion.button>
+          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <Link
+              to="/employee-list/add-employee"
+              className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+            >
+              Add
+              <FaPlus className="mt-[3px]" size={14} />
+            </Link>
+          </motion.button>
         </div>
       </div>
 
@@ -262,8 +262,8 @@ const EmployeeList = () => {
 
       {/* Confirmation Popup */}
       {isPopupOpen && (
-        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50">
-          <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg">
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-50">
+          <div className="bg-white p-5 rounded-lg shadow-lg max-w-full sm:max-w-lg md:max-w-lg lg:max-w-md xl:max-w-lg w-11/12">
             <div className="flex justify-center mb-4">
               <div className="bg-red-100 p-5 rounded-full">
                 <FaTrashAlt className="text-red-600 text-4xl" />
@@ -272,12 +272,12 @@ const EmployeeList = () => {
             <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
               Are you sure you want to delete ?
             </h3>
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={handlePopupClose}
-                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200"
+                className="flex items-center gap-2 bg-gray-400 px-8 py-3 rounded-lg text-white font-semibold hover:bg-gray-500 active:bg-gray-500 transition duration-200 w-full sm:w-auto"
               >
                 No
               </motion.button>
@@ -285,7 +285,7 @@ const EmployeeList = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={deleteEmployee}
-                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200"
+                className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200 w-full sm:w-auto"
               >
                 Yes
               </motion.button>
@@ -295,7 +295,11 @@ const EmployeeList = () => {
       )}
 
       {/* Pagination Section */}
-      <div className="flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg">
+      <div
+        className={`flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg ${
+          isPopupOpen ? "hidden" : ""
+        }`}
+      >
         <div className="flex flex-1 justify-between sm:hidden">
           <motion.button
             onClick={() => handlePageChange(currentPage - 1)}

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { TaskService } from "../../../service/TaskService";
 import { motion } from "framer-motion"; // Import framer-motion
-
 
 
 const AssignTask = () => {
@@ -23,23 +22,26 @@ const AssignTask = () => {
   const [departmentList, setDepartmentList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [manualNotification, setManualNotification] = useState(false);
+    const [notifications, setNotifications] = useState([{ reminderDateTime: ""}]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-
         const departmentResult = await DepartmentService.getDepartments();
-        const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
+        const activeDepartments = departmentResult.data.filter(
+          (department) => department.isActive === true
+        );
         setDepartmentList(activeDepartments);
 
-        if(departmentId)
-          {
-               // Fetch Employee from department
-               const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
-               setEmployeeList(employeeResult.data);
-          }
-
+        if (departmentId) {
+          // Fetch Employee from department
+          const employeeResult = await EmployeeService.getEmployeeByDepartment(
+            departmentId
+          );
+          setEmployeeList(employeeResult.data);
+        }
       } catch (error) {
         console.error("Error fetching employee list:", error);
       }
@@ -75,6 +77,12 @@ const AssignTask = () => {
       taskDescription,
       departmentId,
       taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate, // Convert empty string to null
+      manualNotification,
+      taskReminderVM: manualNotification ? {
+        reminderDateTimes: notifications.map(notification => ({
+          reminderDateTime: notification.reminderDateTime, // Ensure it's a string (ISO8601 or other formats)
+        }))
+      } : {},
     };
 
     setIsSubmitting(true);
@@ -83,6 +91,15 @@ const AssignTask = () => {
       if (response.status === 1) {
         toast.success(response.message); // Toast on success
         navigate(-1);
+        setTaskName('');
+        setTaskAssignTo('');
+        setTaskPriority('');
+        setTaskType('');
+        setTaskStartingDate('');
+        setTaskExpectedCompletionDate('');
+        setTaskDescription('');
+        setDepartmentId('');
+        setNotifications([{ reminderDateTime: "" }]); // Clear notifications
         // navigate("/user/assign-task-list");
       }
     } catch (error) {
@@ -91,6 +108,24 @@ const AssignTask = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleAddNotification = () => {
+    setNotifications([...notifications, { reminderDateTime: "" }]);
+  };
+
+  // Handle change in notification input fields
+  const handleNotificationChange = (index, field, value) => {
+    const updatedNotifications = notifications.map((notification, i) => 
+      i === index ? { ...notification, [field]: value } : notification
+    );
+    setNotifications(updatedNotifications);
+  };
+
+  // Handle removing a notification row
+  const handleRemoveNotification = (index) => {
+    const updatedNotifications = notifications.filter((_, i) => i !== index);
+    setNotifications(updatedNotifications);
   };
 
   return (
@@ -252,6 +287,79 @@ const AssignTask = () => {
                 className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
               ></textarea>
             </div>
+
+            {/* Send Manual Notification */}
+            <div className="w-full mb-4 px-3">
+              <label className="block text-base font-medium">Send Manual Notification</label>
+              <div className="flex items-center gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="manualNotification"
+                    value="true"
+                    checked={manualNotification === true}
+                    onChange={() => setManualNotification(true)}
+                    className="me-1"
+                  />
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="manualNotification"
+                    value="false"
+                    checked={manualNotification === false}
+                    onChange={() => setManualNotification(false)}
+                    className="me-1"
+                  />
+                  No
+                </label>
+              </div>
+            </div>
+
+            {manualNotification && (
+              <div className="w-full px-3">
+                <button
+                  type="button"
+                  onClick={handleAddNotification}
+                  className="text-blue-500 font-medium"
+                >
+                  + Add Manual Notification
+                </button>
+
+                {notifications.map((notification, index) => (
+                  <div key={index} className="mt-4 flex flex-wrap gap-4">
+                    <div className="w-full md:w-1/2 mb-2">
+                      <label className="block text-base font-medium">Notification DateTime</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="datetime-local"
+                          value={notification.reminderDateTime}
+                          onChange={(e) => handleNotificationChange(index, "reminderDateTime", e.target.value)}
+                          className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveNotification(index)}
+                          className="text-red-500"
+                        >
+                          <FaTimes size={18} />
+                        </button>
+                      </div>
+                    </div>
+                    {/* <div className="w-full md:w-1/2 mb-2">
+                      <label className="block text-base font-medium">Notification Message</label>
+                      <input
+                        type="text"
+                        value={notification.message}
+                        onChange={(e) => handleNotificationChange(index, "message", e.target.value)}
+                        className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                      />
+                    </div> */}
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="w-full px-3">
             <motion.button

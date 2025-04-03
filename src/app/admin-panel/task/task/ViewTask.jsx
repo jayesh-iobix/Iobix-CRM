@@ -50,7 +50,7 @@ const ViewTask = () => {
 
   return (
     <>
-      <div className="container mx-auto mb-10">
+      <div className="container mx-auto mb-10 flex-wrap">
         <div className="bg-white px-4 sm:px-6 md:px-10 p-6 md:p-8 rounded-lg shadow-lg space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-center border-b pb-4">
             <h1 className="font-semibold text-3xl sm:text-4xl">Task Details</h1>

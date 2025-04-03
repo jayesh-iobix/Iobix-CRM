@@ -330,7 +330,7 @@ const ViewVendorProject = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center my-3">
+      <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">Project List</h1>
         <div className="flex">
           {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -346,7 +346,7 @@ const ViewVendorProject = () => {
         </div>
       </div>
 
-      <div className="flex gap-4 my-4">
+      <div className="flex gap-4 my-4 flex-wrap">
         <input
           type="text"
           value={inquiryFilter}
@@ -367,7 +367,7 @@ const ViewVendorProject = () => {
             <option value="FinalApproval">FinalApproval</option>
         </select>
 
-        <select
+        {/* <select
           value={projectFilter}
           onChange={handleProjectFilterChange}
           className="border border-gray-300 rounded p-2 w-fit border-active"
@@ -376,7 +376,7 @@ const ViewVendorProject = () => {
             <option value="Partner">Partner</option>
             <option value="Client">Client Company</option>
             <option value="Client">Vendor</option>
-        </select>
+        </select> */}
       </div>
 
       <div className="grid overflow-x-auto">

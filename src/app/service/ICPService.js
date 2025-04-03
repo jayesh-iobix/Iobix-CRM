@@ -19,8 +19,8 @@ export const ICPService = {
     }
   },
 
-   // Method to get all ICP
-   getICP: async () => {
+  // Method to get all ICP
+  getICP: async () => {
     try {
       const response = await httpClient.get(`${api}/GetAll`); // Update 'GetAll' with actual endpoint if different
       return response.data;
@@ -30,8 +30,8 @@ export const ICPService = {
     }
   },
 
-   // Method to get a ICP by ID
-   getByIdICP: async (idealCustomerProfileId) => {
+  // Method to get a ICP by ID
+  getByIdICP: async (idealCustomerProfileId) => {
     try {
       const response = await httpClient.get(`${api}/${idealCustomerProfileId}`); 
       return response.data;
@@ -41,16 +41,16 @@ export const ICPService = {
     }
   },
 
-   // Methos to update Employee
-//    updateEmployee: async (employeeId, updatedEmployeeData) => {
-//     try {
-//       const response = await httpClient.put(${api}/${employeeId},updatedEmployeeData); 
-//       return response.data;
-//     } catch (error) {
-//       console.error('Failed to fetch employee:', error);
-//       throw error;
-//     }
-//   },
+  // Methos to update icp
+  updateICP: async (id, icpData) => {
+    try {
+      const response = await httpClient.put(`${api}/${id}`,icpData); 
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update ico:', error);
+      throw error;
+   }
+  },
 
   // Methos to delete Employee
 //   deleteEmployee: async (employeeId) => {

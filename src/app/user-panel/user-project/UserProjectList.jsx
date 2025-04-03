@@ -346,7 +346,7 @@ const UserProjectList = () => {
         </div>
       </div>
 
-      <div className="flex gap-4 my-4">
+      <div className="flex gap-4 my-4 flex-wrap">
         <input
           type="text"
           value={inquiryFilter}

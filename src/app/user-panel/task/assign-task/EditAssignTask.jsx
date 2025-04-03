@@ -134,7 +134,7 @@ const EditAssignTask = () => {
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Task</h1>
         <div className="flex">
-          <motion.button
+          {/* <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
@@ -144,7 +144,7 @@ const EditAssignTask = () => {
           >
             Add Sub Task <span className="mt-[2px]"> <FaPlus size={14} /></span>
           </Link>
-          </motion.button>
+          </motion.button> */}
 
           <motion.button
           whileHover={{ scale: 1.1 }}

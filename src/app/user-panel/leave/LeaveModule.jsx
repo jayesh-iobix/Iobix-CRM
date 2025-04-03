@@ -269,6 +269,7 @@ const fetchLeaveType = async () => {
       {selectedMonth !== null && (
         // <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <div className="grid mt-4 overflow-x-auto shadow-xl">
+          {/* <div className="overflow-x-auto"> */}
           <table className="min-w-full table-auto bg-white border border-gray-200">
             <thead className="bg-gray-900 border-b">
               <tr>
@@ -336,14 +337,15 @@ const fetchLeaveType = async () => {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+        // </div>
         // {/* </section> */}
       )}
 
       {/* Modal for Apply Leave */}
       {showModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50 overflow-x-auto">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-full sm:max-w-md md:max-w-lg lg:max-w-2xl w-full">
+        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50 overflow-x-auto">
+          <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
             <h2 className="text-xl font-semibold mb-4 text-center sm:text-left">
               Apply Leave
             </h2>

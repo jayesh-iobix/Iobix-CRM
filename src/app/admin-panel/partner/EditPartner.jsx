@@ -24,6 +24,9 @@ const EditPartner = () => {
     cityId: "",
     whatsAppNumber: "",
     companyWebsite : "",
+    departmentId: "",
+    relationalManagerId : "",
+    isRelationalManagerId : "",
   });
 
   const { id } = useParams();
@@ -35,15 +38,19 @@ const EditPartner = () => {
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
+  const [departmentList, setDepartmentList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const navigate = useNavigate();
+  const [isRelationalManager, setIsRelationalManager] = useState("");
 
   useEffect(() => {
       const fetchData = async () => {
         try {
+
           // Fetch Partner
           const partner = await PartnerService.getByIdPartner(id);
           setFormData(partner.data);
+          setIsRelationalManager(partner.data.isRelationalManager)
           //   console.log(partner.data);
   
           // Fetch Countries
@@ -62,6 +69,18 @@ const EditPartner = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+
+       //#region Fetch Employee By Department
+       const departmentResult = await DepartmentService.getDepartments();
+       const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
+       setDepartmentList(activeDepartments); 
+       if (formData.departmentId) {
+         // Fetch Employee from department
+         const employeeResult = await EmployeeService.getEmployeeByDepartment(formData.departmentId);
+         setEmployeeList(employeeResult.data);
+       }
+      //#endregion Fetch Employee By Department
+
       //#region Fetch Inqiry Source
       const inquirySourceResult = await InquirySourceService.getInquirySource();
       const activeInquirySource = inquirySourceResult.data.filter(inquirySource => inquirySource.isActive === true);
@@ -84,8 +103,9 @@ const EditPartner = () => {
       }
       //#endregion Fetch Country, State, and City Source
     };
+    
     fetchData();
-    }, [formData.countryId, formData.stateId])
+    }, [formData.countryId, formData.stateId, formData.departmentId])
 
   const validateForm = () => {
     const newErrors = {};
@@ -106,18 +126,26 @@ const EditPartner = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    debugger; 
+    // debugger; 
 
     if (validateForm()) {
       setIsSubmitting(true);
+
+      const updatedCompanyData = {
+        ...formData,
+        isRelationalManager,
+        // departmentId: isRelationalManager ? formData.departmentId : "",
+        relationalManagerId: isRelationalManager ? formData.relationalManagerId : null,
+      }
+
+      // console.log(updatedCompanyData)
       try {
-        //debugger;
+        // debugger;
         // Call the API to add the employee
-        const response = await PartnerService.updatePartner(id, formData); // Call the service
+        const response = await PartnerService.updatePartner(id, updatedCompanyData); // Call the service
         if (response.status === 1) {
           navigate(-1);
           toast.success("Partner updated successfully");
@@ -129,22 +157,23 @@ const EditPartner = () => {
         }
 
         // Reset the form after successful submission
-        setFormData({
-          companyName: "",
-          companyRegistrationNumber : "",
-          companyGSTNumber : "",
-          companyLinkedin : "",
-          contactPersonName : "",
-          phoneNumber : "",
-          email: "",
-          contactPersonLinkedin : "",
-          address: "",
-          countryId: "",
-          stateId: "",
-          cityId: "",
-          whatsAppNumber: "",
-          companyWebsite : "",
-        });
+        // setFormData({
+        //   companyName: "",
+        //   companyRegistrationNumber : "",
+        //   companyGSTNumber : "",
+        //   companyLinkedin : "",
+        //   contactPersonName : "",
+        //   phoneNumber : "",
+        //   email: "",
+        //   contactPersonLinkedin : "",
+        //   address: "",
+        //   countryId: "",
+        //   stateId: "",
+        //   cityId: "",
+        //   whatsAppNumber: "",
+        //   companyWebsite : "",
+        // });
+
         setErrors({});
       } catch (error) {
         console.error("Error adding client partner:", error);
@@ -199,6 +228,101 @@ const EditPartner = () => {
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-4 dark:bg-dark">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
+          {/* Select Employee Assign To */}
+          <div className="w-full mb-4 px-3">
+              <label className="block text-base font-medium">
+                Relational Manager Assign To Partner ?
+              </label>
+              <div className="flex items-center gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="isRelationalManager"
+                    value="true"
+                    checked={isRelationalManager === true}
+                    onChange={() => setIsRelationalManager(true)}
+                    className="me-1"
+                  />
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="isRelationalManager"
+                    value="false"
+                    checked={isRelationalManager === false}
+                    onChange={() => setIsRelationalManager(false)}
+                    className="me-1"
+                  />
+                  No
+                </label>
+              </div>
+            </div>
+            {isRelationalManager && (
+              <>
+                {/* Department Select */}
+                <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
+                  <label className="mb-2 block text-base font-medium">
+                    Department
+                  </label>
+                  <select
+                    value={formData.departmentId}
+                    onChange={handleChange}
+                    // onChange={(e) => setDepartmentId(e.target.value)}
+                    name="departmentId"
+                    className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
+                  >
+                    <option value="" className="text-gray-400">
+                      --Select Department--
+                    </option>
+                    {departmentList.length > 0 ? (
+                      departmentList.map((departmentItem) => (
+                        <option
+                          key={departmentItem.departmentId}
+                          value={departmentItem.departmentId}
+                        >
+                          {departmentItem.departmentName}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No Department available
+                      </option>
+                    )}
+                  </select>
+                </div>
+
+                {/* Relational Manager */}
+                <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/3">
+                  <label className="mb-2 block text-base font-medium">
+                    Assign To
+                  </label>
+                  <select
+                    value={formData.relationalManagerId}
+                    onChange={handleChange}
+                    name="relationalManagerId"
+                    className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
+                  >
+                    <option value="">--Select Employee--</option>
+                    {employeeList.length > 0 ? (
+                      employeeList.map((employee) => (
+                        <option
+                          key={employee.employeeId}
+                          value={employee.employeeId}
+                        >
+                          {employee.firstName + " " + employee.lastName}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No Employees available
+                      </option>
+                    )}
+                  </select>
+                </div>
+              </>
+            )}
+
             {[
               {
                 label: "Company Name",
@@ -419,9 +543,10 @@ const EditPartner = () => {
           </div>
         </form>
       </section>
-    </>
-  );
+    </>
+  );
 };
+
 
 export default EditPartner;
 

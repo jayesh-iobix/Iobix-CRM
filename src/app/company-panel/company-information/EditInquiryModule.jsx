@@ -15,7 +15,7 @@ const EditInquiryModule = () => {
     cityId: [],
     countries: [],
     states: [],
-    citys: [],
+    cities: [],
     industries: "",
     companySize: "",
     fundingStage: "",
@@ -65,8 +65,40 @@ const EditInquiryModule = () => {
             // });
 
             setFormData(response.data); // Prepopulate the form with the existing data
+            
         //   }
 
+        // Fetch countries
+        // const countryResult = await CommonService.getCountry();
+        // setCountryList(countryResult.data);
+
+        // // Fetch states and cities if country and state are selected
+        // if (formData.countryId.length > 0) {
+        //   const stateResult = await CommonService.getMultipleState(formData.countryId);
+        //   setStateList(stateResult.data);
+
+        //   if (stateResult.data.length > 0) {
+        //     if (formData.stateId.length > 0) {
+        //       const cityResult = await CommonService.getMultipleCity(formData.stateId);
+        //       setCityList(cityResult.data);
+        //       if (cityResult.data.length === 0) {
+        //         setFormData((prev) => ({ ...prev, cityId: [] }));
+        //       }
+        //     }
+        //   } else {
+        //     setFormData((prev) => ({ ...prev, stateId: [], cityId: [] }));
+        //   }
+        // }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchCountrystatecityData = async () => {
+      try {
         // Fetch countries
         const countryResult = await CommonService.getCountry();
         setCountryList(countryResult.data);
@@ -92,8 +124,10 @@ const EditInquiryModule = () => {
         console.error("Error fetching data:", error);
       }
     };
-    fetchData();
-  }, [formData.countryId, formData.stateId, id]);
+    fetchCountrystatecityData();
+  }, [formData.countryId, formData.stateId]);
+
+  
 
   const handleSelectChange = (selectedOptions, field) => {
     setFormData((prev) => ({
@@ -129,7 +163,6 @@ const EditInquiryModule = () => {
   const selectedCountryOptions = countryOptions.filter((option) =>
     Array.isArray(formData.countryId) && formData.countryId.includes(option.value)
   );
-  
 
   const stateOptions = stateList.map((state) => ({
     value: state.stateId,
@@ -151,10 +184,11 @@ const EditInquiryModule = () => {
 
     try {
       const response = await ICPService.updateICP(id, formData); // Update the data with the given id
-      console.log("Response:", response);
+      // console.log("Response:", response);
       if (response.status === 1) {
         toast.success("Ideal Customer Profile updated successfully!");
-        navigate(`/company-form/${response.message}`);
+        navigate(-1); // Navigate back to the previous page
+        // navigate(/company-form/${response.message});
       }
     } catch (error) {
       console.error("Failed to update Ideal Customer Profile:", error);
@@ -210,7 +244,7 @@ const EditInquiryModule = () => {
                 <Select
                   options={countryOptions}
                   isMulti
-                  value={countryOptions.filter((option) => formData.countries.includes(option.value))}
+                  value={countryOptions.filter((option) => formData.countryId.includes(option.value))}
                   onChange={(selectedOption) =>
                     handleSelectChange(selectedOption, "countryId")
                   }
@@ -222,7 +256,7 @@ const EditInquiryModule = () => {
                 <Select
                   options={stateOptions}
                   isMulti
-                  value={stateOptions.filter((option) => formData.states.includes(option.value))}
+                  value={stateOptions.filter((option) => formData.stateId.includes(option.value))}
                   onChange={(selectedOption) =>
                     handleSelectChange(selectedOption, "stateId")
                   }
@@ -233,7 +267,7 @@ const EditInquiryModule = () => {
                 <Select
                   options={cityOptions}
                   isMulti
-                  value={cityOptions.filter((option) => formData.citys.includes(option.value))}
+                  value={cityOptions.filter((option) => formData.cityId.includes(option.value))}
                   onChange={(selectedOption) =>
                     handleSelectChange(selectedOption, "cityId")
                   }
@@ -570,8 +604,9 @@ const EditInquiryModule = () => {
           </div>
         </div>
       </section>
-    </>
-  );
+    </>
+  );
 };
+
 
 export default EditInquiryModule;

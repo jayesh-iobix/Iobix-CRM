@@ -19,15 +19,15 @@ export const EmployeeService = {
     }
   },
 
-   // Method to get all Employee
-   getEmployees: async () => {
-    try {
-      const response = await httpClient.get(`${api}/GetAll`); // Update 'GetAll' with actual endpoint if different
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch departments:', error);
-      throw error;
-    }
+  // Method to get all Employee
+  getEmployees: async () => {
+   try {
+     const response = await httpClient.get(`${api}/GetAll`); // Update 'GetAll' with actual endpoint if different
+     return response.data;
+   } catch (error) {
+     console.error('Failed to fetch departments:', error);
+     throw error;
+   }
   },
 
    // Method to get Inquiry Transfer Employee
