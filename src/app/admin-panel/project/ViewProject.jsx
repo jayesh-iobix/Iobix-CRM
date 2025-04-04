@@ -16,6 +16,7 @@ import InquiryChat from "../inquiry/InquiryChat";
 import InquiryTaskList from "../inquiry-task/InquiryTaskList";
 import InquiryChatCreated from "../inquiry/InquiryChatCreated";
 import ApprovedVendorInqry from "../approved-inquiry/ApprovedVendorInqry";
+import { VendorService } from "../../service/VendorService";
 // import ChatInquiry from "./ChatInquiry";
 
 const ViewProject = () => {
@@ -59,10 +60,12 @@ const ViewProject = () => {
   const [departments, setDepartments] = useState([]);
   const [clients, setClients] = useState([]);
   const [partners, setPartners] = useState([]);
+  const [vendors, setVendors] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const [departmentId, setDepartmentId] = useState("");
   const [clientId, setClientId] = useState("");
   const [partnerId, setPartnerId] = useState("");
+  const [vendorId, setVendorId] = useState("");
   const [inquiryForwardedTo, setInquiryForwardedTo] = useState("");  
   const [inquiryTransferTo, setInquiryTransferTo] = useState("");  
   const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState(""); 
@@ -103,6 +106,10 @@ const ViewProject = () => {
       const partnerCompany = await PartnerService.getPartner();
       setPartners(partnerCompany.data);
       // console.log(partnerCompany.data);
+
+      // Fetch Vendor 
+      const vendor = await VendorService.getVendor();
+      setVendors(vendor.data);
 
       // Fetch Inquiry Permission for Client Dropdown
       const inquiryPermissionforClient = await InquiryPermissionService.accessOfGetClientInAdminEmp(id);
@@ -209,10 +216,11 @@ const ViewProject = () => {
     const inquiryData = {
       inquiryRegistrationId: id,
       inquiryForwardedTo: 
-      (inquiryForwardedTo === "" && partnerId === "" && clientId !== "") ? clientId : 
-      (inquiryForwardedTo === "" && clientId === "" && partnerId !== "") ? partnerId : 
-      (clientId === "" && partnerId === "" && inquiryForwardedTo !== "") ? inquiryForwardedTo : 
-      (inquiryForwardedTo === "" && clientId === "" && partnerId === "" ? null : inquiryForwardedTo),
+      (inquiryForwardedTo === "" && partnerId === "" && vendorId === "" && clientId !== "") ? clientId : 
+      (inquiryForwardedTo === "" && clientId === "" && vendorId === "" && partnerId !== "") ? partnerId : 
+      (inquiryForwardedTo === "" && clientId === "" && partnerId === "" && vendorId !== "") ? vendorId : 
+      (clientId === "" && partnerId === "" && vendorId === "" && inquiryForwardedTo !== "") ? inquiryForwardedTo : 
+      (inquiryForwardedTo === "" && clientId === "" && partnerId === "" && vendorId === "" ? null : inquiryForwardedTo),
       // (inquiryForwardedTo === "" && clientId !== "") ? clientId : 
       // (clientId === "" && inquiryForwardedTo !== "") ? inquiryForwardedTo : 
       // (inquiryForwardedTo === "" && clientId === "" ? null : inquiryForwardedTo),
@@ -659,6 +667,22 @@ const ViewProject = () => {
                     </label>
                   </>
                 )}
+
+                {inquiryHideShow === true && formData.inquiryStatus !== 4 && (
+                  <>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="selectionOption"
+                        value="vendor"
+                        checked={selectedOption === "vendor"}
+                        onChange={() => setSelectedOption("vendor")}
+                        className="mr-2"
+                      />
+                      Select Vendor
+                    </label>
+                  </>
+                )}
               </div>
 
               {/* Client selection (visible when "Client" is selected) */}
@@ -720,6 +744,46 @@ const ViewProject = () => {
                           value={partner.partnerRegistrationId}
                         >
                           {partner.companyName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Description Field */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      FollowUp Description
+                    </label>
+                    <textarea
+                      value={inquiryFollowUpDescription}
+                      onChange={(e) =>
+                        setInquiryFollowUpDescription(e.target.value)
+                      }
+                      className="w-full mt-1 px-3 py-2 rounded-md border border-active"
+                      rows="4"
+                    />
+                  </div>
+                </>
+              )}
+
+              {selectedOption === "vendor" && (
+                <>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Select Vendor
+                    </label>
+                    <select
+                      value={vendorId}
+                      onChange={(e) => setVendorId(e.target.value)}
+                      className="w-full mt-1 px-3 py-2 rounded-md border border-active"
+                    >
+                      <option value="">--Select Vendor--</option>
+                      {vendors.map((vendor) => (
+                        <option
+                          key={vendor.vendorId}
+                          value={vendor.vendorId}
+                        >
+                          {vendor.companyName}
                         </option>
                       ))}
                     </select>

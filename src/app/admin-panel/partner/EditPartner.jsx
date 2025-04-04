@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquirySourceService } from "../../service/InquirySourceService";
 import { PartnerService } from "../../service/PartnerService";
+import { DepartmentService } from "../../service/DepartmentService";
+import { EmployeeService } from "../../service/EmployeeService";
 
 
 const EditPartner = () => {

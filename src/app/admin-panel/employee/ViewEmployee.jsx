@@ -153,7 +153,7 @@ const ViewEmployee = () => {
                       { label: "Emergency Mobile Number", name: "emergencyMobileNumber", value: formData.emergencyMobileNumber},
                       { label: "Gender", name: "gender", value: formData.gender},
                       { label: "Date of Birth", name: "birthDate",  value: formData.birthDate },
-                      { label: "Blood Group", name: "bloodGroup", value: formData.address },
+                      { label: "Blood Group", name: "bloodGroup", value: formData.bloodGroup },
                       { label: "Date of Joining", name: "dateOfJoining",  value: formData.dateOfJoining },
                       { label: "Country", name: "countryName",  value: formData.countryName },
                       { label: "State", name: "stateName",  value: formData.stateName },

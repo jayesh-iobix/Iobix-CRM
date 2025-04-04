@@ -275,7 +275,7 @@ export default function Header() {
         )}
 
         {/* Chat Popover */}
-        <Popover className="relative">
+        {/* <Popover className="relative">
           {({ open }) => (
             <>
               <Popover.Button
@@ -308,7 +308,7 @@ export default function Header() {
               </Transition>
             </>
           )}
-        </Popover>
+        </Popover> */}
 
         {/* Notifications Popover */}
         <Popover className="relative">
@@ -410,10 +410,25 @@ export default function Header() {
                       )}
                     >
                       Your Profile
-                    </div>
+                    </div>  
                   ) : (
                     <div
-                      onClick={() => navigate("/user/user-profile")}
+                    onClick={() => {
+                      // Get the user's role (this can be from state, context, or props)
+                    
+                      // Conditionally navigate based on the role
+                      if (role === 'partner') {
+                        navigate("/partner/partner-profile");
+                      } else if (role === 'company') {
+                        navigate("/company/company-profile");
+                      } else if (role === 'vendor') {
+                        navigate("/vendor/vendor-profile");
+                      } else {
+                        // Default navigation or error handling (optional)
+                        console.log("Unknown role");
+                      }
+                    }}
+                    
                       className={classNames(
                         active && "bg-gray-100",
                         "active:bg-gray-200 rounded-sm px-4 py-2 text-gray-700 cursor-pointer focus:bg-gray-200"

@@ -2,19 +2,37 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoClose } from 'react-icons/io5';
 import { FaUser } from "react-icons/fa";
+import { EmployeeService } from '../../service/EmployeeService';
 import { motion } from "framer-motion"; // Import framer-motion
 import { ProfileService } from '../../service/ProfileService';
 
 
-const UserProfile = () => {
+const PartnerProfile = () => {
 
-    const [userDetails, setUserDetails] = useState("");
-    const navigate = useNavigate();
+ const [partnerDetails, setPartnerDetails] = useState("");
+ const navigate = useNavigate();
 
-  const fetchUserDetails = async () => {
+ const role = sessionStorage.getItem("role");
+
+  const fetchPartnerDetails = async () => {
     try {
-      const result = await ProfileService.getEmployeesProfileDetail();
-      setUserDetails(result.data);
+        let result;
+
+        // Call API based on the user role
+        if (role === 'partner') {
+          result = await ProfileService.getPartnerProfileDetail();
+        } else if (role === 'company') {
+          result = await ProfileService.getClientProfileDetail();
+        } else if (role === 'vendor') {
+          result = await ProfileService.getVendorProfileDetail();
+        } else {
+          throw new Error('Unknown role');
+        }
+    
+        // Set the details based on the response
+        if (result && result.data) {
+          setPartnerDetails(result.data); // You can rename `setPartnerDetails` to something more general like `setProfileDetails` if you want.
+        }
 
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -35,7 +53,7 @@ const UserProfile = () => {
   
 
   useEffect(() => {
-    fetchUserDetails()
+    fetchPartnerDetails()
   },[])
 
   return (
@@ -48,8 +66,8 @@ const UserProfile = () => {
 
         {/* User Name and Role */}
         <div>
-          <h2 className="text-3xl mt-1 font-semibold text-gray-800">{userDetails.firstName +" "+ userDetails.lastName}</h2>
-          <p className="text-gray-500 text-xl">{userDetails.role}</p>
+          <h2 className="text-3xl mt-1 font-semibold text-gray-800">{partnerDetails.contactPersonName}</h2>
+          <p className="text-gray-500 text-xl">{partnerDetails.companyName}</p>
         </div>
         </div>
         <div>
@@ -62,16 +80,21 @@ const UserProfile = () => {
         </div>
       </div>
 
-      {/* User Details Section */}
+      {/* Partner Details Section */}
       <div className="mt-10">
-        <h3 className="text-xl font-semibold text-gray-800">User Details</h3>
+        <h3 className="text-xl font-semibold text-gray-800">
+        {role === 'company' ? 'Company Details' : 
+         role === 'partner' ? 'Partner Details' : 
+         role === 'vendor' ? 'Vendor Details' : 'Other Role Details'
+        }
+        </h3>
         <ul className="mt-4 space-y-2">
           <li className="flex flex-col sm:flex-row items-center space-x-2 text-gray-700">
-            <label htmlFor="name" className="w-full sm:w-40 block text-base font-medium">Full Name:</label>
+            <label htmlFor="name" className="w-full sm:w-40 block text-base font-medium">Company Name:</label>
             <input
               id="name"
               type="text"
-              value={userDetails.firstName +" "+ userDetails.lastName}
+              value={partnerDetails.companyName}
               readOnly
               className="w-full sm:w-1/2 mb-2 bg-transparent rounded-md border-b-2 py-[10px] px-4 text-dark outline-none"
             />
@@ -81,77 +104,77 @@ const UserProfile = () => {
             <input
               id="email"
               type="email"
-              value={userDetails.email}
+              value={partnerDetails.email}
               readOnly
               className="w-full sm:w-1/2 mb-2 bg-transparent rounded-md border-b-2 py-[10px] px-4 text-dark outline-none"
             />
           </li>
           <li className="flex flex-col sm:flex-row items-center space-x-2 text-gray-700">
-            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Employee Code:</label>
+            <label htmlFor="email" className="w-full sm:w-40 block text-base font-medium">Contact Person Name:</label>
             <input
-              id="role"
-              type="text"
-              value={userDetails.employeeCode}
+              id="email"
+              type="email"
+              value={partnerDetails.contactPersonName}
               readOnly
               className="w-full sm:w-1/2 mb-2 bg-transparent rounded-md border-b-2 py-[10px] px-4 text-dark outline-none"
             />
           </li>
           <li className="flex flex-col sm:flex-row items-center space-x-2 text-gray-700">
-            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Department:</label>
+            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Company Registration No:</label>
             <input
               id="role"
               type="text"
-              value={userDetails.departmentName}
+              value={partnerDetails.companyRegistrationNumber}
               readOnly
               className="w-full sm:w-1/2 mb-2 bg-transparent rounded-md border-b-2 py-[10px] px-4 text-dark outline-none"
             />
           </li>
           <li className="flex flex-col sm:flex-row items-center space-x-2 text-gray-700">
-            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Designation:</label>
+            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Company GST No:</label>
             <input
               id="role"
               type="text"
-              value={userDetails.designationName}
+              value={partnerDetails.companyGSTNumber}
               readOnly
               className="w-full sm:w-1/2 mb-2 bg-transparent rounded-md border-b-2 py-[10px] px-4 text-dark outline-none"
             />
           </li>
           <li className="flex flex-col sm:flex-row items-center space-x-2 text-gray-700">
-            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Mobile Number:</label>
+            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Company Linkedin:</label>
             <input
               id="role"
               type="text"
-              value={userDetails.mobileNumber}
+              value={partnerDetails.companyLinkedin}
               readOnly
               className="w-full sm:w-1/2 mb-2 bg-transparent rounded-md border-b-2 py-[10px] px-4 text-dark outline-none"
             />
           </li>
           <li className="flex flex-col sm:flex-row items-center space-x-2 text-gray-700">
-            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Date of Joining:</label>
+            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Phone Number:</label>
             <input
               id="role"
               type="text"
-              value={formatDate(userDetails.dateOfJoining)}
+              value={partnerDetails.phoneNumber}
               readOnly
               className="w-full sm:w-1/2 mb-2 bg-transparent rounded-md border-b-2 py-[10px] px-4 text-dark outline-none"
             />
           </li>
           <li className="flex flex-col sm:flex-row items-center space-x-2 text-gray-700">
-            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Date of Birth:</label>
+            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">WhatsApp Number:</label>
             <input
               id="role"
               type="text"
-              value={formatDate(userDetails.birthDate)}
+              value={partnerDetails.whatsAppNumber}
               readOnly
               className="w-full sm:w-1/2 mb-2 bg-transparent rounded-md border-b-2 py-[10px] px-4 text-dark outline-none"
             />
           </li>
           <li className="flex flex-col sm:flex-row items-center space-x-2 text-gray-700">
-            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Blood Group:</label>
+            <label htmlFor="role" className="w-full sm:w-40 block text-base font-medium">Contact Person Linkedin:</label>
             <input
               id="role"
               type="text"
-              value={userDetails.bloodGroup}
+              value={partnerDetails.contactPersonLinkedin}
               readOnly
               className="w-full sm:w-1/2 mb-2 bg-transparent rounded-md border-b-2 py-[10px] px-4 text-dark outline-none"
             />
@@ -161,7 +184,7 @@ const UserProfile = () => {
             <input
               id="role"
               type="text"
-              value={userDetails.address}
+              value={partnerDetails.address}
               readOnly
               className="w-full sm:w-1/2 mb-2 bg-transparent rounded-md border-b-2 py-[10px] px-4 text-dark outline-none"
             />
@@ -172,4 +195,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default PartnerProfile;

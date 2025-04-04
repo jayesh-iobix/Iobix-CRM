@@ -51,6 +51,7 @@ const EditVendor = () => {
           // Fetch Vendor
           const vendor = await VendorService.getByIdVendor(id);
           setFormData(vendor.data);
+          setIsRelationalManager(vendor.data.isRelationalManager)
           //   console.log(vendor.data);
   
           // Fetch Countries
@@ -104,7 +105,7 @@ const EditVendor = () => {
       //#endregion Fetch Country, State, and City Source
     };
     fetchData();
-    }, [formData.countryId, formData.stateId])
+    }, [formData.countryId, formData.stateId, formData.departmentId])
 
   const validateForm = () => {
     const newErrors = {};

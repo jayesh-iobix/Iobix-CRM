@@ -144,7 +144,7 @@ const ViewPartner = () => {
                       { label: "Company GST No.", name: "companyGSTNumber", value: formData.companyGSTNumber },
                       { label: "Company Linkedin", name: "companyLinkedin", value: formData.companyLinkedin },
                       { label: "Company Website", name: "companyWebsite", value: formData.companyWebsite },
-                      { label: "Contact Person Name", name: "contactPersonName",value: formData.contactPersonName },
+                      { label: "Contact Person Name", name: "contactPersonName",value: formData.contactPersonName},
                       { label: "Contact Person Phone No.", name: "phoneNumber", value: formData.phoneNumber},
                       { label: "Contact Person WhatsApp No.", name: "whatsAppNumber", value: formData.whatsAppNumber},
                       { label: "Email", name: "email",  value: formData.email },

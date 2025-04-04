@@ -51,6 +51,7 @@ const EditClientCompany = () => {
           // Fetch Client Company
           const clientCompany = await ClientCompanyService.getByIdClientCompany(id);
           setFormData(clientCompany.data);
+          setIsRelationalManager(clientCompany.data.isRelationalManager)
           //   console.log(clientCompany.data);
   
           // Fetch Countries

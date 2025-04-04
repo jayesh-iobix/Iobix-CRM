@@ -147,6 +147,7 @@ import EditProject from './app/admin-panel/project/EditProject';
 import ViewVendorProject from './app/vendor-panel/vendor-project/ViewVendorProject';
 import UserViewTaskProject from './app/user-panel/user-project/UserViewTaskProject';
 import VendorRegistration from './app/components/VendorRegistration';
+import PartnerProfile from './app/partner-panel/partner-profile/PartnerProfile';
 
 
 function App() {
@@ -381,6 +382,7 @@ function App() {
     {/* Company dashboard route */}
     <Route path="/company" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
     <Route index element={<ClientCompDashboard />} />
+    <Route path="/company/company-profile" element={<PartnerProfile/>} />
     <Route path="/company/icp-list" element={<InquiryModuleList/>} />
     <Route path="/company/add-icp" element={<InquiryModule/>} />
     <Route path="/company/edit-icp/:id" element={<EditInquiryModule/>} />
@@ -403,6 +405,7 @@ function App() {
     {/* Partner dashboard route */}
     <Route path="/partner" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
     <Route index element={<PartnerDashboard />} />
+    <Route path="/partner/partner-profile" element={<PartnerProfile/>} />
     <Route path="/partner/project-list" element={<InquiryList/>} />
     <Route path="/partner/get-project-list" element={<GetInquiryList/>} />
     <Route path="/partner/get-project-list/view-project/:id" element={<GetViewInquiry/>} />
@@ -425,6 +428,7 @@ function App() {
     {/* Vendor dashboard route */}
     <Route path="/vendor" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
     <Route index element={<VendorDashboard />} />
+    <Route path="/vendor/vendor-profile" element={<PartnerProfile/>} />
     <Route path="/vendor/icp-list" element={<InquiryModuleList/>} />
     <Route path="/vendor/add-icp" element={<InquiryModule/>} />
     <Route path="/vendor/edit-icp/:id" element={<EditInquiryModule/>} />
