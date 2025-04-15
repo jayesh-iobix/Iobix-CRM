@@ -417,7 +417,9 @@ export default function Header() {
                       // Get the user's role (this can be from state, context, or props)
                     
                       // Conditionally navigate based on the role
-                      if (role === 'partner') {
+                      if (role === 'user') {
+                        navigate("/user/user-profile");
+                      } else if (role === 'partner') {
                         navigate("/partner/partner-profile");
                       } else if (role === 'company') {
                         navigate("/company/company-profile");

@@ -33,6 +33,7 @@ const EditInquiryTask = () => {
   const [clientCompanyList, setClientCompanyList] = useState([]);
   const [vendorList, setVendorList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
+  // const [manualNotification, setManualNotification] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selection, setSelection] = useState("partner"); // Add this to track the radio button selection (partner, client, employee)
@@ -472,6 +473,35 @@ const EditInquiryTask = () => {
               <label className="block text-base font-medium">Attach Document</label>
               <input type="file" onChange={handleFileChange} />
             </div>
+
+            {/* Send Manual Notification */}
+            {/* <div className="w-full mb-4 px-3">
+              <label className="block text-base font-medium">Send Manual Notification</label>
+              <div className="flex items-center gap-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="manualNotification"
+                    value="true"
+                    checked={manualNotification === true}
+                    onChange={() => setManualNotification(true)}
+                    className="me-1"
+                  />
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="manualNotification"
+                    value="false"
+                    checked={manualNotification === false}
+                    onChange={() => setManualNotification(false)}
+                    className="me-1"
+                  />
+                  No
+                </label>
+              </div>
+            </div> */}
 
             {/* Submit Button */}
             <div className="w-full mb-6 px-3">

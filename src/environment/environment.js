@@ -36,4 +36,5 @@ export const environment = {
   taskReminder: "https://localhost:7292/api/TaskReminder",
   vendor: "https://localhost:7292/api/VendorRegistration",
   profile: "https://localhost:7292/api/Profile",
+  schedule: "https://localhost:7292/api/ScheduleCalendar",
 }

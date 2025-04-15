@@ -148,6 +148,7 @@ import ViewVendorProject from './app/vendor-panel/vendor-project/ViewVendorProje
 import UserViewTaskProject from './app/user-panel/user-project/UserViewTaskProject';
 import VendorRegistration from './app/components/VendorRegistration';
 import PartnerProfile from './app/partner-panel/partner-profile/PartnerProfile';
+import Schedule from './app/admin-panel/schedule-calendar/Schedule';
 
 
 function App() {
@@ -328,6 +329,7 @@ function App() {
       <Route path="view-project/:id" element={<ViewProject />} />
       <Route path="view-inquiry-task/:id" element={<ViewInquiryTask />} />
       <Route path="view-inquiry-subtask/:id" element={<ViewInquirySubTask />} />
+      <Route path="calendar" element={<Schedule />} />
       {/* <Route path="/profile" element={<Profile/>} /> */}
     </Route>
 
@@ -377,6 +379,7 @@ function App() {
     <Route path="/user/edit-inquiry-subtask/:id" element={<EditInquirySubTask />} />
     <Route path="/user/view-inquiry-task/:id" element={<ViewInquiryTask/>} />
     <Route path="/user/view-inquiry-subtask/:id" element={<ViewInquirySubTask/>} />
+    <Route path="/user/calendar" element={<Schedule />} />
     </Route>
 
     {/* Company dashboard route */}

@@ -68,7 +68,7 @@ export const CommonService = {
 
   // Method to get all State by multiple CountryId
   getMultipleState: async (countryIds) => {
-    debugger;
+    // debugger;
     // const countryId = ids.map((item) => item.countryId);
   
     const queryParams = new URLSearchParams();

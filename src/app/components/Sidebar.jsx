@@ -17,10 +17,10 @@ import '../../../src/App.css';
 // } from "../../lib/constants";
 
 const linkClass =
-  "flex items-center gap-2 font-light px-3 py-2 hover:bg-[#558989] hover:no-underline active:bg-[#558989] rounded-lg text-base"
+  "flex items-center gap-2 font-light px-3 py-2 hover:bg-[#558989] hover:no-underline active:bg-[#558989] rounded-lg text-base";
 
   const adminLinkClass =
-  "flex items-center gap-2 font-light px-3 py-2 hover:bg-[#042E45] hover:no-underline active:bg-[#042E45] rounded-lg text-base";;
+  "flex items-center gap-2 font-light px-3 py-2 hover:bg-[#042E45] hover:no-underline active:bg-[#042E45] rounded-lg text-base";
 
 
 
