@@ -400,6 +400,7 @@ function App() {
     <Route path="/company/companyinquiry-list/create-inquiry-sub-task/:id" element={<AddInquirySubTask />} />
     <Route path="/company/view-inquiry-task/:id" element={<PartnerViewInquiryTask/>} />
     <Route path="/company/view-inquiry-subtask/:id" element={<PartnerViewInquiryTask/>} />
+    <Route path="/company/calendar" element={<Schedule />} />
     {/* <Route path="/company/inquiry-list" element={<InquiryListInCompany />} />
     <Route path="/company/inquiry-list/add-inquiry" element={<AddInquiryInCompany />} /> */}
     {/* <Route path="/company/task-list" element={<UserTaskList/>} /> */}
@@ -426,6 +427,7 @@ function App() {
     <Route path="/partner/partnerinquiry-task-list/create-inquiry-sub-task/:id" element={<AddInquirySubTask />} />
     <Route path="/partner/inquiry-tasknote-list/:id" element={<InquiryTaskNoteList />} />
     <Route path="/partner/inquiry-subtasknote-list/:id" element={<InquiryTaskNoteList />} />
+    <Route path="/partner/calendar" element={<Schedule />} />
     </Route>
 
     {/* Vendor dashboard route */}
@@ -447,6 +449,7 @@ function App() {
     <Route path="/vendor/vendorinquiry-list/create-inquiry-sub-task/:id" element={<AddInquirySubTask />} />
     <Route path="/vendor/view-inquiry-task/:id" element={<PartnerViewInquiryTask/>} />
     <Route path="/vendor/view-inquiry-subtask/:id" element={<PartnerViewInquiryTask/>} />
+    <Route path="/vendor/calendar" element={<Schedule />} />
     </Route>
   
     </Routes>

@@ -50,6 +50,17 @@ export const ScheduleCalService = {
     }
   },
 
+  // Method to get schedule reminder by scheduleId
+  getScheduleReminderById: async (scheduleId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetReminder/${scheduleId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch schedule:', error);
+      throw error;
+    }
+  },
+
   // Method to get schedule by userId
   getScheduleByUserId: async (userId) => {
     try {

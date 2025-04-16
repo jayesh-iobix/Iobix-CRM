@@ -8,6 +8,9 @@ import { DepartmentService } from '../../service/DepartmentService';
 import { EmployeeService } from '../../service/EmployeeService';
 import { CommonService } from '../../service/CommonService';
 import { FaPlus, FaTimes } from 'react-icons/fa';
+import { PartnerService } from '../../service/PartnerService';
+import { ClientCompanyService } from '../../service/ClientCompanyService';
+import { VendorService } from '../../service/VendorService';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -61,14 +64,20 @@ const Schedule = () => {
   const [departmentId, setDepartmentId] = useState("");
   const [employeeList, setEmployeeList] = useState([]);
   const [adminList, setAdminList] = useState([]);
+  const [partnerList, setPartnerList] = useState([]);
+  const [companyList, setCompanyList] = useState([]);
+  const [vendorList, setVendorList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
+
   const [userId, setUserId] = useState(sessionStorage.getItem('LoginUserId'));
 
   const [manualNotification, setManualNotification] = useState(false); // Default to 'NO'
-  const [manualNotificationTime, setManualNotificationTime] = useState(null); // to store the selected date-time
   const [notificationDateTimes, setNotificationDateTimes] = useState([]); // to store multiple selected date-times
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [meetingLinkError, setMeetingLinkError] = useState('');
+  const urlRegex = /^(https?:\/\/(?:www\.)?(?:zoom\.us|teams\.microsoft\.com|meet\.google\.com)\/.*)$/;
 
+  const role = sessionStorage.getItem('role');
 
   // const userIdForSchedule = sessionStorage.getItem('LoginUserId');
 
@@ -108,15 +117,24 @@ const Schedule = () => {
 
         if (departmentId === "Admin") {
           // Call the API for Admin when "Admin" is selected
-          const adminResult = await CommonService.getAdmin(departmentId);
+          const adminResult = await CommonService.getAdmin();
           setAdminList(adminResult.data);
+        } else if (departmentId === "Partner") {
+          const partnerResult = await PartnerService.getPartner();
+          setPartnerList(partnerResult.data);
+        } else if (departmentId === "Company") {
+          const companyResult = await ClientCompanyService.getClientCompany();
+          setCompanyList(companyResult.data);
+        } else if (departmentId === "Vendor") {
+          const vendorResult = await VendorService.getVendor();
+          setVendorList(vendorResult.data);
         } else if (departmentId) {
-          // Call the API for employees when a valid department is selected
           const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
           setEmployeeList(employeeResult.data);
         } else {
           // If no department is selected, clear the employee list
           setEmployeeList([]);
+          setAdminList([]);
         }
 
         // if (departmentId) {
@@ -190,6 +208,9 @@ const Schedule = () => {
       const response = await ScheduleCalService.getScheduleById(scheduleId);
       const scheduleData = response.data;
       // console.log(scheduleData)
+
+      // const responseReminder = await ScheduleCalService.getScheduleReminderById(scheduleId);
+      // const scheduleReminderData = responseReminder.data;
       setEventTitle(scheduleData.eventTitle);
       setEventDate(scheduleData.eventDate);
       setEventTheme(scheduleData.eventTheme);
@@ -245,6 +266,13 @@ const Schedule = () => {
   };
 
   const addEvent = async () => {
+
+    // Validate meeting link before proceeding
+    // if (eventMeetingLink && !urlRegex.test(eventMeetingLink)) {
+    //   toast.error('Please enter a valid Google Meet/Zoom link!');
+    //   return; // Prevent submission
+    // }
+
     if (eventTitle === '') {
       toast.error('Please enter a title for the event!');
       return;
@@ -253,6 +281,10 @@ const Schedule = () => {
       toast.error('Please select a start time!');
       return;
     }
+    // if (endTime === '') {
+    //   toast.error('Please select a end time!');
+    //   return;
+    // }
 
     const formattedEventDate = format(new Date(eventDate), 'yyyy-MM-dd');
 
@@ -262,17 +294,15 @@ const Schedule = () => {
 
     // debugger;
     const scheduleData = {
-      eventDate: formattedEventDate,
-      eventTitle,
-      eventTheme,
-      startTime,
-      endTime: endTime === '' ? null : endTime,
-      eventLocation,
-      eventMeetingLink,
-      eventGuest: guestEmails, // ✅ use array of emails
-      manualNotification,
-      reminderDateTimes: notificationDateTimes, // Store the selected date-times for reminders
-      // eventGuest,
+        eventDate: formattedEventDate,
+        eventTitle,
+        eventTheme,
+        startTime,
+        endTime: endTime === '' ? null : endTime,
+        eventLocation,
+        eventMeetingLink,
+        eventGuest: guestEmails, // ✅ use array of emails
+        // eventGuest,
       
     };
 
@@ -430,16 +460,31 @@ const Schedule = () => {
   const showMoreEventsModal = (date) => {
     setMoreEventsDate(date.toDateString());
     setOpenMoreEventsModal(true); // Open the More Events modal
-    console.log("More Events for date:", date);
+    // console.log("More Events for date:", date);
+  };
+
+  const handleMeetingLinkChange = (e) => {
+    const value = e.target.value;
+    setEventMeetingLink(value);
+  
+    // Validate URL format
+    if (value && !urlRegex.test(value)) {
+      setMeetingLinkError('Please enter a valid Google Meet/Zoom link');
+    } else {
+      setMeetingLinkError('');
+    }
   };
   
   return (
     <div className="antialiased sans-serif h-screen">
+      {(role === "admin" || role === "user") && (
       <h1 className="font-semibold md:mb-[-12px] lg:mb-[-12px] text-2xl">
         Calendar
       </h1>
+      )}
 
       {/* Department and User Selects */}
+      {(role === "admin" || role === "user") && ( 
       <div className="container mx-auto py-2 md:py-6">
         <div className="flex flex-wrap items-center">
           {/* <label className="block text-base font-medium"> Department </label> */}
@@ -467,11 +512,14 @@ const Schedule = () => {
                 </option>
               )}
               <option value="Admin">Admin</option>
+              <option value="Partner">Partner</option>
+              <option value="Company">Company</option>
+              <option value="Vendor">Vendor</option>
             </select>
           </div>
 
           {/* Conditionally render the Employee Select dropdown */}
-          {departmentId !== "Admin" && (
+          {departmentId !== "Admin" && departmentId !== "Partner" && departmentId !== "Company" && departmentId !== "Vendor" &&(
             <div className="w-full md:w-1/3 me-2">
               <select
                 value={userId}
@@ -505,18 +553,73 @@ const Schedule = () => {
               </select>
             </div>
           )}
+
+          {/* Conditionally render the Partner Select dropdown */}
+          {departmentId === "Partner" && (
+            <div className="w-full md:w-1/3 me-2">
+              <select
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                className="w-full rounded-md border py-[10px] px-4 border-active"
+              >
+                <option value="">--Select Partner--</option>
+                {partnerList.map((partner) => (
+                  <option key={partner.partnerRegistrationId} value={partner.partnerRegistrationId}>
+                    {partner.companyName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Conditionally render the Company Select dropdown */}
+          {departmentId === "Company" && (
+            <div className="w-full md:w-1/3 me-2">
+              <select
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                className="w-full rounded-md border py-[10px] px-4 border-active"
+              >
+                <option value="">--Select Company--</option>
+                {companyList.map((company) => (
+                  <option key={company.clientRegistrationId} value={company.clientRegistrationId}>
+                    {company.companyName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Conditionally render the Vendor Select dropdown */}
+          {departmentId === "Vendor" && (
+            <div className="w-full md:w-1/3 me-2">
+              <select
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                className="w-full rounded-md border py-[10px] px-4 border-active"
+              >
+                <option value="">--Select Vendor--</option>
+                {vendorList.map((vendor) => (
+                  <option key={vendor.vendorId} value={vendor.vendorId}>
+                    {vendor.companyName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {/* </div> */}
         </div>
       </div>
+      )}
 
       <div className="container mx-auto py-2 md:py-0">
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="flex items-center justify-between py-2 px-6">
-            <div>
-              <span className="text-lg font-bold text-gray-800">
+          <div className="flex flex-col sm:flex-row items-center justify-between py-2 px-6">
+            <div className="flex items-center mb-4 sm:mb-0">
+              <span className="text-lg sm:text-xl font-bold text-gray-800">
                 {MONTH_NAMES[month]}
               </span>
-              <span className="ml-1 text-lg text-gray-600 font-normal">
+              <span className="ml-1 text-lg sm:text-xl text-gray-600 font-normal">
                 {year}
               </span>
             </div>
@@ -688,7 +791,7 @@ const Schedule = () => {
               <select
                 onChange={handleViewModeChange}
                 value={viewMode}
-                className="border border-gray-300 rounded-lg p-2 border-active"
+                className="border border-gray-300 rounded-lg p-2 text-sm sm:text-base border-active"
               >
                 <option value="month">Monthly View</option>
                 <option value="week">Weekly View</option>
@@ -696,6 +799,7 @@ const Schedule = () => {
               </select>
             </div>
           </div>
+
           {/* Scrollable sections for month, week, and day */}
           {viewMode === "month" && (
             <div className="-mx-1 -mb-1">
@@ -761,7 +865,7 @@ const Schedule = () => {
                           >
                             <div className="truncate">{event.eventTitle}</div>
                             <div>
-                              {formatTime(event.startTime)} -{" "}
+                              {formatTime(event.startTime)} - {" "}
                               {formatTime(event.endTime)}
                             </div>
                           </div>
@@ -792,26 +896,22 @@ const Schedule = () => {
           {viewMode === "week" && (
             <div className="p-4">
               <div className="flex justify-center mb-4">
-                {/* <button onClick={() => navigateWeek(-1)}>Previous</button> */}
                 <div className="font-semibold">
-                  {format(startOfWeek(currentDate), "MMM dd")} -{" "}
+                  {format(startOfWeek(currentDate), "MMM dd")} - {" "}
                   {format(endOfWeek(currentDate), "MMM dd, yyyy")}
                 </div>
-                {/* <button onClick={() => navigateWeek(1)}>Next</button> */}
               </div>
 
               {/* Fixed header row */}
               <div className="flex">
-                <div className="w-16"></div> {/* Empty space for time column */}
+                <div className="w-16"></div>
                 <div className="flex-1 grid grid-cols-7">
                   {noOfDays.map((day, i) => (
                     <div key={i} className="text-center py-2 border-b">
-                      <div className="text-sm font-semibold cursor-pointer">
-                        {DAYS[i]}
-                      </div>
+                      <div className="text-sm font-semibold">{DAYS[i]}</div>
                       <div
                         onClick={() => showEventModal(day)}
-                        className={`w-8 h-8 mx-auto flex items-center justify-center rounded-full cursor-pointer ${
+                        className={`w-8 h-8 mx-auto cursor-pointer flex items-center justify-center rounded-full ${
                           isSameDay(day, new Date())
                             ? "bg-blue-500 text-white"
                             : "text-gray-700"
@@ -831,7 +931,7 @@ const Schedule = () => {
               >
                 {/* Time column */}
                 <div className="w-16">
-                  {HOURS.map((hour, i) => (
+                  {HOURS.map((hour) => (
                     <div
                       key={hour}
                       className="h-12 flex items-center pr-2 justify-end"
@@ -843,72 +943,133 @@ const Schedule = () => {
 
                 {/* Days columns */}
                 <div className="flex-1 grid grid-cols-7">
-                  {noOfDays.map((day, i) => (
-                    <div key={i} className="border-r last:border-r-0 relative">
+                  {noOfDays.map((day, dayIndex) => {
+                    const dayEvents = events
+                      .filter((event) =>
+                        isSameDay(new Date(event.eventDate), day)
+                      )
+                      .sort((a, b) => {
+                        const aStart = a.startTime?.split(":").map(Number) || [
+                          0, 0,
+                        ];
+                        const bStart = b.startTime?.split(":").map(Number) || [
+                          0, 0,
+                        ];
+                        return (
+                          aStart[0] * 60 +
+                          aStart[1] -
+                          (bStart[0] * 60 + bStart[1])
+                        );
+                      });
+
+                    // Group overlapping events
+                    const eventGroups = [];
+                    let currentGroup = [];
+
+                    dayEvents.forEach((event, i) => {
+                      if (i === 0) {
+                        currentGroup.push(event);
+                        return;
+                      }
+
+                      const prevEvent = dayEvents[i - 1];
+                      const prevEnd = prevEvent.endTime
+                        ?.split(":")
+                        .map(Number) || [0, 0];
+                      const currentStart = event.startTime
+                        ?.split(":")
+                        .map(Number) || [0, 0];
+
+                      if (
+                        prevEnd[0] * 60 + prevEnd[1] >
+                        currentStart[0] * 60 + currentStart[1]
+                      ) {
+                        // Events overlap
+                        currentGroup.push(event);
+                      } else {
+                        // No overlap, start new group
+                        eventGroups.push(currentGroup);
+                        currentGroup = [event];
+                      }
+                    });
+
+                    if (currentGroup.length > 0) {
+                      eventGroups.push(currentGroup);
+                    }
+
+                    return (
                       <div
-                        className="relative"
-                        style={{ height: `${HOURS.length * 48}px` }}
+                        key={dayIndex}
+                        className="border-r last:border-r-0 relative"
                       >
-                        {/* Time slots background */}
-                        {HOURS.map((_, idx) => (
-                          <div
-                            key={idx}
-                            className="h-12 border-b border-gray-100"
-                          ></div>
-                        ))}
+                        <div
+                          className="relative"
+                          style={{ height: `${HOURS.length * 48}px` }}
+                        >
+                          {/* Time slots background */}
+                          {HOURS.map((_, idx) => (
+                            <div
+                              key={idx}
+                              className="h-12 border-b border-gray-100"
+                            ></div>
+                          ))}
 
-                        {/* Events positioned by time */}
-                        {events
-                          .filter((event) =>
-                            isSameDay(new Date(event.eventDate), day)
-                          )
-                          .map((event) => {
-                            const startHour =
-                              parseInt(event.startTime?.split(":")[0]) || 0;
-                            const startMinute =
-                              parseInt(event.startTime?.split(":")[1]) || 0;
-                            const endHour =
-                              parseInt(event.endTime?.split(":")[0]) || 0;
-                            const endMinute =
-                              parseInt(event.endTime?.split(":")[1]) || 0;
+                          {/* Render event groups */}
+                          {eventGroups.map((group, groupIndex) => {
+                            return group.map((event, eventIndex) => {
+                              const startTime = event.startTime
+                                ?.split(":")
+                                .map(Number) || [0, 0];
+                              const endTime = event.endTime
+                                ?.split(":")
+                                .map(Number) || [0, 0];
+                              const top =
+                                startTime[0] * 48 + startTime[1] * 0.8;
+                              const height =
+                                (endTime[0] - startTime[0]) * 48 +
+                                (endTime[1] - startTime[1]) * 0.8;
 
-                            const top = startHour * 48 + startMinute * 0.8;
-                            const height =
-                              (endHour - startHour) * 48 +
-                              (endMinute - startMinute) * 0.8;
+                              // Calculate width and left position based on group
+                              const widthPercent = 100 / group.length;
+                              const leftPercent = widthPercent * eventIndex;
 
-                            return (
-                              <div
-                                onClick={() => showEditModal(event)}
-                                key={event.scheduleCalendarId}
-                                className={`absolute left-1 right-1 rounded p-1 text-xs ${
-                                  event.eventTheme === "blue"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : event.eventTheme === "red"
-                                    ? "bg-red-100 text-red-800"
-                                    : event.eventTheme === "yellow"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : event.eventTheme === "green"
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-purple-100 text-purple-800"
-                                }`}
-                                style={{
-                                  top: `${top}px`,
-                                  height: `${height}px`,
-                                }}
-                              >
-                                <div className="truncate font-medium">
-                                  {event.eventTitle}
+                              return (
+                                <div
+                                  onClick={() => showEditModal(event)}
+                                  key={event.scheduleCalendarId}
+                                  className={`absolute rounded p-1 text-xs group transition-all duration-200 ease-in-out ${
+                                    event.eventTheme === "blue"
+                                      ? "bg-blue-100 hover:bg-blue-200 text-blue-800 border-l-4 border-blue-500 cursor-pointer"
+                                      : event.eventTheme === "red"
+                                      ? "bg-red-100 hover:bg-red-200 text-red-800 border-l-4 border-red-500 cursor-pointer"
+                                      : event.eventTheme === "yellow"
+                                      ? "bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-l-4 border-yellow-500 cursor-pointer"
+                                      : event.eventTheme === "green"
+                                      ? "bg-green-100 hover:bg-green-200 text-green-800 border-l-4 border-green-500 cursor-pointer"
+                                      : "bg-purple-100 hover:bg-purple-200 text-purple-800 border-l-4 border-purple-500 cursor-pointer"
+                                  }`}
+                                  style={{
+                                    top: `${top}px`,
+                                    height: `${height}px`,
+                                    width: `${widthPercent}%`,
+                                    left: `${leftPercent}%`,
+                                  }}
+                                >
+                                  <div className="font-medium truncate">
+                                    {event.eventTitle}
+                                  </div>
+                                  <div className="text-gray-600 truncate">
+                                    {formatTime(event.startTime)} - {" "}
+                                    {formatTime(event.endTime)}
+                                  </div>
                                 </div>
-                                <div>
-                                  {event.startTime} - {event.endTime}
-                                </div>
-                              </div>
-                            );
+                              );
+                            });
                           })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -951,54 +1112,113 @@ const Schedule = () => {
                     ></div>
                   ))}
 
-                  {/* Events positioned by time */}
-                  {events
-                    .filter((event) =>
-                      isSameDay(new Date(event.eventDate), currentDate)
-                    )
-                    .map((event) => {
-                      const startHour =
-                        parseInt(event.startTime?.split(":")[0]) || 0;
-                      const startMinute =
-                        parseInt(event.startTime?.split(":")[1]) || 0;
-                      const endHour =
-                        parseInt(event.endTime?.split(":")[0]) || 0;
-                      const endMinute =
-                        parseInt(event.endTime?.split(":")[1]) || 0;
+                  {/* Process and display events */}
+                  {(() => {
+                    const dayEvents = events
+                      .filter((event) =>
+                        isSameDay(new Date(event.eventDate), currentDate)
+                      )
+                      .sort((a, b) => {
+                        const aStart = a.startTime?.split(":").map(Number) || [
+                          0, 0,
+                        ];
+                        const bStart = b.startTime?.split(":").map(Number) || [
+                          0, 0,
+                        ];
+                        return (
+                          aStart[0] * 60 +
+                          aStart[1] -
+                          (bStart[0] * 60 + bStart[1])
+                        );
+                      });
 
-                      const top = startHour * 48 + startMinute * 0.8;
-                      const height =
-                        (endHour - startHour) * 48 +
-                        (endMinute - startMinute) * 0.8;
+                    // Group overlapping events
+                    const eventGroups = [];
+                    let currentGroup = [];
 
-                      return (
-                        <div
-                          key={event.scheduleCalendarId}
-                          className={`absolute left-1 right-1 rounded p-1 text-xs ${
-                            event.eventTheme === "blue"
-                              ? "bg-blue-100 text-blue-800"
-                              : event.eventTheme === "red"
-                              ? "bg-red-100 text-red-800"
-                              : event.eventTheme === "yellow"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : event.eventTheme === "green"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-purple-100 text-purple-800"
-                          }`}
-                          style={{
-                            top: `${top}px`,
-                            height: `${height}px`,
-                          }}
-                        >
-                          <div className="truncate font-medium">
-                            {event.eventTitle}
+                    dayEvents.forEach((event, i) => {
+                      if (i === 0) {
+                        currentGroup.push(event);
+                        return;
+                      }
+
+                      const prevEvent = dayEvents[i - 1];
+                      const prevEnd = prevEvent.endTime
+                        ?.split(":")
+                        .map(Number) || [0, 0];
+                      const currentStart = event.startTime
+                        ?.split(":")
+                        .map(Number) || [0, 0];
+
+                      if (
+                        prevEnd[0] * 60 + prevEnd[1] >
+                        currentStart[0] * 60 + currentStart[1]
+                      ) {
+                        // Events overlap
+                        currentGroup.push(event);
+                      } else {
+                        // No overlap, start new group
+                        eventGroups.push(currentGroup);
+                        currentGroup = [event];
+                      }
+                    });
+
+                    if (currentGroup.length > 0) {
+                      eventGroups.push(currentGroup);
+                    }
+
+                    // Render event groups
+                    return eventGroups.map((group, groupIndex) => {
+                      return group.map((event, eventIndex) => {
+                        const startTime = event.startTime
+                          ?.split(":")
+                          .map(Number) || [0, 0];
+                        const endTime = event.endTime
+                          ?.split(":")
+                          .map(Number) || [0, 0];
+                        const top = startTime[0] * 48 + startTime[1] * 0.8;
+                        const height =
+                          (endTime[0] - startTime[0]) * 48 +
+                          (endTime[1] - startTime[1]) * 0.8;
+
+                        // Calculate width and left position based on group
+                        const widthPercent = 100 / group.length;
+                        const leftPercent = widthPercent * eventIndex;
+
+                        return (
+                          <div
+                            onClick={() => showEditModal(event)}
+                            key={event.scheduleCalendarId}
+                            className={`absolute rounded p-1 text-xs group transition-all duration-200 ease-in-out ${
+                              event.eventTheme === "blue"
+                                ? "bg-blue-100 hover:bg-blue-200 text-blue-800 border-l-4 border-blue-500 cursor-pointer"
+                                : event.eventTheme === "red"
+                                ? "bg-red-100 hover:bg-red-200 text-red-800 border-l-4 border-red-500 cursor-pointer"
+                                : event.eventTheme === "yellow"
+                                ? "bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-l-4 border-yellow-500 cursor-pointer"
+                                : event.eventTheme === "green"
+                                ? "bg-green-100 hover:bg-green-200 text-green-800 border-l-4 border-green-500 cursor-pointer"
+                                : "bg-purple-100 hover:bg-purple-200 text-purple-800 border-l-4 border-purple-500 cursor-pointer"
+                            }`}
+                            style={{
+                              top: `${top}px`,
+                              height: `${height}px`,
+                              width: `${widthPercent}%`,
+                              left: `${leftPercent}%`,
+                            }}
+                          >
+                            <div className="font-medium truncate">
+                              {event.eventTitle}
+                            </div>
+                            <div className="text-gray-600 truncate">
+                              {formatTime(event.startTime)} - {" "}
+                              {formatTime(event.endTime)}
+                            </div>
                           </div>
-                          <div>
-                            {event.startTime} - {event.endTime}
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      });
+                    });
+                  })()}
                 </div>
               </div>
             </div>
@@ -1126,7 +1346,7 @@ const Schedule = () => {
                 </div>
               </div>
 
-                {/* Meeting Link Field */}
+              {/* Meeting Link Field */}
               <div className="grid grid-cols-1 sm:grid-cols-1 gap-4 mb-4">
                 <div className="mb-4">
                   <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">
@@ -1136,29 +1356,33 @@ const Schedule = () => {
                     className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
                     type="url"
                     value={eventMeetingLink}
-                    onChange={(e) => setEventMeetingLink(e.target.value)}
-                    placeholder="Zoom/Teams link (optional)"
+                    onChange={handleMeetingLinkChange}
+                    // onChange={(e) => setEventMeetingLink(e.target.value)}
+                    placeholder="Google Meet/Zoom link (optional)"
                   />
+                  {meetingLinkError && (
+                    <p className="text-red-500 text-xs mt-1">{meetingLinkError}</p>
+                  )}
                 </div>
 
                 {/* Add Guest Field */}
                 {/* <div className="mb-4">
-            <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">
-              Add Guest
-            </label>
-            <CreatableSelect
-              isMulti
-              options={allEmails}
-              value={selectedGuests}
-              onChange={setSelectedGuests}
-              placeholder="Add guest (select or type email)"
-              className="react-select-container"
-              classNamePrefix="react-select"
-            />
+                 <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">
+                   Add Guest
+                 </label>
+                 <CreatableSelect
+                   isMulti
+                   options={allEmails}
+                   value={selectedGuests}
+                   onChange={setSelectedGuests}
+                   placeholder="Add guest (select or type email)"
+                   className="react-select-container"
+                   classNamePrefix="react-select"
+                 />
                 </div> */}
               </div>
 
-                {/* Add Guest Field */}
+              {/* Add Guest Field */}
               <div className="grid grid-cols-1 gap-4 mb-4">
                 <div className="mb-4">
                   <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">
@@ -1176,75 +1400,6 @@ const Schedule = () => {
                 </div>
               </div>
 
-              {/* Send Manual Notification Field */}
-              <div className="mb-4">
-                <label className="text-gray-800 block mb-1 font-bold text-sm tracking-wide">
-                  Send Manual Notification?
-                </label>
-                <div className="flex items-center space-x-4">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      value="true"
-                      checked={manualNotification === true}
-                      onChange={() => setManualNotification(true)}
-                      className="form-radio"
-                    />
-                    <span>YES</span>
-                  </label>
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      value="false"
-                      checked={manualNotification === false}
-                      onChange={() => setManualNotification(false)}
-                      className="form-radio"
-                    />
-                    <span>NO</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Add Manual Notification Button (Visible when YES is selected) */}
-              {manualNotification === true && (
-                <div className="mb-4">
-                  <button
-                    onClick={() => setNotificationDateTimes([...notificationDateTimes, ''])}
-                    className="flex items-center text-blue-500 hover:text-blue-700"
-                  >
-                    <FaPlus className="mr-2" />
-                    Add Manual Notification
-                  </button>
-                </div>
-              )}
-
-              {/* Display Date-Time Picker Fields */}
-             {notificationDateTimes.map((dateTime, index) => (
-               <div key={index} className="flex items-center mb-4">
-                 <input
-                   type="datetime-local"
-                   value={dateTime}
-                   onChange={(e) => {
-                     const updatedDateTimes = [...notificationDateTimes];
-                     updatedDateTimes[index] = e.target.value;
-                     setNotificationDateTimes(updatedDateTimes);
-                   }}
-                   className="bg-gray-200 appearance-none border-2 border-gray-200 rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
-                 />
-                 {/* Close Icon to Remove Date-Time Picker */}
-                 <button
-                   type="button"
-                   onClick={() => {
-                     const updatedDateTimes = notificationDateTimes.filter((_, i) => i !== index);
-                     setNotificationDateTimes(updatedDateTimes);
-                   }}
-                   className="ml-2 text-red-500 hover:text-red-700"
-                 >
-                   <FaTimes />
-                 </button>
-               </div>
-             ))}
-
               <div className="flex justify-end gap-2 mt-8">
                 {editingEvent && (
                   <button
@@ -1256,12 +1411,16 @@ const Schedule = () => {
                 )}
                 <button
                   className={`bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 ${
-                    isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                    isSubmitting || meetingLinkError || !eventTitle ? "opacity-50 cursor-not-allowed" : ""
                   }`}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || meetingLinkError || !eventTitle}
                   onClick={editingEvent ? updateEvent : addEvent}
                 >
-                  {isSubmitting ? 'Submitting...' : editingEvent ? "Update Event" : "Add Event"}
+                  {isSubmitting
+                    ? "Submitting..."
+                    : editingEvent
+                    ? "Update Event"
+                    : "Add Event"}
                 </button>
               </div>
             </div>
@@ -1424,7 +1583,8 @@ const Schedule = () => {
                         {event.eventTitle}
                       </p>
                       <p className="text-xs">
-                        {event.startTime} - {event.endTime}
+                        {formatTime(event.startTime)} - {" "}
+                        {formatTime(event.endTime)}
                       </p>
                     </div>
                   ))}

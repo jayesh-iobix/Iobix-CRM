@@ -138,7 +138,7 @@ const SignIn = ({ onLogin, setLoading }) => {
       deviceOSVersion: os.version || "Unknown Version",
     };
 
-    console.log(deviceInfoVM);
+    // console.log(deviceInfoVM);
 
     const signInData = {
       email,

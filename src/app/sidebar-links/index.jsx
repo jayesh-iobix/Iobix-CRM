@@ -261,6 +261,12 @@ export const PARTNER_DASHBOARD_SIDEBAR_LINKS = [
       { label: "Recived Project", path:"/partner/get-project-list" },
     ],
   },
+  {
+    key: "calendar",
+    label: "Schedule Calendar",
+    path: "/partner/calendar",
+    icon: <BiCalendar />,
+  },
   // {
   //   key: "inquiry",
   //   label: "Inquiry",
@@ -297,6 +303,12 @@ export const COMPANY_DASHBOARD_SIDEBAR_LINKS = [
       { label: "Recived Project", path:"/company/get-project-list" },
       { label: "Send Project", path: "/company/project-list" },
     ],
+  },
+  {
+    key: "calendar",
+    label: "Schedule Calendar",
+    path: "/company/calendar",
+    icon: <BiCalendar />,
   },
   // {
   //   key: "inquiry",
@@ -338,6 +350,12 @@ export const VENDOR_DASHBOARD_SIDEBAR_LINKS = [
       { label: "Send Project", path: "/vendor/project-list" },
       { label: "Recived Project", path:"/vendor/get-project-list" },
     ],
+  },
+  {
+    key: "calendar",
+    label: "Schedule Calendar",
+    path: "/vendor/calendar",
+    icon: <BiCalendar />,
   },
 ];
 
