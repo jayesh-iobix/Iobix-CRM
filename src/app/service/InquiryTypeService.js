@@ -30,7 +30,6 @@ export const InquiryTypeService = {
 
    // Methos to update InquiryType
    updateInquiryType: async (inquiryTypeId, inquiryTypeData) => {
-    debugger;
     try {
       const response = await httpClient.put(`${api}/${inquiryTypeId}`,inquiryTypeData); 
       return response.data;

@@ -64,7 +64,8 @@ const AddEmployee = () => {
       // Get the device token if not stored
       const getDeviceToken = async () => {
         try {
-          const currentToken = await getToken(messaging, { vapidKey: "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" });
+          const currentToken = await getToken(messaging, { vapidKey: "BMJdBmT_HG1NcRtaygZg71bqZoRQCsLhkjXGks726bNTGkVsYAEwBCAiM7CVtFZZjGAtLMGiBw1pzhbG-B01TdE" });
+          // const currentToken = await getToken(messaging, { vapidKey: "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" });
           if (currentToken) {
             setDeviceToken(currentToken);
             // console.log(currentToken);
@@ -317,7 +318,8 @@ const AddEmployee = () => {
         <h1 className="font-semibold text-2xl">Add Employee</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link
-            to="/employee-list"
+            onClick={() => navigate(-1)}
+            // to="/employee-list"
             className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
           >
             <FaArrowLeft size={16} />

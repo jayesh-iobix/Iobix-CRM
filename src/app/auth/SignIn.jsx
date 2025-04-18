@@ -30,7 +30,7 @@ const SignIn = ({ onLogin, setLoading }) => {
       // Get the device token if not stored
       const getDeviceToken = async () => {
         try {
-          const currentToken = await getToken(messaging, { vapidKey: "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" });
+          const currentToken = await getToken(messaging, { vapidKey: "BMJdBmT_HG1NcRtaygZg71bqZoRQCsLhkjXGks726bNTGkVsYAEwBCAiM7CVtFZZjGAtLMGiBw1pzhbG-B01TdE" });
           if (currentToken) {
             setDeviceToken(currentToken);
             sessionStorage.setItem("deviceToken", currentToken);
@@ -158,6 +158,7 @@ const SignIn = ({ onLogin, setLoading }) => {
           const decodedToken = jwtDecode(token);
           const role = getRoleFromToken(decodedToken);
 
+          console.log(decodedToken)
           sessionStorage.setItem("role", role);
           onLogin(role);
 

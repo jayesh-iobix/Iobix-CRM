@@ -77,7 +77,7 @@ const VendorList = () => {
       const response = await VendorService.deleteVendor(deleteId);
       if (response.status === 1) {
         setFilteredVendors((prevVendors) =>
-          prevVendors.filter((vendor) => vendor.vendorRegistrationId !== deleteId)
+          prevVendors.filter((vendor) => vendor.vendorId !== deleteId)
         );
         toast.error("Vendor Deleted Successfully"); // Toast on success
         setIsPopupOpen(false); // Close popup after deletion
@@ -89,8 +89,8 @@ const VendorList = () => {
     }
   };
 
-  const handleDeleteClick = (vendorRegistrationId) => {
-    setDeleteId(vendorRegistrationId);
+  const handleDeleteClick = (vendorId) => {
+    setDeleteId(vendorId);
     setIsPopupOpen(true); // Open popup
   };
 
@@ -175,7 +175,7 @@ const VendorList = () => {
           ) : (
             currentItems.map((item) => (
               <motion.tr
-                key={item.vendorRegistrationId}
+                key={item.vendorId}
                 className="border-b hover:bg-gray-50"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -210,7 +210,7 @@ const VendorList = () => {
                     >
                       <Link
                         className="text-blue-500 hover:text-blue-700"
-                        to={`/employee-list/edit-employee/${item.vendorRegistrationId}`}
+                        to={`/employee-list/edit-employee/${item.vendorId}`}
                       >
                         <FaEdit size={24} />
                       </Link>
@@ -220,7 +220,7 @@ const VendorList = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() =>
-                        handleDeleteClick(item.vendorRegistrationId)
+                        handleDeleteClick(item.vendorId)
                       }
                       className="text-red-500 hover:text-red-700"
                     >

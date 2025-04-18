@@ -30,7 +30,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
       { label: "Inquiry Type", path: "/master/inquirytype-list" },
       { label: "Inquiry Source", path: "/master/inquirysource-list" },
       // { label: "Inquiry Origin", path: "/master/inquiryorigin-list" },
-      { label: "User Inquiry Permission", path: "/master/userinquirypermission-list" },
+      // { label: "User Inquiry Permission", path: "/master/userinquirypermission-list" },
       { label: "Admin Inquiry Permissi", path: "/master/inquirypermission-list" },
     ],
   },  
@@ -82,6 +82,83 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     path: "/vendor-list",
     icon: <FaVenusDouble />,
   },
+
+
+];
+
+//HR Dashboard Sidebar Links
+export const HR_DASHBOARD_SIDEBAR_LINKS = [
+  {
+    key: "dashboard",
+    label: "Dashboard",
+    path: "/user",
+    icon: <HiOutlineViewGrid />,
+  },
+  {
+    key: "master",
+    label: "Master",
+    icon: <BiBox />,
+    submenu: [
+      // { label: "Partner", path: "/master/partner-list" },
+      // { label: "Department", path: "/master/department-list" },
+      // { label: "Designation", path: "/master/designation-list" },
+      { label: "Leave Type", path: "/master/leave-type-list" },
+      { label: "Employee Leave Type", path: "/master/employee-leavetype-list" },
+      // { label: "Employee Permission", path: "/master/employeepermission-list" },
+      { label: "Holiday", path: "/master/holiday-list" },
+      { label: "Inquiry Type", path: "/master/inquirytype-list" },
+      { label: "Inquiry Source", path: "/master/inquirysource-list" },
+      // { label: "User Inquiry Permission", path: "/master/userinquirypermission-list" },
+      // { label: "Admin Inquiry Permissi", path: "/master/inquirypermission-list" },
+    ],
+  },  
+  {
+    key: "employee",
+    label: "Employees",
+    path: "/user/employee-list",
+    icon: <BsPeople />,
+  },
+  {
+    key: "task",
+    label: "Task",
+    icon: <BiTask />,
+    submenu: [
+      { label: "Task List", path: "/user/task/task-list" },
+    ],
+  },
+  {
+    key: "calendar",
+    label: "Schedule Calendar",
+    path: "/user/calendar",
+    icon: <BiCalendar />,
+  },
+  // {
+  //   key: "project",
+  //   label: "Project",
+  //   icon: <HiOutlineQuestionMarkCircle />,
+  //   submenu: [
+  //     { label: "Received Project", path: "/received-project-list" },
+  //     { label: "Created Project", path: "/created-project-list" },
+  //   ],
+  // },
+  // {
+  //   key: "partner",
+  //   label: "Partners",
+  //   path: "/partner-list",
+  //   icon: <FaRegHandshake />,
+  // },
+  // {
+  //   key: "client company",
+  //   label: "Client Company",
+  //   path: "/clientcompany-list",
+  //   icon: <FaBusinessTime />,
+  // },
+  // {
+  //   key: "vendor",
+  //   label: "Vendors",
+  //   path: "/vendor-list",
+  //   icon: <FaVenusDouble />,
+  // },
 
 
 ];
@@ -243,7 +320,6 @@ export const USER_DASHBOARD_SIDEBAR_LINKS = [
   // },
 ];
 
-
 //Partner Dashboard Sidebar Links
 export const PARTNER_DASHBOARD_SIDEBAR_LINKS = [
   {
@@ -267,18 +343,6 @@ export const PARTNER_DASHBOARD_SIDEBAR_LINKS = [
     path: "/partner/calendar",
     icon: <BiCalendar />,
   },
-  // {
-  //   key: "inquiry",
-  //   label: "Inquiry",
-  //   path: "/partner/inquiry-list",
-  //   icon: <HiOutlineQuestionMarkCircle />,
-  // },
-  // {
-  //   key: "getinquiry",
-  //   label: "Get Inquiry Iobix",
-  //   path: "/partner/get-inquiry-list",
-  //   icon: <HiOutlineQuestionMarkCircle />,
-  // },
 ];
 
 //Company Dashboard Sidebar Links
@@ -310,19 +374,6 @@ export const COMPANY_DASHBOARD_SIDEBAR_LINKS = [
     path: "/company/calendar",
     icon: <BiCalendar />,
   },
-  // {
-  //   key: "inquiry",
-  //   label: "Send Inquiry",
-  //   path: "/company/inquiry-list",
-  //   icon: <HiOutlineQuestionMarkCircle />,
-  // },
-  // {
-  //   key: "recivedinquiry",
-  //   label: "Recived Inquiry",
-  //   path: "/company/get-inquiry-list",
-  //   icon: <HiOutlineQuestionMarkCircle />,
-  // },
-
   // {
   //   key: "form to fill",
   //   label: "Form to Fill",

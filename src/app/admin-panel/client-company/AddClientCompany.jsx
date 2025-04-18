@@ -63,7 +63,7 @@ const AddClientCompany = () => {
       // Get the device token if not stored
       const getDeviceToken = async () => {
         try {
-          const currentToken = await getToken(messaging, { vapidKey: "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" });
+          const currentToken = await getToken(messaging, { vapidKey: "BMJdBmT_HG1NcRtaygZg71bqZoRQCsLhkjXGks726bNTGkVsYAEwBCAiM7CVtFZZjGAtLMGiBw1pzhbG-B01TdE" });
           if (currentToken) {
             setDeviceToken(currentToken);
             console.log(currentToken);
@@ -174,6 +174,9 @@ const AddClientCompany = () => {
         const companyData = {
             ...formData,
             deviceInfoVM,
+            stateId: formData.stateId === "" ? 0 : formData.stateId,
+            cityId: formData.cityId === "" ? 0 : formData.cityId,
+            relationalManagerId : formData.relationalManagerId === "" ? null : formData.relationalManagerId,
             // role: "IsClient",
         }
         const response = await ClientCompanyService.addClientCompany(companyData); // Call the service
@@ -564,7 +567,7 @@ const AddClientCompany = () => {
                 }`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Add Partner"}
+                {isSubmitting ? "Submitting..." : "Add Client Company"}
               </motion.button>
             </div>
           </div>

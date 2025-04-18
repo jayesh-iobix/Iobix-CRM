@@ -24,6 +24,10 @@ const LeaveModule = () => {
   const [leaveTypeList, setLeaveTypeList] = useState([]);
   const [status, setStatus] = useState("0"); // Leave Type (Full-Day / Half-Day)
 
+  const [totalBalance, setTotalBalance] = useState(''); // Total balance of different leave types
+  const [leaveBalance, setLeaveBalance] = useState([]); // Leave types from backend
+  const [showLeaveModal, setShowLeaveModal] = useState(false); // Modal visibility
+
   const employeeId = sessionStorage.getItem("LoginUserId");
 
 const fetchLeaveRecords = async () => {
@@ -31,6 +35,14 @@ const fetchLeaveRecords = async () => {
     const response = await LeaveService.getLeaveRecords(employeeId);
     setLeaveData(response.data);
     setFilteredData(response.data);
+
+    const responseCount = await LeaveService.getTotalLeaveCount(employeeId);
+    setTotalBalance(responseCount.data);
+    // console.log(responseCount)
+
+    const responseBalance = await LeaveService.getTotalLeaveBalance(employeeId);
+    setLeaveBalance(responseBalance.data);
+    // console.log(responseBalance.data)
   } catch (error) {
     console.error("Error fetching leave data:", error);
     alert("Error fetching leave data, please try again.");
@@ -81,6 +93,7 @@ const fetchLeaveType = async () => {
 
   // Open and close modal
   const openModal = () => setShowModal(true);
+  
   const closeModal = () => {
     setShowModal(false);
     setFromDate("");
@@ -212,9 +225,10 @@ const fetchLeaveType = async () => {
 
       {/* Card for Year and Month Dropdown */}
       <div className="bg-white shadow-lg rounded-lg p-4">
-        <div className="-mx-4 px-10 flex flex-wrap">
+        <div className="-mx-4 px-10 flex justify-between flex-wrap">
+          <div className="flex flex-wrap">
           {/* Year Dropdown */}
-          <div className="w-full mb-2 px-3 md:w-1/4 lg:w-1/5">
+          <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
             <label htmlFor="year" className="mr-2">
               Year:
             </label>
@@ -240,7 +254,7 @@ const fetchLeaveType = async () => {
           </div>
 
           {/* Month Dropdown */}
-          <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/4">
+          <div className="w-full mb-2 px-3 md:w-1/2 lg:w:60%">
             <label htmlFor="month" className="mr-2">
               Month:
             </label>
@@ -262,6 +276,53 @@ const fetchLeaveType = async () => {
               ))}
             </select>
           </div>
+          </div>
+
+          {/* Total Balance Button (Top Right Corner) */}
+          <div>
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowLeaveModal(true)} // Show the modal when clicked
+            className="bg-gray-400 hover:bg-gray-700 text-white py-2 px-4 rounded"
+          >
+            Total Balance of Current Month: {totalBalance} days
+            {/* <FaInfoCircle className="ml-2" size={14} /> */}
+          </motion.button>
+          </div>
+
+          {/* Leave Breakdown Modal */}
+          {showLeaveModal && (
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                <h2 className="text-xl font-semibold mb-4">Leave Balance Breakdown</h2>
+    
+                {/* Leave Types */}
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold">Leave Types</h3>
+                  <ul className="space-y-2 mt-2">
+                    {leaveBalance.map((leave, index) => (
+                      <li key={index} className="flex justify-between">
+                        <span>{leave.leaveTypeName}</span>
+                        <span>{leave.totalLeaveBalance} days</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+  
+                {/* Close Button */}
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => setShowLeaveModal(false)}
+                    className="bg-gray-500 text-white py-2 px-4 rounded-md"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

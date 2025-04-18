@@ -23,6 +23,9 @@ const LeaveList = () => {
   const [leaveType, setLeaveType] = useState("Full-Day"); // Leave Type (Full-Day / Half-Day)
   const [status, setStatus] = useState(0); // Leave Type (Full-Day / Half-Day)
 
+  const [totalBalance, setTotalBalance] = useState(''); // Total balance of different leave types
+  const [leaveBalance, setLeaveBalance] = useState([]); // Leave types from backend
+
   const {id} = useParams();
   // const employeeId = sessionStorage.getItem("LoginUserId");
 
@@ -31,6 +34,15 @@ const fetchLeaveRecords = async () => {
     const response = await LeaveService.getLeaveRecords(id);
     setLeaveData(response.data);
     setFilteredData(response.data);
+
+    const responseCount = await LeaveService.getTotalLeaveCount(id);
+    setTotalBalance(responseCount.data);
+    // console.log(responseCount)
+
+    const responseBalance = await LeaveService.getTotalLeaveBalance(id);
+    setLeaveBalance(responseBalance.data);
+    // console.log(responseBalance.data)
+
   } catch (error) {
     console.error("Error fetching leave data:", error);
     alert("Error fetching leave data, please try again.");
@@ -134,7 +146,7 @@ const fetchLeaveRecords = async () => {
       status: statusValue  // 1 for Approve, 2 for Reject
     };
 
-    debugger;
+    // debugger;
 
     try {
       const response = await LeaveService.approveRejectLeave(leave.leaveRequestId,leaveData);
@@ -167,6 +179,50 @@ const fetchLeaveRecords = async () => {
     <div className="mt-4">
       <div className="flex flex-col sm:flex-row justify-between items-center my-3">
         <h1 className="font-semibold text-2xl sm:text-3xl">Leave Records for {year}</h1>
+
+        {/* Total Balance Button (Top Right Corner) */}
+        <motion.button
+          type="button"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setShowModal(true)} // Show the modal when clicked
+          className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded"
+        >
+          Total Balance: {totalBalance} days
+          {/* <FaInfoCircle className="ml-2" size={14} /> */}
+        </motion.button>
+
+        {/* Leave Breakdown Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+              <h2 className="text-xl font-semibold mb-4">Leave Balance Breakdown</h2>
+  
+              {/* Leave Types */}
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold">Leave Types</h3>
+                <ul className="space-y-2 mt-2">
+                  {leaveBalance.map((leave, index) => (
+                    <li key={index} className="flex justify-between">
+                      <span>{leave.leaveTypeName}</span>
+                      <span>{leave.totalLeaveBalance} days</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Close Button */}
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="bg-gray-500 text-white py-2 px-4 rounded-md"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Apply Leave Button */}
         {/* <motion.button
@@ -317,109 +373,124 @@ const fetchLeaveRecords = async () => {
         </section>
       )}
 
-      {/* Modal for Apply Leave */}
-      {showModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">Apply Leave</h2>
-
-            {/* From Date */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                From Date
-              </label>
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => {
-                  setFromDate(e.target.value);
-                  if (toDate) {
-                    calculateTotalDays(e.target.value, toDate);
-                  }
-                }}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-              />
-            </div>
-
-            {/* To Date */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                To Date
-              </label>
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => {
-                  setToDate(e.target.value);
-                  if (fromDate) {
-                    calculateTotalDays(fromDate, e.target.value);
-                  }
-                }}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-              />
-            </div>
-
-            {/* Total Days */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Total Days
-              </label>
-              <input
-                type="text"
-                value={totalDays}
-                disabled
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-              />
-            </div>
-
-            {/* Reason */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Reason
-              </label>
-              <textarea
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                rows="4"
-              />
-            </div>
-
-            {/* Leave Type */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Leave Type
-              </label>
-              <select
-                value={leaveType}
-                onChange={(e) => setLeaveType(e.target.value)}
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-              >
-                <option value="Full-Day">Full-Day</option>
-                <option value="Half-Day">Half-Day</option>
-              </select>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={closeModal}
-                className="bg-gray-500 text-white py-2 px-4 rounded-md"
-              >
-                Close
-              </button>
-              <button
-                onClick={handleApplyLeave}
-                className="bg-blue-600 text-white py-2 px-4 rounded-md"
-              >
-                Apply Leave
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 };
 
 export default LeaveList;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// {/* Modal for Apply Leave */}
+// {showModal && (
+//   <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+//     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+//       <h2 className="text-xl font-semibold mb-4">Apply Leave</h2>
+
+//       {/* From Date */}
+//       <div className="mb-4">
+//         <label className="block text-sm font-medium text-gray-700">
+//           From Date
+//         </label>
+//         <input
+//           type="date"
+//           value={fromDate}
+//           onChange={(e) => {
+//             setFromDate(e.target.value);
+//             if (toDate) {
+//               calculateTotalDays(e.target.value, toDate);
+//             }
+//           }}
+//           className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+//         />
+//       </div>
+
+//       {/* To Date */}
+//       <div className="mb-4">
+//         <label className="block text-sm font-medium text-gray-700">
+//           To Date
+//         </label>
+//         <input
+//           type="date"
+//           value={toDate}
+//           onChange={(e) => {
+//             setToDate(e.target.value);
+//             if (fromDate) {
+//               calculateTotalDays(fromDate, e.target.value);
+//             }
+//           }}
+//           className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+//         />
+//       </div>
+
+//       {/* Total Days */}
+//       <div className="mb-4">
+//         <label className="block text-sm font-medium text-gray-700">
+//           Total Days
+//         </label>
+//         <input
+//           type="text"
+//           value={totalDays}
+//           disabled
+//           className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+//         />
+//       </div>
+
+//       {/* Reason */}
+//       <div className="mb-4">
+//         <label className="block text-sm font-medium text-gray-700">
+//           Reason
+//         </label>
+//         <textarea
+//           value={reason}
+//           onChange={(e) => setReason(e.target.value)}
+//           className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+//           rows="4"
+//         />
+//       </div>
+
+//       {/* Leave Type */}
+//       <div className="mb-4">
+//         <label className="block text-sm font-medium text-gray-700">
+//           Leave Type
+//         </label>
+//         <select
+//           value={leaveType}
+//           onChange={(e) => setLeaveType(e.target.value)}
+//           className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+//         >
+//           <option value="Full-Day">Full-Day</option>
+//           <option value="Half-Day">Half-Day</option>
+//         </select>
+//       </div>
+
+//       {/* Buttons */}
+//       <div className="flex justify-end gap-2">
+//         <button
+//           onClick={closeModal}
+//           className="bg-gray-500 text-white py-2 px-4 rounded-md"
+//         >
+//           Close
+//         </button>
+//         <button
+//           onClick={handleApplyLeave}
+//           className="bg-blue-600 text-white py-2 px-4 rounded-md"
+//         >
+//           Apply Leave
+//         </button>
+//       </div>
+//     </div>
+//   </div>
+// )}

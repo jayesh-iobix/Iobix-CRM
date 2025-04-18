@@ -8,13 +8,13 @@ import { getMessaging, getToken, onMessage } from "firebase/messaging";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBBqw3shvbnD3PWBJFZLXMYLLA5rBk25yE",
-  authDomain: "iobix-crm.firebaseapp.com",
-  projectId: "iobix-crm",
-  storageBucket: "iobix-crm.firebasestorage.app",
-  messagingSenderId: "487169874511",
-  appId: "1:487169874511:web:de18fe599bee6ae24c683a",
-  measurementId: "G-2Z18Z903ZD"
+  apiKey: "AIzaSyC3oEBFbEcJuSsydnGHyHlSKJXPtF3fA9c",
+  authDomain: "iobix-internal-crm.firebaseapp.com",
+  projectId: "iobix-internal-crm",
+  storageBucket: "iobix-internal-crm.firebasestorage.app",
+  messagingSenderId: "175041541347",
+  appId: "1:175041541347:web:546893553ead5443c441d6",
+  measurementId: "G-LH2FTHDDR1"
 };
 
 // Initialize Firebase
@@ -31,7 +31,8 @@ export const generateToken = async () => {
     // debugger;
     const deviceToken = await getToken(messaging, {
       vapidKey: 
-      "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" // Replace with your actual VAPID key
+      "BMJdBmT_HG1NcRtaygZg71bqZoRQCsLhkjXGks726bNTGkVsYAEwBCAiM7CVtFZZjGAtLMGiBw1pzhbG-B01TdE" // Replace with your actual VAPID key
+      // "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" // Replace with your actual VAPID key
     });
     sessionStorage.setItem("deviceToken", deviceToken);
     // console.log("FCM Device Token: ", deviceToken);

@@ -18,6 +18,28 @@ export const LeaveService = {
     }
   },
 
+  // Method to get TotalLeaveCount 
+  getTotalLeaveCount: async (employeeId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetLeaveBalanceCount/${employeeId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch attendance:', error);
+      throw error;
+    }
+  },
+
+  // Method to get TotalLeaveCount 
+  getTotalLeaveBalance: async (employeeId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetLeaveTypeBalance/${employeeId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch leave record:', error);
+      throw error;
+    }
+  },
+
   // Method to getByEmployee leave
   getLeaveRecords: async (employeeId) => {
     try {

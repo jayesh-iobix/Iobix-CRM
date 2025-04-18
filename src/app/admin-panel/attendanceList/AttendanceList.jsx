@@ -145,7 +145,7 @@ const AttendanceList = () => {
   return (
     <div className="mt-4 ">
       <div className="flex justify-between items-center my-3 flex-wrap">
-        <h1 className="font-semibold text-2xl">Attendance List for {year}</h1>
+        <h1 className="font-semibold text-2xl ">Attendance List for {year}</h1>
 
         {/* Download Report Button */}
         <motion.button
