@@ -153,7 +153,7 @@ const EmployeeList = () => {
           </motion.button>
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
-              to="/employee-list/add-employee"
+              to="/user/employee-list/add-employee"
               className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
             >
               Add
@@ -251,20 +251,20 @@ const EmployeeList = () => {
                     >
                       <Link
                         className="text-green-500 hover:text-green-700"
-                        to={`/employee-list/view-employee/${item.employeeId}`}
+                        to={`/user/employee-list/view-employee/${item.employeeId}`}
                       >
                         <FaEye size={24} />
                       </Link>
                     </motion.button>
 
-                    <motion.button
+                    {/* <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleDeleteClick(item.employeeId)}
                       className="text-red-500 hover:text-red-700"
                     >
                       <FaTrash size={22} />
-                    </motion.button>
+                    </motion.button> */}
                   </div>
                 </td>
               </motion.tr>

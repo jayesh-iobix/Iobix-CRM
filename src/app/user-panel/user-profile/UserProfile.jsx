@@ -49,7 +49,7 @@ const UserProfile = () => {
         {/* User Name and Role */}
         <div>
           <h2 className="text-3xl mt-1 font-semibold text-gray-800">{userDetails.firstName +" "+ userDetails.lastName}</h2>
-          <p className="text-gray-500 text-xl">{userDetails.role}</p>
+          <p className="text-gray-500 text-xl">{userDetails.departmentName}</p>
         </div>
         </div>
         <div>

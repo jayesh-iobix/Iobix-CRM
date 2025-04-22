@@ -254,7 +254,7 @@ const fetchLeaveType = async () => {
           </div>
 
           {/* Month Dropdown */}
-          <div className="w-full mb-2 px-3 md:w-1/2 lg:w:60%">
+          <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
             <label htmlFor="month" className="mr-2">
               Month:
             </label>

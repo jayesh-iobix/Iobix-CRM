@@ -1,5 +1,5 @@
-import { BiAbacus, BiBox, BiCalendar, BiGrid, BiGridSmall, BiGridVertical, BiListUl, BiTask } from 'react-icons/bi'
-import { BsChat, BsFillGrid1X2Fill, BsFillGridFill, BsHandThumbsUp, BsPeople, BsPersonRaisedHand } from 'react-icons/bs'
+import { BiAbacus, BiBox, BiCalendar, BiGrid, BiGridSmall, BiGridVertical, BiListUl, BiMicrophone, BiSolidMicrophone, BiTask } from 'react-icons/bi'
+import { BsChat, BsFillGrid1X2Fill, BsFillGridFill, BsFillMegaphoneFill, BsHandThumbsUp, BsMegaphone, BsPeople, BsPersonRaisedHand } from 'react-icons/bs'
 import { FaBuilding, FaBusinessTime, FaCalendar, FaHandshake, FaHandshakeAltSlash, FaRegHandshake, FaVenusDouble } from 'react-icons/fa';
 import {
 	HiOutlineViewGrid,
@@ -113,24 +113,31 @@ export const HR_DASHBOARD_SIDEBAR_LINKS = [
     ],
   },  
   {
+    key: "task",
+    label: "Task",
+    icon: <BiTask />,
+    submenu: [
+      { label: "User Tasks", path: "/user/task-list" },
+      { label: "Assign Tasks", path: "/user/assign-task-list" },
+    ],
+  },
+  {
     key: "employee",
     label: "Employees",
     path: "/user/employee-list",
     icon: <BsPeople />,
   },
   {
-    key: "task",
-    label: "Task",
-    icon: <BiTask />,
-    submenu: [
-      { label: "Task List", path: "/user/task/task-list" },
-    ],
-  },
-  {
     key: "calendar",
     label: "Schedule Calendar",
     path: "/user/calendar",
     icon: <BiCalendar />,
+  },
+  {
+    key: "announcement",
+    label: "Announcement",
+    path: "/user/announcement/announcement-list",
+    icon: <BsMegaphone />,
   },
   // {
   //   key: "project",

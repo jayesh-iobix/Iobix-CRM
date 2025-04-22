@@ -158,7 +158,7 @@ const SignIn = ({ onLogin, setLoading }) => {
           const decodedToken = jwtDecode(token);
           const role = getRoleFromToken(decodedToken);
 
-          console.log(decodedToken)
+          // console.log(decodedToken)
           sessionStorage.setItem("role", role);
           onLogin(role);
 
@@ -167,6 +167,7 @@ const SignIn = ({ onLogin, setLoading }) => {
           if (userDetails.data) {
             sessionStorage.setItem("LoginUserId", userDetails.data.loginUserId);
             sessionStorage.setItem("UserName", userDetails.data.userName);
+            sessionStorage.setItem("DepartmentName", userDetails.data.departmentName);
           }
 
           // Navigate based on role

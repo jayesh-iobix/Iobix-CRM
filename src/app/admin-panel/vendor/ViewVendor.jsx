@@ -143,13 +143,16 @@ const ViewVendor = () => {
                       { label: "Company Name", name: "companyName", value: formData.companyName },
                       { label: "Company Registration No.", name: "companyRegistrationNumber", value: formData.companyRegistrationNumber },
                       { label: "Company GST No.", name: "companyGSTNumber", value: formData.companyGSTNumber },
-                      { label: "Company Linkedin", name: "companyLinkedin", value: formData.companyLinkedin },
-                      { label: "Company Website", name: "companyWebsite", value: formData.companyWebsite },
+                      // { label: "Company Linkedin", name: "companyLinkedin", value: formData.companyLinkedin },
+                      // { label: "Company Website", name: "companyWebsite", value: formData.companyWebsite },
+                      { label: "Company Linkedin", value: formData.companyLinkedin ? <a href={formData.companyLinkedin} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">{formData.companyLinkedin}</a> : 'No website available'},
+                      { label: "Company Website", value: formData.companyWebsite ? <a href={formData.companyWebsite} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">{formData.companyWebsite}</a> : 'No website available'},
                       { label: "Contact Person Name", name: "contactPersonName",value: formData.contactPersonName },
                       { label: "Contact Person Phone No.", name: "phoneNumber", value: formData.phoneNumber},
                       { label: "Contact Person WhatsApp No.", name: "whatsAppNumber", value: formData.whatsAppNumber},
                       { label: "Email", name: "email",  value: formData.email },
-                      { label: "Contact Person Linkedin", name: "contactPersonLinkedin", value: formData.contactPersonLinkedin },
+                      // { label: "Contact Person Linkedin", name: "contactPersonLinkedin", value: formData.contactPersonLinkedin },
+                      { label: "Contact Person Linkedin", value: formData.contactPersonLinkedin ? <a href={formData.contactPersonLinkedin} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">{formData.contactPersonLinkedin}</a> : 'No website available'},
                       { label: "Country", name: "countryName",  value: formData.countryName },
                       { label: "State", name: "stateName",  value: formData.stateName },
                       { label: "City", name: "cityName",  value: formData.cityName },
@@ -164,7 +167,6 @@ const ViewVendor = () => {
                       </div>
                     ))}
                   </div>
-
                 </div>
               )}
               {/* {activeTab === 2 && "Attendance List"} */}

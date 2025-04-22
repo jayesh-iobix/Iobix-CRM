@@ -150,6 +150,11 @@ import VendorRegistration from './app/components/VendorRegistration';
 import PartnerProfile from './app/partner-panel/partner-profile/PartnerProfile';
 import Schedule from './app/admin-panel/schedule-calendar/Schedule';
 import PCVSchedule from './app/partner-panel/schedule-calendar/PCVSchedule';
+import EmployeeListForHr from './app/hr-panel/employee/EmployeeList';
+import AddEmployeeByHr from './app/hr-panel/employee/AddEmployee';
+import EditEmployeeByHr from './app/hr-panel/employee/AddEmployee';
+import ViewEmployeeByHr from './app/hr-panel/employee/ViewEmployee';
+import AddAnnouncement from './app/hr-panel/announcement/AddAnnouncement';
 
 
 function App() {
@@ -381,11 +386,12 @@ function App() {
     <Route path="/user/view-inquiry-task/:id" element={<ViewInquiryTask/>} />
     <Route path="/user/view-inquiry-subtask/:id" element={<ViewInquirySubTask/>} />
     <Route path="/user/calendar" element={<Schedule />} />
-    <Route path="/user/employee-list" element={<EmployeeList />} />
-    <Route path="employee-list/add-employee" element={<AddEmployee />} />
-    <Route path="employee-list/edit-employee/:id" element={<EditEmployee />} />
-    <Route path="employee-list/view-employee/:id" element={<ViewEmployee />} />
+    <Route path="/user/employee-list" element={<EmployeeListForHr />} />
+    <Route path="/user/employee-list/add-employee" element={<AddEmployeeByHr />} />
+    <Route path="/user/employee-list/edit-employee/:id" element={<EditEmployeeByHr />} />
+    <Route path="/user/employee-list/view-employee/:id" element={<ViewEmployeeByHr />} />
     <Route path="/user/task/task-list" element={<TaskList />} />
+    <Route path="/user/announcement/announcement-list" element={<AddAnnouncement />} />
     </Route>
 
     {/* Company dashboard route */}

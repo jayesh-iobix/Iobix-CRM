@@ -27,9 +27,9 @@ const linkClass =
 export default function Sidebar() {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State to manage sidebar visibility
-  const [departmentName, setDepartmentName] = useState(""); // State to manage sidebar visibility
+  // const [departmentName, setDepartmentName] = useState(""); // State to manage sidebar visibility
   const role = sessionStorage.getItem("role");
-  
+  const departmentName = sessionStorage.getItem("DepartmentName")
   
 
 // Use linkClass in your component
@@ -83,15 +83,15 @@ export default function Sidebar() {
   // role === "admin" ? DASHBOARD_SIDEBAR_LINKS : USER_DASHBOARD_SIDEBAR_LINKS;
 
 
-  useEffect(() => {
-    const fetchDepartment = async () => {
-      // debugger;
-      const depatment = await AuthService.getBasicDetail();
-      setDepartmentName(depatment.data.departmentName)
-      // console.log(depatment.data)
-    }
-    fetchDepartment();  
-    }, []);
+
+
+  // useEffect(() => {
+  //   const fetchDepartment = async () => {
+  //     const depatment = await AuthService.getBasicDetail();
+  //     setDepartmentName(depatment.data.departmentName)
+  //   }
+  //   fetchDepartment();  
+  // }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);

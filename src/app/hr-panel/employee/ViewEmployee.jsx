@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
-import { ClientCompanyService } from "../../service/ClientCompanyService";
+import { EmployeeService } from "../../service/EmployeeService";
+import AttendanceList from "../../admin-panel/attendanceList/AttendanceList";
+import LeaveList from "../../admin-panel/leave/LeaveList";
 
-const ViewClientCompany = () => {
+
+const ViewEmployee = () => {
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -42,16 +45,15 @@ const ViewClientCompany = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch Client Company
-        const clientCompany = await ClientCompanyService.getByIdClientCompany(id);
-        // const formattedClientCompany = {
-        //   ...clientCompany.data,
-        //   birthDate: clientCompany.data.birthDate ? clientCompany.data.birthDate.split("T")[0] : "",
-        //   dateOfJoining: clientCompany.data.dateOfJoining ? clientCompany.data.dateOfJoining.split("T")[0] : "",
-        // };
-        setFormData(clientCompany.data);
-        // setFormData(formattedClientCompany);
-        // console.log(formattedClientCompany)
+        // Fetch Employee
+        const employee = await EmployeeService.getByIdEmployee(id);
+        const formattedEmployee = {
+          ...employee.data,
+          birthDate: employee.data.birthDate ? employee.data.birthDate.split("T")[0] : "",
+          dateOfJoining: employee.data.dateOfJoining ? employee.data.dateOfJoining.split("T")[0] : "",
+        };
+        setFormData(formattedEmployee);
+        // console.log(formattedEmployee)
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -70,21 +72,21 @@ const ViewClientCompany = () => {
   return (
     <>
       <div className="flex flex-wrap justify-between items-center my-3">
-        <h1 className="font-semibold text-xl sm:text-2xl">View Client Company</h1>
+        <h1 className="font-semibold text-xl sm:text-2xl">View Employee</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
-              to={`/clientcompany-list/edit-clientcompany/${id}`}
+              to={`/user/employee-list/edit-employee/${id}`}
               className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
             >
-              Edit Client Company
+              Edit Employe
               <FaEdit size={16} /> 
             </Link>
           </motion.button>
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <button
               onClick={() => navigate(-1)}
-              // to="/clientcompany-list"
+              // to="/employee-list"
               className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
             >
               <FaArrowLeft size={16} />
@@ -106,9 +108,10 @@ const ViewClientCompany = () => {
                 aria-orientation="horizontal"
               >
                 {[
-                  "Client Company Details",
-                //   "Attendance List",
-                //   "Leave List",
+                  "Employee Details",
+                  "Attendance List",
+                  "Leave List",
+                  // "Task List",
                 ].map((tab, index) => (
                   <button
                     key={index}
@@ -139,19 +142,19 @@ const ViewClientCompany = () => {
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[
-                      { label: "Company Name", name: "companyName", value: formData.companyName },
-                      { label: "Company Registration No.", name: "companyRegistrationNumber", value: formData.companyRegistrationNumber },
-                      { label: "Company GST No.", name: "companyGSTNumber", value: formData.companyGSTNumber },
-                      // { label: "Company Linkedin", name: "companyLinkedin", value: formData.companyLinkedin },
-                      // { label: "Company Website", name: "companyWebsite", value: formData.companyWebsite },
-                      { label: "Company Linkedin", value: formData.companyLinkedin ? <a href={formData.companyLinkedin} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">{formData.companyLinkedin}</a> : 'No website available'},
-                      { label: "Company Website", value: formData.companyWebsite ? <a href={formData.companyWebsite} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">{formData.companyWebsite}</a> : 'No website available'},
-                      { label: "Contact Person Name", name: "contactPersonName",value: formData.contactPersonName },
-                      { label: "Contact Person Phone No.", name: "phoneNumber", value: formData.phoneNumber},
-                      { label: "Contact Person WhatsApp No.", name: "whatsAppNumber", value: formData.whatsAppNumber},
-                      { label: "Email", name: "email",  value: formData.email },
-                      { label: "Contact Person Linkedin", value: formData.contactPersonLinkedin ? <a href={formData.contactPersonLinkedin} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">{formData.contactPersonLinkedin}</a> : 'No website available'},
-                      // { label: "Contact Person Linkedin", name: "contactPersonLinkedin", value: formData.contactPersonLinkedin },
+                      { label: "First Name", name: "firstName", value: formData.firstName },
+                      { label: "Middle Name", name: "middleName", value: formData.middleName },
+                      { label: "Last Name", name: "lastName", value: formData.lastName },
+                      { label: "Employee Code", name: "employeeCode", value: formData.employeeCode },
+                      { label: "Department", name: "departmentName", value: formData.departmentName },
+                      { label: "Designation", name: "designationName", value: formData.designationName },
+                      { label: "Email", name: "email", value: formData.email },
+                      { label: "Mobile Number", name: "mobileNumber",value: formData.mobileNumber },
+                      { label: "Emergency Mobile Number", name: "emergencyMobileNumber", value: formData.emergencyMobileNumber},
+                      { label: "Gender", name: "gender", value: formData.gender},
+                      { label: "Date of Birth", name: "birthDate",  value: formData.birthDate },
+                      { label: "Blood Group", name: "bloodGroup", value: formData.bloodGroup },
+                      { label: "Date of Joining", name: "dateOfJoining",  value: formData.dateOfJoining },
                       { label: "Country", name: "countryName",  value: formData.countryName },
                       { label: "State", name: "stateName",  value: formData.stateName },
                       { label: "City", name: "cityName",  value: formData.cityName },
@@ -162,15 +165,16 @@ const ViewClientCompany = () => {
                         <label className="font-semibold text-gray-700 me-2">
                           {field.label}:
                         </label>
-                        <span className="text-gray-600 break-words">{field.value}</span>
+                        <span className="text-gray-600">{field.value}</span>
                       </div>
                     ))}
                   </div>
 
                 </div>
               )}
-              {/* {activeTab === 2 && "Attendance List"} */}
-              {/* {activeTab === 3 && "Leave List"}  */}
+              {activeTab === 2 && <AttendanceList />}
+              {activeTab === 3 && <LeaveList />}
+              {/* {activeTab === 4 && <UserTaskList />} */}
             </div>
           </div>
         </form>
@@ -181,4 +185,4 @@ const ViewClientCompany = () => {
   );
 };
 
-export default ViewClientCompany;
+export default ViewEmployee;

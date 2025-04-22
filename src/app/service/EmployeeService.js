@@ -75,15 +75,15 @@ export const EmployeeService = {
   },
   
   // Method to get single Employee
-    getByIdEmployee: async (employeeId) => {
-      try {
-        const response = await httpClient.get(`${api}/${employeeId}`); // Update 'GetAll' with actual endpoint if different
-        return response.data;
-      } catch (error) {
-        console.error('Failed to fetch employee:', error);
-        throw error;
-      }
-    },
+  getByIdEmployee: async (employeeId) => {
+    try {
+      const response = await httpClient.get(`${api}/${employeeId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch employee:', error);
+      throw error;
+    }
+  },
 
   // Method to get EmployeeCode
   getEmployeeCode: async (dateOfJoining) => {
@@ -96,28 +96,26 @@ export const EmployeeService = {
     }
   },
 
- // Method to get Employee Based on Department
- getEmployeeByDepartment: async (departmentId) => {
-  try {
+  // Method to get Employee Based on Department
+  getEmployeeByDepartment: async (departmentId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetByDepartment/${departmentId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch employees:', error);
+      throw error;
+    }
+  },
 
-    const response = await httpClient.get(`${api}/GetByDepartment/${departmentId}`);
-    // console.log(response)
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch employees:', error);
-    throw error;
-  }
-},
-
-// Method to get all Employee
-getEmployeesProfileDetail: async () => {
-  try {
-    const response = await httpClient.get(`${api}/GetProfileDetail`); // Update 'GetAll' with actual endpoint if different
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch departments:', error);
-    throw error;
-  }
-},
+  // Method to get all Employee
+  getEmployeesProfileDetail: async () => {
+    try {
+      const response = await httpClient.get(`${api}/GetProfileDetail`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch departments:', error);
+      throw error;
+    }
+  },
   
 };
