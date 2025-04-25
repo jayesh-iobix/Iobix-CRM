@@ -1,5 +1,6 @@
 import React from 'react'
 import UserDashboardStatsGrid from './UserDashboardStatsGrid'
+import Announcement from './Announcement'
 
 const UserDashboard = () => {
   return (
@@ -7,9 +8,9 @@ const UserDashboard = () => {
 			<UserDashboardStatsGrid/>
 			<div className="flex flex-row gap-4 w-full">
 			</div>
-			{/* <div className="flex flex-row gap-4 w-full">
-			<RecentOrders />
-			</div> */}
+			<div className="grid">
+			<Announcement />
+			</div>
 		</div>
   )
 }

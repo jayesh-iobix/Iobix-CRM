@@ -155,6 +155,8 @@ import AddEmployeeByHr from './app/hr-panel/employee/AddEmployee';
 import EditEmployeeByHr from './app/hr-panel/employee/AddEmployee';
 import ViewEmployeeByHr from './app/hr-panel/employee/ViewEmployee';
 import AddAnnouncement from './app/hr-panel/announcement/AddAnnouncement';
+import AnnouncementList from './app/hr-panel/announcement/AnnouncementList';
+import ViewAnnouncement from './app/hr-panel/announcement/ViewAnnouncement';
 
 
 function App() {
@@ -336,6 +338,9 @@ function App() {
       <Route path="view-inquiry-task/:id" element={<ViewInquiryTask />} />
       <Route path="view-inquiry-subtask/:id" element={<ViewInquirySubTask />} />
       <Route path="calendar" element={<Schedule />} />
+      <Route path="announcement-list" element={<AnnouncementList />} />
+      <Route path="announcement-list/add-announcement" element={<AddAnnouncement />} />
+      <Route path="announcement-list/view-announcement/:id" element={<ViewAnnouncement />} />
       {/* <Route path="/profile" element={<Profile/>} /> */}
     </Route>
 
@@ -391,7 +396,9 @@ function App() {
     <Route path="/user/employee-list/edit-employee/:id" element={<EditEmployeeByHr />} />
     <Route path="/user/employee-list/view-employee/:id" element={<ViewEmployeeByHr />} />
     <Route path="/user/task/task-list" element={<TaskList />} />
-    <Route path="/user/announcement/announcement-list" element={<AddAnnouncement />} />
+    <Route path="/user/announcement-list" element={<AnnouncementList />} />
+    <Route path="/user/announcement-list/add-announcement" element={<AddAnnouncement />} />
+    <Route path="/user/announcement-list/view-announcement/:id" element={<ViewAnnouncement />} />
     </Route>
 
     {/* Company dashboard route */}

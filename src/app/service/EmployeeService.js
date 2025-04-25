@@ -107,6 +107,20 @@ export const EmployeeService = {
     }
   },
 
+  // Method to get Employee Based on multiple Department
+  getEmployeeByMultiDepartment: async (departmentIds) => {
+    try {
+      const queryParams = new URLSearchParams();
+      departmentIds.forEach(id => queryParams.append('DepartmentIds', id));
+
+      const response = await httpClient.get(`${api}/GetByMultiDepartment?${queryParams.toString()}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch employees:', error);
+      throw error;
+    }
+  },
+
   // Method to get all Employee
   getEmployeesProfileDetail: async () => {
     try {

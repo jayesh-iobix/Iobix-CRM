@@ -37,4 +37,5 @@ export const environment = {
   vendor: "https://localhost:7292/api/VendorRegistration",
   profile: "https://localhost:7292/api/Profile",
   schedule: "https://localhost:7292/api/ScheduleCalendar",
+  announcement: "https://localhost:7292/api/Announcement",
 }

@@ -55,6 +55,12 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     icon: <BiCalendar />,
   },
   {
+    key: "announcement",
+    label: "Announcement",
+    path: "/announcement-list",
+    icon: <BsMegaphone />,
+  },
+  {
     key: "project",
     label: "Project",
     icon: <HiOutlineQuestionMarkCircle />,
@@ -136,7 +142,7 @@ export const HR_DASHBOARD_SIDEBAR_LINKS = [
   {
     key: "announcement",
     label: "Announcement",
-    path: "/user/announcement/announcement-list",
+    path: "/user/announcement-list",
     icon: <BsMegaphone />,
   },
   // {
