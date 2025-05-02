@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -5,8 +6,11 @@ import { EmployeeService } from "../../service/EmployeeService";
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService";
+//#endregion
 
+//#region Component: EmployeeList
 const EmployeeList = () => {
+  //#region State variables
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
@@ -15,12 +19,13 @@ const EmployeeList = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //#region Pagination state
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region useEffect: Fetch Employee Data
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -36,17 +41,24 @@ const EmployeeList = () => {
     };
     fetchEmployees();
   }, []);
+  //#endregion
 
+  //#region Handlers: Filtering
   // Function to filter tasks based on selected employee name
   const handleEmployeeFilterChange = (event) => {
     setEmployeeFilter(event.target.value);
   };
+
+  const uniqueDepartments = [
+    ...new Set(employees.map((employee) => employee.departmentName)),
+  ];
 
   // Handle department filter change
   const handleDepartmentChange = (event) => {
     setDepartmentFilter(event.target.value);
   };
 
+ // Re-filter employees on name or department change
   useEffect(() => {
     // Apply filters to the employees array
     let filtered = employees;
@@ -74,11 +86,18 @@ const EmployeeList = () => {
     setTotalItems(filtered.length); 
     setCurrentPage(1); // Reset to the first page when a new filter is applied
   }, [employeeFilter, departmentFilter, employees]);
+  //#endregion
 
-  const uniqueDepartments = [
-    ...new Set(employees.map((employee) => employee.departmentName)),
-  ];
+  //#region Delete Logic
+  const handleDeleteClick = (employeeId) => {
+    setDeleteId(employeeId);
+    setIsPopupOpen(true); // Open popup
+  };
 
+  const handlePopupClose = () => {
+    setIsPopupOpen(false); // Close popup without deleting
+    setDeleteId(null); // Reset the ID
+  };
 
   const deleteEmployee = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
@@ -97,17 +116,9 @@ const EmployeeList = () => {
       alert("Failed to delete employee");
     }
   };
+  //#endregion
 
-  const handleDeleteClick = (employeeId) => {
-    setDeleteId(employeeId);
-    setIsPopupOpen(true); // Open popup
-  };
-
-  const handlePopupClose = () => {
-    setIsPopupOpen(false); // Close popup without deleting
-    setDeleteId(null); // Reset the ID
-  };
-
+  //#region Download Report
   const handleDownloadReport = async () => {
     setIsSubmitting(true);
     try {
@@ -122,8 +133,8 @@ const EmployeeList = () => {
       setIsSubmitting(false);
     }
   }
+  //#endregion
   
-
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -136,8 +147,10 @@ const EmployeeList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header + Buttons */}
       <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">Employee List</h1>
         <div className="flex flex-wrap gap-2 mt-2 md:mt-1 lg:mt-1 xl:mt-1">
@@ -190,6 +203,7 @@ const EmployeeList = () => {
         </select>
       </div>
 
+      {/* Employee Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -212,12 +226,6 @@ const EmployeeList = () => {
               ))}
             </tr>
           </thead>
-          {/* <motion.tbody
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          > */}
           {currentItems.length === 0 ? (
             <tr>
               <td colSpan="6" className="text-center py-3 px-4 text-gray-700">
@@ -273,7 +281,7 @@ const EmployeeList = () => {
         </table>
       </div>
 
-      {/* Confirmation Popup */}
+      {/* Delete Confirmation Popup */}
       {isPopupOpen && (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-50">
           <div className="bg-white p-5 rounded-lg shadow-lg max-w-full sm:max-w-lg md:max-w-lg lg:max-w-md xl:max-w-lg w-11/12">
@@ -418,6 +426,9 @@ const EmployeeList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default EmployeeList;
+//#endregion
+

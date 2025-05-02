@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -6,9 +7,12 @@ import { motion } from "framer-motion"; // Import framer-motion
 import AttendanceList from "../attendanceList/AttendanceList";
 import LeaveList from "../leave/LeaveList";
 import UserTaskList from "../task/user-task/UserTaskList";
+//#endregion 
 
+//#region  Component: ViewEmployee
 const ViewEmployee = () => {
 
+  //#region State Initialization
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -36,12 +40,12 @@ const ViewEmployee = () => {
     keyResponsibility: "",
     reportingTo: "" 
   });
-
   const [activeTab, setActiveTab] = useState(1);
-
   const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Employee Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -63,12 +67,16 @@ const ViewEmployee = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Handle Tab Change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Render UI
   return (
     <>
       <div className="flex flex-wrap justify-between items-center my-3">
@@ -179,10 +187,10 @@ const ViewEmployee = () => {
           </div>
         </form>
       </section>
-
-      
     </>
   );
+  //#endregion
 };
 
 export default ViewEmployee;
+//#endregion

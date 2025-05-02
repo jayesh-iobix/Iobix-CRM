@@ -425,16 +425,28 @@ export const VENDOR_DASHBOARD_SIDEBAR_LINKS = [
 
 //Bottom Dashboard Sidebar Links
 export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
-	{
-		key: 'settings',
-		label: 'Settings',
-		// path: '/settings',
-		icon: <HiOutlineCog />
-	},
+	// {
+	// 	key: 'settings',
+	// 	label: 'Settings',
+	// 	// path: '/settings',
+	// 	icon: <HiOutlineCog />
+	// },
 	{
 		key: 'support',
 		label: 'Help & Support',
-		// path: '/support',
+		path: '/help-support',
 		icon: <HiOutlineQuestionMarkCircle />
 	}
 ]
+
+// Function to return sidebar links based on the user role
+export const getDashboardSidebarBottomLinks = (role) => {
+	return [
+		{
+			key: 'support',
+			label: 'Help & Support',
+			path: `/${role}/help-support`,
+			icon: <HiOutlineQuestionMarkCircle />
+		}
+	];
+};

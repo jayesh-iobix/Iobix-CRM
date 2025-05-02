@@ -1,3 +1,4 @@
+//#region Import
 import React, { useState, useEffect } from "react";
 import InquiryChat from "./InquiryChat";
 import { InquiryService } from "../../service/InquiryService";
@@ -6,9 +7,12 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { FaEye } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
+//#endregion
 
+//#region Component: ChatInquiry
 const ChatInquiry = () => {
 
+  //#region State Initialization
   const [formData, setFormData] = useState({
     inquiryTitle: '',
     inquiryLocation: '',
@@ -30,12 +34,10 @@ const ChatInquiry = () => {
     senderName:'',
     senderId:'',
   });
-
   const [inquiryForwadedeData, setInquiryForwadedeData] = useState(""); 
-  const [inquiryTransferdData, setInquiryTransferdData] = useState("");
-  const [isViewInquiryPopUp, setIsViewInquiryPopUp] = useState(false);
+  const [inquiryTransferdData, setInquiryTransferdData] = useState("");
+  const [isViewInquiryPopUp, setIsViewInquiryPopUp] = useState(false);
   // const [viewInquiryId, setViewInquiryId] = useState(""); // State for the selected inquiry
-
   const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry category
   const [partnerClientEmployeeList, setPartnerClientEmployeeList] = useState([]); // State for second dropdown
   const [selectedPerson, setSelectedPerson] = useState(null); // State for the selected partner/client/employee
@@ -43,7 +45,9 @@ const ChatInquiry = () => {
   const [selectedPersonId, setSelectedPersonId] = useState(null); // State for the selected partner/client/employee Id
   const [inquiries, setInquiries] = useState([]); // State for storing inquiries
   const [selectedInquiry, setSelectedInquiry] = useState(null); // State for the selected inquiry
+  //#endregion
 
+  //#region Fetch Inquiry Data
   const fetchData = async (id) => {
     try {
 
@@ -65,12 +69,14 @@ const ChatInquiry = () => {
       alert("Error fetching data, please try again.");
     }
   };
+  //#endregion
 
-const handleIsViewInquiryPopUp = (inquiryRegistrationId) => {
-  // setDeleteId(designationId);
-  fetchData(inquiryRegistrationId);
-  setIsViewInquiryPopUp(true); // Open popup
-};
+  //#region Fetch Inquiry List
+  const handleIsViewInquiryPopUp = (inquiryRegistrationId) => {
+    // setDeleteId(designationId);
+    fetchData(inquiryRegistrationId);
+    setIsViewInquiryPopUp(true); // Open popup
+  };
 
   const handleInquiryFilterChange = (event) => {
     const selectedInquiryType = event.target.value;
@@ -91,10 +97,11 @@ const handleIsViewInquiryPopUp = (inquiryRegistrationId) => {
 
     fetchInquiries();
   };
+  //#endregion
 
+  //#region Person Select
   const handlePersonSelect = async (person) => {
 
-    debugger;
     setSelectedPerson(person);
 
     // Extract userId from the selected person object
@@ -124,14 +131,19 @@ const handleIsViewInquiryPopUp = (inquiryRegistrationId) => {
 
     fetchInquiriesForSender();
   };
+  //#endregion
 
+  //#region Inquiry Select
   const handleInquirySelect = (inquiry) => {
     setSelectedInquiry(inquiry);
     // setId(inquiry.inquiryRegistrationId);
   };
+  //#endregion
 
+  //#region render
   return (
     <div className="mt-4">
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl sm:text-3xl">Inquiry Chat</h1>
       </div>
@@ -410,6 +422,8 @@ const handleIsViewInquiryPopUp = (inquiryRegistrationId) => {
       )}
     </div>
   );
+  //#endregion
 };
 
 export default ChatInquiry;
+//#endregion

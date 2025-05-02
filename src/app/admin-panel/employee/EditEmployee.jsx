@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -8,9 +9,12 @@ import { EmployeeService } from "../../service/EmployeeService";
 import { motion } from "framer-motion"; // Import framer-motion
 import { EmployeeLeaveTypeService } from "../../service/EmployeeLeaveTypeService";
 import { toast } from "react-toastify";
+//#endregion
 
+//#region Component: AddEmployee
 const EditEmployee = () => {
 
+  //#region State Initialization
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -36,8 +40,6 @@ const EditEmployee = () => {
     probationPeriod: "",
     employeeLeaveTypeId: "",
   });
-
-  const { id } = useParams();
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
@@ -47,8 +49,12 @@ const EditEmployee = () => {
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
-  const navigate = useNavigate();
 
+  const { id } = useParams();
+  const navigate = useNavigate();
+  //#endregion
+
+  //#region Fetch Employee Details + Static Dropdown Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -81,7 +87,9 @@ const EditEmployee = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Fetch Dependent Dropdowns: Designation, State, City, Employee
   useEffect(() => {
     const fetchDropdownData = async () => {
       if(formData.departmentId)
@@ -117,6 +125,13 @@ const EditEmployee = () => {
 
     fetchDropdownData();
   }, [formData.countryId, formData.stateId, formData.departmentId]);
+  //#endregion
+
+  //#region Form Handlers
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const validateForm = () => {
     const requiredFields = [
@@ -132,7 +147,9 @@ const EditEmployee = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  //#endregion
 
+  //#region Submit Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
@@ -162,12 +179,9 @@ const EditEmployee = () => {
       }
     }
   };
+  //#endregion
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
+  //#region JSX Renderin
   return (
     <>
       <div className="flex justify-between items-center my-3">
@@ -496,7 +510,9 @@ const EditEmployee = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditEmployee;
+//#endregion
 

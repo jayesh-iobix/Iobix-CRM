@@ -39,7 +39,8 @@ export const ReportService = {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'TaskReport.pdf'); // Specify the file name
+      link.setAttribute('download', `Task_Report${month}_${year}.pdf`); // Specify the file name
+      // link.setAttribute('download', 'TaskReport.pdf'); // Specify the file name
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -61,6 +62,28 @@ export const ReportService = {
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `Attendance_Report_${month}_${year}.pdf`); // Specify the file name
+      // link.setAttribute('download', 'AttendanceReport.pdf'); // Specify the file name
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading the report:', error);
+    }
+  },
+
+  // Method to attendance task report
+  downloadApplyLeaveReport: async (employeeId, month, year) => {
+    // debugger;
+    try {
+      const response = await httpClient.get(`${api}/DownloadApplyLeaveReport/${employeeId}/${month}/${year}`, {
+        responseType: 'blob', // Important
+      });
+
+      // Create a link element, use it to download the blob, and then remove it
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `ApplyLeave_Report${month}_${year}.pdf`); // Specify the file name
       // link.setAttribute('download', 'AttendanceReport.pdf'); // Specify the file name
       document.body.appendChild(link);
       link.click();

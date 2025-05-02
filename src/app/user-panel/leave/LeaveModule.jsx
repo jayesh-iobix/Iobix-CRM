@@ -1,12 +1,17 @@
+//#region Imports
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion"; // Import framer-motion
 import { FaPlus, FaTimes } from "react-icons/fa";
 import { LeaveService } from "../../service/LeaveService";
 import { toast } from "react-toastify";
 import { LeaveTypeService } from "../../service/LeaveTypeService";
+//#endregion 
 
+//#region Component: LeaveModule
 const LeaveModule = () => {
 
+  //#region State Variables
+  // Get the current year and month
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth(); // Get the current month (0-based index)
 
@@ -29,57 +34,52 @@ const LeaveModule = () => {
   const [showLeaveModal, setShowLeaveModal] = useState(false); // Modal visibility
 
   const employeeId = sessionStorage.getItem("LoginUserId");
+  //#endregion
 
-const fetchLeaveRecords = async () => {
-  try {
-    const response = await LeaveService.getLeaveRecords(employeeId);
-    setLeaveData(response.data);
-    setFilteredData(response.data);
+  //#region Functions
+  // Function to fetch leave records from the backend
+  const fetchLeaveRecords = async () => {
+    try {
+      const response = await LeaveService.getLeaveRecords(employeeId);
+      setLeaveData(response.data);
+      setFilteredData(response.data);
+  
+      const responseCount = await LeaveService.getTotalLeaveCount(employeeId);
+      setTotalBalance(responseCount.data);
+  
+      const responseBalance = await LeaveService.getTotalLeaveBalance(employeeId);
+      setLeaveBalance(responseBalance.data);
+    } catch (error) {
+      console.error("Error fetching leave data:", error);
+      alert("Error fetching leave data, please try again.");
+    }
+  };
+  
+  // Function to fetch leave types from the backend
+  const fetchLeaveType = async () => {
+    try {
+      const response = await LeaveTypeService.getLeaveTypes();
+      setLeaveTypeList(response.data);
+    } catch (error) {
+      console.error("Error fetching leave type:", error);
+      alert("Error fetching leave type, please try again.");
+    }
+  };
+  //#endregion
 
-    const responseCount = await LeaveService.getTotalLeaveCount(employeeId);
-    setTotalBalance(responseCount.data);
-    // console.log(responseCount)
-
-    const responseBalance = await LeaveService.getTotalLeaveBalance(employeeId);
-    setLeaveBalance(responseBalance.data);
-    // console.log(responseBalance.data)
-  } catch (error) {
-    console.error("Error fetching leave data:", error);
-    alert("Error fetching leave data, please try again.");
-  }
-};
-
-const fetchLeaveType = async () => {
-  try {
-    const response = await LeaveTypeService.getLeaveTypes();
-    setLeaveTypeList(response.data);
-  } catch (error) {
-    console.error("Error fetching leave type:", error);
-    alert("Error fetching leave type, please try again.");
-  }
-};
-
+  //#region useEffect fetch leave records and leave types
   useEffect(() => {
     fetchLeaveRecords();
     fetchLeaveType();
   }, []);
+  //#endregion
 
+  //#region filter data by month and year
   // Function to get all months for the year
   const months = [
     "January", "February", "March", "April", "May", "June", 
     "July", "August", "September", "October", "November", "December"
   ];
-
-  // Function to calculate total days between fromDate and toDate
-  const calculateTotalDays = (from, to) => {
-    const fromDateObj = new Date(from);
-    const toDateObj = new Date(to);
-
-    const timeDiff = toDateObj - fromDateObj;
-    const dayDiff = timeDiff / (1000 * 3600 * 24);
-
-    setTotalDays(dayDiff + 1); // Including both start and end date
-  };
 
   // Function to filter leaves by selected month and year
   const filterDataByMonthAndYear = (month, year) => {
@@ -90,35 +90,26 @@ const fetchLeaveType = async () => {
     });
     setFilteredData(filtered);
   };
+  //#endregion
 
-  // Open and close modal
-  const openModal = () => setShowModal(true);
-  
-  const closeModal = () => {
-    setShowModal(false);
-    setFromDate("");
-    setToDate("");
-    setTotalDays(0);
-    setReason("");
+  //#region calculate total days between fromDate and toDate
+  // Function to calculate total days between fromDate and toDate
+  const calculateTotalDays = (from, to) => {
+    const fromDateObj = new Date(from);
+    const toDateObj = new Date(to);
+
+    const timeDiff = toDateObj - fromDateObj;
+    const dayDiff = timeDiff / (1000 * 3600 * 24);
+
+    setTotalDays(dayDiff + 1); // Including both start and end date
   };
+  //#endregion
 
-  // Function to set the color based on the leave status
-  const getStatusColor = (statusName) => {
-    switch (statusName) {
-      case "Pending":
-        return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
-      case "Approved":
-        return "text-green-500 bg-green-100"; // Green for Approved
-      case "Rejected":
-        return "text-red-500 bg-red-100"; // Red for Rejected
-      default:
-        return "text-gray-500 bg-gray-100"; // Default color
-    }
-  };
-
+  //#region handle leave application submission
   // Handle leave application submission
   const handleApplyLeave = async (e) => {
     e.preventDefault();
+
 
     // Convert fromDate and toDate to Date objects to check the day of the week
     const fromDateObj = new Date(fromDate);
@@ -128,6 +119,20 @@ const fetchLeaveType = async () => {
     if (fromDateObj.getDay() === 0 || toDateObj.getDay() === 0) {
       toast.error("You cannot apply for leave on a Sunday, as it's already a holiday.");
       return; // Exit the function if it's a Sunday
+    }
+
+    // Check if leave already exists for the same date range
+    const isLeaveAlreadyApplied = filteredData.some(
+      (leave) =>
+        new Date(leave.fromDate).toLocaleDateString() === fromDateObj.toLocaleDateString() &&
+        new Date(leave.toDate).toLocaleDateString() === toDateObj.toLocaleDateString() &&
+        leave.status !== 2 && // Exclude rejected leaves from the check
+        leave.status !== 3   // Exclude cancelled leaves from the check 
+    );
+
+    if (isLeaveAlreadyApplied) {
+      toast.error("You have already applied for leave on these dates.");
+      return; // Exit the function if leave already exists for the same dates
     }
 
     const leaveData = {
@@ -161,6 +166,32 @@ const fetchLeaveType = async () => {
     closeModal();
   };
 
+  // Open and close modal
+  const openModal = () => setShowModal(true);
+  
+  const closeModal = () => {
+    setShowModal(false);
+    setFromDate("");
+    setToDate("");
+    setTotalDays(0);
+    setReason("");
+  };
+
+  // Function to set the color based on the leave status
+  const getStatusColor = (statusName) => {
+    switch (statusName) {
+      case "Pending":
+        return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
+      case "Approved":
+        return "text-green-500 bg-green-100"; // Green for Approved
+      case "Rejected":
+        return "text-red-500 bg-red-100"; // Red for Rejected
+      default:
+        return "text-gray-500 bg-gray-100"; // Default color
+    }
+  };
+
+  // Function to format date in dd-mm-yyyy format
   const formatDate = (dateString) => {
     const dateObj = new Date(dateString);
     const day = String(dateObj.getDate()).padStart(2, "0"); // Add leading zero for single digit days
@@ -169,11 +200,12 @@ const fetchLeaveType = async () => {
   
     return `${day}-${month}-${year}`;
   };
+  //#endregion
   
+  //#region handle leave cancellation
   // Handle to cancle leave
   const handelCancleLeave = async (leave, statusValue, e) => {
     e.preventDefault();
-    // console.log(leave);
     const leaveData = {
       employeeId: leave.employeeId,
       leaveTypeId: leave.leaveTypeId,
@@ -184,8 +216,6 @@ const fetchLeaveType = async () => {
       leaveType: leave.leaveType,
       status: statusValue, // 1 for Approve, 2 for Reject, 3 for Cancle
     };
-
-      // debugger;
 
       try {
         const response = await LeaveService.cancleLeave(
@@ -202,10 +232,13 @@ const fetchLeaveType = async () => {
       }
       closeModal();
   };
+  //#endregion
 
-
+  //#region Render
   return (
+    
     <div className="mt-4">
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl sm:text-3xl">
           Leave Records of {year}
@@ -328,9 +361,7 @@ const fetchLeaveType = async () => {
 
       {/* Display Leave Records for the Selected Month */}
       {selectedMonth !== null && (
-        // <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <div className="grid mt-4 overflow-x-auto shadow-xl">
-          {/* <div className="overflow-x-auto"> */}
           <table className="min-w-full table-auto bg-white border border-gray-200">
             <thead className="bg-gray-900 border-b">
               <tr>
@@ -399,8 +430,6 @@ const fetchLeaveType = async () => {
             </tbody>
           </table>
           </div>
-        // </div>
-        // {/* </section> */}
       )}
 
       {/* Modal for Apply Leave */}
@@ -539,122 +568,12 @@ const fetchLeaveType = async () => {
             </div>
           </div>
         </div>
-
-        // <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50 overflow-x-auto">
-        //   <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-        //     <h2 className="text-xl font-semibold mb-4">Apply Leave</h2>
-
-        //     {/* From Date */}
-        //     <div className="mb-4">
-        //       <label className="block text-sm font-medium text-gray-700">From Date</label>
-        //       <input
-        //         type="date"
-        //         value={fromDate}
-        //         onChange={(e) => {
-        //           setFromDate(e.target.value);
-        //           if (toDate) {
-        //             calculateTotalDays(e.target.value, toDate);
-        //           }
-        //         }}
-        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-        //       />
-        //     </div>
-
-        //     {/* To Date */}
-        //     <div className="mb-4">
-        //       <label className="block text-sm font-medium text-gray-700">To Date</label>
-        //       <input
-        //         type="date"
-        //         value={toDate}
-        //         onChange={(e) => {
-        //           setToDate(e.target.value);
-        //           if (fromDate) {
-        //             calculateTotalDays(fromDate, e.target.value);
-        //           }
-        //         }}
-        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-        //       />
-        //     </div>
-
-        //     {/* Total Days */}
-        //     <div className="mb-4">
-        //       <label className="block text-sm font-medium text-gray-700">Total Days</label>
-        //       <input
-        //         type="text"
-        //         value={totalDays}
-        //         disabled
-        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-        //       />
-        //     </div>
-
-        //     {/* Reason */}
-        //     <div className="mb-4">
-        //       <label className="block text-sm font-medium text-gray-700">Reason</label>
-        //       <textarea
-        //         value={reason}
-        //         onChange={(e) => setReason(e.target.value)}
-        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-        //         rows="4"
-        //       />
-        //     </div>
-
-        //     {/* Leave Type */}
-        //     <div className="mb-4">
-        //     <label className="block text-sm font-medium text-gray-700">Leave Type</label>
-        //       <select
-        //         value={leaveTypeId}
-        //         onChange={(e) => setLeaveTypeId(e.target.value)}
-        //         name="leaveTypeId"
-        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-        //       >
-        //         <option value="" className="text-gray-400">
-        //           --Select Leave Type--
-        //         </option>
-        //         {leaveTypeList.length > 0 ? (
-        //           leaveTypeList.map((leaveType) => (
-        //             <option key={leaveType.leaveTypeId} value={leaveType.leaveTypeId}>
-        //               {leaveType.leaveTypeName}
-        //             </option>
-        //           ))
-        //         ) : (
-        //           <option value="" disabled>
-        //             No leave type available
-        //           </option>
-        //         )}
-        //       </select>
-        //     </div>
-
-        //     {/* Day */}
-        //     <div className="mb-4">
-        //       <label className="block text-sm font-medium text-gray-700">Day</label>
-        //       <select
-        //         value={leaveType}
-        //         onChange={(e) => setLeaveType(e.target.value)}
-        //         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-        //       >
-        //         <option value="" className="text-gray-400">
-        //           --Select Day Type--
-        //         </option>
-        //         <option value="Full-Day">Full-Day</option>
-        //         <option value="Half-Day">Half-Day</option>
-        //       </select>
-        //     </div>
-
-        //     {/* Buttons */}
-        //     <div className="flex justify-end gap-2">
-        //       <button onClick={closeModal} className="bg-gray-500 text-white py-2 px-4 rounded-md">
-        //         Close
-        //       </button>
-        //       <button onClick={handleApplyLeave} className="bg-blue-600 text-white py-2 px-4 rounded-md">
-        //         Apply Leave
-        //       </button>
-        //     </div>
-        //   </div>
-        // </div>
       )}
 
     </div>
   );
+  //#endregion
 };
 
 export default LeaveModule;
+//#endregion

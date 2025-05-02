@@ -1,3 +1,4 @@
+//#region Imports
 import './App.css';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -16,7 +17,6 @@ import Layout from './app/components/Layout';
 import AddDepartment from './app/admin-panel/master/department/AddDepartment';
 import DesignationList from './app/admin-panel/master/designation/DesignationList';
 import AddDesignation from './app/admin-panel/master/designation/AddDesignation';
-// import SignIn from './app/admin-panel/auth/SignIn';
 import EditDepartment from './app/admin-panel/master/department/EditDepartment';
 import EditDesignation from './app/admin-panel/master/designation/EditDesignation';
 import EditEmployee from './app/admin-panel/employee/EditEmployee';
@@ -81,7 +81,6 @@ import PartnerDashboard from './app/partner-panel/dashboard/PartnerDashboard';
 import AddInquiry from './app/partner-panel/inquiry/AddInquiry';
 import InquiryList from './app/partner-panel/inquiry/InquiryList';
 import PartnerViewInquiry from './app/admin-panel/inquiry/ViewInquiry';
-// import InquiryListInAdmin from './app/admin-panel/partner-inquiry/InquiryList';
 import AddPartnerInquiry from './app/admin-panel/partner-inquiry/AddPartnerInquiry';
 import InquiryOriginList from './app/admin-panel/master/inquiry-origin/InquiryOriginList';
 import AddInquiryOrigin from './app/admin-panel/master/inquiry-origin/AddInquiryOrigin';
@@ -118,7 +117,6 @@ import CreatedProjectList from './app/admin-panel/project/created-project/Create
 import ViewPartnerProject from './app/partner-panel/inquiry/ViewProject';
 import ViewProject from './app/admin-panel/project/ViewProject';
 import AddProject from './app/admin-panel/project/AddProject';
-import Chat from './app/partner-panel/inquiry/Chat';
 import InquiryTaskList from './app/admin-panel/inquiry-task/InquiryTaskList';
 import PartnerInquiryTaskList from './app/partner-panel/inquiry-task/PartnerInquiryTaskList';
 import ViewInquiryTask from './app/admin-panel/inquiry-task/ViewInquiryTask';
@@ -157,7 +155,8 @@ import ViewEmployeeByHr from './app/hr-panel/employee/ViewEmployee';
 import AddAnnouncement from './app/hr-panel/announcement/AddAnnouncement';
 import AnnouncementList from './app/hr-panel/announcement/AnnouncementList';
 import ViewAnnouncement from './app/hr-panel/announcement/ViewAnnouncement';
-
+import HelpSupport from './app/components/HelpSupport';
+//#endregion
 
 function App() {
 
@@ -173,9 +172,6 @@ function App() {
     // debugger;
     generateToken();
     onMessage(messaging, (payload) => { 
-     // Listen for foreground messages (optional)      
-    //  console.log('Message received in foreground: ', payload);
-    //  toast.success(payload.notification.body)
     }); 
 
     //console.log(token)
@@ -186,12 +182,6 @@ function App() {
         if (decodedToken?.Admin === 'IsAdmin' || decodedToken.Admin === 'IsAdminIT' || decodedToken.Admin === 'IsAdminBD') {
           setIsAuthenticated(true); // User is authenticated
           setUserRole('admin'); // Set the role to admin
-        // } else if (decodedToken?.Admin === 'IsAdminIT') {
-        //   setIsAuthenticated(true); // User is authenticated
-        //   setUserRole('ITadmin'); // Set the role to employee
-        // } else if (decodedToken?.Admin === 'IsAdminBD') {
-        //   setIsAuthenticated(true); // User is authenticated
-        //   setUserRole('BDadmin'); // Set the role to employee
         } else if (decodedToken?.Employee === 'IsEmployee') {
           setUserRole('user'); // Set the role to employee
           setIsAuthenticated(true); // User is authenticated
@@ -218,7 +208,6 @@ function App() {
     setTimeout(() => setLoading(false), 1500); // 1500ms delay
   }, []); // Empty dependency array ensures this effect runs only once, on mount
 
-
   if (loading) {
     // Optionally render a loading spinner or nothing while the auth state is being determined
     return (
@@ -241,11 +230,13 @@ function App() {
     <Route path="/sign-in" element={<SignIn onLogin={() => setIsAuthenticated(true)} setLoading={setLoading} />} />
     <Route path="/forgot-password" element={<ForgotPassword/>} />
     <Route path="/reset-password/:token" element={<ResetPassowrd/>} />
-    {/* <Route path="/inquiry" element={<InquiryModule/>} /> */}
+
+     {/* Route */}
     <Route path="/company-form" element={<CompanyForm/>} />
     <Route path="/company-registration" element={<CompanyRegistration/>} />
     <Route path="/partner-registration" element={<PartnerRegistration/>} />
     <Route path="/vendor-registration" element={<VendorRegistration/>} />
+    {/* <Route path="/inquiry" element={<InquiryModule/>} /> */}    
 
     {/* Admin dashboard Routes */}
     <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
@@ -341,6 +332,7 @@ function App() {
       <Route path="announcement-list" element={<AnnouncementList />} />
       <Route path="announcement-list/add-announcement" element={<AddAnnouncement />} />
       <Route path="announcement-list/view-announcement/:id" element={<ViewAnnouncement />} />
+      <Route path="help-support" element={<HelpSupport />} />
       {/* <Route path="/profile" element={<Profile/>} /> */}
     </Route>
 
@@ -399,30 +391,7 @@ function App() {
     <Route path="/user/announcement-list" element={<AnnouncementList />} />
     <Route path="/user/announcement-list/add-announcement" element={<AddAnnouncement />} />
     <Route path="/user/announcement-list/view-announcement/:id" element={<ViewAnnouncement />} />
-    </Route>
-
-    {/* Company dashboard route */}
-    <Route path="/company" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
-    <Route index element={<ClientCompDashboard />} />
-    <Route path="/company/company-profile" element={<PartnerProfile/>} />
-    <Route path="/company/icp-list" element={<InquiryModuleList/>} />
-    <Route path="/company/add-icp" element={<InquiryModule/>} />
-    <Route path="/company/edit-icp/:id" element={<EditInquiryModule/>} />
-    <Route path="/company/view-icp/:id" element={<ViewIquiryModule/>} />
-    <Route path="/company/project-list" element={<InquiryList/>} />
-    <Route path="/company/project-list/add-project" element={<AddInquiry/>} />
-    <Route path="/company/project-list/view-project/:id" element={<ViewInquiry/>} />
-    <Route path="/company/get-project-list" element={<GetInquiryList/>} />
-    <Route path="/company/get-project-list/view-project/:id" element={<GetViewInquiry/>} />
-    <Route path="/company/companyinquiry-list/create-inquiry-task/:id" element={<AddPartnerInquiryTask />} />
-    <Route path="/company/companyinquiry-list/edit-inquiry-task/:id" element={<EditPartnerInquiryTask />} />
-    <Route path="/company/companyinquiry-list/create-inquiry-sub-task/:id" element={<AddInquirySubTask />} />
-    <Route path="/company/view-inquiry-task/:id" element={<PartnerViewInquiryTask/>} />
-    <Route path="/company/view-inquiry-subtask/:id" element={<PartnerViewInquiryTask/>} />
-    <Route path="/company/calendar" element={<PCVSchedule />} />
-    {/* <Route path="/company/inquiry-list" element={<InquiryListInCompany />} />
-    <Route path="/company/inquiry-list/add-inquiry" element={<AddInquiryInCompany />} /> */}
-    {/* <Route path="/company/task-list" element={<UserTaskList/>} /> */}
+    {/* <Route path="/user/help-support" element={<HelpSupport />} /> */}
     </Route>
 
     {/* Partner dashboard route */}
@@ -447,6 +416,31 @@ function App() {
     <Route path="/partner/inquiry-tasknote-list/:id" element={<InquiryTaskNoteList />} />
     <Route path="/partner/inquiry-subtasknote-list/:id" element={<InquiryTaskNoteList />} />
     <Route path="/partner/calendar" element={<PCVSchedule />} />
+    {/* <Route path="/partner/help-support" element={<HelpSupport />} /> */}
+    </Route>
+
+    {/* Company dashboard route */}
+    <Route path="/company" element={isAuthenticated ? <Layout /> : <Navigate to="/sign-in" />}>
+    <Route index element={<ClientCompDashboard />} />
+    <Route path="/company/company-profile" element={<PartnerProfile/>} />
+    <Route path="/company/icp-list" element={<InquiryModuleList/>} />
+    <Route path="/company/add-icp" element={<InquiryModule/>} />
+    <Route path="/company/edit-icp/:id" element={<EditInquiryModule/>} />
+    <Route path="/company/view-icp/:id" element={<ViewIquiryModule/>} />
+    <Route path="/company/project-list" element={<InquiryList/>} />
+    <Route path="/company/project-list/add-project" element={<AddInquiry/>} />
+    <Route path="/company/project-list/view-project/:id" element={<ViewInquiry/>} />
+    <Route path="/company/get-project-list" element={<GetInquiryList/>} />
+    <Route path="/company/get-project-list/view-project/:id" element={<GetViewInquiry/>} />
+    <Route path="/company/companyinquiry-list/create-inquiry-task/:id" element={<AddPartnerInquiryTask />} />
+    <Route path="/company/companyinquiry-list/edit-inquiry-task/:id" element={<EditPartnerInquiryTask />} />
+    <Route path="/company/companyinquiry-list/create-inquiry-sub-task/:id" element={<AddInquirySubTask />} />
+    <Route path="/company/view-inquiry-task/:id" element={<PartnerViewInquiryTask/>} />
+    <Route path="/company/view-inquiry-subtask/:id" element={<PartnerViewInquiryTask/>} />
+    <Route path="/company/calendar" element={<PCVSchedule />} />
+    {/* <Route path="/company/inquiry-list" element={<InquiryListInCompany />} />
+    <Route path="/company/inquiry-list/add-inquiry" element={<AddInquiryInCompany />} /> */}
+    {/* <Route path="/company/task-list" element={<UserTaskList/>} /> */}
     </Route>
 
     {/* Vendor dashboard route */}

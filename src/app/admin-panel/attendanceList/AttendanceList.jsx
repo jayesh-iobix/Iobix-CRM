@@ -1,12 +1,16 @@
+//#region Imports
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion"; // Import framer-motion
-import { FaPlus } from "react-icons/fa";
 import { AttendanceService } from "../../service/AttendanceService";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { ReportService } from "../../service/ReportService";
+//#endregion
 
+//#region Component: AttendanceList
 const AttendanceList = () => {
+  //#region State Variables
+  // Get the current year and month
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth(); // Get the current month (0-based index)
 
@@ -16,9 +20,11 @@ const AttendanceList = () => {
   const [selectedMonth, setSelectedMonth] = useState(currentMonth); // Set the selected month to current month
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-
   const { id } = useParams();
+  //#endregion
 
+  //#region useEffect: Fetch Attendance Data
+  // Fetch attendance data when the component mounts
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
@@ -33,7 +39,32 @@ const AttendanceList = () => {
 
     fetchAttendance();
   }, []);
+  //#endregion
 
+  //#region Filter Function
+  // Create an array of months for the year
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  // Filter function to filter attendance data based on selected month and year
+  const filterDataByMonthAndYear = (month, year) => {
+    setSelectedMonth(month); // Set the selected month
+    const filtered = attendanceData.filter((attendance) => {
+      const attendanceDate = new Date(attendance.attendanceDate);
+      return attendanceDate.getFullYear() === year && attendanceDate.getMonth() === month;
+    });
+    setFilteredData(filtered);
+  };
+
+  useEffect(() => {
+    // Filter the data based on the current month and year when the component loads
+    filterDataByMonthAndYear(currentMonth, currentYear);
+  }, [currentMonth, currentYear]);
+  //#endregion
+
+  //#region Helper Functions
   // Function to get all dates of a specific month and year
   const getDaysInMonth = (month, year) => {
     const daysInMonth = [];
@@ -48,16 +79,6 @@ const AttendanceList = () => {
     return daysInMonth;
   };
 
-  // Filter function based on selected month and year
-  const filterDataByMonthAndYear = (month, year) => {
-    setSelectedMonth(month); // Set the selected month
-    const filtered = attendanceData.filter((attendance) => {
-      const attendanceDate = new Date(attendance.attendanceDate);
-      return attendanceDate.getFullYear() === year && attendanceDate.getMonth() === month;
-    });
-    setFilteredData(filtered);
-  };
-
   // Function to get all years range for the dropdown
   const getYears = () => {
     const currentYear = new Date().getFullYear();
@@ -68,12 +89,7 @@ const AttendanceList = () => {
     return years;
   };
 
-  // Create an array of months for the year
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
+  // Function to format time in HH:MM format
   const formatTime = (dateTime) => {
     const date = new Date(dateTime);
     const hours = String(date.getHours()).padStart(2, '0');
@@ -81,6 +97,7 @@ const AttendanceList = () => {
     return `${hours}:${minutes}`;
   };
 
+  // Function to format total time in HH:MM format
   const formatTotalTime = (totalTime) => {
     if (!totalTime) return '00:00'; // Handle empty or null case
   
@@ -111,12 +128,9 @@ const AttendanceList = () => {
         return ""; // Default color
     }
   };
+  //#endregion
 
-  useEffect(() => {
-    // Filter the data based on the current month and year when the component loads
-    filterDataByMonthAndYear(currentMonth, currentYear);
-  }, [currentMonth, currentYear]);
-
+  //#region Download Report Function
   const handleDownloadReport = async () => {
     const month = months[selectedMonth]; // Get the month name using the selected index
     setIsSubmitting(true);
@@ -127,13 +141,6 @@ const AttendanceList = () => {
       if(response) {
         toast.success("Report downloaded successfully!");
       }
-      // await ReportService.downloadAttendanceReport(id, year, month);
-      // Optionally, add a success message or additional logic after the download
-      // const blob = new Blob([response.data], { type: "application/vnd.ms-excel" });
-      // const link = document.createElement("a");
-      // link.href = URL.createObjectURL(blob);
-      // link.download = `Attendance_Report_${year}_${selectedMonth + 1}.xlsx`;
-      // link.click();
     } catch (error) {
       console.error("Error downloading report:", error);
       toast.error("Failed to download report.");
@@ -141,9 +148,12 @@ const AttendanceList = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <div className="mt-4 ">
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl ">Attendance List for {year}</h1>
 
@@ -262,6 +272,8 @@ const AttendanceList = () => {
       </section>
     </div>
   );
+  //#endregion
 };
 
 export default AttendanceList;
+//#endregion

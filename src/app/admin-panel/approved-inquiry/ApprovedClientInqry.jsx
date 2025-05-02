@@ -1,13 +1,15 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { DepartmentService } from "../../service/DepartmentService";
-import { EmployeeService } from "../../service/EmployeeService";
 import { InquiryApproveRejectService } from "../../service/InquiryApproveRejectService";
+//#endregion
 
+//#region Component: ApprovedClientInqry
 const ApprovedClientInqry = () => {
+  //#region State variables
   const [inquiries, setInquiries] = useState([]);
   const [filteredInquiries, setFilteredInquiries] = useState([]);
   const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry name or code
@@ -18,21 +20,13 @@ const ApprovedClientInqry = () => {
   const [approveId, setApproveId] = useState(null); // Store the eventTypeId for deletion
   const [inquiryGivenTo, setInquiryGivenTo] = useState(null); // Store the inquiryGivenTo 
   
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
-  //#endregion
-  
   const { id } = useParams();
-  const role = sessionStorage.getItem("role");
+  //#endregion
 
-  // console.log(role);
-
-  // const navigateTo = role === 'partner' 
-  // ? '/partner/inquiry-list/add-inquiry' 
-  // : '/company/inquiry-list/add-inquiry';
-
+  //#region Fetch Approved/Rejected Client Inquiry
   const fetchInquiries = async () => {
     try {
       const result =
@@ -50,6 +44,7 @@ const ApprovedClientInqry = () => {
   useEffect(() => {
     fetchInquiries();
   }, []);
+  //#endregion
   
   
   const handleInquiryFilterChange = (event) => {
@@ -60,6 +55,8 @@ const ApprovedClientInqry = () => {
     setCategoryFilter(event.target.value);
   };
   
+  //#region Filter Inquiries
+  // Filter inquiries based on inquiry name and category
   useEffect(() => {
     let filtered = inquiries;
 
@@ -77,8 +74,9 @@ const ApprovedClientInqry = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
+  //#endregion
   
-  
+  //#region Status Color
   // Function to set the color based on the leave status
   const getStatusColor = (finalApproval) => {
     switch (finalApproval) {
@@ -92,7 +90,9 @@ const ApprovedClientInqry = () => {
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
+  //#endregion
 
+  //#region Handle Approve/Cancel Clicks
   const handleApproveClick = (item) => {
     
     setApproveId(item.inquiryRegistrationId);
@@ -105,7 +105,10 @@ const ApprovedClientInqry = () => {
     setInquiryGivenTo(item.inquiryApprovedBy);
     setIsCancelPopupOpen(true);
   };
+  //#endregion
 
+  //#region Handle Approve/Cancel Inquiry Submission
+  // Function to approve the inquiry 
   const approveInquiry = async (status) => {
     if (!approveId) return;
 
@@ -132,7 +135,7 @@ const ApprovedClientInqry = () => {
       toast.error("Failed to approve inquiry.");
     }
   };
-
+  // Function to cancel the inquiry
   const cancelInquiry = async (status) => {
     if (!cancelId) return;
 
@@ -158,7 +161,9 @@ const ApprovedClientInqry = () => {
       toast.error("Failed to cancel inquiry.");
     }
   };
-  
+  //#endregion
+
+  //#region Handle Popup Close
   const handleApprovePopupClose = () => {
     setIsApprovePopupOpen(false);
     setInquiryGivenTo("");
@@ -170,6 +175,7 @@ const ApprovedClientInqry = () => {
     setInquiryGivenTo("");
     // setDeleteId(null);
   };
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -183,12 +189,15 @@ const ApprovedClientInqry = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+       {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Approved Client Project List</h1>
       </div>
 
+      {/* Filter Section */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -454,9 +463,11 @@ const ApprovedClientInqry = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default ApprovedClientInqry;
+//#endregion
   
   // In the above code, we have created a function to approve and cancel the inquiry. We have also created a function to fetch the inquiries and filter them based on the inquiry name and category. 
   // We have also created a function to set the color based on the final approval status. 

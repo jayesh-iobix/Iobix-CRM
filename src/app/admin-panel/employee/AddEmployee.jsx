@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,9 +13,11 @@ import { messaging } from "../../../firebase/firebase";
 import { getToken } from "firebase/messaging";
 import FingerprintJS from "@fingerprintjs/fingerprintjs"; // For fingerprinting
 import { UAParser } from "ua-parser-js";
+//#endregion
 
-
+//#region Component: AddEmployee
 const AddEmployee = () => {
+  //#region State
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -49,11 +52,12 @@ const AddEmployee = () => {
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
-  const navigate = useNavigate();
-
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
+  const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect: Device Token & Fingerprint
   useEffect(() => {
     // Check for stored device token
     const storedDeviceToken = sessionStorage.getItem("deviceToken");
@@ -65,10 +69,8 @@ const AddEmployee = () => {
       const getDeviceToken = async () => {
         try {
           const currentToken = await getToken(messaging, { vapidKey: "BMJdBmT_HG1NcRtaygZg71bqZoRQCsLhkjXGks726bNTGkVsYAEwBCAiM7CVtFZZjGAtLMGiBw1pzhbG-B01TdE" });
-          // const currentToken = await getToken(messaging, { vapidKey: "BDwin9GPI89uYBOZ_kketB7Bko6cWpgVIiRed1FpdIbxMBihUYnpmDzupodPT5O2ESxHA4F9NVJm3jDvrzAYpC8" });
           if (currentToken) {
             setDeviceToken(currentToken);
-            // console.log(currentToken);
             sessionStorage.setItem("deviceToken", currentToken);
           } else {
             console.log("No device token available.");
@@ -88,7 +90,9 @@ const AddEmployee = () => {
     };
     getDeviceId();
   }, []);
+  //#endregion
 
+  //#region useEffect: Fetch Dropdown Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -159,7 +163,9 @@ const AddEmployee = () => {
     formData.departmentId,
     formData.dateOfJoining,
   ]); // Watch country, state, departmentfrom and employeecode formData
+  //#endregion
 
+  //#region Form Validation
   const validateForm = () => {
     const newErrors = {};
   
@@ -178,12 +184,9 @@ const AddEmployee = () => {
     if (!formData.emergencyMobileNumber || !/^[0-9]{10}$/.test(formData.emergencyMobileNumber)) {
       newErrors.emergencyMobileNumber = "Emergency Mobile Number is required";
     }
-    // if (!formData.emergencyMobileNumber) newErrors.emergencyMobileNumber = "Emergency Mobile Number is required";
     if (!formData.birthDate) newErrors.birthDate = "Birth Date is required";
     if (!formData.dateOfJoining) newErrors.dateOfJoining = "Date of Joining is required";
     if (!formData.countryId) newErrors.countryId = "Country is required";
-    // if (!formData.stateId) newErrors.stateId = "State is required";
-    // if (!formData.cityId) newErrors.cityId = "City is required";
     if (!formData.bloodgroup) newErrors.bloodgroup = "Bloodgroup is required";
     if (!formData.address) newErrors.address = "Address is required";
     if (!formData.keyResponsibility) newErrors.keyResponsibility = "Key Responsibility is required";
@@ -192,39 +195,9 @@ const AddEmployee = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
-  // const validateForm = () => {
-  //   const requiredFields = [
-  //     "firstName",
-  //     "middleName",
-  //     "lastName",
-  //     "employeecode",
-  //     "email",
-  //     "password",
-  //     "departmentId",
-  //     "designationId",
-  //     "gender",
-  //     "mobileNumber",
-  //     "emergencyMobileNumber",
-  //     "birthDate",
-  //     "dateOfJoining",
-  //     "countryId",
-  //     "stateId",
-  //     "cityId",
-  //     "bloodgroup",
-  //     "address",
-  //     "keyResponsibility",
-  //     "onProbation",
-  //   ];
-  //   const newErrors = {};
-  //   requiredFields.forEach((field) => {
-  //     if (!formData[field]) newErrors[field] = `${field} is required`;
-  //   });
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
+  //#endregion
 
-
+  //#region Submit Handler
   const handleSubmit = async (e) => {
     // debugger;
     e.preventDefault();
@@ -264,7 +237,6 @@ const AddEmployee = () => {
         if (response.status === 1) {
           toast.success("Employee Created Successfully"); // Toast on success
           navigate(-1);
-          // navigate("/employee-list");
         }
         if (response.status === 2) {
           toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
@@ -306,20 +278,24 @@ const AddEmployee = () => {
       }
     }
   };
+  //#endregion
 
+  //#region Form Field Change Handler
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header + Buttons */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Employee</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link
             onClick={() => navigate(-1)}
-            // to="/employee-list"
             className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
           >
             <FaArrowLeft size={16} />
@@ -328,6 +304,7 @@ const AddEmployee = () => {
         </motion.button>
       </div>
 
+      {/* Form Container */}
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-4 dark:bg-dark">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -356,12 +333,6 @@ const AddEmployee = () => {
                 type: "email",
                 placeholder: "Enter your email",
               },
-              // {
-              //   label: "Password",
-              //   name: "password",
-              //   type: "password",
-              //   placeholder: "Enter your password",
-              // },
               {
                 label: "Mobile Number",
                 name: "mobileNumber",
@@ -774,6 +745,7 @@ const AddEmployee = () => {
               </div>
             </div>
 
+            {/* Submit Button */}
             <div className="w-full flex px-3">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -792,6 +764,8 @@ const AddEmployee = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default AddEmployee;
+//#endregion

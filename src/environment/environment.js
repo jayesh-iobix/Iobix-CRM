@@ -38,4 +38,6 @@ export const environment = {
   profile: "https://localhost:7292/api/Profile",
   schedule: "https://localhost:7292/api/ScheduleCalendar",
   announcement: "https://localhost:7292/api/Announcement",
+  helpSupport: "https://localhost:7292/api/HelpIssueTicket",
+  helpAdmin: "https://localhost:7292/api/HelpAdminContact",
 }
