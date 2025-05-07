@@ -1,13 +1,16 @@
+//#region Imports
 import React, { useState } from 'react'
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
 import { HolidayService } from '../../../service/HolidayService';
+//#endregion
 
-
+//#region Component: AddHoliday
 const AddHoliday = () => {
 
+  //#region State Variables
   const [holidayName, setHolidayName] = useState("");
   const [holidayStartDate, setHolidayStartDate] = useState("");
   const [holidayEndDate, setHolidayEndDate] = useState("");
@@ -15,7 +18,9 @@ const AddHoliday = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Function to Calculate Total Holidays
   // Function to calculate total days between fromDate and toDate
   const calculateTotalHolidays = (from, to) => {
     const fromDateObj = new Date(from);
@@ -26,7 +31,9 @@ const AddHoliday = () => {
 
     setTotalHolidayDays(dayDiff + 1); // Including both start and end date
   };
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!holidayName) newErrors.holidayName = 'Holiday Name is required';
@@ -76,9 +83,12 @@ const AddHoliday = () => {
       }
     };
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Holiday</h1>
         <motion.button
@@ -92,6 +102,7 @@ const AddHoliday = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className='bg-white rounded-lg  shadow-sm m-1 py-8 pt-'>
         <form onSubmit={handleSubmit} className='container'>
           <div className='-mx-4 px-10 mt- flex flex-wrap'>
@@ -177,7 +188,9 @@ const AddHoliday = () => {
         </form>
       </section>
     </>
-  )
+  );
+  //#endregion
 }
 
 export default AddHoliday
+//#endregion

@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -5,10 +6,12 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { EmployeeService } from "../../service/EmployeeService";
 import AttendanceList from "../../admin-panel/attendanceList/AttendanceList";
 import LeaveList from "../../admin-panel/leave/LeaveList";
+//#endregion 
 
-
+//#region  Component: ViewEmployee
 const ViewEmployee = () => {
 
+  //#region State Initialization
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -36,12 +39,13 @@ const ViewEmployee = () => {
     keyResponsibility: "",
     reportingTo: "" 
   });
-
   const [activeTab, setActiveTab] = useState(1);
 
   const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion 
 
+  //#region Fetch Employee Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -63,14 +67,19 @@ const ViewEmployee = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Handle Tab Change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Render 
   return (
     <>
+      {/* Header Section */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Employee</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -96,6 +105,7 @@ const ViewEmployee = () => {
         </div>
       </div>
 
+      {/* Tab Navigation and Employee Details Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <form className="container">
           <div className="md:px-2 lg:px-2 px-7">
@@ -178,11 +188,11 @@ const ViewEmployee = () => {
             </div>
           </div>
         </form>
-      </section>
-
-      
+      </section>      
     </>
   );
+  //#endregion
 };
 
 export default ViewEmployee;
+//#endregion

@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,8 +7,11 @@ import { TaskService } from "../../../service/TaskService";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
+//#region Component: CreateTask
 const CreateTask = () => {
+  //#region State Variables
   const [taskName, setTaskName] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
   const [taskPriority, setTaskPriority] = useState("");
@@ -25,7 +29,9 @@ const CreateTask = () => {
   const [notifications, setNotifications] = useState([{ reminderDateTime: ""}]);
   // const [notifications, setNotifications] = useState([{ reminderDateTime: "", message: "" }]);
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Department and Employee Data
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -44,7 +50,9 @@ const CreateTask = () => {
 
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Form Validation & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -112,49 +120,9 @@ const CreateTask = () => {
       setIsSubmitting(false);
     }
   };
-  
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
+  //#endregion
 
-  //   if (!validateForm()) return;
-
-  //   debugger;
-
-  //   // Format the task reminder if manual notification is enabled
-  //   const formattedNotifications = manualNotification ? notifications.map(notification => ({
-  //     reminderDateTime: notification.reminderDateTime,
-  //     // message: notification.message || "", // Default empty message if not provided
-  //   })) : [];
-
-  //   const taskData = {
-  //     taskName,
-  //     taskAssignTo,
-  //     taskPriority,
-  //     taskType,
-  //     taskStartingDate,
-  //     taskExpectedCompletionDate: taskExpectedCompletionDate === "" ? null : taskExpectedCompletionDate,
-  //     taskDescription,
-  //     departmentId,
-  //     taskCompletionDate: taskCompletionDate === "" ? null : taskCompletionDate,
-  //     taskReminderVM: formattedNotifications
-  //     // taskReminderVM: manualNotification ? notifications : [], // Add manual notifications if selected
-  //   };
-  //   console.log(taskData)
-  //   setIsSubmitting(true);
-  //   try {
-  //     const response = await TaskService.addTask(taskData);
-  //     if (response.status === 1) {
-  //       toast.success(response.message); // Toast on success
-  //       navigate("/task/task-list");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error adding task:", error);
-  //     toast.error("Failed to add task.");
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
+  //#region Notification Management
   // Handle adding new notification row
   const handleAddNotification = () => {
     setNotifications([...notifications, { reminderDateTime: "" }]);
@@ -173,9 +141,12 @@ const CreateTask = () => {
     const updatedNotifications = notifications.filter((_, i) => i !== index);
     setNotifications(updatedNotifications);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Task</h1>
         <motion.button
@@ -191,7 +162,8 @@ const CreateTask = () => {
           </Link>
         </motion.button>
       </div>
-
+      
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -427,6 +399,8 @@ const CreateTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default CreateTask;
+//#endregion

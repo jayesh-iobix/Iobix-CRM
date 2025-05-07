@@ -1,4 +1,4 @@
-// InquiryModule.jsx
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 // import Stepper from "./Stepper"; // Assuming you are using the Stepper component
@@ -10,9 +10,11 @@ import { ca } from "date-fns/locale";
 import { motion } from "framer-motion"; // Import framer-motion
 import { FaArrowLeft } from "react-icons/fa";
 import Stepper from "../../components/Stepper";
+//#endregion
 
-
+//#region  Component: InquiryModule
 const InquiryModule = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
     countryId: [],
     stateId: [],
@@ -42,7 +44,9 @@ const InquiryModule = () => {
   const [currentStep, setCurrentStep] = useState(1); // Stepper state
   const [errors, setErrors] = useState({}); // State for storing errors
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect for fetching country, state, and citydata
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -72,39 +76,9 @@ const InquiryModule = () => {
     };
     fetchData();
   }, [formData.countryId, formData.stateId]); // Trigger fetchData when countryId or stateId changes
+  //#endregion
 
-  // Fetch countries on component mount
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  
-  //       // Fetch countries
-  //       const countryResult = await CommonService.getCountry();
-  //       setCountryList(countryResult.data);
-  //       // Fetch states and cities if country and state are selected
-  //       if (formData.countryId) {
-  //         const stateResult = await CommonService.getState(formData.countryId);
-  //         setStateList(stateResult.data);
-  
-  //         if (stateResult.data.length > 0) {
-  //           if (formData.stateId) {
-  //             const cityResult = await CommonService.getCity(formData.stateId);
-  //             setCityList(cityResult.data);
-  //             if (cityResult.data.length === 0) {
-  //               setFormData((prev) => ({ ...prev, cityId: 0 })); // Set cityId to 0 if no cities are found
-  //             }
-  //           }
-  //         } else {
-  //           setFormData((prev) => ({ ...prev, stateId: 0, cityId: 0 })); // Set stateId to 0 if no states are found
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching event type list:", error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [formData.countryId, formData.stateId]); // Trigger fetchData when countryId or stateId changes
-
+  //#region Handle Select Change
   const handleSelectChange = (selectedOptions, field) => {
     setFormData((prev) => ({
       ...prev,
@@ -131,34 +105,9 @@ const InquiryModule = () => {
       setCityList([]); // Reset city list when state changes
     }
   };
+  //#endregion
 
-  // const handleSelectChange = (selectedOption, field) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [field]: selectedOption ? selectedOption.value : null, // Handle selection
-  //   }));
-  
-  //   // Reset state and city when country changes
-  //   if (field === "countryId") {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       ["stateId"]: null, // Handle selection
-  //       ["cityId"]: null, // Handle selection
-  //     }));
-  //     setStateList([]); // Reset state list when country changes
-  //     setCityList([]);  // Reset city list when country changes
-  //   }
-  
-  //   // Reset city when state changes
-  //   if (field === "stateId") {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       ["cityId"]: null, // Handle selection
-  //     }));
-  //     setCityList([]); // Reset city list when state changes
-  //   }
-  // };
-
+  //#region Country, State,and City Option
   const countryOptions = countryList.map((country) => ({
     value: country.countryId,
     label: country.name,
@@ -173,13 +122,16 @@ const InquiryModule = () => {
     value: city.cityId,
     label: city.name,
   }));
+  //#endregion
 
+  //#region Handle Form Change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  //#endregion
 
- 
+  //#region Handle Form Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -201,7 +153,9 @@ const InquiryModule = () => {
       // Proceed with form submission
     // }
   };
+  //#endregion
 
+  //#region Validation Step
   const validateStep = (step) => {
     const newErrors = {};
     switch (step) {
@@ -226,9 +180,9 @@ const InquiryModule = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  //#endregion
 
-  // Define steps with labels and components
-  
+  //#region Steps Configuration
   const steps = [
     {
       label: "Segmentation",
@@ -581,9 +535,12 @@ const InquiryModule = () => {
       setCurrentStep(currentStep + 1);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+    {/* Header Section and Buttons */}
     <div className="flex flex-wrap justify-between items-center my-3">
       <h1 className="font-semibold text-xl sm:text-2xl">Add Ideal Customer Profile</h1>
       <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -597,6 +554,7 @@ const InquiryModule = () => {
       </motion.button>
     </div>
 
+    {/* Form Section */}
     <section className="bg-white rounded-lg shadow-lg m-1 py-8">
     <div className="container px-4 sm:px-6 mx-auto">
       {/* Stepper */}
@@ -638,49 +596,12 @@ const InquiryModule = () => {
     </section>
 
     </>
-    // <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
-    //   <h2 className="text-2xl font-semibold text-center mb-6">Ideal Customer Profile</h2>
-
-    //   {/* Stepper Component */}
-    //   <Stepper steps={steps} currentStep={currentStep} />
-
-    //   {/* Navigation Buttons */}
-    //   <div className="flex justify-between mt-6">
-    //     {currentStep > 1 && (
-    //       <button
-    //         onClick={() => setCurrentStep(currentStep - 1)}
-    //         className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
-    //       >
-    //         Previous
-    //       </button>
-    //     )}
-
-    //     {currentStep < steps.length && (
-    //       <button
-    //         onClick={handleNextClick}
-    //         // onClick={() => setCurrentStep(currentStep + 1)}
-    //         className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-    //       >
-    //         Next
-    //       </button>
-    //     )}
-
-    //     {currentStep === steps.length && (
-    //       <button
-    //         type="submit"
-    //         onClick={handleSubmit}
-    //         className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-    //         // disabled={isSubmitDisabled}
-    //       >
-    //         Submit
-    //       </button>
-    //     )}
-    //   </div>
-    // </div>
   );
+  //#endregion
 };
 
 export default InquiryModule;
+//#endregion
 
 
 

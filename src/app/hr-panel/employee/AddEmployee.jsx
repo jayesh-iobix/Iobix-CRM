@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,9 +13,11 @@ import { messaging } from "../../../firebase/firebase";
 import { getToken } from "firebase/messaging";
 import FingerprintJS from "@fingerprintjs/fingerprintjs"; // For fingerprinting
 import { UAParser } from "ua-parser-js";
+//#endregion
 
-
+//#region Component: AddEmployee
 const AddEmployee = () => {
+  //#region State Initialization
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -49,11 +52,13 @@ const AddEmployee = () => {
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
-  const navigate = useNavigate();
-
+  
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
-
+  const navigate = useNavigate();
+  //#endregion
+  
+  //#region useEffect: Device Token & Fingerprint
   useEffect(() => {
     // Check for stored device token
     const storedDeviceToken = sessionStorage.getItem("deviceToken");
@@ -88,7 +93,9 @@ const AddEmployee = () => {
     };
     getDeviceId();
   }, []);
+  //#endregion
 
+  //#region useEffect: Fetch Dropdown Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -159,7 +166,9 @@ const AddEmployee = () => {
     formData.departmentId,
     formData.dateOfJoining,
   ]); // Watch country, state, departmentfrom and employeecode formData
+  //#endregion
 
+  //#region Form Validation
   const validateForm = () => {
     const newErrors = {};
   
@@ -192,39 +201,9 @@ const AddEmployee = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
-  // const validateForm = () => {
-  //   const requiredFields = [
-  //     "firstName",
-  //     "middleName",
-  //     "lastName",
-  //     "employeecode",
-  //     "email",
-  //     "password",
-  //     "departmentId",
-  //     "designationId",
-  //     "gender",
-  //     "mobileNumber",
-  //     "emergencyMobileNumber",
-  //     "birthDate",
-  //     "dateOfJoining",
-  //     "countryId",
-  //     "stateId",
-  //     "cityId",
-  //     "bloodgroup",
-  //     "address",
-  //     "keyResponsibility",
-  //     "onProbation",
-  //   ];
-  //   const newErrors = {};
-  //   requiredFields.forEach((field) => {
-  //     if (!formData[field]) newErrors[field] = `${field} is required`;
-  //   });
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
+  //#endregion
 
-
+  //#region Submit Handler
   const handleSubmit = async (e) => {
     // debugger;
     e.preventDefault();
@@ -306,14 +285,19 @@ const AddEmployee = () => {
       }
     }
   };
+  //#endregion
 
+  //#region Form Field Change Handler
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header + Buttons */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Employee</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -328,6 +312,7 @@ const AddEmployee = () => {
         </motion.button>
       </div>
 
+      {/* Form Container */}
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-4 dark:bg-dark">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -792,6 +777,8 @@ const AddEmployee = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default AddEmployee;
+//#endregion

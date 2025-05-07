@@ -1,24 +1,26 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { HolidayService } from "../../../service/HolidayService";
+//#endregion
 
-
+//#region Component: HolidayList
 const HolidayList = () => {
+
+  //#region State Variables
   const [holidays, setHolidays] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
-  //const navigate = useNavigate();
-
+  //#region useEffect: Fetch Holiday Data
   useEffect(() => {
     const fetchHolidays = async () => {
       try {
@@ -33,8 +35,9 @@ const HolidayList = () => {
     };
     fetchHolidays();
   }, []);
+  //#endregion
 
-
+  //#region Delete Logic
   const deleteHoliday = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -62,7 +65,9 @@ const HolidayList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
+  //#region Format Date Logic
   const formatDate = (dateString) => {
     const dateObj = new Date(dateString);
     const day = String(dateObj.getDate()).padStart(2, "0"); // Add leading zero for single digit days
@@ -71,21 +76,24 @@ const HolidayList = () => {
   
     return `${day}-${month}-${year}`;
   };
+  //#endregion
 
-   //#region Pagination logic
-   const indexOfLastItem = currentPage * itemsPerPage;
-   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-   const currentItems = holidays.slice(indexOfFirstItem, indexOfLastItem);
- 
-   const totalPages = Math.ceil(totalItems / itemsPerPage);
- 
-   const handlePageChange = (pageNumber) => {
-     setCurrentPage(pageNumber);
-   };
-   //#endregion
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = holidays.slice(indexOfFirstItem, indexOfLastItem);
 
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  //#endregion
+
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Holiday List</h1>
         <motion.button
@@ -102,6 +110,7 @@ const HolidayList = () => {
         </motion.button>
       </div>
 
+      {/* Holiday Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white">
           <thead className="bg-gray-900 border-b">
@@ -330,10 +339,11 @@ const HolidayList = () => {
             </nav>
           </div>
         </div>
-      </div>
-      
+      </div> 
     </>
   );
+  //#endregion
 };
 
 export default HolidayList;
+//#endregion

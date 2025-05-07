@@ -1,11 +1,15 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { ClientCompanyService } from "../../service/ClientCompanyService";
+//#endregion
 
+//#region Component: ViewClientCompany
 const ViewClientCompany = () => {
 
+  //#region State Variables
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -33,12 +37,12 @@ const ViewClientCompany = () => {
     keyResponsibility: "",
     reportingTo: "" 
   });
-
   const [activeTab, setActiveTab] = useState(1);
-
   const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Client Company Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -61,14 +65,19 @@ const ViewClientCompany = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Function to handle tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Render 
   return (
     <>
+      {/* Header Section */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Client Company</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -94,6 +103,7 @@ const ViewClientCompany = () => {
         </div>
       </div>
 
+      {/* Tab Navigation and Client Details Section*/}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <form className="container">
           <div className="md:px-2 lg:px-2 px-7">
@@ -175,10 +185,10 @@ const ViewClientCompany = () => {
           </div>
         </form>
       </section>
-
-      
     </>
   );
+  //#endregion
 };
 
 export default ViewClientCompany;
+//#endregion

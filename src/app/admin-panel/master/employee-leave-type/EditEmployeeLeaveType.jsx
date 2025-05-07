@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -6,9 +7,12 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { EmployeeLeaveTypeService } from "../../../service/EmployeeLeaveTypeService";
 import { LeaveTypeService } from "../../../service/LeaveTypeService";
 import Select from 'react-select';  // Import react-select
+//#endregion
 
+//#region Component: EditEmployeeLeaveType
 const EditEmployeeLeaveType = () => {
-  const { id } = useParams(); // Get the ID from the URL
+  
+  //#region State Variables
   const [selectedLeaveTypes, setSelectedLeaveTypes] = useState([]);
   const [employeeLeaveTypeName, setEmployeeLeaveTypeName] = useState("");
   const [leaveTypeList, setLeaveTypeList] = useState([]);
@@ -16,8 +20,11 @@ const EditEmployeeLeaveType = () => {
   const [isActive, setIsActive] = useState(false); // State for Active status
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams(); // Get the ID from the URL
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect - Fetch Leave Type and Employee Leave Type data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -63,8 +70,9 @@ const EditEmployeeLeaveType = () => {
   
     fetchData();
   }, [id]); // Fetch data when the component mounts or the ID changes
-  
+  //#endregion
 
+  //#region Validation Function 
   const validateForm = () => {
     const newErrors = {};
     if (!employeeLeaveTypeName) newErrors.employeeLeaveTypeName = "Employee Leave Type is required";
@@ -72,7 +80,9 @@ const EditEmployeeLeaveType = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  //#endregion
 
+  //#region Event Handler
   const handleLeaveTypeChange = (selectedOptions) => {
     setSelectedLeaveTypes(selectedOptions);
     // Reset the days of leave for newly selected leave types
@@ -125,15 +135,20 @@ const EditEmployeeLeaveType = () => {
       }
     }
   };
+  //#endregion
 
+  //#region Prepare Select Options
   // Prepare options for react-select
   const leaveTypeOptions = leaveTypeList.map(leaveType => ({
     value: leaveType.leaveTypeId,
     label: leaveType.leaveTypeName
   }));
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Employee Leave Type</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -147,6 +162,7 @@ const EditEmployeeLeaveType = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -212,6 +228,8 @@ const EditEmployeeLeaveType = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditEmployeeLeaveType;
+//#endregion

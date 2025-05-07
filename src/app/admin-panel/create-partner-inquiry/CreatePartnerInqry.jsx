@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,7 +8,9 @@ import { InquirySourceService } from '../../service/InquirySourceService';
 import { toast } from 'react-toastify';
 import { InquiryService } from '../../service/InquiryService';
 import { PartnerService } from '../../service/PartnerService';
+//#region Imports
 
+//#region InputField Component
 const InputField = ({ label, value, onChange, name, type = 'text', error, className }) => (
   <div className={`w-full mb-2 px-3 ${className}`}>
     <label className="block text-base font-medium">{label}</label>
@@ -40,7 +43,9 @@ const InputField = ({ label, value, onChange, name, type = 'text', error, classN
     {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
+//#endregion 
 
+//#region SelectField Component
 const SelectField = ({ label, value, onChange, name, options, error }) => (
   <div className="w-full mb-2 px-3 md:w-1/3">
     <label className="block text-base font-medium">{label}</label>
@@ -64,8 +69,11 @@ const SelectField = ({ label, value, onChange, name, options, error }) => (
     {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
+//#endregion
 
+//#region Component: CreatePartnerInqry Component
 const CreatePartnerInqry = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
     partnerRegistrationId: '',
     inquiryTitle: '',
@@ -81,15 +89,15 @@ const CreatePartnerInqry = () => {
     specialNotes: '',  // Replaced reasonForClosure with specialNotes
     inquiryDocuments: null, // Store file here
   });
-
   const [partnerList, setPartnerList] = useState([]);
   const [inquiryTypeList, setInquiryTypeList] = useState([]);
   const [inquirySourceList, setInquirySourceList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect to fetch data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -108,7 +116,9 @@ const CreatePartnerInqry = () => {
     };
     fetchData();
   }, []);
+  //#endregion
 
+  //#region Event Handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -118,13 +128,13 @@ const CreatePartnerInqry = () => {
     const { name, files } = e.target;
     setFormData(prev => ({ ...prev, [name]: files[0] }));  // Storing the first file
   };  
+  //#endregion
 
+  //#region Submit Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // debugger;
-    // Add form validation logic here
     // Add form validation and submission logic here
 
     const formDataToSend = new FormData();
@@ -160,9 +170,12 @@ const CreatePartnerInqry = () => {
     
     setIsSubmitting(false);
   };
+  //#endregion
 
+  //#region Render
   return (
     <div>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Inquiry</h1>
         <motion.button
@@ -178,10 +191,12 @@ const CreatePartnerInqry = () => {
           </Link>
         </motion.button>
       </div>
-
+      
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
+            {/* Select Partner Field*/}
             <SelectField
               label="Partner"
               value={formData.partnerRegistrationId}
@@ -191,6 +206,7 @@ const CreatePartnerInqry = () => {
               error={errors.partnerRegistrationId}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Inquiry Title Field */}
             <InputField
               label="Inquiry Title"
               value={formData.inquiryTitle}
@@ -199,6 +215,7 @@ const CreatePartnerInqry = () => {
               error={errors.inquiryTitle}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Inquiry Location Field */}
             <InputField
               label="Inquiry Location"
               value={formData.inquiryLocation}
@@ -207,6 +224,7 @@ const CreatePartnerInqry = () => {
               error={errors.inquiryLocation}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Inquiry Type Field */}
             <SelectField
               label="Inquiry Type"
               value={formData.inquiryTypeId}
@@ -216,6 +234,7 @@ const CreatePartnerInqry = () => {
               error={errors.inquiryTypeId}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Inquiry Source Field */}
             <SelectField
               label="Inquiry Source"
               value={formData.inquirySourceId}
@@ -225,6 +244,7 @@ const CreatePartnerInqry = () => {
               error={errors.inquirySourceId}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Inquiry Customer Name */}
             <InputField
               label="Customer Name"
               value={formData.customerName}
@@ -233,6 +253,7 @@ const CreatePartnerInqry = () => {
               error={errors.customerName}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Customer Contact Info Field */}
             <InputField
               label="Customer Contact Info"
               value={formData.customerContactInfo}
@@ -241,6 +262,7 @@ const CreatePartnerInqry = () => {
               error={errors.customerContactInfo}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Estimated Value Field */}
             <InputField
               label="Estimated Value"
               type="number"
@@ -250,6 +272,7 @@ const CreatePartnerInqry = () => {
               error={errors.estimatedValue}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Priority Level Field */}
             <SelectField
               label="Priority Level"
               value={formData.priorityLevel}
@@ -263,7 +286,7 @@ const CreatePartnerInqry = () => {
               error={errors.priorityLevel}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
-            
+            {/* Inquiry Document Field */}
             <InputField
               label="Inquiry Document"
               value={formData.inquiryDocuments}
@@ -273,6 +296,7 @@ const CreatePartnerInqry = () => {
               error={errors.inquiryDocuments}
               className="md:w-1/3"
             />
+            {/* Inquiry Description Field */}
             <InputField
               label="Inquiry Description"
               value={formData.inquiryDescription}
@@ -282,6 +306,7 @@ const CreatePartnerInqry = () => {
               error={errors.inquiryDescription}
               className="md:w-1/2" // Applied w-1/2 for Inquiry Description
             />
+            {/* Special Notes Field */}
             <InputField
               label="Special Notes"  // Replaced reasonForClosure with specialNotes
               value={formData.specialNotes}
@@ -291,7 +316,7 @@ const CreatePartnerInqry = () => {
               error={errors.specialNotes}
               className="md:w-1/2" // Applied w-1/2 for Inquiry Description
             />
-
+            {/* Submit Button */}
             <div className="w-full px-3">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -310,6 +335,8 @@ const CreatePartnerInqry = () => {
       </section>
     </div>
   );
+  //#endregion
 };
 
 export default CreatePartnerInqry;
+//#endregion

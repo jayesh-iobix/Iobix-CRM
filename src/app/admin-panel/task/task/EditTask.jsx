@@ -1,20 +1,22 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft, FaEye } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { TaskService } from "../../../service/TaskService";
-import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { toast } from "react-toastify";
 import ChatbotComponent from "../../chat/ChatbotComponent";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
+//#region Component: EditTask
 const EditTask = () => {
+  //#region State Variables
   const [taskName, setTaskName] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
   const [taskPriority, setTaskPriority] = useState("");
   const [taskStatus, setTaskStatus] = useState("");
-  // const [taskStatusName, setTaskStatusName] = useState("");
   const [taskType, setTaskType] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [departments, setDepartments] = useState([]);
@@ -26,9 +28,10 @@ const EditTask = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams(); // Get task ID from URL
+  //#endregion
 
+  //#region Fetch Task and Employees
   useEffect(() => {
-
     const fetchTask = async () => {
       try {
         const taskResult = await TaskService.getTaskById(id); // Assuming TaskService has a method to fetch a single task by ID
@@ -58,7 +61,6 @@ const EditTask = () => {
         alert("Failed to fetch task details.");
       }
     };
-
     fetchTask(); // Fetch the task details when the component mounts
   }, [id]);
 
@@ -79,7 +81,9 @@ const EditTask = () => {
     
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Form Validation & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -129,30 +133,21 @@ const EditTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Task</h1>
         <div className="flex">
-        {/* <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Link
-            to={`/task/create-subtask/${id}`}
-            className="bg-blue-600 hover:bg-blue-700 text-white flex gap-2 mx-2 py-2 px-4 rounded hover:no-underline"
-          >
-            Add Sub Task <span className="mt-[2px]"> <FaPlus size={14} /></span>
-          </Link>
-          </motion.button> */}
           <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
           <Link
             onClick={() => navigate(-1)}
-            // to="/task/task-list"
             className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
           >
             <FaArrowLeft size={16} />
@@ -162,6 +157,7 @@ const EditTask = () => {
         </div>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8 mb-10">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -347,6 +343,8 @@ const EditTask = () => {
       </section> */}
     </>
   );
+  //#endregion
 };
 
 export default EditTask;
+//#endregion

@@ -1,20 +1,25 @@
+//#region Imports
 import React, { useEffect, useState } from 'react'
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
 import { LeaveTypeService } from '../../../service/LeaveTypeService';
+//#endregion
 
-
+//#region Component: EditLeaveType
 const EditLeaveType = () => {
 
-  const { id } = useParams(); 
+  //#region State Variables
   const [leaveTypeName, setLeaveTypeName] = useState("");
   const [isActive, setIsActive] = useState(""); // New state for checkbox
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams(); 
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect - Fetch Leave Type data
   useEffect(() => {
     const fetchData = async () => {
       const result = await LeaveTypeService.getByIdLeaveTypes(id);
@@ -23,7 +28,9 @@ const EditLeaveType = () => {
     };
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!leaveTypeName) newErrors.leaveTypeName = 'Leave Type Name is required';
@@ -66,9 +73,12 @@ const EditLeaveType = () => {
       }
     };
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Event Type</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -79,6 +89,7 @@ const EditLeaveType = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className='bg-white rounded-lg  shadow-sm m-1 py-8 pt-'>
         <form onSubmit={handleSubmit} className='container'>
           <div className='-mx-4 px-10 mt- flex flex-wrap'>
@@ -129,7 +140,9 @@ const EditLeaveType = () => {
         </form>
       </section>
     </>
-  )
+  );
+  //#endregion
 }
 
 export default EditLeaveType
+//#endregion

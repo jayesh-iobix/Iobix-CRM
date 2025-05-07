@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit, FaEllipsisV, FaEye, FaPlus, FaTimes, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -8,8 +9,11 @@ import { ReportService } from "../../service/ReportService"; // Assuming you hav
 import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { format } from "date-fns";
+//#endregion
 
+//#region Component: VendorProjectList
 const VendorProjectList = () => {
+  //#region State Variables
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
@@ -26,26 +30,15 @@ const VendorProjectList = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [departmentId, setDepartmentId] = useState("");
   const [forwardTo, setForwardTo] = useState("");
-  
 
-  //#region  Popup useState
-  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by taskAllocationId
-  const [activeSubTaskMenu, setActiveSubTaskMenu] = useState(null); // Track the active sub-task menu
-
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [forwardPopupVisible, setForwardPopupVisible] = useState(false);
-  const [completionDateIsPopupVisible, setCompletionDateIsPopupVisible] = useState(false);
-  const [taskTransferIsPopupVisible, setTaskTransferIsPopupVisible] = useState(false);
-  const [subTaskTransferIsPopupVisible, setSubTaskTransferIsPopupVisible] = useState(false);
-  const [currentTask, setCurrentTask] = useState(null);
-  //#endregion
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
   //#endregion
 
+  //#region Role vise navigation Logic
   const role = sessionStorage.getItem("role");
   // console.log(role);
 
@@ -56,8 +49,9 @@ const VendorProjectList = () => {
   : role === 'company'
   ? '/company/project-list/add-project'
   : '/default/path'; // You can set a default path if needed
+  //#endregion
 
-
+  //#region Fetch Inquiries
   useEffect(() => {
     const fetchInquiries = async () => {
       try {
@@ -66,21 +60,6 @@ const VendorProjectList = () => {
           // console.log(result.data);
           setFilteredInquiries(result.data);
           setTotalItems(result.data.length);
-
-        // const departmentResult = await DepartmentService.getDepartments();
-        // setDepartments(departmentResult.data); // Set the 'data' array to the state\
-        // // console.log(departmentId);
-        // if (departmentId) {
-        //   // debugger;
-        //   const employeeResult = await EmployeeService.getEmployeeByDepartment(
-        //     departmentId
-        //   );
-        //   setEmployeeList(employeeResult.data);
-        // }
-        // const result = await InquiryService.getInquiry();
-        // setInquiries(result.data);
-        // setFilteredInquiries(result.data);
-        // setTotalItems(result.data.length);
       } catch (error) {
         console.error("Error fetching inquiries:", error);
         setInquiries([]);
@@ -89,31 +68,9 @@ const VendorProjectList = () => {
     };
     fetchInquiries();
   }, []);
+  //#endregion
 
-  // const fetchData = async () => {
-  //    try {
-
-  //      const departmentResult = await DepartmentService.getDepartments();
-  //      setDepartments(departmentResult.data); // Set the 'data' array to the state\
-  //      // console.log(departmentId);
-  //      if (departmentId) {
-  //        debugger;
-  //        const employeeResult = await EmployeeService.getEmployeeByDepartment(
-  //          departmentId
-  //        );
-  //        setEmployeeList(employeeResult.data);
-  //      }
-  //    } catch (error) {
-  //      console.error("Error fetching data:", error);
-  //      setTasks([]);
-  //      setFilteredTasks([]); // Fallback to an empty array in case of an error
-  //    }
-  //  };
-  
-    // useEffect(() => {
-    //   fetchData();
-    // }, [departmentId]);
-
+  //#region Dropdown Position Logic
   // Function to get the dropdown position (top or bottom) based on available space
   const getDropdownPosition = (inquiryRegistrationId , isLastRow) => {
     const button = buttonRefs.current[inquiryRegistrationId ];
@@ -132,7 +89,9 @@ const VendorProjectList = () => {
     // Otherwise, open it below
     return { top: buttonRect.bottom - 5, left: buttonRect.left - 120 };
   };
+  //#endregion
 
+  //#region Filter Logic
   const handleInquiryFilterChange = (event) => {
     setInquiryFilter(event.target.value);
   };
@@ -158,7 +117,9 @@ const VendorProjectList = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
+  //#endregion
 
+  //#region Cancle/Delete Inquiry Logic
   const cancelInquiry = async () => {
     if (!deleteId) return;
     try {
@@ -214,7 +175,9 @@ const VendorProjectList = () => {
     setIsCancelPopupOpen(false);
     // setDeleteId(null);
   };
+  //#endregion
 
+  //#region Dropdown Toggle Logic
   const toggleDropdown = (inquiryRegistrationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenDropdown((prev) =>
@@ -225,7 +188,9 @@ const VendorProjectList = () => {
   const closeMenu = () => {
     setOpenDropdown(null);
   };
+  //#endregion
 
+  //#region Status Color Logic
   // Function to set the color based on the leave status
   const getStatusColor = (inquiryStatusName) => {
     switch (inquiryStatusName) {
@@ -241,13 +206,15 @@ const VendorProjectList = () => {
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
+  //#endregion
 
-
+  //#region Forward Inquiry Logic
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {
     setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
     setForwardPopupVisible(true); // Show the popup
   };
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -261,8 +228,10 @@ const VendorProjectList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Project List</h1>
         <div className="flex">
@@ -279,6 +248,7 @@ const VendorProjectList = () => {
         </div>
       </div>
 
+      {/* Filter Section */}
       <div className="flex gap-4 my-4">
         <input
           type="text"
@@ -300,6 +270,7 @@ const VendorProjectList = () => {
         </select>
       </div>
 
+      {/* Inquiry List Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -717,6 +688,8 @@ const VendorProjectList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default VendorProjectList;
+//#endregion

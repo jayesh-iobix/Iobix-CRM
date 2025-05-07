@@ -1,24 +1,26 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: DepartmentList
 const DepartmentList = () => {
+
+  //#region State Variables
   const [departments, setDepartments] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
-  //const navigate = useNavigate();
-
+  //#region useEffect: Fetch Department Data
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -33,7 +35,9 @@ const DepartmentList = () => {
     };
     fetchDepartments();
   }, []);
+  //#endregion
 
+  //#region Delete Logic
   const deleteDepartment = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -61,7 +65,9 @@ const DepartmentList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
+  //#region IsActive Logic
   const handleCheckboxChange = async (checked, departmentId, item) => {
     // Optimistically update the UI by changing the `isActive` for the current row
     const updatedDepartments = departments.map((item) =>
@@ -102,21 +108,24 @@ const DepartmentList = () => {
       // Revert UI change if needed
     }
   };
+  //#endregion
 
-   //#region Pagination logic
-   const indexOfLastItem = currentPage * itemsPerPage;
-   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-   const currentItems = departments.slice(indexOfFirstItem, indexOfLastItem);
- 
-   const totalPages = Math.ceil(totalItems / itemsPerPage);
- 
-   const handlePageChange = (pageNumber) => {
-     setCurrentPage(pageNumber);
-   };
-   //#endregion
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = departments.slice(indexOfFirstItem, indexOfLastItem);
 
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  //#endregion
+
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Department List</h1>
         <motion.button
@@ -133,6 +142,7 @@ const DepartmentList = () => {
         </motion.button>
       </div>
 
+      {/* Department Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -359,9 +369,10 @@ const DepartmentList = () => {
           </div>
         </div>
       </div>
-      
     </>
   );
+  //#endregion
 };
 
 export default DepartmentList;
+//#endregion

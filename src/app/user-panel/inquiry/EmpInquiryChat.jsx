@@ -1,11 +1,15 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion"; // Import framer-motion
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { InquiryChatService } from "../../service/InquiryChatService";
 import { useParams } from "react-router-dom";
 import { debounce } from "lodash";
+//#endregion
 
+//#region Component: EmpInquiryChat
 const EmpInquiryChat = () => {
+  //#region State Variables
   const [messages, setMessages] = useState([]); // State to store messages
   const [newMessage, setNewMessage] = useState(""); // State to store new message
   const [file, setFile] = useState(null); // State to store selected file
@@ -19,7 +23,9 @@ const EmpInquiryChat = () => {
   const { id } = useParams();
   const loginId = sessionStorage.getItem("LoginUserId");
   const role = sessionStorage.getItem("role");
+  //#endregion
 
+  //#region Fetch Initial Chat Data
   // Fetch initial chat data
   const fetchData = debounce(async () => {
     
@@ -55,16 +61,19 @@ const EmpInquiryChat = () => {
   useEffect(() => {
     fetchData();
   }, [id, selectedPersonId]);
+  //#endregion
 
+  //#region Scroll to Bottom on New Message
   // Scroll to the bottom when messages change
- 
   useEffect(() => {
     const chatContainer = document.getElementById("chatContainer");
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   }, [messages]);
+  //#endregion
 
+  //#region SignalR Setup
   // Set up SignalR connection
   useEffect(() => {
 
@@ -79,7 +88,6 @@ const EmpInquiryChat = () => {
       })
       .catch((error) => console.error("Error while starting connection: " + error));
 
-    debugger;
     // Listen for incoming messages
     
     newConnection.on("ReceiveUserMessage", (chatMessage) => {
@@ -106,90 +114,9 @@ const EmpInquiryChat = () => {
       }
     };
   }, [selectedPersonId]);
-
-  // useEffect(() => {
-
-  //   // Set up SignalR connection
-  //   const newConnection = new HubConnectionBuilder()
-  //     .withUrl("https://localhost:7292/inquirychathub") // Your SignalR Hub URL
-  //     .build();
+  //#endregion
   
-  //   newConnection.start()
-  //     .then(() => {
-  //       console.log("Connected to SignalR Hub!");
-  //     })
-  //     .catch((error) => console.error("Error while starting connection: " + error));
-
-  //   debugger;
-  //   // Listen for incoming messages
-    
-  //   newConnection.on("ReceiveUserMessage", (chatMessage) => {
-  //     if (chatMessage.senderId !== loginId && chatMessage.inquiryRegistrationId === id) {
-  //     setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
-  //     console.log(messages);
-  //     }
-  //   });
-
-  //   newConnection.on("ReceiveAdminMessage", (chatMessage) => {
-  //     if (chatMessage.senderId === selectedPersonId && (chatMessage.receiverId === loginId) && chatMessage.inquiryRegistrationId === id) {
-  //       // Append the new message to the state
-  //       // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
-  //       setMessages((prevMessages) => [...prevMessages, chatMessage]);
-  //     }
-  //   });
-  
-  //   setConnection(newConnection);
-  
-  //   // Cleanup on unmount
-  //   return () => {
-  //     if (newConnection) {
-  //       newConnection.stop();
-  //     }
-  //   };
-  // }, [selectedPersonId]);
-
-  // useEffect(() => {
-
-  //   // Set up SignalR connection
-  //   const newConnection = new HubConnectionBuilder()
-  //     .withUrl("https://localhost:7292/inquirychathub") // Your SignalR Hub URL
-  //     .build();
-  
-  //   newConnection.start()
-  //     .then(() => {
-  //       console.log("Connected to SignalR Hub!");
-  //     })
-  //     .catch((error) => console.error("Error while starting connection: " + error));
-
-  //   debugger;
-  //   // Listen for incoming messages
-    
-  //   newConnection.on("ReceiveUserMessage", (chatMessage) => {
-  //     if (chatMessage.senderId !== loginId && chatMessage.inquiryRegistrationId === id) {
-  //     setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
-  //     console.log(messages);
-  //     }
-  //   });
-
-  //   newConnection.on("ReceiveAdminMessage", (chatMessage) => {
-  //     if (chatMessage.senderId !== loginId && (chatMessage.receiverId === loginId) && chatMessage.inquiryRegistrationId === id) {
-  //       // Append the new message to the state
-  //       // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
-  //       setMessages((prevMessages) => [...prevMessages, chatMessage]);
-  //     }
-  //   });
-  
-  //   setConnection(newConnection);
-  
-  //   // Cleanup on unmount
-  //   return () => {
-  //     if (newConnection) {
-  //       newConnection.stop();
-  //     }
-  //   };
-  // }, []);
-  
-
+  //#region Handlers
   // Fetch chat persons based on selected type (Partner, Client, Employee)
   const handleChatPersonTypeChange = async (event) => {
     const selectedType = event.target.value;
@@ -240,8 +167,6 @@ const EmpInquiryChat = () => {
         receiverId: selectedPersonId,
         // sentDate: new Date().toISOString(),
       };
-
-      debugger;
 
       const formData = new FormData();
       if (file) {
@@ -313,7 +238,9 @@ const EmpInquiryChat = () => {
       hour12: true,
     });
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
       {/* Select Chat Person Type */}
@@ -357,7 +284,6 @@ const EmpInquiryChat = () => {
       </div>
 
       {/* Chat Section */}
-      
       {selectedPerson ? (
       <section className="bg-white rounded-lg shadow-lg mt-8 p-6">
         <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">Chat with {selectedPersonName}</h2>
@@ -481,9 +407,11 @@ const EmpInquiryChat = () => {
         
     </>
   );
+  //#endregion
 };
 
 export default EmpInquiryChat;
+//#endregion
 
 
 

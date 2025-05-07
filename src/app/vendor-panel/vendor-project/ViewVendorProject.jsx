@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -6,14 +7,15 @@ import { InquiryService } from "../../service/InquiryService";
 import { toast } from "react-toastify";
 import { InquiryApproveRejectService } from "../../service/InquiryApproveRejectService";
 import CompanyInquiryChat from "../../company-panel/inquiry-chat/CompanyInquiryChat";
-import PartnerInquiryList from "../../admin-panel/partner-inquiry/PartnerInquiryList";
-
 import Chat from "../../partner-panel/inquiry/Chat";
 import PartnerInquiryTaskList from "../../partner-panel/inquiry-task/PartnerInquiryTaskList";
 import CreateInquiryTaskList from "../../partner-panel/inquiry-task/CreateInquiryTaskList";
+//#endregion
 
+//#region Component: ViewVendorProject 
 const ViewVendorProject = () => {
 
+  //#region State Variables
   const [formData, setFormData] = useState({
     inquiryTitle: '',
     inquiryLocation: '',
@@ -39,7 +41,9 @@ const ViewVendorProject = () => {
   
   const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Project Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -57,52 +61,59 @@ const ViewVendorProject = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Function to handle tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
-   const handleApproveReject = async (status) => {
-      // Add your approval logic here
-  
-      // debugger;
-      const inquiryApproveRejectData = {
-        inquiryRegistrationId: id,
-        clientApprovedReject: role === 'company' ? status : null,  // Store status if the role is 'client'
-        partnerApprovedReject: role === 'partner' ? status : null, // Store status if the role is 'partner'
-        partnerApprovedReject: role === 'vendor' ? status : null, // Store status if the role is 'partner'
-        // clientApprovedReject : status,
-        // partnerApprovedReject: status,
-      };
-      try {
-        // Call the API to add the task note
-        const response = await InquiryApproveRejectService.addInquiryApproveReject(inquiryApproveRejectData);
-        if (response.status === 1 || response.status === 3 ) {
-          toast.success(response.message); // Toast on success
-          // fetchInquiries();
-        }
-        else if (response.status === 2 || response.status === 4 || response.status === 5 || response.status === 6) {
-          toast.error(response.message); // Toast on success
-          // fetchInquiries();
-        }
-        else {
-          toast.error(response.message); // Toast on error
-        }
-  
-      } catch (error) {
-        console.error(
-          "Error:",
-          error.response?.data || error.message
-        );
-        if (error.response?.data?.errors) {
-          console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-        }
-      }
-   };
+  //#region Function to Approve/Reject Project
+  const handleApproveReject = async (status) => {
+     // Add your approval logic here
+
+     // debugger;
+     const inquiryApproveRejectData = {
+       inquiryRegistrationId: id,
+       clientApprovedReject: role === 'company' ? status : null,  // Store status if the role is 'client'
+       partnerApprovedReject: role === 'partner' ? status : null, // Store status if the role is 'partner'
+       partnerApprovedReject: role === 'vendor' ? status : null, // Store status if the role is 'partner'
+       // clientApprovedReject : status,
+       // partnerApprovedReject: status,
+     };
+     try {
+       // Call the API to add the task note
+       const response = await InquiryApproveRejectService.addInquiryApproveReject(inquiryApproveRejectData);
+       if (response.status === 1 || response.status === 3 ) {
+         toast.success(response.message); // Toast on success
+         // fetchInquiries();
+       }
+       else if (response.status === 2 || response.status === 4 || response.status === 5 || response.status === 6) {
+         toast.error(response.message); // Toast on success
+         // fetchInquiries();
+       }
+       else {
+         toast.error(response.message); // Toast on error
+       }
+
+     } catch (error) {
+       console.error(
+         "Error:",
+         error.response?.data || error.message
+       );
+       if (error.response?.data?.errors) {
+         console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
+       }
+     }
+  };
+  //#endregion
     
+  //#region Render
   return (
     <>
+      {/* Header Section + Button */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -180,6 +191,7 @@ const ViewVendorProject = () => {
         </div>
       </div>
 
+      {/* Project Details Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <form className="container">
           <div className="md:px-2 lg:px-2 px-7">

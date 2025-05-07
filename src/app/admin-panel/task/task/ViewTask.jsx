@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
@@ -5,33 +6,39 @@ import { TaskService } from "../../../service/TaskService";
 import { motion } from "framer-motion"; // Import framer-motion
 import { TaskReminderService } from "../../../service/TaskReminderService";
 // import ChatComponent from "../../employee-chat/ChatComponent";
+//#endregion
 
-
+//#region Component: ViewTask
 const ViewTask = () => {
 
+  //#region State Variables
   const { id } = useParams();
   const navigate = useNavigate();
   const [taskDetails, setTaskDetails] = useState({});
   const [taskReminderDetails, setTaskReminderDetails] = useState({});
+  //#endregion
 
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const taskResult = await TaskService.getTaskById(id);
-            setTaskDetails(taskResult.data);
+  //#region Fetch Task Data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const taskResult = await TaskService.getTaskById(id);
+          setTaskDetails(taskResult.data);
+        const taskReminderResult = await TaskReminderService.getTaskReminder(id);
+          setTaskReminderDetails(taskReminderResult.data);
+          // console.log(taskReminderResult.data);
+          
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-          const taskReminderResult = await TaskReminderService.getTaskReminder(id);
-            setTaskReminderDetails(taskReminderResult.data);
-            // console.log(taskReminderResult.data);
-            
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      };
-  
-      fetchData();
-    }, [id]);
+    fetchData();
+  }, [id]);
+  //#endregion
 
+  //#region Function to get status color & format date
+  // Function to get status color based on the status name
   const getStatusColor = (status) => {
     const statusColors = {
       Pending: "text-red-500 bg-red-100",
@@ -46,12 +53,14 @@ const ViewTask = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString(); // You can customize the date format as needed
   };
+  //#endregion
 
-
+  //#region Render
   return (
     <>
       <div className="container mx-auto mb-10 flex-wrap">
         <div className="bg-white px-4 sm:px-6 md:px-10 p-6 md:p-8 rounded-lg shadow-lg space-y-8">
+          {/* Header Section */}
           <div className="flex flex-col sm:flex-row justify-between items-center border-b pb-4">
             <h1 className="font-semibold text-3xl sm:text-4xl">Task Details</h1>
             <div className="flex flex-wrap justify-center sm:justify-end gap-2 mt-4 sm:mt-0">
@@ -94,6 +103,8 @@ const ViewTask = () => {
               </motion.button>
             </div>
           </div>
+          
+          {/* Task Details Section */}
           <div className="space-y-5">
               <div className="flex flex-wrap justify-between gap-4">
                 <p className="w-full sm:w-auto">
@@ -154,7 +165,7 @@ const ViewTask = () => {
                   <strong className="mr-1">Task Description:</strong> {taskDetails.taskDescription}
                 </p>
               </div>
-            </div>
+          </div>
         </div>
 
         {/* Chat Component */}
@@ -163,6 +174,8 @@ const ViewTask = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default ViewTask;
+//#endregion

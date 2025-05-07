@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
@@ -12,8 +13,11 @@ import { getToken } from "firebase/messaging";
 import { InquirySourceService } from "../service/InquirySourceService";
 import { CommonService } from "../service/CommonService";
 import { PartnerService } from "../service/PartnerService";
+//#endregion
 
+//#region Component: PartnerRegistration
 const PartnerRegistration = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
       companyName: "",
       companyRegistrationNumber : "",
@@ -29,7 +33,7 @@ const PartnerRegistration = () => {
       cityId: "",
       whatsAppNumber: "",
       companyWebsite : "",
-    });  // State for form data
+  });  // State for form data
   const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,7 +46,9 @@ const PartnerRegistration = () => {
 
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
+  //#endregion
 
+  //#region useEffect Hooks to handle device token and fetch data
   useEffect(() => {
     // Check for stored device token
     const storedDeviceToken = sessionStorage.getItem("deviceToken");
@@ -79,12 +85,6 @@ const PartnerRegistration = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      //#region Fetch Inqiry Source
-      // const inquirySourceResult = await InquirySourceService.getInquirySource();
-      // const activeInquirySource = inquirySourceResult.data.filter(inquirySource => inquirySource.isActive === true);
-      // setInquirySourceList(activeInquirySource);
-      //#endregion Fetch Inqiry Source
-
       //#region Fetch Country, State, and City Source
       // Fetch countries
       const countryResult = await CommonService.getCountry();
@@ -103,7 +103,9 @@ const PartnerRegistration = () => {
     };
     fetchData();
   }, [formData.countryId, formData.stateId]);
+  //#endregion
 
+  //#region Form Validation and Submission
   const validateForm = () => {
     const newErrors = {};
     if (!formData.companyName) newErrors.companyName = "Company Name is required";
@@ -116,18 +118,6 @@ const PartnerRegistration = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
-  // const validateForm = () => {
-  //   const newErrors = {};
-  //   if (!formData.companyName) newErrors.companyName = "Company Name is required";
-  //   if (!formData.email) newErrors.email = "Email name is required";
-  //   if (!formData.contactPersonLinkedin) newErrors.contactPersonLinkedin = "Contact Person Linkedin is required";
-  //   if (!formData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
-  //   if (!formData.address) newErrors.address = "Address is required";
-  //   if (!formData.countryId) newErrors.countryId = "Country is required";
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -183,12 +173,16 @@ const PartnerRegistration = () => {
       // setLoading(false); // Stop loading spinner after request
     }
   };
+  //#endregion
 
+  //#region Handle Change Function
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
       <div className="w-full min-h-screen flex items-center justify-center flex-col lg:flex-row bg-[#f3f4f6] bg-signin">
@@ -545,6 +539,8 @@ const PartnerRegistration = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default PartnerRegistration;
+//#endregion

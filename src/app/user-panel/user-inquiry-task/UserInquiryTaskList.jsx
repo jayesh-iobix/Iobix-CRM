@@ -1,20 +1,22 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
-import {FaArrowDown,FaArrowRight,FaBook,FaClock,FaEdit,FaEllipsisV,FaEye,FaFile,FaPagelines,FaPlus,FaRegCalendarTimes,FaRegClock,FaRegTimesCircle,FaRegTrashAlt,FaTrash, FaTrashAlt,} from "react-icons/fa";
-import { FaCircleInfo, FaClockRotateLeft, FaDeleteLeft, FaRegFileLines } from "react-icons/fa6";
+import {FaArrowDown,FaArrowRight,FaEllipsisV,FaEye,FaTrash, FaTrashAlt,} from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import { SubTaskService } from "../../service/SubTaskService";
 import { TaskService } from "../../service/TaskService";
 import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
-import { TaskNoteService } from "../../service/TaskNoteService";
 import { IoCloseCircle, IoTime, IoTimer, IoTrash } from "react-icons/io5";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { InquirySubTaskService } from "../../service/InquirySubTaskService";
 import { InquiryTaskNoteService } from "../../service/InquiryTaskNoteService";
+//#endregion
 
+//#region Component: UserInquiryTaskList
 const UserInquiryTaskList = () => {
+  //#region State Variables
   const [tasks, setTasks] = useState([]);
   const [inquiryTaskAllocationId, setInquiryTaskAllocationId] = useState("");
   const [inquirySubTaskAllocationId, setInquirySubTaskAllocationId] = useState("");
@@ -79,6 +81,34 @@ const UserInquiryTaskList = () => {
   const {id} = useParams();
   const loginId = sessionStorage.getItem("LoginUserId");
   const role = sessionStorage.getItem("role");
+  //#endregion
+
+  //#region Tasks, Sub-Tasks, and Employee
+  const fetchTasks = async () => {
+    try {
+      const result = await InquiryTaskService.getInquiryTaskInUser(id);
+      setTasks(result.data);
+      setFilteredTasks(result.data); // Initially show all tasks
+      setTotalItems(result.data.length); // Set total items for pagination
+      result.data.map((item) => {
+        fetchsubtaskdata(item.inquiryTaskAllocationId);
+      });
+
+      const departmentResult = await DepartmentService.getDepartments();
+      setDepartments(departmentResult.data); // Set the 'data' array to the state\
+      // console.log(departmentId);
+      if (departmentId) {
+        const employeeResult = await EmployeeService.getEmployeeByDepartment(
+          departmentId
+        );
+        setEmployeeList(employeeResult.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      setTasks([]);
+      setFilteredTasks([]); // Fallback to an empty array in case of an error
+    }
+  };
 
   // Function to fetch sub-tasks by task allocation ID
   const getInquirySubTasksByTaskId = async (inquiryTaskAllocationId) => {
@@ -101,37 +131,12 @@ const UserInquiryTaskList = () => {
     }));
   };
 
-  const fetchTasks = async () => {
-    try {
-      const result = await InquiryTaskService.getInquiryTaskInUser(id);
-      setTasks(result.data);
-      setFilteredTasks(result.data); // Initially show all tasks
-      setTotalItems(result.data.length); // Set total items for pagination
-      result.data.map((item) => {
-        fetchsubtaskdata(item.inquiryTaskAllocationId);
-      });
-
-      const departmentResult = await DepartmentService.getDepartments();
-      setDepartments(departmentResult.data); // Set the 'data' array to the state\
-      // console.log(departmentId);
-      if (departmentId) {
-        debugger;
-        const employeeResult = await EmployeeService.getEmployeeByDepartment(
-          departmentId
-        );
-        setEmployeeList(employeeResult.data);
-      }
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-      setTasks([]);
-      setFilteredTasks([]); // Fallback to an empty array in case of an error
-    }
-  };
-
   useEffect(() => {
     fetchTasks();
   }, [departmentId]);
+  //#endregion
 
+  //#region Function to Delete Tasks and Sub-Tasks
   const handleDeleteClick = (inquiryTaskAllocationId) => {
     // debugger;
     // event.preventDefault(); // Prevent the default action (page reload)
@@ -194,7 +199,9 @@ const UserInquiryTaskList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
+  //#region Toggle Row Expansion
   const toggleRow = async (inquiryTaskAllocationId) => {
     const newExpandedRows = { ...expandedRows };
     const isExpanded = newExpandedRows[inquiryTaskAllocationId];
@@ -223,7 +230,31 @@ const UserInquiryTaskList = () => {
 
     setExpandedRows(newExpandedRows);
   };
+  //#endregion
 
+  //#region Function to get status color & format date
+  // Function to set the color based on the task status
+  const getStatusColor = (taskStatusName) => {
+    switch (taskStatusName) {
+      case "Pending":
+        return "text-red-500 bg-red-100"; // Red for Pending
+      case "Completed":
+        return "text-green-500 bg-green-100"; // Green for Completed
+      case "InProgress":
+        return "text-yellow-500 bg-yellow-100"; // Yellow for In Progress
+      default:
+        return "text-gray-500 bg-gray-100"; // Default color
+    }
+  };
+
+  // Function to format the date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(); // You can customize the date format as needed
+  };
+  //#endregion
+
+  //#region Handlers: Filtering
   useEffect(() => {
     // Apply filters to the tasks array
     let filtered = tasks;
@@ -259,38 +290,6 @@ const UserInquiryTaskList = () => {
     setCurrentPage(1); // Reset to the first page when a new filter is applied
   }, [employeeFilter, priorityFilter, statusFilter, projectFilter, tasks]);
 
-  //#region Pagination logic
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredTasks.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-  //#endregion
-
-  // Function to set the color based on the task status
-  const getStatusColor = (taskStatusName) => {
-    switch (taskStatusName) {
-      case "Pending":
-        return "text-red-500 bg-red-100"; // Red for Pending
-      case "Completed":
-        return "text-green-500 bg-green-100"; // Green for Completed
-      case "InProgress":
-        return "text-yellow-500 bg-yellow-100"; // Yellow for In Progress
-      default:
-        return "text-gray-500 bg-gray-100"; // Default color
-    }
-  };
-
-  // Function to format the date
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(); // You can customize the date format as needed
-  };
-
   // Function to filter tasks based on selected employee
   const handleEmployeeFilterChange = (event) => {
     setEmployeeFilter(event.target.value);
@@ -321,9 +320,10 @@ const UserInquiryTaskList = () => {
     ...new Set(tasks.map((task) => task.taskStatusName)),
     ...new Set((Array.isArray(subTasks) ? subTasks : []).map((subTask) => subTask.taskStatusName)),
   ];
-  
   // const uniqueStatuses = [...new Set(tasks.map((task) => task.taskStatusName))];
+  //#endregion
 
+  //#region Popup and Task Details
   // Function to handle opening the popup and setting the current task
   const handleEyeClick = (task) => {
     setCurrentTask(task); // Set the selected task data
@@ -376,7 +376,9 @@ const UserInquiryTaskList = () => {
     }
     return "00:00:00"; // Default fallback if the format is unexpected
   };
+  //#endregion
 
+  //#region Dropdown Handling
   const toggleDropdown = (inquiryTaskAllocationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenDropdown((prev) =>
@@ -434,6 +436,7 @@ const UserInquiryTaskList = () => {
     // Otherwise, position the dropdown below the button
     return { top: buttonRect.bottom - 5, left: buttonRect.right - 120 }; // Position below the button
   };
+  //#endregion
 
   //#region Add Start And End Date of Task
   // Handle the start date change
@@ -522,6 +525,7 @@ const UserInquiryTaskList = () => {
   };
   //#endregion
 
+  //#region Task and Sub-task Date Handling
   // Function to handle opening the popup and setting the current task
   const handleTaskStartAndEndDate = (task) => {
     setInquiryTaskAllocationId(task.inquiryTaskAllocationId); // Set the selected task data
@@ -532,7 +536,9 @@ const UserInquiryTaskList = () => {
     setInquirySubTaskAllocationId(subTask.inquirySubTaskAllocationId); // Set the selected task data
     setSubStartDateIsPopupVisible(true); // Show the popup
   };
+  //#endregion
   
+  //#region Task and Sub-task Transfer Handling
   const handleTaskTransfer = (task) => {
     setAllocationId(task.inquiryTaskAllocationId); // Set the selected task data
     setTaskTransferIsPopupVisible(true); // Show the popup
@@ -614,7 +620,9 @@ const UserInquiryTaskList = () => {
     // Close the popup after submission
     // setIsPopupVisible(false);
   };
+  //#endregion
 
+  //#region Task Note Submission
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -661,9 +669,24 @@ const UserInquiryTaskList = () => {
     // Close the popup after submission
     // setIsPopupVisible(false);
   };
+  //#endregion
+  
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredTasks.slice(indexOfFirstItem, indexOfLastItem);
 
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  //#endregion
+
+  //#region Render
   return (
     <>
+      {/* Header Section + Buttons */}
       <div className="flex justify-between items-center my-3 ">
         <h1 className="font-semibold text-2xl">Inquiry Task List</h1>
         {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -1688,6 +1711,8 @@ const UserInquiryTaskList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default UserInquiryTaskList;
+//#endregion

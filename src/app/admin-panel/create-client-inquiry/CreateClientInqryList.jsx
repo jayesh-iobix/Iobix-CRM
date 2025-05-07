@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit, FaEllipsisV, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -9,8 +10,11 @@ import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
 import { format } from "date-fns";
+//#endregion
 
+//#region Component: CreateClientInqryList
 const CreateClientInqryList = () => {
+  //#region State Variables
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
@@ -28,34 +32,21 @@ const CreateClientInqryList = () => {
   const [departmentId, setDepartmentId] = useState("");
   const [inquiryForwardedTo, setInquiryForwardedTo] = useState("");  
   const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState(""); 
-
   
-  //#region  Popup useState
-  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by taskAllocationId
-  const [activeSubTaskMenu, setActiveSubTaskMenu] = useState(null); // Track the active sub-task menu
-
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [completionDateIsPopupVisible, setCompletionDateIsPopupVisible] = useState(false);
-  const [currentTask, setCurrentTask] = useState(null);
-  //#endregion
-  
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
   //#endregion
   
+  //#region Role and Navigation
   const role = sessionStorage.getItem("role");
-  // console.log(role);
 
   const navigateTo = role === 'admin' 
   ? '/create-clientinquiry-list/add-clientinquiry' 
   : '/user/create-clientinquiry-list/add-clientinquiry';
-
-  // const navigateToView = role === 'admin' 
-  // ? `/create-clientinquiry-list/view-clientinquiry/${item.inquiryRegistrationId}` 
-  // : `/user//create-clientinquiry-list/view-clientinquiry/${item.inquiryRegistrationId}` ;
+  //#endregion
   
+  //#region Fetch Inquiries
   const fetchInquiries = async () => {
     try {
       const result = await InquiryService.getInquiryInAdminToClient();
@@ -87,7 +78,9 @@ const CreateClientInqryList = () => {
   useEffect(() => {
     fetchInquiries();
   }, [departmentId]);
+  //#endregion
   
+  //#region Dropdown Position Logic
   // Function to get the dropdown position (top or bottom) based on available space
   const getDropdownPosition = (inquiryRegistrationId , isLastRow) => {
     const button = buttonRefs.current[inquiryRegistrationId ];
@@ -106,7 +99,9 @@ const CreateClientInqryList = () => {
     // Otherwise, open it below
     return { top: buttonRect.bottom - 5, left: buttonRect.left - 120 };
   };
-  
+  //#endregion
+
+  //#region Filter Logic
   const handleInquiryFilterChange = (event) => {
     setInquiryFilter(event.target.value);
   };
@@ -132,7 +127,9 @@ const CreateClientInqryList = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
+  //#endregion
   
+  //#region Delete Inquiry Logic
   const deleteInquiry = async () => {
     if (!deleteId) return;
     try {
@@ -160,7 +157,9 @@ const CreateClientInqryList = () => {
     setIsPopupOpen(false);
     setDeleteId(null);
   };
+  //#endregion
   
+  //#region Dropdown Toggle Logic
   const toggleDropdown = (inquiryRegistrationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenDropdown((prev) =>
@@ -171,7 +170,9 @@ const CreateClientInqryList = () => {
   const closeMenu = () => {
     setOpenDropdown(null);
   };
+  //#endregion
   
+  //#region Status Color Logic
   // Function to set the color based on the leave status
   const getStatusColor = (inquiryStatusName) => {
     switch (inquiryStatusName) {
@@ -187,8 +188,9 @@ const CreateClientInqryList = () => {
         return "text-gray-500 bg-gray-100"; // Default color
    }
   };
+  //#endregion
 
-  
+  //#region Forward Inquiry Logic
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {
     setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
@@ -233,6 +235,7 @@ const CreateClientInqryList = () => {
       // Close the popup after submission
       // setIsPopupVisible(false);
   };
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -246,8 +249,10 @@ const CreateClientInqryList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Create Client Company Project List</h1>
         <div className="flex">
@@ -264,6 +269,7 @@ const CreateClientInqryList = () => {
         </div>
       </div>
 
+      {/* Filter Section */}
       <div className="flex gap-4 my-4">
         <input
           type="text"
@@ -285,6 +291,7 @@ const CreateClientInqryList = () => {
         </select>
       </div>
 
+      {/* Create Inquiry List Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -675,6 +682,8 @@ const CreateClientInqryList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default CreateClientInqryList;
+//#endregion

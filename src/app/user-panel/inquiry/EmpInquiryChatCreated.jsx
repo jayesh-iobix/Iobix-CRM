@@ -1,11 +1,15 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion"; // Import framer-motion
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { InquiryChatService } from "../../service/InquiryChatService";
 import { useParams } from "react-router-dom";
 import { debounce } from "lodash";
+//#endregion
 
+//#region Component: EmpInquiryChatCreated
 const EmpInquiryChatCreated = () => {
+  //#region State Variables
   const [messages, setMessages] = useState([]); // State to store messages
   const [newMessage, setNewMessage] = useState(""); // State to store new message
   const [file, setFile] = useState(null); // State to store selected file
@@ -19,6 +23,7 @@ const EmpInquiryChatCreated = () => {
   const { id } = useParams();
   const loginId = sessionStorage.getItem("LoginUserId");
   const role = sessionStorage.getItem("role");
+  //#endregion
 
   // Fetch initial chat data
   const fetchData = debounce(async () => {
@@ -52,19 +57,23 @@ const EmpInquiryChatCreated = () => {
   
   }, 300);
   
+  //#region Fetch Chat Data
   useEffect(() => {
     fetchData();
   }, [id, selectedPersonId]);
+  //#endregion
 
+  //#region Auto Scroll on New Message
   // Scroll to the bottom when messages change
- 
   useEffect(() => {
     const chatContainer = document.getElementById("chatContainer");
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   }, [messages]);
+  //#endregion
 
+  //#region SignalR Setup
   // Set up SignalR connection
   useEffect(() => {
 
@@ -106,51 +115,9 @@ const EmpInquiryChatCreated = () => {
       }
     };
   }, [selectedPersonId]);
-
-  // useEffect(() => {
-
-  //   // Set up SignalR connection
-  //   const newConnection = new HubConnectionBuilder()
-  //     .withUrl("https://localhost:7292/inquirychathub") // Your SignalR Hub URL
-  //     .build();
+  //#endregion
   
-  //   newConnection.start()
-  //     .then(() => {
-  //       console.log("Connected to SignalR Hub!");
-  //     })
-  //     .catch((error) => console.error("Error while starting connection: " + error));
-
-  //   debugger;
-  //   // Listen for incoming messages
-    
-  //   newConnection.on("ReceiveUserMessage", (chatMessage) => {
-  //     if (chatMessage.senderId !== loginId && (chatMessage.receiverId === selectedPersonId || role === 'admin' || role === 'user') && chatMessage.inquiryRegistrationId === id) {
-  //     setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
-  //     // console.log(messages);
-  //     }
-  //     console.log(chatMessage);
-  //   });
-
-  //   newConnection.on("ReceiveAdminMessage", (chatMessage) => {
-  //     if (chatMessage.senderId !== loginId && (chatMessage.receiverId === selectedPersonId || role === 'admin' || role === 'user') && chatMessage.inquiryRegistrationId === id) {
-  //       // Append the new message to the state
-  //       // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
-  //       setMessages((prevMessages) => [...prevMessages, chatMessage]);
-  //     }
-  //     console.log(chatMessage);
-  //   });
-  
-  //   setConnection(newConnection);
-  
-  //   // Cleanup on unmount
-  //   return () => {
-  //     if (newConnection) {
-  //       newConnection.stop();
-  //     }
-  //   };
-  // }, []);
-  
-
+  //#region Handlers
   // Fetch chat persons based on selected type (Partner, Client, Employee)
   const handleChatPersonTypeChange = async (event) => {
     const selectedType = event.target.value;
@@ -261,7 +228,9 @@ const EmpInquiryChatCreated = () => {
   const clearFile = () => {
     setFile(null);
   };
+  //#endregion
 
+  //#region Utilities
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", {
@@ -274,7 +243,9 @@ const EmpInquiryChatCreated = () => {
       hour12: true,
     });
   };
+  //#endregion
 
+  //#endregion
   return (
     <>
       {/* Select Chat Person Type */}
@@ -441,6 +412,8 @@ const EmpInquiryChatCreated = () => {
         
     </>
   );
+  //#endregion
 };
 
 export default EmpInquiryChatCreated;
+//#endregion

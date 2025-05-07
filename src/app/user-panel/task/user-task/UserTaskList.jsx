@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaArrowDown, FaArrowRight, FaEllipsisV } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -10,12 +11,14 @@ import { TaskNoteService } from "../../../service/TaskNoteService";
 import { SubTaskService } from "../../../service/SubTaskService";
 import { motion } from "framer-motion"; // Import framer-motion
 import { IoTime } from "react-icons/io5";
+//#endregion
 
-
+//#region Component: UserTaskList
 const UserTaskList = () => {
 
   const userId = sessionStorage.getItem("LoginUserId")
 
+  //#region State Variables
   const [tasks, setTasks] = useState([]);
   const [taskAllocationId, setTaskAllocationId] = useState("");
   const [subTaskAllocationId, setSubTaskAllocationId] = useState("");
@@ -69,7 +72,9 @@ const UserTaskList = () => {
   const [openSubDropdown, setOpenSubDropdown] = useState({}); // State to track which dropdown is open
   const buttonRefs = useRef({}); // To store references to dropdown buttons
   //#endregion
+  //#endregion
 
+  //#region Tasks, Sub-Tasks, and Employee
   const fetchTasks = async () => {
     try {
       const result = await TaskService.getUserTasks();
@@ -122,7 +127,9 @@ const UserTaskList = () => {
   useEffect(() => {
     fetchTasks();
   }, [departmentId]);
+  //#endregion
 
+  //#region Toggle Row Expansion
   const toggleRow = async (taskAllocationId) => {
     const newExpandedRows = { ...expandedRows };
     const isExpanded = newExpandedRows[taskAllocationId];
@@ -150,7 +157,31 @@ const UserTaskList = () => {
     }
     setExpandedRows(newExpandedRows);
   };
+  //#endregion
 
+  //#region Function to get status color & format date
+  // Function to set the color based on the task status
+  const getStatusColor = (taskStatusName) => {
+    switch (taskStatusName) {
+      case "Pending":
+        return "text-red-500 bg-red-100"; // Red for Pending
+      case "Completed":
+        return "text-green-500 bg-green-100"; // Green for Completed
+      case "InProgress":
+        return "text-yellow-500 bg-yellow-100"; // Yellow for In Progress
+      default:
+        return "text-gray-500 bg-gray-100"; // Default color
+    }
+  };
+
+  // Function to format the date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(); // You can customize the date format as needed
+  };
+  //#endregion
+
+  //#region Handlers: Filtering
   useEffect(() => {
     // Apply filters to the tasks array
     let filtered = tasks;
@@ -181,38 +212,6 @@ const UserTaskList = () => {
     setCurrentPage(1); // Reset to the first page when a new filter is applied
   }, [employeeFilter, priorityFilter, statusFilter, tasks]);
 
-  //#region Pagination logic
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredTasks.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-  //#endregion
-
-  // Function to set the color based on the task status
-  const getStatusColor = (taskStatusName) => {
-    switch (taskStatusName) {
-      case "Pending":
-        return "text-red-500 bg-red-100"; // Red for Pending
-      case "Completed":
-        return "text-green-500 bg-green-100"; // Green for Completed
-      case "InProgress":
-        return "text-yellow-500 bg-yellow-100"; // Yellow for In Progress
-      default:
-        return "text-gray-500 bg-gray-100"; // Default color
-    }
-  };
-
-  // Function to format the date
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(); // You can customize the date format as needed
-  };
-
   // Function to filter tasks based on selected priority
   const handlePriorityFilterChange = (event) => {
     setPriorityFilter(event.target.value);
@@ -223,13 +222,15 @@ const UserTaskList = () => {
     setStatusFilter(event.target.value);
   };
 
-    // Get the list of unique employees (task takers) and priorities for the filter dropdowns
-    const uniqueEmployees = [
-      ...new Set(tasks.map((task) => task.taskAssignToName)),
-    ];
-    const uniquePriorities = [...new Set(tasks.map((task) => task.taskPriority))];
-    const uniqueStatuses = [...new Set(tasks.map((task) => task.taskStatusName))];
+  // Get the list of unique employees (task takers) and priorities for the filter dropdowns
+  const uniqueEmployees = [
+    ...new Set(tasks.map((task) => task.taskAssignToName)),
+  ];
+  const uniquePriorities = [...new Set(tasks.map((task) => task.taskPriority))];
+  const uniqueStatuses = [...new Set(tasks.map((task) => task.taskStatusName))];
+  //#endregion
 
+  //#region Popup and Task Details  
   // Function to handle opening the popup and setting the current task
   const handleEyeClick = (task) => {
     setCurrentTask(task); // Set the selected task data
@@ -282,7 +283,9 @@ const UserTaskList = () => {
     }
     return "00:00:00"; // Default fallback if the format is unexpected
   };
+  //#endregion
 
+  //#region Dropdown Handling
   const toggleDropdown = (taskAllocationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenDropdown((prev) => (prev === taskAllocationId ? null : taskAllocationId));
@@ -317,7 +320,7 @@ const UserTaskList = () => {
     // Otherwise, open it below
     return { top: buttonRect.bottom-5, left: buttonRect.left - 120 };
   };
-
+  
   const getDropdownPositionForSubTask = (subTaskAllocationId, isLastRow) => {
     debugger;
     const button = buttonRefs.current[subTaskAllocationId];  // Get reference to the button
@@ -336,25 +339,20 @@ const UserTaskList = () => {
     // Otherwise, position the dropdown below the button
     return { top: buttonRect.bottom-5, left: buttonRect.right - 120 };  // Position below the button
   };
+  //#endregion
 
-   // Function to handle opening the popup and setting the current task
+  //#region Task and Sub-task Date Handling
+  // Function to handle opening the popup and setting the current task
    const handleTaskStartAndEndDate = (task) => {
     setTaskAllocationId(task.taskAllocationId); // Set the selected task data
     setStartDateIsPopupVisible(true); // Show the popup
   };
+
   const handleSubTaskStartAndEndDate = (subTask) => {
     setSubTaskAllocationId(subTask.subTaskAllocationId); // Set the selected task data
     setSubStartDateIsPopupVisible(true); // Show the popup
   };
-
-  const handleTaskTransfer = (task) => {
-    setAllocationId(task.taskAllocationId); // Set the selected task data
-    setTaskTransferIsPopupVisible(true); // Show the popup
-  };
-  const handleSubTaskTransfer = (subTask) => {
-    setAllocationId(subTask.subTaskAllocationId); // Set the selected task data
-    setSuTaskTransferIsPopupVisible(true); // Show the popup
-  }; 
+  //#endregion
 
    //#region Add Start And End Date of Task
   // Handle the start date change
@@ -442,9 +440,16 @@ const UserTaskList = () => {
   };
   //#endregion
  
-  // Function to handle form submission
- 
-  // Function to handle opening the popup and setting the current task
+  
+  //#region Task and Sub-task Transfer Handling
+  const handleTaskTransfer = (task) => {
+    setAllocationId(task.taskAllocationId); // Set the selected task data
+    setTaskTransferIsPopupVisible(true); // Show the popup
+  };
+  const handleSubTaskTransfer = (subTask) => {
+    setAllocationId(subTask.subTaskAllocationId); // Set the selected task data
+    setSuTaskTransferIsPopupVisible(true); // Show the popup
+  }; 
 
   const handleTransferSubmit = async (event) => {
     event.preventDefault();
@@ -517,7 +522,10 @@ const UserTaskList = () => {
     // Close the popup after submission
     // setIsPopupVisible(false);
   };
+  //#endregion
 
+  //#region Task Note Submission
+  // Function to handle opening the popup and setting the current task
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -565,9 +573,24 @@ const UserTaskList = () => {
     // Close the popup after submission
     // setIsPopupVisible(false);
   };
+  //#endregion
 
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredTasks.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  //#endregion
+
+  //#region Render
   return (
     <>
+     {/* Header Section + Buttons */}
       <div className="flex justify-between items-center my-3 ">
         <h1 className="font-semibold text-2xl">User Task List</h1>
       </div>
@@ -607,6 +630,7 @@ const UserTaskList = () => {
         </select>
       </div>
 
+      {/* Task List Section */}
       <div className="grid overflow-x-auto shadow-xl">
         <table className="min-w-full bg-white border border-gray-200">
           <thead className="bg-gray-900 border-b">
@@ -1297,7 +1321,9 @@ const UserTaskList = () => {
 
     </>
   );
+   //#endregion
 };
 
 export default UserTaskList;
+//#endregion
 

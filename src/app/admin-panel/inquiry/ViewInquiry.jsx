@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -13,10 +14,12 @@ import ApprovedPartnerInqry from "../approved-inquiry/ApprovedPartnerInqry";
 import ApprovedClientInqry from "../approved-inquiry/ApprovedClientInqry";
 import InquiryChat from "./InquiryChat";
 import { PartnerService } from "../../service/PartnerService";
-import ChatInquiry from "./ChatInquiry";
+//#endregion
 
-const ViewInquiry = ({hideTab}) => {
+//#region Component: ViewInquiry
+const ViewInquiry = () => {
 
+  //#region State Initialization
   const [formData, setFormData] = useState({
     inquiryTitle: '',
     inquiryLocation: '',
@@ -38,8 +41,6 @@ const ViewInquiry = ({hideTab}) => {
     senderName:'',
     senderId:'',
   });
-
-  // const [inquiryHideShow, setInquiryHideShow] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
   const [inquiryHideShow, setInquiryHideShow] = useState(false);
   const [forwardPopupVisible, setForwardPopupVisible] = useState(false);
@@ -50,8 +51,6 @@ const ViewInquiry = ({hideTab}) => {
   const [inquiryForwadedeData, setInquiryForwadedeData] = useState(""); 
   const [inquiryTransferdData, setInquiryTransferdData] = useState("");
   
-  // const [name, setName] = useState("")
-
   const [departments, setDepartments] = useState([]);
   const [clients, setClients] = useState([]);
   const [partners, setPartners] = useState([]);
@@ -62,12 +61,11 @@ const ViewInquiry = ({hideTab}) => {
   const [inquiryForwardedTo, setInquiryForwardedTo] = useState("");  
   const [inquiryTransferTo, setInquiryTransferTo] = useState("");  
   const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState(""); 
-
   const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion
 
-  const role = sessionStorage.getItem("role");
-
+  //#region Fetch Inquiry Data
   const fetchData = async () => {
     try {
       // Fetch Inquiry Permission
@@ -135,11 +133,14 @@ const ViewInquiry = ({hideTab}) => {
   useEffect(() => {
     fetchData();
   }, [id, departmentId]);
+  //#endregion
 
+  //#region Handle Tab Change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
   const handleTakeInquiry = async () => {
 
@@ -176,12 +177,7 @@ const ViewInquiry = ({hideTab}) => {
     // setIsPopupVisible(false);
   };
 
-  // Function to handle opening the popup and setting the current task
-  // const handleTransferInquiry = (inquiry) => {
-  //   setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
-  //   setTransferPopupVisible(true); // Show the popup
-  // };
-
+  //#region Inquiry Forwarded/Transfered Data
   //Function to forward submit the api
   const handleInquirySubmit = async (event) => {
     event.preventDefault();
@@ -191,8 +187,6 @@ const ViewInquiry = ({hideTab}) => {
         toast.error("Please select an employee/client/partner to forward the inquiry and provide a follow-up description.");
         return; // Prevent form submission
     }
-
-    debugger;
 
     const inquiryData = {
       inquiryRegistrationId: id,
@@ -318,165 +312,12 @@ const ViewInquiry = ({hideTab}) => {
       // Close the popup after submission
       // setIsPopupVisible(false);
   };
+  //#endregion
 
-
-  // //Function to forward submit the api
-  // const handleInquirySubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   debugger;
-
-  //   const inquiryData = {
-  //     inquiryRegistrationId: id,
-  //     inquiryForwardedTo: 
-  //     (inquiryForwardedTo === "" && clientId !== "") ? clientId : 
-  //     (clientId === "" && inquiryForwardedTo !== "") ? inquiryForwardedTo : 
-  //     (inquiryForwardedTo === "" && clientId === "" ? null : inquiryForwardedTo),
-  //     // inquiryForwardedTo: inquiryForwardedTo === "" ? null : inquiryForwardedTo,
-  //     inquiryFollowUpDescription,
-  //     inquiryTransferTo: null
-  //     // inquiryTransferTo: inquiryTransferTo === "" ? null : inquiryTransferTo,
-  //     // taskTransferTo,
-  //   };
-
-  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-
-  //   try {
-  //     // Call the API to add the task note
-  //     const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryData);
-  //     if (response.status === 1) {
-  //        toast.success("Inquiry Forwarded Successfully."); // Toast on success
-  //       // if(inquiryForwardedTo === null || "") {
-  //       //   toast.success("Inquiry Transfer Successfully."); // Toast on success
-  //       // }
-  //       // toast.success(response.message); // Toast on success
-  //       // fetchInquiries();
-  //       setInquiryFollowUpDescription("");
-  //       setInquiryForwardedTo("");
-  //       setInquiryTransferTo("");
-  //       setDepartmentId("")
-  //     } 
-  //     else {
-  //       setInquiryFollowUpDescription("");
-  //       setInquiryForwardedTo("");
-  //       setInquiryTransferTo("");
-  //       setDepartmentId("")
-  //     }
-  //     // console.log("task transfer added successfully:", response);
-
-  //     // Optionally, you can update the task state or show a success message here
-  //     setForwardPopupVisible(false); // Close the popup
-  //     setTransferPopupVisible(false); // Close the popup
-  //   } catch (error) {
-  //     console.error(
-  //       "Error forwarding a inquiry:",
-  //       error.response?.data || error.message
-  //     );
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-  
-  //     // Close the popup after submission
-  //     // setIsPopupVisible(false);
-  // };
-
-  // //Function to transfer submit the api
-  // const handleTransferInquirySubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   debugger;
-
-  //   const inquiryData = {
-  //     inquiryRegistrationId: id,
-  //     inquiryForwardedTo:null,
-  //     // inquiryForwardedTo: inquiryForwardedTo === "" ? null : inquiryForwardedTo,
-  //     inquiryFollowUpDescription,
-  //     inquiryTransferTo,
-  //   };
-
-  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-
-  //   try {
-  //     // Call the API to add the task note
-  //     const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryData);
-  //     if (response.status === 1) {
-  //         toast.success("Inquiry Transfer Successfully."); // Toast on success
-  //       // toast.success(response.message); // Toast on success
-  //       // fetchInquiries();
-  //       setInquiryFollowUpDescription("");
-  //       setInquiryForwardedTo("");
-  //       setInquiryTransferTo("");
-  //       setDepartmentId("")
-  //     } 
-  //     else {
-  //       setInquiryFollowUpDescription("");
-  //       setInquiryForwardedTo("");
-  //       setInquiryTransferTo("");
-  //       setDepartmentId("")
-  //     }
-  //     // console.log("task transfer added successfully:", response);
-
-  //     // Optionally, you can update the task state or show a success message here
-  //     setForwardPopupVisible(false); // Close the popup
-  //     setTransferPopupVisible(false); // Close the popup
-  //   } catch (error) {
-  //     console.error(
-  //       "Error transfering a inquiry:",
-  //       error.response?.data || error.message
-  //     );
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-  
-  //     // Close the popup after submission
-  //     // setIsPopupVisible(false);
-  // };
-
-  // const handleForwardSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   // debugger;
-
-  //   const inquiryForwardData = {
-  //     inquiryRegistrationId: id,
-  //     inquiryForwardedTo,
-  //     inquiryFollowUpDescription,
-  //     // taskTransferTo,
-  //   };
-  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-
-  //   try {
-  //     // Call the API to add the task note
-  //     const response = await InquiryFollowUpService.addInquiryFollowUp(
-  //       inquiryForwardData
-  //     );
-  //     if (response.status === 1) {
-  //       toast.success("Inquiry Forwarded Successfully."); // Toast on success
-  //       // toast.success(response.message); // Toast on success
-  //       fetchData();
-  //     }
-  //     console.log("Inquiry Forwarded Successfully:", response);
-
-  //     // Optionally, you can update the task state or show a success message here
-  //     setForwardPopupVisible(false); // Close the popup
-  //   } catch (error) {
-  //     console.error(
-  //       "Error forwarding inquiry:",
-  //       error.response?.data || error.message
-  //     );
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-
-  //   // Close the popup after submission
-  //   // setIsPopupVisible(false);
-  // };
-
+  //#region Render
   return (
     <>
+      {/* Header Section + Buttons */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Inquiry</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -494,16 +335,6 @@ const ViewInquiry = ({hideTab}) => {
         </Link>
         </motion.button>
 
-          {/* Forward Inquiry Button placed above the edit and back buttons */}
-          {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <button
-              onClick={() => setForwardPopupVisible(true)} // Show the popup
-              className="bg-yellow-500 hover:bg-yellow-600 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-            >
-              Forward Inquiry
-            </button>
-          </motion.button> */}
-
           {inquiryHideShow === true && (
             <>
               {/* Trabsfer Inquiry Button placed above the edit and back buttons  */}
@@ -516,31 +347,6 @@ const ViewInquiry = ({hideTab}) => {
               >
                 Transfer Project
               </motion.button>
-
-              {/* Take Inquiry Button placed above the edit and back buttons */}
-              {/* <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                type="button"
-                onClick={handleTakeInquiry}
-                className="bg-green-600 hover:bg-green-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-              >
-                Take Inquiry
-              </motion.button> */}
-
-              {/* Edit Inquiry */}
-              {/* <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <Link
-                  to={`/partner/inquiry-list/edit-inquiry/${id}`}
-                  className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-                >
-                  Edit Inquiry
-                  <FaEdit size={16} />
-                </Link>
-              </motion.button> */}
             </>
           )}
 
@@ -858,6 +664,7 @@ const ViewInquiry = ({hideTab}) => {
         </div>
       )}
 
+      {/* Project Details Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <form className="container">
           <div className="md:px-2 lg:px-2 px-7">
@@ -1009,6 +816,7 @@ const ViewInquiry = ({hideTab}) => {
         </form>
       </section>
 
+      {/* Project Transfer/Forward Details Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <div className="md:px-2 lg:px-2 px-7">
           <div className="flex">
@@ -1047,6 +855,8 @@ const ViewInquiry = ({hideTab}) => {
       /> */}
     </>
   );
+  //#endregion
 };
 
 export default ViewInquiry;
+//#endregion

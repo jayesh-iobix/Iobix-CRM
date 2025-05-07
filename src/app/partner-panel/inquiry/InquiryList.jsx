@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit, FaEllipsisV, FaEye, FaPlus, FaTimes, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -8,8 +9,11 @@ import { ReportService } from "../../service/ReportService"; // Assuming you hav
 import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { format } from "date-fns";
+//#endregion
 
+//#region Component: InquiryList 
 const InquiryList = () => {
+  //#region State Variables
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
@@ -46,8 +50,10 @@ const InquiryList = () => {
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
   //#endregion
 
+  //#endregion
+
+  //#region Role and Navigation
   const role = sessionStorage.getItem("role");
-  // console.log(role);
 
   const navigateTo = 
   role === 'partner' 
@@ -58,7 +64,9 @@ const InquiryList = () => {
   ? '/company/project-list/add-project' 
   : '/default/project-list/add-project'; // Optional default route if role is unknown
 
+  //#endregion
 
+  //#region Fetch Inquiries Role vise
   useEffect(() => {
     const fetchInquiries = async () => {
       try {
@@ -81,20 +89,6 @@ const InquiryList = () => {
         } else {
           toast.error("Faild to get inquiry!");
         }
-        // const departmentResult = await DepartmentService.getDepartments();
-        // setDepartments(departmentResult.data); // Set the 'data' array to the state\
-        // // console.log(departmentId);
-        // if (departmentId) {
-        //   // debugger;
-        //   const employeeResult = await EmployeeService.getEmployeeByDepartment(
-        //     departmentId
-        //   );
-        //   setEmployeeList(employeeResult.data);
-        // }
-        // const result = await InquiryService.getInquiry();
-        // setInquiries(result.data);
-        // setFilteredInquiries(result.data);
-        // setTotalItems(result.data.length);
       } catch (error) {
         console.error("Error fetching inquiries:", error);
         setInquiries([]);
@@ -103,31 +97,9 @@ const InquiryList = () => {
     };
     fetchInquiries();
   }, []);
+  //#endregion
 
-  // const fetchData = async () => {
-  //    try {
-
-  //      const departmentResult = await DepartmentService.getDepartments();
-  //      setDepartments(departmentResult.data); // Set the 'data' array to the state\
-  //      // console.log(departmentId);
-  //      if (departmentId) {
-  //        debugger;
-  //        const employeeResult = await EmployeeService.getEmployeeByDepartment(
-  //          departmentId
-  //        );
-  //        setEmployeeList(employeeResult.data);
-  //      }
-  //    } catch (error) {
-  //      console.error("Error fetching data:", error);
-  //      setTasks([]);
-  //      setFilteredTasks([]); // Fallback to an empty array in case of an error
-  //    }
-  //  };
-  
-    // useEffect(() => {
-    //   fetchData();
-    // }, [departmentId]);
-
+  //#region Helper Functions
   // Function to get the dropdown position (top or bottom) based on available space
   const getDropdownPosition = (inquiryRegistrationId , isLastRow) => {
     const button = buttonRefs.current[inquiryRegistrationId ];
@@ -172,7 +144,9 @@ const InquiryList = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
+  //#endregion
 
+  //#region Cancle Inquiry
   const cancelInquiry = async () => {
     if (!deleteId) return;
     try {
@@ -191,6 +165,13 @@ const InquiryList = () => {
     }
   };
 
+  const handleCancelPopupClose = () => {
+    setIsCancelPopupOpen(false);
+    // setDeleteId(null);
+  };
+  //#endregion
+
+  //#region Delete Inquiry
   const deleteInquiry = async () => {
     if (!deleteId) return;
     try {
@@ -223,12 +204,9 @@ const InquiryList = () => {
     setIsPopupOpen(false);
     setDeleteId(null);
   };
+  //#endregion
 
-  const handleCancelPopupClose = () => {
-    setIsCancelPopupOpen(false);
-    // setDeleteId(null);
-  };
-
+  //#region Dropdown Handling
   const toggleDropdown = (inquiryRegistrationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenDropdown((prev) =>
@@ -239,7 +217,9 @@ const InquiryList = () => {
   const closeMenu = () => {
     setOpenDropdown(null);
   };
-
+  //#endregion
+  
+  //#region Status Color
   // Function to set the color based on the leave status
   const getStatusColor = (inquiryStatusName) => {
     switch (inquiryStatusName) {
@@ -255,13 +235,15 @@ const InquiryList = () => {
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
+  //#endregion
 
-
+  //#region Forward Inquiry
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {
     setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
     setForwardPopupVisible(true); // Show the popup
   };
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -275,8 +257,10 @@ const InquiryList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">Project List</h1>
         <div className="flex">
@@ -293,6 +277,7 @@ const InquiryList = () => {
         </div>
       </div>
 
+      {/* Filter Section */}
       <div className="flex gap-4 my-4 flex-wrap">
         <input
           type="text"
@@ -314,6 +299,7 @@ const InquiryList = () => {
         </select>
       </div>
 
+      {/* Inquiry Details Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -731,6 +717,8 @@ const InquiryList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default InquiryList;
+//#endregion

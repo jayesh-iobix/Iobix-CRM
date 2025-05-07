@@ -1,10 +1,15 @@
+//#region Imports
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion"; // Import framer-motion
 import { FaPlus } from "react-icons/fa";
 import { AttendanceService } from "../../service/AttendanceService";
 import { toast } from "react-toastify";
+//#endregion
 
+//#region Component: AttendanceList
 const AttendanceList = () => {
+  //#region State Variables
+  // Get the current year and month
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth(); // Get the current month (0-based index)
 
@@ -12,15 +17,11 @@ const AttendanceList = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [year, setYear] = useState(currentYear); // Set the year to current year
   const [selectedMonth, setSelectedMonth] = useState(currentMonth); // Set the selected month to current month
-  const [showModal, setShowModal] = useState(false); // Modal visibility
-  const [inDateTime, setInDateTime] = useState("");  // In DateTime
-  const [outDateTime, setOutDateTime] = useState(""); // Out DateTime
-  const [totalTime, setTotalTime] = useState("");    // Total Time
-  const [status, setStatus] = useState("Present");   // New state for Status
-  const [remarks, setRemarks] = useState("On Time"); // New state for Remarks
 
   const employeeId = sessionStorage.getItem("LoginUserId");
+  //#endregion
 
+  //#region useEffect: Fetch Attendance Data
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
@@ -36,7 +37,32 @@ const AttendanceList = () => {
 
     fetchAttendance();
   }, []);
+  //#endregion
 
+  //#region Filter Function
+  // Create an array of months for the year
+  const months = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  // Filter function based on selected month and year
+  const filterDataByMonthAndYear = (month, year) => {
+    setSelectedMonth(month); // Set the selected month
+    const filtered = attendanceData.filter((attendance) => {
+      const attendanceDate = new Date(attendance.attendanceDate);
+      return attendanceDate.getFullYear() === year && attendanceDate.getMonth() === month;
+    });
+    setFilteredData(filtered);
+  };
+
+  useEffect(() => {
+    // Filter the data based on the current month and year when the component loads
+    filterDataByMonthAndYear(currentMonth, currentYear);
+  }, [currentMonth, currentYear]);
+  //#endregion
+
+  //#region Helper Functions
   // Function to get all dates of a specific month and year
   const getDaysInMonth = (month, year) => {
     const daysInMonth = [];
@@ -51,16 +77,6 @@ const AttendanceList = () => {
     return daysInMonth;
   };
 
-  // Filter function based on selected month and year
-  const filterDataByMonthAndYear = (month, year) => {
-    setSelectedMonth(month); // Set the selected month
-    const filtered = attendanceData.filter((attendance) => {
-      const attendanceDate = new Date(attendance.attendanceDate);
-      return attendanceDate.getFullYear() === year && attendanceDate.getMonth() === month;
-    });
-    setFilteredData(filtered);
-  };
-
   // Function to get all years range for the dropdown
   const getYears = () => {
     const currentYear = new Date().getFullYear();
@@ -71,62 +87,7 @@ const AttendanceList = () => {
     return years;
   };
 
-  // const openModal = () => {
-  //   setShowModal(true);
-  // };
-
-  // const closeModal = () => {
-  //   setShowModal(false);
-  //   setInDateTime("");
-  //   setOutDateTime("");
-  //   setTotalTime("");
-  // };
-
-  // const handleSubmitAttendance = async (e) => {
-  //   e.preventDefault();
-  //   const totalTimeFormatted = calculateTotalTime(inDateTime, outDateTime);
-
-  //   const attendanceData = {
-  //     inDateTime,
-  //     outDateTime,
-  //     totalTime: totalTimeFormatted,
-  //     status,
-  //     remarks,
-  //   };
-
-  //   try {
-  //     const response = await AttendanceService.addAttendance(attendanceData);
-  //     if (response.status === 1) {
-  //       toast.success(response.message); // Toast on success
-  //     }
-  //   } catch (error) {
-  //     console.error("Error adding attendance:", error);
-  //     toast.error("Failed to add attendance.");
-  //   }
-  //   closeModal();
-  // };
-
-  // const calculateTotalTime = (inDateTime, outDateTime) => {
-  //   const inDate = new Date(inDateTime);
-  //   const outDate = new Date(outDateTime);
-
-  //   const diffInMs = outDate - inDate;
-
-  //   const hours = Math.floor(diffInMs / (1000 * 60 * 60));
-  //   const minutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
-  //   const seconds = Math.floor((diffInMs % (1000 * 60)) / 1000);
-
-  //   const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-  //   return formattedTime;
-  // };
-
-  // Create an array of months for the year
-  const months = [
-    "January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December"
-  ];
-
+  // Function to format time in HH:MM format
   const formatTime = (dateTime) => {
     const date = new Date(dateTime);
     const hours = String(date.getHours()).padStart(2, '0');
@@ -134,6 +95,7 @@ const AttendanceList = () => {
     return `${hours}:${minutes}`;
   };
 
+  // Function to format total time in HH:MM format
   const formatTotalTime = (totalTime) => {
     if (!totalTime) return '00:00'; // Handle empty or null case
   
@@ -162,29 +124,12 @@ const AttendanceList = () => {
         return ""; // Default color
     }
   };
+  //#endregion
 
-  // // Function to set the color based on the attendnce status
-  // const getStatusColor = (statusName) => {
-  //   switch (statusName) {
-  //     case "Present":
-  //       return "text-green-500 bg-green-100"; // Green for Approved
-  //     case "Absent":
-  //       return "text-red-500 bg-red-100"; // Red for Rejected
-  //     case "OnLeave":
-  //       return "text-red-500 bg-red-100"; // Red for Rejected
-  //     default:
-  //       return ""; // Default color
-  //   }
-  // };
-  
-
-  useEffect(() => {
-    // Filter the data based on the current month and year when the component loads
-    filterDataByMonthAndYear(currentMonth, currentYear);
-  }, [currentMonth, currentYear]);
-
+  //#region Render
   return (
     <div className="mt-4">
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Attendance List for {year}</h1>
   
@@ -308,8 +253,9 @@ const AttendanceList = () => {
         )}
       {/* </section> */}
     </div>
-  );  
-
+  );
+  //#endregion  
 };
 
 export default AttendanceList;
+//#endregion

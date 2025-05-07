@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit, FaEllipsisV, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -8,8 +9,11 @@ import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
 import { format } from "date-fns";
+//#endregion
 
+//#region Component: ForwardClientInqryList Component
 const ForwardClientInqryList = () => {
+  //#region State Variables
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
@@ -28,19 +32,12 @@ const ForwardClientInqryList = () => {
   const [inquiryForwardedTo, setInquiryForwardedTo] = useState("");  
   const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState("");  
   
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
   //#endregion
   
-//   const role = sessionStorage.getItem("role");
-  // console.log(role);
-
-  // const navigateTo = role === 'partner' 
-  // ? '/partner/inquiry-list/add-inquiry' 
-  // : '/company/inquiry-list/add-inquiry';
-  
+  //#region Fetch Inquiries
   const fetchInquiries = async () => {
     try {
       const result = await InquiryService.getForwardedCompanyInqryInUser();
@@ -71,7 +68,9 @@ const ForwardClientInqryList = () => {
   useEffect(() => {
     fetchInquiries();
   }, [departmentId]);
+  //#endregion
   
+  //#region Dropdown Position Logic
   // Function to get the dropdown position (top or bottom) based on available space
   const getDropdownPosition = (inquiryRegistrationId , isLastRow) => {
     const button = buttonRefs.current[inquiryRegistrationId ];
@@ -90,7 +89,9 @@ const ForwardClientInqryList = () => {
     // Otherwise, open it below
     return { top: buttonRect.bottom - 5, left: buttonRect.left - 120 };
   };
+  //#endregion
   
+  //#region Filter Logic
   const handleInquiryFilterChange = (event) => {
     setInquiryFilter(event.target.value);
   };
@@ -116,7 +117,9 @@ const ForwardClientInqryList = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
+  //#endregion
   
+  //#region Delete Inquiry Logic
   const deleteInquiry = async () => {
     if (!deleteId) return;
     try {
@@ -144,7 +147,9 @@ const ForwardClientInqryList = () => {
     setIsPopupOpen(false);
     setDeleteId(null);
   };
+  //#endregion
   
+  //#region Dropdown Toggle Logic
   const toggleDropdown = (inquiryRegistrationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenDropdown((prev) =>
@@ -155,7 +160,9 @@ const ForwardClientInqryList = () => {
   const closeMenu = () => {
     setOpenDropdown(null);
   };
+  //#endregion
   
+  //#region Status Color Logic
   // Function to set the color based on the leave status
   const getStatusColor = (inquiryStatusName) => {
     switch (inquiryStatusName) {
@@ -170,20 +177,10 @@ const ForwardClientInqryList = () => {
       default:
         return "text-gray-500 bg-gray-100"; // Default color
     }
-  };
-  // const getStatusColor = (inquiryStatusName) => {
-  //   switch (inquiryStatusName) {
-  //     case "Pending":
-  //       return "text-yellow-500 bg-yellow-100"; // Yellow for Pending
-  //     case "Approved":
-  //       return "text-green-500 bg-green-100"; // Green for Approved
-  //     case "Rejected":
-  //       return "text-red-500 bg-red-100"; // Red for Rejected
-  //     default:
-  //       return "text-gray-500 bg-gray-100"; // Default color
-  //   }
-  // };
+  };
+  //#endregion
   
+  //#region Forward Inquiry Logic
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {
     setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
@@ -228,6 +225,7 @@ const ForwardClientInqryList = () => {
       // Close the popup after submission
       // setIsPopupVisible(false);
   };
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -241,8 +239,10 @@ const ForwardClientInqryList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Forwarded Client Project List</h1>
         <div className="flex">
@@ -259,6 +259,7 @@ const ForwardClientInqryList = () => {
         </div>
       </div>
 
+      {/* Filter Section */}
       <div className="flex gap-4 my-4">
         <input
           type="text"
@@ -281,6 +282,7 @@ const ForwardClientInqryList = () => {
         </select>
       </div>
 
+      {/* Form Section */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -668,6 +670,8 @@ const ForwardClientInqryList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default ForwardClientInqryList;
+//#endregion

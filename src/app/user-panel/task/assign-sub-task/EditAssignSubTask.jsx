@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEye } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -6,9 +7,11 @@ import { DepartmentService } from "../../../service/DepartmentService";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
+//#endregion
 
-
+//#region Component: EditAssignSubTask
 const EditAssignSubTask = () => {
+  //#region State Variables
   const [taskAllocationId, setTaskAllocationId] = useState("");
   const [taskName, setTaskName] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
@@ -24,7 +27,9 @@ const EditAssignSubTask = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams(); // Get task ID from URL
+  //#endregion
 
+  //#region Fetch Task and Employees
   useEffect(() => {
 
     const fetchTask = async () => {
@@ -75,7 +80,9 @@ const EditAssignSubTask = () => {
     
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Form Validation & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -126,9 +133,12 @@ const EditAssignSubTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Sub Task</h1>
         <div className="flex">
@@ -153,6 +163,7 @@ const EditAssignSubTask = () => {
         </div>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8 mb-10">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -302,6 +313,8 @@ const EditAssignSubTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditAssignSubTask;
+//#endregion

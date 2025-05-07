@@ -1,37 +1,46 @@
+//#region Imports
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { TaskNoteService } from '../../../service/TaskNoteService';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: SubTaskNoteList
 export const SubTaskNoteList = () => {
+  
+  //#region State Variables
+  const { id } = useParams();
+  const [taskNotes, setTaskNotes] = useState([]);
+  const navigate = useNavigate("")
+  //#endregion
 
-    const { id } = useParams();
-    const [taskNotes, setTaskNotes] = useState([]);
-    const navigate = useNavigate("")
+  //#region Fetch Sub-Task Note
+  useEffect(() => {
+      const fetchTaskNotes = async () => {
+        try {
+          const result = await TaskNoteService.getTaskNoteByTaskId(id);
+          setTaskNotes(result.data);
+  
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
+          setTaskNotes([]);
+        }
+      };
+      fetchTaskNotes();
+  }, [id]);
+  //#endregion
 
-    useEffect(() => {
-        const fetchTaskNotes = async () => {
-          try {
-            const result = await TaskNoteService.getTaskNoteByTaskId(id);
-            setTaskNotes(result.data);
-    
-          } catch (error) {
-            console.error("Error fetching tasks:", error);
-            setTaskNotes([]);
-          }
-        };
-        fetchTaskNotes();
-      }, [id]);
-
-      // Function to format the date
+  //#region Format Date 
+  // Function to format the date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString(); // You can customize the date format as needed
   };
+  //#endregion
 
+  //#region Delete Sub-Task Note Logic
   const deleteNote = async (taskNoteId) => {
     // console.log(taskNoteId);
     debugger;
@@ -48,9 +57,12 @@ export const SubTaskNoteList = () => {
       alert("Failed to delete task");
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+    {/* Header Section */}
     <div className="flex justify-between items-center my-3 ">
       <h1 className="font-semibold text-2xl">Task Note List</h1>
       <motion.button
@@ -66,6 +78,7 @@ export const SubTaskNoteList = () => {
         </motion.button>
     </div>
 
+    {/* Task Note List Table */}
     <div className="grid overflow-x-auto shadow-xl">
       <table className="min-w-full bg-white border border-gray-200">
         <thead className="bg-gray-900 border-b">
@@ -148,4 +161,6 @@ export const SubTaskNoteList = () => {
     </div>
   </>
   )
+  //#endregion
 }
+//#endregion

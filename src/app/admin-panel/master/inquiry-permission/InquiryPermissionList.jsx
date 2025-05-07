@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -5,20 +6,22 @@ import { EmployeePermissionService } from "../../../service/EmployeePermissionSe
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { InquiryPermissionService } from "../../../service/InquiryPermissionService";
+//#endregion
 
+//#region Component: InquiryPermissionList
 const InquiryPermissionList = () => {
+
+  //#region State Variables
   const [inquiryPermissionList, setInquiryPermissionList] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
-  //const navigate = useNavigate();
-
+  //#region useEffect: Fetch InquiryOrigin Data
   useEffect(() => {
     const fetchInquiryOrigin = async () => {
       try {
@@ -34,7 +37,9 @@ const InquiryPermissionList = () => {
     };
     fetchInquiryOrigin();
   }, []);
+  //#endregion
 
+  //#region Delete Logic
   const deleteInquiryPermission = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -64,7 +69,9 @@ const InquiryPermissionList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
+  //#region IsActive Logic
   const handleCheckboxChange = async (checked, inquiryPermissionId , item) => {
       // Optimistically update the UI by changing the `isActive` for the current row
       const updatedInquiryOrigin = inquiryPermissionList.map((item) =>
@@ -105,21 +112,24 @@ const InquiryPermissionList = () => {
         // Revert UI change if needed
       }
   };
+  //#endregion
 
-   //#region Pagination logic
-   const indexOfLastItem = currentPage * itemsPerPage;
-   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-   const currentItems = inquiryPermissionList.slice(indexOfFirstItem, indexOfLastItem);
- 
-   const totalPages = Math.ceil(totalItems / itemsPerPage);
- 
-   const handlePageChange = (pageNumber) => {
-     setCurrentPage(pageNumber);
-   };
-   //#endregion
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = inquiryPermissionList.slice(indexOfFirstItem, indexOfLastItem);
 
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  //#endregion
+
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">User Inquiry Permission List</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -133,6 +143,7 @@ const InquiryPermissionList = () => {
         </motion.button>
       </div>
 
+      {/* InquiryPermission Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white">
           <thead className="bg-gray-900 border-b">
@@ -380,6 +391,8 @@ const InquiryPermissionList = () => {
       </div>
     </>
   );
+  //#endregion
 }
 
 export default InquiryPermissionList
+//#endregion

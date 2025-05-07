@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit, FaEllipsisV, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -6,8 +7,11 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService"; // Assuming you have a ReportService for downloading reports
 import { format } from "date-fns";
+//#endregion
 
+//#region Component: GetInquiryList
 const GetInquiryList = () => {
+  //#region State variables
   const [inquiries, setInquiries] = useState([]);
   const [filteredInquiries, setFilteredInquiries] = useState([]);
   const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry name or code
@@ -19,7 +23,6 @@ const GetInquiryList = () => {
   const [openDropdown, setOpenDropdown] = useState({}); // State to track which dropdown is open
   const buttonRefs = useRef({}); // To store references to dropdown buttons
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
@@ -28,6 +31,7 @@ const GetInquiryList = () => {
   const role = sessionStorage.getItem("role");
   // console.log(role);
 
+  //#region Fetch Inquiries
   useEffect(() => {
     const fetchInquiries = async () => {
       try {
@@ -62,7 +66,9 @@ const GetInquiryList = () => {
     };
     fetchInquiries();
   }, []);
+  //#endregion
 
+  //#region Helper Functions
   // Function to get the dropdown position (top or bottom) based on available space
   const getDropdownPosition = (inquiryRegistrationId , isLastRow) => {
     const button = buttonRefs.current[inquiryRegistrationId ];
@@ -107,7 +113,9 @@ const GetInquiryList = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
+  //#endregion
 
+  //#region Delete Inquiry
   const deleteInquiry = async () => {
     if (!deleteId) return;
     try {
@@ -135,7 +143,9 @@ const GetInquiryList = () => {
     setIsPopupOpen(false);
     setDeleteId(null);
   };
+  //#endregion
 
+  //#region Dropdown Handling
   const toggleDropdown = (inquiryRegistrationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenDropdown((prev) =>
@@ -146,7 +156,9 @@ const GetInquiryList = () => {
   const closeMenu = () => {
     setOpenDropdown(null);
   };
+  //#endregion
 
+  //#region Status Color
   // Function to set the color based on the leave status
   const getStatusColor = (inquiryStatusName) => {
     switch (inquiryStatusName) {
@@ -164,7 +176,7 @@ const GetInquiryList = () => {
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
-
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -180,6 +192,7 @@ const GetInquiryList = () => {
 
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">Get Project List From Iobix</h1>
         {/* <div className="flex">
@@ -195,6 +208,7 @@ const GetInquiryList = () => {
         </div> */}
       </div>
 
+      {/* Filter Section */}
       <div className="flex gap-4 my-4 flex-wrap">
         <input
           type="text"
@@ -216,6 +230,7 @@ const GetInquiryList = () => {
         </select>
       </div>
 
+      {/* Inquiry Details Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -513,6 +528,8 @@ const GetInquiryList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default GetInquiryList;
+//#endregion

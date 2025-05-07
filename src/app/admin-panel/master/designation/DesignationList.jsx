@@ -1,12 +1,16 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { DesignationService } from "../../../service/DesignationService";
 import { FaEdit, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: DesignationList
 const DesignationList = () => {
+
+  //#region State Variables
   const [designation, setDesignation] = useState([]);
   const [filteredDesignation, setFilteredDesignation] = useState([]);
   const [departmentFilter, setDepartmentFilter] = useState("");
@@ -17,7 +21,9 @@ const DesignationList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
+  //#endregion
 
+  //#region useEffect: Fetch Designation Data
   useEffect(() => {
     const fetchDesignations = async () => {
       try {
@@ -32,7 +38,9 @@ const DesignationList = () => {
     };
     fetchDesignations();
   }, []);
+  //#endregion
 
+  //#region Delete Logic
   const deleteDesignation = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -62,7 +70,9 @@ const DesignationList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
+  //#region Handlers: Filtering
   // Handle department filter change
   const handleDepartmentChange = (event) => {
     const selectedDepartment = event.target.value;
@@ -83,7 +93,9 @@ const DesignationList = () => {
     // Reset to the first page when a new filter is applied
     setCurrentPage(1);
   };
+  //#endregion
 
+  //#region IsActive Logic
   const handleCheckboxChange = async (checked, designationId, item) => {
   
       // debugger;
@@ -129,9 +141,10 @@ const DesignationList = () => {
         toast.error("Error updating designation.");
         // Revert UI change if needed
       }
-    };
+  };
+  //#endregion
 
-  // Pagination logic
+  //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredDesignation.slice(indexOfFirstItem, indexOfLastItem);
@@ -141,9 +154,12 @@ const DesignationList = () => {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Designation List</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -171,6 +187,7 @@ const DesignationList = () => {
         </select>
       </div>
 
+      {/* Designation Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white ">
           <thead className="bg-gray-900 border-b">
@@ -430,7 +447,9 @@ const DesignationList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default DesignationList;
+//#endregion
 

@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import Select from 'react-select';
@@ -7,8 +8,11 @@ import { AnnouncementService } from "../../service/AnnouncementService";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { FaArrowLeft } from "react-icons/fa";
+//#endregion
 
+//#region Component: AddAnnouncement
 const AddAnnouncement = () => {
+  //#region State variables
   const [departmentList, setDepartmentList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState([]);
@@ -25,7 +29,9 @@ const AddAnnouncement = () => {
   const [nameFilter, setNameFilter] = useState("");
   const [designationFilter, setDesignationFilter] = useState("");
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Departments
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -37,7 +43,9 @@ const AddAnnouncement = () => {
     };
     fetchDepartments();
   }, []);
+  //#endregion
 
+  //#region Fetch Employees by Department
   useEffect(() => {
     if (selectedDepartment.length > 0) {
       const fetchEmployees = async () => {
@@ -59,9 +67,9 @@ const AddAnnouncement = () => {
       fetchEmployees();
     }
   }, [selectedDepartment]);
+  //#endregion
 
-  // const handleDepartmentChange = (event) => setSelectedDepartment(event.target.value);
-
+  //#region Handlers
   const handleDepartmentChange = (selectedOptions) => {
     // Update selected departments
     const selectedValues = selectedOptions.map(option => option.value);
@@ -83,7 +91,9 @@ const AddAnnouncement = () => {
       setSelectedEmployees([]); // Deselect all visitors
     }
   };
+  //#endregion
 
+  //#region Send Notification
   const sendNotification = async () => {
     if (!announcementTitle || !announcementMessage) {
       toast.error("Please provide both a title and a message.");
@@ -149,7 +159,9 @@ const AddAnnouncement = () => {
     // }
 
   };
+  //#endregion
 
+  //#region Filters
   // Filter visitors based on company name
   const filteredEmployees = employeeList.filter((employee) =>
     (employee.firstName || "").toLowerCase().includes(nameFilter.toLowerCase()) ||
@@ -163,7 +175,9 @@ const AddAnnouncement = () => {
       value: department.departmentId
     }))
   ];
+  //#endregion
 
+  //#region Reset Functions
   const resetForm = () => {
     setSelectedDepartment("");
     setEmployeeList([]);
@@ -183,10 +197,12 @@ const AddAnnouncement = () => {
     setAnnouncementDateTime("");
     setShowModal(false);
   };
-  
+  //#endregion
 
+  //#region Render
   return (
     <div className="p-5 bg-white shadow-lg rounded-lg">
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h2 className="font-semibold text-2xl">Announcement</h2>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -216,23 +232,6 @@ const AddAnnouncement = () => {
             className="w-full"
           />
         </div>
-        {/* <div className="mb-4">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            Select Department
-          </label>
-          <select
-            value={selectedDepartment}
-            onChange={handleDepartmentChange}
-            className="border border-gray-300 px-4 py-2 rounded-md w-full"
-          >
-            <option value="">--Select Department--</option>
-            {departmentList.map((department) => (
-              <option key={department.departmentId} value={department.departmentId}>
-                {department.departmentName}
-              </option>
-            ))}
-          </select>
-        </div> */}
       </div>
 
       {/* Instant Announcement Toggle */}
@@ -401,9 +400,11 @@ const AddAnnouncement = () => {
       )}
     </div>
   );
+  //#endregion
 };
 
 export default AddAnnouncement;
+//#endregion
 
 
 

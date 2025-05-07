@@ -197,7 +197,7 @@ const ApprovedClientInqry = () => {
         <h1 className="font-semibold text-2xl">Approved Client Project List</h1>
       </div>
 
-      {/* Filter Section */}
+      {/* Table Section */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">

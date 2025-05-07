@@ -1,11 +1,15 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { VendorService } from "../../service/VendorService";
+//#endregion
 
+//#region Component: ViewVendor
 const ViewVendor = () => {
 
+  //#region State Variables
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -33,12 +37,12 @@ const ViewVendor = () => {
     keyResponsibility: "",
     reportingTo: "" 
   });
-
   const [activeTab, setActiveTab] = useState(1);
-
   const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Vendor Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,14 +66,19 @@ const ViewVendor = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Function to handle tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Vendor</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -95,6 +104,7 @@ const ViewVendor = () => {
         </div>
       </div>
 
+      {/* Tab Navigation and Vendor Details Section*/}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <form className="container">
           <div className="md:px-2 lg:px-2 px-7">
@@ -175,10 +185,10 @@ const ViewVendor = () => {
           </div>
         </form>
       </section>
-
-      
     </>
   );
+  //#endregion
 };
 
 export default ViewVendor;
+//#endregion

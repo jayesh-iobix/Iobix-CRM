@@ -1,18 +1,23 @@
+//#region Imports
 import React, { useState } from 'react'
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import { DepartmentService } from '../../../service/DepartmentService';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: AddDepartment
 const AddDepartment = () => {
 
+  //#region State Variables
   const [departmentName, setDepartmentName] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!departmentName) newErrors.departmentName = 'Department Name is required';
@@ -58,9 +63,12 @@ const AddDepartment = () => {
     };
     // setAdminId("3FA85F64-5717-4562-B3FC-2C963F66AFA6");
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Department</h1>
         <motion.button
@@ -74,6 +82,7 @@ const AddDepartment = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className='bg-white rounded-lg  shadow-sm m-1 py-8 pt-'>
         <form onSubmit={handleSubmit} className='container'>
           <div className='-mx-4 px-10 mt- flex flex-wrap'>
@@ -110,7 +119,9 @@ const AddDepartment = () => {
         </form>
       </section>
     </>
-  )
+  );
+  //#endregion
 }
 
 export default AddDepartment
+ //#endregion

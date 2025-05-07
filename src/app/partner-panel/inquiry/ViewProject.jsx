@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -9,9 +10,12 @@ import InquiryChat from "../../admin-panel/inquiry/InquiryChat";
 import PartnerInquiryTaskList from "../inquiry-task/PartnerInquiryTaskList";
 import CompanyInquiryChat from "../../company-panel/inquiry-chat/CompanyInquiryChat";
 import CreateInquiryTaskList from "../inquiry-task/CreateInquiryTaskList";
+//#endregion
 
+//#region Component: ViewProject 
 const ViewProject = () => {
 
+  //#region State Variables
   const [formData, setFormData] = useState({
     inquiryTitle: '',
     inquiryLocation: '',
@@ -38,7 +42,9 @@ const ViewProject = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const role = sessionStorage.getItem("role");
+  //#endregion
 
+  //#region Fetch Project Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -61,14 +67,19 @@ const ViewProject = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Function to handle tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -126,6 +137,7 @@ const ViewProject = () => {
         </div>
       </div>
 
+      {/* Project Details Table */}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <form className="container">
           <div className="md:px-2 lg:px-2 px-7">
@@ -273,6 +285,8 @@ const ViewProject = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default ViewProject;
+//#endregion

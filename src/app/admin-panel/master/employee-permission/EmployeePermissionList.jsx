@@ -1,23 +1,25 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { EmployeePermissionService } from "../../../service/EmployeePermissionService";
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
+//#endregion
 
+//#region Component: EmployeePermissionList
 const EmployeePermissionList = () => {
+  //#region State Variables
   const [employeePermissionList, setEmployeePermissionList] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
-  //const navigate = useNavigate();
-
+  //#region useEffect: Fetch EmployeePermission Data
   useEffect(() => {
     const fetchEmployeePermission = async () => {
       try {
@@ -32,8 +34,9 @@ const EmployeePermissionList = () => {
     };
     fetchEmployeePermission();
   }, []);
+  //#endregion
 
-
+  //#region Delete Logic
   const deleteEmployeePermission = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -63,21 +66,24 @@ const EmployeePermissionList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
-   //#region Pagination logic
-   const indexOfLastItem = currentPage * itemsPerPage;
-   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-   const currentItems = employeePermissionList.slice(indexOfFirstItem, indexOfLastItem);
- 
-   const totalPages = Math.ceil(totalItems / itemsPerPage);
- 
-   const handlePageChange = (pageNumber) => {
-     setCurrentPage(pageNumber);
-   };
-   //#endregion
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = employeePermissionList.slice(indexOfFirstItem, indexOfLastItem);
 
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  //#endregion
+
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Employee Permission List</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -91,6 +97,7 @@ const EmployeePermissionList = () => {
         </motion.button>
       </div>
 
+      {/* EmployeePermission Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white">
           <thead className="bg-gray-900 border-b">
@@ -311,6 +318,8 @@ const EmployeePermissionList = () => {
       </div>
     </>
   );
+  //#endregion
 }
 
 export default EmployeePermissionList;
+//#endregion

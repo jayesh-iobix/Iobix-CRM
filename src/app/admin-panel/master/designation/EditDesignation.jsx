@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -5,20 +6,25 @@ import { DesignationService } from "../../../service/DesignationService";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: EditDesignation
 const EditDesignation = () => {
   
+  //#region State Variables
   const [departmentId, setDepartmentId] = useState("");
   const [designationName, setDesignationName] = useState("");
   const [isActive, setIsActive] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { id } = useParams();
   const [departmentList, setDepartmentList] = useState([]);
   const navigate = useNavigate();
+  const { id } = useParams();
+  //#endregion
 
+  //#region useEffect - Fetch Department and Designation data
   useEffect(() => {
+
     const fetchDepartmentData = async () => {
       //#region Fetch DepartmentList
       const departmentResult = await DepartmentService.getDepartments();
@@ -41,7 +47,9 @@ const EditDesignation = () => {
     fetchData();
     fetchDepartmentData();
   }, []);
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!departmentId) newErrors.departmentId = "Department Name is required";
@@ -89,9 +97,12 @@ const EditDesignation = () => {
       }
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Designation</h1>
         <motion.button
@@ -108,6 +119,7 @@ const EditDesignation = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white shadow-sm m-1 py-8 pt-">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -193,6 +205,8 @@ const EditDesignation = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditDesignation;
+//#endregion

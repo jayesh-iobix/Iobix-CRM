@@ -1,20 +1,25 @@
-
+//#region Imports
 import React, { useState, useEffect } from 'react';
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { DepartmentService } from '../../../service/DepartmentService';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: EditDepartment
 const EditDepartment = () => {
-  const { id } = useParams(); 
+
+  //#region State Variables
   const [departmentName, setDepartmentName] = useState("");
   const [isActive, setIsActive] = useState(""); // New state for checkbox
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams(); 
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect - Fetch Department data
   useEffect(() => {
     const fetchData = async () => {
       const department = await DepartmentService.getByIdDepartments(id);
@@ -23,14 +28,16 @@ const EditDepartment = () => {
     };
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!departmentName) newErrors.departmentName = 'Department Name is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -58,9 +65,12 @@ const EditDepartment = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Department</h1>
         <motion.button
@@ -73,7 +83,8 @@ const EditDepartment = () => {
         </Link>
         </motion.button>
       </div>
-
+      
+      {/* Form Section */}
       <section className='bg-white shadow-sm m-1 py-8 pt-'>
         <form onSubmit={handleSubmit} className='container'>
           <div className='-mx-4 px-10 mt- flex flex-wrap'>
@@ -128,32 +139,8 @@ const EditDepartment = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditDepartment;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// async function fetchDocument(id) {
-//     try {
-//       const document = await DocumentService.getById(id);
-//       console.log('Fetched document:', document);
-//     } catch (error) {
-//       console.error('Error fetching document:', error);
-//     }
-//   }
+//#endregion

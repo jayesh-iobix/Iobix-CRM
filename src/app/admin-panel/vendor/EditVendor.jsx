@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -8,9 +9,12 @@ import { InquirySourceService } from "../../service/InquirySourceService";
 import { VendorService } from "../../service/VendorService";
 import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
+//#endregion
 
-
+//#region Component: EditVendor
 const EditVendor = () => {
+
+  //#region State Variables
   const [formData, setFormData] = useState({
     companyName: "",
     companyRegistrationNumber : "",
@@ -32,19 +36,20 @@ const EditVendor = () => {
   });
 
   const { id } = useParams();
-  const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
   const [inquirySourceList, setInquirySourceList] = useState([]);
   
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
-  const navigate = useNavigate();
   const [isRelationalManager, setIsRelationalManager] = useState("");
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect: Fetch Data
   useEffect(() => {
       const fetchData = async () => {
         try {
@@ -105,8 +110,10 @@ const EditVendor = () => {
       //#endregion Fetch Country, State, and City Source
     };
     fetchData();
-    }, [formData.countryId, formData.stateId, formData.departmentId])
+  }, [formData.countryId, formData.stateId, formData.departmentId])
+  //#endregion
 
+  //#region Form Validation and Submission
   const validateForm = () => {
     const newErrors = {};
     if (!formData.companyName) newErrors.companyName = "Company Name is required";
@@ -125,7 +132,6 @@ const EditVendor = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -183,7 +189,9 @@ const EditVendor = () => {
       }
     }
   };
+  //#endregion
 
+  //#region Handle Change Function
   const handleChange = (e) => {
     const { name, value } = e.target;
     
@@ -209,9 +217,12 @@ const EditVendor = () => {
     // Update form data for all fields
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Vendor</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -225,6 +236,7 @@ const EditVendor = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-4 dark:bg-dark">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -545,6 +557,8 @@ const EditVendor = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditVendor;
+//#endregion

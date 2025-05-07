@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
@@ -5,9 +6,11 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { InquirySubTaskService } from "../../service/InquirySubTaskService";
 import { SubTaskNoteService } from "../../service/SubTaskNoteService";
+//#endregion 
 
-
+//#region Component: ViewInquiryTask
 const ViewInquiryTask = () => {
+  //#region State Initialization
   const userId = sessionStorage.getItem("LoginUserId");
   const role = sessionStorage.getItem("role");
   // const navigateTo = role === "admin" ? `/partnerinquiry-list/edit-inquiry-task/${id}` : `/user/partnerinquiry-list/edit-inquiry-task/${id}`;
@@ -28,7 +31,9 @@ const ViewInquiryTask = () => {
   const [taskTimeOut, setTaskTimeOut] = useState("");
   const [taskDuration, setTaskDuration] = useState("");
   const [taskUpdate, setTaskUpdate] = useState("");
+  //#endregion
 
+  //#region Fetch Task Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -53,7 +58,9 @@ const ViewInquiryTask = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Utility Functions 
   const getStatusColor = (status) => {
     const statusColors = {
       Pending: "text-red-500 bg-red-100",
@@ -67,18 +74,6 @@ const ViewInquiryTask = () => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString(); // You can customize the date format as needed
-  };
-
-  // Function to handle opening the popup and setting the current task
-  const handleEyeClick = (task) => {
-    setCurrentTask(task); // Set the selected task data
-    setSubTaskAllocationId(task.subTaskAllocationId); // Set the selected task data
-    setTaskDate(formatDate(task.taskDate)); // Assuming taskDate is in a format we can directly display
-    setTaskTimeIn(task.taskTimeIn);
-    setTaskTimeOut(task.taskTimeOut);
-    setTaskDuration(task.taskDuration);
-    setTaskUpdate(task.taskUpdate);
-    setIsPopupVisible(true); // Show the popup
   };
 
   // Function to calculate task duration based on time in and time out
@@ -102,71 +97,14 @@ const ViewInquiryTask = () => {
   useEffect(() => {
     calculateDuration();
   }, [taskTimeIn, taskTimeOut]);
+  //#endregion
 
-  const formatTimeToBackendFormat = (time) => {
-    if (!time) return '';  // If no time, return an empty string
-    const [hours, minutes] = time.split(':');
-    return `${hours}:${minutes}:00.0000000`;  // Convert to HH:mm:ss.SSSSSSS
-  };
-  
-   // Function to convert duration format (e.g., "4h 0m" -> "04:00:00")
-   const convertToTimeSpanFormat = (duration) => {
-    const match = duration.match(/(\d+)h (\d+)m/); // Matches "4h 0m" format
-    if (match) {
-      const hours = String(match[1]).padStart(2, '0'); // Pad to two digits
-      const minutes = String(match[2]).padStart(2, '0'); // Pad to two digits
-      return `${hours}:${minutes}:00`; // Assuming seconds are zero
-    }
-    return "00:00:00"; // Default fallback if the format is unexpected
-  };
-
-
-  // Function to handle form submission
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-  // Format task time fields to the expected format
-  const formattedTimeIn = formatTimeToBackendFormat(taskTimeIn);
-  const formattedTimeOut = formatTimeToBackendFormat(taskTimeOut);
-
-  const formattedDuration = convertToTimeSpanFormat(taskDuration);
-  // Convert taskDuration to the required time span format (hh:mm:ss)
-
-    const taskNoteData = {
-      subTaskAllocationId,
-      taskDate,
-      taskTimeIn: formattedTimeIn,
-      taskTimeOut: formattedTimeOut,
-      taskDuration: formattedDuration,
-      taskUpdate,
-    };
-
-    console.log("Submitting task note data:", taskNoteData); // Log the data before submitting
-
-
-    try {
-      
-      // Call the API to add the task note
-      const result = await SubTaskNoteService.addSubTaskNote(taskNoteData);
-      console.log("Task note added successfully:", result);
-      
-      // Optionally, you can update the task state or show a success message here
-      setIsPopupVisible(false); // Close the popup
-    }catch (error) {
-      console.error("Error adding task note:", error.response?.data || error.message);
-      if (error.response?.data?.errors) {
-        console.log("Validation Errors:", error.response.data.errors);  // This will help pinpoint specific fields causing the issue
-      }
-    }
-    
-    // Close the popup after submission
-    // setIsPopupVisible(false);
-  };
-
+  //#region Render
   return (
     <>
       <div className="container mx-auto mb-10">
         <div className="bg-white px-4 md:px-10 p-6 md:p-8 rounded-lg shadow-lg space-y-6">
+          {/* Header Section and Buttons */}
           <div className="flex flex-col md:flex-row justify-between items-center border-b pb-4">
             <h1 className="font-semibold text-2xl md:text-3xl">Inquiry Task Details</h1>
             <div className="flex space-x-2 mt-4 md:mt-0">
@@ -207,6 +145,8 @@ const ViewInquiryTask = () => {
               </motion.button>
             </div>
           </div>
+
+          {/* Inquiry Task Details Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               { label: 'Task Name', value: taskDetails.taskName },
@@ -232,8 +172,8 @@ const ViewInquiryTask = () => {
       </div>
     </>
   );
-  
-  
+  //#endregion
 };
 
 export default ViewInquiryTask;
+//#endregion 

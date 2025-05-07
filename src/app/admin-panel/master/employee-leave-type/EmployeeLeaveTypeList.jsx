@@ -1,26 +1,28 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaEdit, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { EmployeeLeaveTypeService } from "../../../service/EmployeeLeaveTypeService";
+//#endregion
 
-
+//#region Component: EmployeeLeaveTypeList
 const EmployeeLeaveTypeList = () => {
+
+  //#region State Variables
   const [employeeLeaveTypeList, setEmployeeLeaveTypeList] = useState([]);
   const [filteredEmployeeLeaveTypeList, setFilteredEmployeeLeaveTypeList] = useState([]);
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
 
-    
-
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region useEffect: Fetch EmployeeLeaveTypes Data
   useEffect(() => {
     const fetchEmployeeLeaveTypes = async () => {
       try {
@@ -35,7 +37,9 @@ const EmployeeLeaveTypeList = () => {
     };
     fetchEmployeeLeaveTypes();
   }, []);
+  //#endregion
 
+  //#region Delete Logic
   const deleteEmployeeLeaveType = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -65,7 +69,9 @@ const EmployeeLeaveTypeList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
+  //#region IsActive Logic
   const handleCheckboxChange = async (checked, employeeLeaveTypeId, item) => {
 
     // debugger;
@@ -111,7 +117,9 @@ const EmployeeLeaveTypeList = () => {
       // Revert UI change if needed
     }
   };
+  //#endregion
 
+  //#region Handlers: Filtering
   // Handle leavetype filter change
   const handleLeaveTypeChange = (event) => {
     const selectedLeaveType = event.target.value;
@@ -132,6 +140,7 @@ const EmployeeLeaveTypeList = () => {
     // Reset to the first page when a new filter is applied
     setCurrentPage(1);
   };
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -145,8 +154,10 @@ const EmployeeLeaveTypeList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Employee Leave Type List</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -423,6 +434,8 @@ const EmployeeLeaveTypeList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default EmployeeLeaveTypeList;
+//#endregion

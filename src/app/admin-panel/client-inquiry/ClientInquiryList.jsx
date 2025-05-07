@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit, FaEllipsisV, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -9,8 +10,11 @@ import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
 import { format } from "date-fns";
+//#endregion
 
+//#region Component: ClientInquiryList
 const ClientInquiryList = () => {
+  //#region State variables
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
@@ -18,7 +22,6 @@ const ClientInquiryList = () => {
   const [categoryFilter, setCategoryFilter] = useState(""); // Filter for inquiry category
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId for deletion
   const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup for confirmation
-  const [isSubmitting, setIsSubmitting] = useState(false); // Button loading state
 
   const buttonRefs = useRef({}); // To store references to dropdown buttons
   const [openDropdown, setOpenDropdown] = useState({}); // State to track which dropdown is open
@@ -31,19 +34,14 @@ const ClientInquiryList = () => {
   const [inquiryTransferTo, setInquiryTransferTo] = useState("");  
   const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState("");  
   
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
   //#endregion
-  
+
   const role = sessionStorage.getItem("role");
-  // console.log(role);
 
-  // const navigateTo = role === 'partner' 
-  // ? '/partner/inquiry-list/add-inquiry' 
-  // : '/company/inquiry-list/add-inquiry';
-
+  //#region Fetch Client Inquiries
   const fetchInquiries = async () => {
     try {
       if(role === "admin") {
@@ -84,7 +82,9 @@ const ClientInquiryList = () => {
   useEffect(() => {
     fetchInquiries();
   }, [departmentId]);
-  
+  //#endregion
+
+  //#region Helper Functions
   // Function to get the dropdown position (top or bottom) based on available space
   const getDropdownPosition = (inquiryRegistrationId , isLastRow) => {
     const button = buttonRefs.current[inquiryRegistrationId ];
@@ -129,7 +129,9 @@ const ClientInquiryList = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
+  //#endregion
   
+  //#region Delete Inquiry
   const deleteInquiry = async () => {
     if (!deleteId) return;
     try {
@@ -157,7 +159,9 @@ const ClientInquiryList = () => {
     setIsPopupOpen(false);
     setDeleteId(null);
   };
+  //#endregion
   
+  //#region Dropdown Handling
   const toggleDropdown = (inquiryRegistrationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenDropdown((prev) =>
@@ -168,7 +172,9 @@ const ClientInquiryList = () => {
   const closeMenu = () => {
     setOpenDropdown(null);
   };
+  //#endregion
   
+  //#region Status Color
   // Function to set the color based on the leave status
   const getStatusColor = (inquiryStatusName) => {
     switch (inquiryStatusName) {
@@ -184,7 +190,9 @@ const ClientInquiryList = () => {
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
+  //#endregion
   
+  //#region Forward / Transfer Inquiry
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {
     setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
@@ -196,7 +204,9 @@ const ClientInquiryList = () => {
     setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
     setTransferPopupVisible(true); // Show the popup
   };
+  //#endregion
 
+  //#region Inquiry Submission
   //Function to submit the api
   const handleInquirySubmit = async (event) => {
     event.preventDefault();
@@ -251,45 +261,7 @@ const ClientInquiryList = () => {
         // Close the popup after submission
         // setIsPopupVisible(false);
   };
-
-  // const handleForwardSubmit = async (event) => {
-  //     event.preventDefault();
-  
-  //     // debugger;
-  
-  //     const inquiryForwardData = {
-  //       inquiryRegistrationId,
-  //       inquiryForwardedTo,
-  //       inquiryFollowUpDescription
-  //       // taskTransferTo,
-  //     };
-  //     //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-  
-  //     try {
-  //       // Call the API to add the task note
-  //       const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryForwardData);
-  //       if (response.status === 1) {
-  //         toast.success("Inquiry Forwarded Successfully."); // Toast on success
-  //         // toast.success(response.message); // Toast on success
-  //         fetchInquiries();
-  //       }
-  //       console.log("task transfer added successfully:", response);
-  
-  //       // Optionally, you can update the task state or show a success message here
-  //       setForwardPopupVisible(false); // Close the popup
-  //     } catch (error) {
-  //       console.error(
-  //         "Error adding task note:",
-  //         error.response?.data || error.message
-  //       );
-  //       if (error.response?.data?.errors) {
-  //         console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //       }
-  //     }
-    
-  //       // Close the popup after submission
-  //       // setIsPopupVisible(false);
-  // };
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -303,8 +275,10 @@ const ClientInquiryList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Client Company Project List</h1>
         <div className="flex">
@@ -321,6 +295,7 @@ const ClientInquiryList = () => {
         </div>
       </div>
 
+      {/* Filter Section */}
       <div className="flex gap-4 my-4">
         <input
           type="text"
@@ -342,6 +317,7 @@ const ClientInquiryList = () => {
         </select>
       </div>
 
+      {/* Inquiry List Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -833,6 +809,8 @@ const ClientInquiryList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default ClientInquiryList;
+//#endregion

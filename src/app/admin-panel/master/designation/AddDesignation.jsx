@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -5,10 +6,12 @@ import { DesignationService } from "../../../service/DesignationService";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: AddDesignation
 const AddDesignation = () => {
   
+  //#region State Variables
   const [departmentId, setDepartmentId] = useState("");
   const [designationName, setDesignationName] = useState("");
   const [errors, setErrors] = useState({});
@@ -16,7 +19,9 @@ const AddDesignation = () => {
 
   const [departmentList, setDepartmentList] = useState([]);
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Department Data
   useEffect(() => {
     const fetchData = async () => {
       //#region Fetch DepartmentList
@@ -27,7 +32,9 @@ const AddDesignation = () => {
     };
     fetchData();
   }, []);
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!departmentId) newErrors.departmentId = "Department Name is required";
@@ -76,9 +83,12 @@ const AddDesignation = () => {
       }
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Designation</h1>
         <motion.button
@@ -95,6 +105,7 @@ const AddDesignation = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -169,6 +180,8 @@ const AddDesignation = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default AddDesignation;
+//#endregion

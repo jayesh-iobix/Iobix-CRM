@@ -1,9 +1,11 @@
+//#region Imports
 import React, { useState } from 'react';
 import ManualPdf from '../../../assets/docs/IOBIX-Internal-CRM-User-Manual.pdf'; // Adjust the path as necessary
 import { HelpSupportService } from '../../service/HelpSupportService';
 import { toast } from 'react-toastify';
+//#endregion
 
-
+//#region FAQ Data
 const faqs = [
   { q: 'How do I reset my password?', a: 'Click on the "Forgot Password" link on the sign-in page and follow the instructions.' },
   { q: 'How can I view my assigned tasks?', a: 'Navigate to the "Task" section in the sidebar to see all tasks assigned to you.' },
@@ -11,15 +13,20 @@ const faqs = [
   { q: 'Where can I download the user manual?', a: 'Use the "Download User Manual" card on this Help & Support page.' },
   { q: 'How do I submit a ticket?', a: 'Click the "Submit Ticket" button, fill out the form, and hit Submit.' },
 ];
+//#endregion
 
+//#region Component: AddHelpSupport
 const AddHelpSupport = () => {
+  //#region State Variables
   const [showFaqModal, setShowFaqModal] = useState(false);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
 
   const [ticket, setTicket] = useState({ name: '', email: '', subject: '', description: '' });
   const [contact, setContact] = useState({ name: '', email: '', message: '' });
+  //#endregion
 
+  //#region Ticket Handlers
   const handleTicketChange = (e) => {
     const { name, value } = e.target;
     setTicket(prev => ({ ...prev, [name]: value }));
@@ -56,7 +63,9 @@ const AddHelpSupport = () => {
     setShowTicketModal(false);
     setTicket({ name: '', email: '', subject: '', description: '' });
   };
+  //#endregion
 
+  //#region Contact Handlers
   const handleContactChange = e => {
     const { name, value } = e.target;
     setContact(prev => ({ ...prev, [name]: value }));
@@ -93,7 +102,9 @@ const AddHelpSupport = () => {
     setShowContactModal(false);
     setContact({ name: '', email: '', message: '' });
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
       <div className="p-6 bg-white rounded-2xl shadow-md">
@@ -304,6 +315,8 @@ const AddHelpSupport = () => {
       )}
     </>
   );
+  //#endregion
 };
 
 export default AddHelpSupport;
+//#endregion

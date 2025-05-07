@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -8,9 +9,12 @@ import { InquirySourceService } from "../../service/InquirySourceService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
+//#endregion
 
-
+//#region Component: EditClientCompany
 const EditClientCompany = () => {
+
+  //#region State Variables
   const [formData, setFormData] = useState({
     companyName: "",
     companyRegistrationNumber : "",
@@ -30,21 +34,21 @@ const EditClientCompany = () => {
     relationalManagerId : "",
     isRelationalManagerId : "",
   });
-
-  const { id } = useParams();
-  const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
   const [inquirySourceList, setInquirySourceList] = useState([]);
-  
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
-  const navigate = useNavigate();
   const [isRelationalManager, setIsRelationalManager] = useState("");
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const { id } = useParams();
+  //#endregion
 
+  //#region useEffect: Fetch Data
+  // Fetch Client Company and Countries
   useEffect(() => {
       const fetchData = async () => {
         try {
@@ -66,7 +70,7 @@ const EditClientCompany = () => {
       };
   
       fetchData();
-    }, [id]);
+  }, [id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,7 +109,35 @@ const EditClientCompany = () => {
       //#endregion Fetch Country, State, and City Source
     };
     fetchData();
-    }, [formData.countryId, formData.stateId, formData.departmentId])
+  }, [formData.countryId, formData.stateId, formData.departmentId])
+  //#endregion
+
+  //#region Form Handlers
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    // Regex for 10-digit number validation
+    const phoneNumberRegex = /^[0-9]{10}$/;
+    
+    // If the field is either phoneNumber or whatsAppNumber, validate the input
+    if (name === "phoneNumber" || name === "whatsAppNumber") {
+      if (value && !phoneNumberRegex.test(value)) {
+        // Only allow 10 digits
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "Please enter a valid 10-digit number",
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "",
+        }));
+      }
+    }
+  
+    // Update form data for all fields
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -127,8 +159,9 @@ const EditClientCompany = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  //#endregion
 
-
+  //#region Submit Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -185,35 +218,12 @@ const EditClientCompany = () => {
       }
     }
   };
+  //#endregion
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    
-    // Regex for 10-digit number validation
-    const phoneNumberRegex = /^[0-9]{10}$/;
-    
-    // If the field is either phoneNumber or whatsAppNumber, validate the input
-    if (name === "phoneNumber" || name === "whatsAppNumber") {
-      if (value && !phoneNumberRegex.test(value)) {
-        // Only allow 10 digits
-        setErrors((prev) => ({
-          ...prev,
-          [name]: "Please enter a valid 10-digit number",
-        }));
-      } else {
-        setErrors((prev) => ({
-          ...prev,
-          [name]: "",
-        }));
-      }
-    }
-  
-    // Update form data for all fields
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
+  //#region Render
   return (
     <>
+      {/* Header Section*/}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Client Company</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -227,6 +237,7 @@ const EditClientCompany = () => {
         </motion.button>
       </div>
 
+      {/* Client Details Section */}
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-4 dark:bg-dark">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -547,8 +558,10 @@ const EditClientCompany = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditClientCompany;
+//#endregion
 
 

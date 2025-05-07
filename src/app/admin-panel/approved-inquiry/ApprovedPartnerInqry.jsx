@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaCheck, FaEdit, FaEllipsisV, FaEye, FaPlus, FaTimes, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
@@ -5,8 +6,11 @@ import { InquiryService } from "../../service/InquiryService"; // Assuming you h
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { InquiryApproveRejectService } from "../../service/InquiryApproveRejectService";
+//#endregion
 
+//#region Component: ApprovedPartnerInqry
 const ApprovedPartnerInqry = () => {
+  //#region State variables
   const [inquiries, setInquiries] = useState([]);
   const [filteredInquiries, setFilteredInquiries] = useState([]);
   const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry name or code
@@ -17,20 +21,13 @@ const ApprovedPartnerInqry = () => {
   const [approveId, setApproveId] = useState(null); // Store the eventTypeId for deletion
   const [inquiryGivenTo, setInquiryGivenTo] = useState(null); // Store the inquiryGivenTo 
   
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
+  const { id } = useParams();
   //#endregion
   
-  const { id } = useParams();
-  const role = sessionStorage.getItem("role");
-  // console.log(role);
-
-  // const navigateTo = role === 'partner' 
-  // ? '/partner/inquiry-list/add-inquiry' 
-  // : '/company/inquiry-list/add-inquiry';
-
+  //#region Fetch Approved/Rejected Partner Inquiry
   const fetchInquiries = async () => {
     try {
         const result = await InquiryApproveRejectService.getInquiryApproveRejectPartner(id);
@@ -48,6 +45,7 @@ const ApprovedPartnerInqry = () => {
   useEffect(() => {
     fetchInquiries();
   }, []);
+  //#endregion
 
   const handleInquiryFilterChange = (event) => {
     setInquiryFilter(event.target.value);
@@ -57,6 +55,7 @@ const ApprovedPartnerInqry = () => {
     setCategoryFilter(event.target.value);
   };
 
+  //#region Filter inquiries based on the filters applied
   useEffect(() => {
     let filtered = inquiries;
 
@@ -74,6 +73,7 @@ const ApprovedPartnerInqry = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
+  //#endregion
 
   // Function to set the color based on the leave status
   const getStatusColor = (finalApproval) => {
@@ -89,6 +89,7 @@ const ApprovedPartnerInqry = () => {
     }
   };
 
+  //#region Handle Approve/Cancel Clicks
   const handleApproveClick = (item) => {
     setApproveId(item.inquiryRegistrationId);
     setInquiryGivenTo(item.inquiryApprovedBy);
@@ -100,7 +101,10 @@ const ApprovedPartnerInqry = () => {
     setInquiryGivenTo(item.inquiryApprovedBy);
     setIsCancelPopupOpen(true);
   };
+  //#endregion
 
+  //#region Handle Approve/Cancel Inquiry Submission
+  // Function to approve the inquiry 
   const approveInquiry = async (status) => {
     if (!approveId) return;
 
@@ -128,6 +132,7 @@ const ApprovedPartnerInqry = () => {
     }
   };
   
+  // Function to cancel the inquiry
   const cancelInquiry = async (status) => {
     if (!cancelId) return;
 
@@ -153,7 +158,9 @@ const ApprovedPartnerInqry = () => {
       toast.error("Failed to cancel inquiry.");
     }
   };
+  //#endregion
 
+  //#region Handle Popup Close
   const handleApprovePopupClose = () => {
     setIsApprovePopupOpen(false);
     setInquiryGivenTo("");
@@ -165,7 +172,7 @@ const ApprovedPartnerInqry = () => {
     setInquiryGivenTo("");
     // setDeleteId(null);
   };
-
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -181,6 +188,7 @@ const ApprovedPartnerInqry = () => {
 
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Approved Partner Project List</h1>
       </div>
@@ -205,6 +213,7 @@ const ApprovedPartnerInqry = () => {
         </select>
       </div> */}
 
+      {/* Table Section */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -239,7 +248,17 @@ const ApprovedPartnerInqry = () => {
                   </td>
                   <td className="px-4 py-2 border-b">
                     <div className="flex gap-2 justify-end">
-                      {inquiries.finalApproval !== 0 &&  ( 
+                      <div>
+                      <span
+                          className={`px-2 py-1 rounded-lg font-medium ${getStatusColor(
+                            item.finalApproval
+                          )}`}
+                        >
+                          {item.finalApproval === 1 ? "Approved" : ""}
+                        </span>
+                      </div>
+
+                      {item.finalApproval !== 1 &&  ( 
                         <motion.button
                         type="button"
                         whileHover={{ scale: 1.1 }}
@@ -459,3 +478,4 @@ const ApprovedPartnerInqry = () => {
 };
 
 export default ApprovedPartnerInqry;
+//#endregion

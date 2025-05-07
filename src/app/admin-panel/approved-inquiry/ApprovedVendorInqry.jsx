@@ -1,11 +1,15 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { InquiryApproveRejectService } from "../../service/InquiryApproveRejectService";
+//#endregion
 
+//#region Component: ApprovedVendorInqry
 const ApprovedVendorInqry = () => {
+  //#region State Variables
   const [inquiries, setInquiries] = useState([]);
   const [filteredInquiries, setFilteredInquiries] = useState([]);
   const [inquiryFilter, setInquiryFilter] = useState(""); // Filter for inquiry name or code
@@ -16,17 +20,13 @@ const ApprovedVendorInqry = () => {
   const [approveId, setApproveId] = useState(null); // Store the eventTypeId for deletion
   const [inquiryGivenTo, setInquiryGivenTo] = useState(null); // Store the inquiryGivenTo 
   
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
+  const { id } = useParams();
   //#endregion
   
-  const { id } = useParams();
-  const role = sessionStorage.getItem("role");
-
-  // console.log(role);
-
+  //#region Fetch Approved/Rejected Vendor Inquiry
   const fetchInquiries = async () => {
     try {
       const result =
@@ -44,6 +44,7 @@ const ApprovedVendorInqry = () => {
   useEffect(() => {
     fetchInquiries();
   }, []);
+  //#endregion
   
   
   const handleInquiryFilterChange = (event) => {
@@ -54,6 +55,8 @@ const ApprovedVendorInqry = () => {
     setCategoryFilter(event.target.value);
   };
   
+  //#region Filter Logic
+  // Filter inquiries based on inquiryFilter and categoryFilter
   useEffect(() => {
     let filtered = inquiries;
 
@@ -71,8 +74,9 @@ const ApprovedVendorInqry = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
+  //#endregion
   
-  
+  //#region Status Color
   // Function to set the color based on the leave status
   const getStatusColor = (finalApproval) => {
     switch (finalApproval) {
@@ -86,9 +90,10 @@ const ApprovedVendorInqry = () => {
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
+  //#endregion
 
+  //#region Handle Approve/Cancel Clicks
   const handleApproveClick = (item) => {
-    
     setApproveId(item.inquiryRegistrationId);
     setInquiryGivenTo(item.inquiryApprovedBy);
     setIsApprovePopupOpen(true);
@@ -99,7 +104,10 @@ const ApprovedVendorInqry = () => {
     setInquiryGivenTo(item.inquiryApprovedBy);
     setIsCancelPopupOpen(true);
   };
+  //#endregion
 
+  //#region Handle Approve/Cancel Inquiry Submission
+  // Function to approve the inquiry 
   const approveInquiry = async (status) => {
     if (!approveId) return;
 
@@ -127,6 +135,7 @@ const ApprovedVendorInqry = () => {
     }
   };
 
+  // Function to cancel the inquiry
   const cancelInquiry = async (status) => {
     if (!cancelId) return;
 
@@ -152,8 +161,9 @@ const ApprovedVendorInqry = () => {
       toast.error("Failed to cancel inquiry.");
     }
   };
+  //#endregion
 
-  
+  //#region Handle Popup Close
   const handleApprovePopupClose = () => {
     setIsApprovePopupOpen(false);
     setInquiryGivenTo("");
@@ -165,6 +175,7 @@ const ApprovedVendorInqry = () => {
     setInquiryGivenTo("");
     // setDeleteId(null);
   };
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -178,32 +189,15 @@ const ApprovedVendorInqry = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Approved Vendor Project List</h1>
       </div>
 
-      {/* <div className="flex gap-4 my-4">
-          <input
-            type="text"
-            value={inquiryFilter}
-            onChange={handleInquiryFilterChange}
-            placeholder="Search Inquiry"
-            className="p-2 outline-none rounded border border-gray-300"
-          />
-          <select
-            value={categoryFilter}
-            onChange={handleCategoryFilterChange}
-            className="border border-gray-300 rounded p-2"
-          >
-            <option value="">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Close">Close</option>
-          </select>
-      </div> */}
-
+      {/* Table Section */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -469,6 +463,8 @@ const ApprovedVendorInqry = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default ApprovedVendorInqry;
+//#endregion

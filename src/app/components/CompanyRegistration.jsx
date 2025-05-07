@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
@@ -12,8 +13,11 @@ import { getToken } from "firebase/messaging";
 import { InquirySourceService } from "../service/InquirySourceService";
 import { CommonService } from "../service/CommonService";
 import { ClientCompanyService } from "../service/ClientCompanyService";
+//#endregion
 
+//#region Component: CompanyRegistration
 const CompanyRegistration = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
     companyName: "",
     companyRegistrationNumber : "",
@@ -29,7 +33,7 @@ const CompanyRegistration = () => {
     cityId: "",
     whatsAppNumber: "",
     companyWebsite : "",
-    });  // State for form data
+  });  // State for form data
   const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,7 +46,9 @@ const CompanyRegistration = () => {
 
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
+  //#endregion
 
+  //#region useEffect Hooks to handle device token and fetch data
   useEffect(() => {
     // Check for stored device token
     const storedDeviceToken = sessionStorage.getItem("deviceToken");
@@ -103,7 +109,9 @@ const CompanyRegistration = () => {
     };
     fetchData();
   }, [formData.countryId, formData.stateId]);
+  //#endregion
 
+  //#region Form Validation and Submission
   const validateForm = () => {
     const newErrors = {};
     if (!formData.companyName) newErrors.companyName = "Company Name is required";
@@ -177,12 +185,16 @@ const CompanyRegistration = () => {
       // setLoading(false); // Stop loading spinner after request
     }
   };
+  //#endregion
 
+  //#region Handle Change Function
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
       <div className="w-full min-h-screen flex items-center justify-center flex-col lg:flex-row bg-[#f3f4f6] bg-signin">
@@ -538,6 +550,8 @@ const CompanyRegistration = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default CompanyRegistration;
+//#endregion

@@ -1,3 +1,4 @@
+//#region Imports
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
@@ -7,8 +8,11 @@ import { motion } from "framer-motion";
 import { CommonService } from "../../service/CommonService";
 import { ICPService } from "../../service/ICPService";
 import Stepper from "../../components/Stepper";
+//#endregion
 
+//#region  Component: EditInquiryModule
 const EditInquiryModule = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
     countryId: [],
     stateId: [],
@@ -42,60 +46,24 @@ const EditInquiryModule = () => {
 
   const { id } = useParams(); // Get the ID from the URL (if applicable)
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect for fetching data
   useEffect(() => {
     const fetchData = async () => {
       try {
-
-        debugger
-        // Fetch data for editing (if id is available)
-        // if (id) {
-            const response = await ICPService.getByIdICP(id); // Fetch the existing data using the id
-            console.log(response.data);
-
-            // Extract the 'countries' from the API response
-            const { countries, states, cities } = response.data;
-   
-            // Assuming 'countries' is an array, directly set it to 'countryId'
-            // setFormData({
-            //    ...formData,
-            //    countryId: countries, // Store the countries in the countryId field
-            //    stateId: states, // Store the countries in the countryId field
-            //    cityId: cities, // Store the countries in the countryId field
-            // });
-
-            setFormData(response.data); // Prepopulate the form with the existing data
-            
-        //   }
-
-        // Fetch countries
-        // const countryResult = await CommonService.getCountry();
-        // setCountryList(countryResult.data);
-
-        // // Fetch states and cities if country and state are selected
-        // if (formData.countryId.length > 0) {
-        //   const stateResult = await CommonService.getMultipleState(formData.countryId);
-        //   setStateList(stateResult.data);
-
-        //   if (stateResult.data.length > 0) {
-        //     if (formData.stateId.length > 0) {
-        //       const cityResult = await CommonService.getMultipleCity(formData.stateId);
-        //       setCityList(cityResult.data);
-        //       if (cityResult.data.length === 0) {
-        //         setFormData((prev) => ({ ...prev, cityId: [] }));
-        //       }
-        //     }
-        //   } else {
-        //     setFormData((prev) => ({ ...prev, stateId: [], cityId: [] }));
-        //   }
-        // }
+        const response = await ICPService.getByIdICP(id); // Fetch the existing data using the id
+        // console.log(response.data);
+        setFormData(response.data); // Prepopulate the form with the existing data
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region useEffect for fetching country, state, and city data
   useEffect(() => {
     const fetchCountrystatecityData = async () => {
       try {
@@ -126,9 +94,9 @@ const EditInquiryModule = () => {
     };
     fetchCountrystatecityData();
   }, [formData.countryId, formData.stateId]);
+  //#endregion
 
-  
-
+  //#region Handle Select Change
   const handleSelectChange = (selectedOptions, field) => {
     setFormData((prev) => ({
       ...prev,
@@ -153,8 +121,9 @@ const EditInquiryModule = () => {
       setCityList([]); // Reset city list when state changes
     }
   };
+  //#endregion
   
-  
+  //#region Country, State,and City Option
   const countryOptions = countryList.map((country) => ({
     value: country.countryId,
     label: country.name,
@@ -173,12 +142,16 @@ const EditInquiryModule = () => {
     value: city.cityId,
     label: city.name,
   }));
+  //#endregion
 
+  //#region Handle Form Change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  //#endregion
 
+  //#region Handle Form Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -195,7 +168,9 @@ const EditInquiryModule = () => {
       toast.error("Failed to update Ideal Customer Profile");
     }
   };
+  //#endregion
 
+  //#region Validation Step
   const validateStep = (step) => {
     const newErrors = {};
     switch (step) {
@@ -220,7 +195,9 @@ const EditInquiryModule = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  //#endregion
 
+  //#region Steps Configuration
   const steps = [
     {
       label: "Segmentation",
@@ -552,9 +529,12 @@ const EditInquiryModule = () => {
       setCurrentStep(currentStep + 1);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section and Buttons */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">Edit Ideal Customer Profile</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -568,6 +548,7 @@ const EditInquiryModule = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <div className="container px-4 sm:px-6 mx-auto">
           {/* Stepper */}
@@ -604,9 +585,10 @@ const EditInquiryModule = () => {
           </div>
         </div>
       </section>
-    </>
-  );
+    </>
+  );
+  //#endregion
 };
 
-
 export default EditInquiryModule;
+//#endregion

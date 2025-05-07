@@ -1,14 +1,16 @@
+//#region Imports
 import React, { useEffect, useState } from 'react'
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
 import { HolidayService } from '../../../service/HolidayService';
+//#endregion
 
-
+//#region Component: EditHoliday
 const EditHoliday = () => {
 
-  const { id } = useParams(); 
+  //#region State Variables
   const [holidayName, setHolidayName] = useState("");
   const [holidayStartDate, setHolidayStartDate] = useState("");
   const [holidayEndDate, setHolidayEndDate] = useState("");
@@ -18,11 +20,12 @@ const EditHoliday = () => {
   const [isActive, setIsActive] = useState(""); // New state for checkbox
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams(); 
   const navigate = useNavigate();
+  //#endregion
 
-
-
-useEffect(() => {
+  //#region useEffect - Fetch Holiday data
+  useEffect(() => {
     const fetchData = async () => {
         const holidayResult = await HolidayService.getByIdHoliday(id);
         const holiday = holidayResult.data;
@@ -35,14 +38,13 @@ useEffect(() => {
         setHolidayStartDate(formattedStartDate);  // Set correctly formatted date
         setHolidayEndDate(formattedEndDate);      // Set correctly formatted date
         setTotalHolidayDays(holiday.totalHolidayDays);
-        // setHolidayType(holiday.holidayType);
-        // setHolidayDescription(holiday.holidayDescription);
         setIsActive(holiday.isActive); // Assuming the department object contains isActive
     };
     fetchData();
-}, [id]);
+  }, [id]);
+  //#endregion
 
-
+  //#region Function to Calculate Total Holidays
   // Function to calculate total days between fromDate and toDate
   const calculateTotalHolidays = (from, to) => {
     const fromDateObj = new Date(from);
@@ -53,7 +55,9 @@ useEffect(() => {
 
     setTotalHolidayDays(dayDiff + 1); // Including both start and end date
   };
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!holidayName) newErrors.holidayName = 'Holiday Name is required';
@@ -100,9 +104,12 @@ useEffect(() => {
       }
     // };
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Holiday</h1>
         <motion.button
@@ -116,6 +123,7 @@ useEffect(() => {
         </motion.button>
       </div>
 
+       {/* Form Section */}
       <section className='bg-white rounded-lg  shadow-sm m-1 py-8 pt-'>
         <form onSubmit={handleSubmit} className='container'>
           <div className='-mx-4 px-10 mt- flex flex-wrap'>
@@ -201,7 +209,9 @@ useEffect(() => {
         </form>
       </section>
     </>
-  )
+  );
+  //#endregion
 }
 
 export default EditHoliday
+//#endregion

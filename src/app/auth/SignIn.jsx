@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
@@ -9,18 +10,22 @@ import { getToken } from "firebase/messaging";
 import 'react-toastify/dist/ReactToastify.css';
 import { messaging } from "../../firebase/firebase";
 import { AuthService } from "../service/AuthService";
+//#endregion
 
+//#region Component: SignIn
 const SignIn = ({ onLogin, setLoading }) => {
+  //#region State Variables
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const navigate = useNavigate();
-
+  
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
+  const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect: Device Token and Device ID
   useEffect(() => {
     // Check for stored device token
     const storedDeviceToken = sessionStorage.getItem("deviceToken");
@@ -52,7 +57,9 @@ const SignIn = ({ onLogin, setLoading }) => {
     };
     getDeviceId();
   }, []);
+  //#endregion
 
+  //#region useEffect: Redirect If Authenticated
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -92,7 +99,9 @@ const SignIn = ({ onLogin, setLoading }) => {
       window.removeEventListener("popstate", handleBackButton); // Clean up the event listener on component unmount
     };
   }, [navigate]);
+  //#endregion
 
+  //#region Form Validation
   const validateForm = () => {
     const newErrors = {};
     if (!email) newErrors.email = "User name is required";
@@ -100,7 +109,9 @@ const SignIn = ({ onLogin, setLoading }) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  //#endregion
 
+  //#region Role Extraction
   const getRoleFromToken = (decodedToken) => {
     if (decodedToken?.Admin) {
       return "admin";
@@ -115,7 +126,9 @@ const SignIn = ({ onLogin, setLoading }) => {
     }
     return "user"; // Default to user
   };
+  //#endregion
 
+  //#region Handle Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -198,7 +211,9 @@ const SignIn = ({ onLogin, setLoading }) => {
       setLoading(false); // Stop loading spinner
     }
   };
+  //#endregion
 
+  //#region JSX
   return (
     <>
       <div className="w-full min-h-screen flex items-center justify-center flex-col lg:flex-row bg-[#f3f4f6] bg-signin">
@@ -287,6 +302,8 @@ const SignIn = ({ onLogin, setLoading }) => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default SignIn;
+//#endregion

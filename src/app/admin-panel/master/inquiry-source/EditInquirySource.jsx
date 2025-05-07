@@ -1,18 +1,25 @@
+//#region Imports
 import React, { useState, useEffect } from 'react';
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquirySourceService } from '../../../service/InquirySourceService';
+//#endregion
 
+//#region Component: EditInquirySource
 const EditInquirySource = () => {
-  const { id } = useParams(); 
+
+  //#region State Variables
   const [inquirySourceName, setInquirySourceName] = useState("");
   const [isActive, setIsActive] = useState(""); // New state for checkbox
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams(); 
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect - Fetch Inquiry Source data
   useEffect(() => {
     const fetchData = async () => {
       const inquirySource = await InquirySourceService.getByIdInquirySource(id);
@@ -22,7 +29,9 @@ const EditInquirySource = () => {
     };
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!inquirySourceName) newErrors.inquirySourceName = 'Inquiry Source Name is required';
@@ -46,8 +55,6 @@ const EditInquirySource = () => {
         if (response.status === 1) {
           navigate(-1);
           toast.success("Inquiry Source Updated Successfully.");
-          // toast.success(response.message); // Toast on success
-          // navigate('/master/inquirySource-list');
         }
         setInquirySourceName('');
       } catch (error) {
@@ -58,9 +65,12 @@ const EditInquirySource = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Inquiry Source</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -74,6 +84,7 @@ const EditInquirySource = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white shadow-sm m-1 py-8 pt-">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -127,6 +138,8 @@ const EditInquirySource = () => {
       </section>
     </>
   );
+  //#endregion
 }
 
 export default EditInquirySource
+//#endregion

@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -6,10 +7,11 @@ import { DepartmentService } from "../../../service/DepartmentService";
 import { SubTaskService } from "../../../service/SubTaskService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: CreateSubTask
 const CreateSubTask = () => {
-  // const [subTaskAllocationId, setSubTaskAllocationId] = useState("");
+  //#region State Variables
   const [taskAllocationId, setTaskAllocationId] = useState("");
   const [taskName, setTaskName] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
@@ -28,8 +30,9 @@ const CreateSubTask = () => {
   const [notifications, setNotifications] = useState([{ reminderDateTime: ""}]);
   const navigate = useNavigate();
   const {id} = useParams();
-  
+  //#endregion
 
+  //#region Fetch Department and Employee Data
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -49,7 +52,9 @@ const CreateSubTask = () => {
 
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Form Validation & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -111,7 +116,10 @@ const CreateSubTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Notification Management
+  // Handle adding a new notification row
   const handleAddNotification = () => {
     setNotifications([...notifications, { reminderDateTime: "" }]);
   };
@@ -129,9 +137,12 @@ const CreateSubTask = () => {
     const updatedNotifications = notifications.filter((_, i) => i !== index);
     setNotifications(updatedNotifications);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Sub Task</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -145,6 +156,7 @@ const CreateSubTask = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -399,6 +411,8 @@ const CreateSubTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default CreateSubTask;
+//#endregion

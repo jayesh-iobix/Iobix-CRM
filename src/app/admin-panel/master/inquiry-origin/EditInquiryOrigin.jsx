@@ -1,18 +1,25 @@
+//#region Imports
 import React, { useState, useEffect } from 'react';
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryOriginService } from '../../../service/InquiryOriginService';
+//#endregion
 
+//#region Component: EditInquiryOrigin
 const EditInquiryOrigin = () => {
-  const { id } = useParams(); 
+
+  //#region State Variables
   const [inquiryOriginName, setInquiryOriginName] = useState("");
   const [isActive, setIsActive] = useState(""); // New state for checkbox
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams(); 
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect - Fetch InquiryOrigin data
   useEffect(() => {
     const fetchData = async () => {
       const inquiryOrigin = await InquiryOriginService.getByIdInquiryOrigin(id);
@@ -22,7 +29,9 @@ const EditInquiryOrigin = () => {
     };
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!inquiryOriginName) newErrors.inquiryOriginName = 'Inquiry Origin Name is required';
@@ -58,9 +67,12 @@ const EditInquiryOrigin = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+     {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Inquiry Origin</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -74,6 +86,7 @@ const EditInquiryOrigin = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white shadow-sm m-1 py-8 pt-">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -127,6 +140,8 @@ const EditInquiryOrigin = () => {
       </section>
     </>
   );
+  //#endregion
 }
 
 export default EditInquiryOrigin
+//#endregion

@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -7,9 +8,11 @@ import ForwardInquiryList from "./ForwardPartnerInqryList";
 import ClientInquiryList from "../../admin-panel/client-inquiry/ClientInquiryList";
 import PartnerInquiryList from "../../admin-panel/partner-inquiry/PartnerInquiryList";
 import ForwardClientInquiryList from "./ForwardClientInqryList";
+//#endregion
 
+//#region Component: InquiryList
 const InquiryList = () => {
-
+  //#region State Variables
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -37,53 +40,25 @@ const InquiryList = () => {
     keyResponsibility: "",
     reportingTo: "" 
   });
-
   const [activeTab, setActiveTab] = useState(1);
-
   // const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       // Fetch Employee
-  //       const employee = await EmployeeService.getByIdEmployee(id);
-  //       const formattedEmployee = {
-  //         ...employee.data,
-  //         birthDate: employee.data.birthDate ? employee.data.birthDate.split("T")[0] : "",
-  //         dateOfJoining: employee.data.dateOfJoining ? employee.data.dateOfJoining.split("T")[0] : "",
-  //       };
-  //       setFormData(formattedEmployee);
-  //       // console.log(formattedEmployee)
-
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       alert("Error fetching data, please try again.");
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [id]);
-
+  //#region Function Tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex flex-wrap justify-between items-center listmy-3">
         <h1 className="font-semibold text-xl sm:text-2xl">Project List</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-          {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <Link
-              to={`/employee-list/edit-employee/${id}`}
-              className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
-            >
-              Edit Employe
-              <FaEdit size={16} /> 
-            </Link>
-          </motion.button> */}
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <button
               onClick={() => navigate(-1)}
@@ -97,6 +72,7 @@ const InquiryList = () => {
         </div>
       </div>
 
+      {/* Project List Table */}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <form className="container">
           <div className="md:px-2 lg:px-2 px-7">
@@ -142,13 +118,13 @@ const InquiryList = () => {
           </div>
         </form>
       </section>
-
-      
     </>
   );
+  //#endregion
 };
 
 export default InquiryList;
+//#endregion
 
 
 

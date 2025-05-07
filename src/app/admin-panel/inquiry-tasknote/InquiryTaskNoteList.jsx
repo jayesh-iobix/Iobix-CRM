@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -5,14 +6,18 @@ import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
 import { TaskNoteService } from '../../service/TaskNoteService';
 import { InquiryTaskNoteService } from '../../service/InquiryTaskNoteService';
+//#endregion
 
-
+//#region  Component: InquiryTaskNoteList
 export const InquiryTaskNoteList = () => {
 
+  //#region State Initialization
   const { id } = useParams();
   const [taskNotes, setTaskNotes] = useState([]);
   const navigate = useNavigate("")
+  //#endregion
 
+  //#region Fetch Task Note Data
   useEffect(() => {
     const fetchTaskNotes = async () => {
       try {
@@ -26,32 +31,20 @@ export const InquiryTaskNoteList = () => {
     };
     fetchTaskNotes();
   }, [id]);
+  //#endregion
 
+  //#region Formate Task Note
   // Function to format the date
   const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString(); // You can customize the date format as needed
   };
-  
-  const deleteNote = async (taskNoteId) => {
-  // console.log(taskNoteId);
-  // debugger;
-  try {
-    const response = await TaskNoteService.deleteTaskNote(taskNoteId);
-    if (response.status === 1) {
-      setTaskNotes((prevTaskNote) =>
-        prevTaskNote.filter((taskNote) => taskNote.taskNoteId !== taskNoteId)
-      );
-      toast.error(response.message);
-    }
-  } catch (error) {
-    console.error("Error deleting task:", error);
-    alert("Failed to delete task");
-  }
-  };
+  //#endregion
 
+  //#region Render 
   return (
     <>
+    {/* Header Section */}
     <div className="flex justify-between items-center my-3 ">
       <h1 className="font-semibold text-2xl">Inquiry Task Note List</h1>
       <motion.button
@@ -68,6 +61,7 @@ export const InquiryTaskNoteList = () => {
         </motion.button>
     </div>
 
+    {/* Table Section */}
     <div className="grid overflow-x-auto shadow-xl">
       <table className="min-w-full bg-white border border-gray-200">
         <thead className="bg-gray-900 border-b">
@@ -159,5 +153,7 @@ export const InquiryTaskNoteList = () => {
       </table>
     </div>
   </>
-  )
+  );
+  //#endregion
 }
+//#endregion

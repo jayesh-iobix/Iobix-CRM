@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit, FaEllipsisV, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -10,9 +11,11 @@ import { EmployeeService } from "../../service/EmployeeService";
 import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
 import { InquiryPermissionService } from "../../service/InquiryPermissionService";
 import { format } from 'date-fns';
+//#endregion
 
-
+//#region Component: PartnerInquiryList
 const PartnerInquiryList = () => {
+  //#region State variables
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
@@ -34,49 +37,17 @@ const PartnerInquiryList = () => {
   const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState("");  
   const [inquiryHideShow, setInquiryHideShow] = useState(false);
   
-  
-  //#region  Popup useState
-  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by taskAllocationId
-  const [activeSubTaskMenu, setActiveSubTaskMenu] = useState(null); // Track the active sub-task menu
-
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [completionDateIsPopupVisible, setCompletionDateIsPopupVisible] = useState(false);
-  const [taskTransferIsPopupVisible, setTaskTransferIsPopupVisible] = useState(false);
-  const [subTaskTransferIsPopupVisible, setSubTaskTransferIsPopupVisible] = useState(false);
-  const [currentTask, setCurrentTask] = useState(null);
-  //#endregion
-  
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
   //#endregion
   
   const role = sessionStorage.getItem("role");
-  // console.log(role);
 
-  // const navigateTo = role === 'partner' 
-  // ? '/partner/inquiry-list/add-inquiry' 
-  // : '/company/inquiry-list/add-inquiry';
-  
-  const fetchInquiriePermission = async (id) => {
-    try {
-      // Fetch Inquiry
-      const inquiryPermission = await InquiryPermissionService.getAccessOfInquiryInAdmin(id);
-      setInquiryHideShow(inquiryPermission.data);
-      
-    } catch (error) {
-      console.error("Error fetching inquiries:", error);
-      setInquiryHideShow(false);
-    }
-  }
-
+  //#region Fetch Partner Inquiries
   const fetchInquiries = async () => {
     try {
-      // Fetch Inquiry
-      // const inquiryPermission = await InquiryPermissionService.getAccessOfInquiryInAdmin(id);
-      // setInquiryHideShow(inquiryPermission.data);
-
+      // Fetch Inquirys based on role
       if(role === "admin") {
         const result = await InquiryService.getInquiryFromPartner();
         setInquiries(result.data);
@@ -116,7 +87,9 @@ const PartnerInquiryList = () => {
   useEffect(() => {
     fetchInquiries();
   }, [departmentId]);
+  //#endregion
   
+  //#region Helper Functions
   // Function to get the dropdown position (top or bottom) based on available space
   const getDropdownPosition = (inquiryRegistrationId, isLastRow) => {
     const button = buttonRefs.current[inquiryRegistrationId ];
@@ -161,7 +134,9 @@ const PartnerInquiryList = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, inquiries]);
+  //#endregion
   
+  //#region Delete Inquiry
   const deleteInquiry = async () => {
     if (!deleteId) return;
     try {
@@ -189,7 +164,9 @@ const PartnerInquiryList = () => {
     setIsPopupOpen(false);
     setDeleteId(null);
   };
+  //#endregion
   
+  //#region Dropdown Handling
   const toggleDropdown = (inquiryRegistrationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenDropdown((prev) =>
@@ -200,7 +177,9 @@ const PartnerInquiryList = () => {
   const closeMenu = () => {
     setOpenDropdown(null);
   };
+  //#endregion
   
+  //#region Status Color
   // Function to set the color based on the leave status
   const getStatusColor = (inquiryStatusName) => {
     switch (inquiryStatusName) {
@@ -216,13 +195,23 @@ const PartnerInquiryList = () => {
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
+  //#endregion
   
+  //#region Forward / Transfer Inquiry
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {
     setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
     setForwardPopupVisible(true); // Show the popup
   };
 
+  // Function to handle opening the popup and setting the current task
+  const handleTransferInquiry = (inquiry) => {
+    setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
+    setTransferPopupVisible(true); // Show the popup
+  };
+  //#endregion
+
+  //#region Inquiry Submission
   //Function to submit the api
   const handleInquirySubmit = async (event) => {
     event.preventDefault();
@@ -277,13 +266,8 @@ const PartnerInquiryList = () => {
       // Close the popup after submission
       // setIsPopupVisible(false);
   };
+  //#endregion
    
-  // Function to handle opening the popup and setting the current task
-  const handleTransferInquiry = (inquiry) => {
-    setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
-    setTransferPopupVisible(true); // Show the popup
-  };
-
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -296,8 +280,10 @@ const PartnerInquiryList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Partner Project List</h1>
         <div className="flex">
@@ -314,6 +300,7 @@ const PartnerInquiryList = () => {
         </div>
       </div>
 
+      {/* Filter Section */}
       <div className="flex gap-4 my-4">
         <input
           type="text"
@@ -336,6 +323,7 @@ const PartnerInquiryList = () => {
           </select>
       </div>
 
+      {/* Project List Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -855,6 +843,8 @@ const PartnerInquiryList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default PartnerInquiryList;
+//#endregion

@@ -1,19 +1,23 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { AuthService } from "../service/AuthService";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import Logo from "../../assets/iobix-technolabs.png"
 import { toast } from "react-toastify";
+//#endregion
 
+//#region Component: ResetPassowrd
 const ResetPassowrd = () => {
+  //#region State Variables
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState(""); // State for confirm password
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {token} = useParams();
-
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Form Validation and Submission
   const validateForm = () => {
     const newErrors = {};
     if (!password) newErrors.password = "Password is required";
@@ -53,8 +57,9 @@ const ResetPassowrd = () => {
       }, 1000); // 1.5 seconds delay before redirect
     }
   };
+  //#endregion
 
-
+  //#region Render
   return (
     <div className="w-full min-h-screen flex items-center justify-center flex-col lg:flex-row bg-[#f3f4f6] bg-signin">
       <div className="w-full lg:w-auto md:w-auto flex gap-0 lg:gap-40 md:gap-38 flex-col md:flex-row items-center justify-center">
@@ -136,6 +141,8 @@ const ResetPassowrd = () => {
       </div>
     </div>
   );
+  //#endregion
 };
 
 export default ResetPassowrd;
+//#endregion

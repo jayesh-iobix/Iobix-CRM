@@ -1,28 +1,36 @@
+//#region Imports
 import React, { useState, useEffect } from 'react';
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryTypeService } from '../../../service/InquiryTypeService';
+//#endregion
 
+//#region Component: EditInquiryType
 const EditInquiryType = () => {
-  const { id } = useParams(); 
+
+  //#region State Variables
   const [inquiryTypeName, setInquiryTypeName] = useState("");
   const [isActive, setIsActive] = useState(""); // New state for checkbox
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams(); 
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect - Fetch Inquiry Type data
   useEffect(() => {
     const fetchData = async () => {
       const inquiryType = await InquiryTypeService.getByIdInquiryType(id);
-      // console.log(inquiryType.data);
       setInquiryTypeName(inquiryType.data.inquiryTypeName);
       setIsActive(inquiryType.data.isActive); // Assuming the department object contains isActive
     };
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!inquiryTypeName) newErrors.inquiryTypeName = 'Inquiry Type Name is required';
@@ -57,9 +65,12 @@ const EditInquiryType = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Inquiry Type</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -73,6 +84,7 @@ const EditInquiryType = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white shadow-sm m-1 py-8 pt-">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -126,6 +138,8 @@ const EditInquiryType = () => {
       </section>
     </>
   );
+  //#endregion
 }
 
 export default EditInquiryType
+//#endregion

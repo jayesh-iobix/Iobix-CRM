@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,9 +13,11 @@ import { InquirySourceService } from "../../service/InquirySourceService";
 import { VendorService } from "../../service/VendorService";
 import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
+//#endregion 
 
-
+//#region Component: AddVendor
 const AddVendor = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
     companyName: "",
     companyRegistrationNumber : "",
@@ -34,22 +37,23 @@ const AddVendor = () => {
   });
 
   const [departmentId, setDepartmentId] = useState(""); // State for Department ID
-  const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
   const [inquirySourceList, setInquirySourceList] = useState([]);
   
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
-  const navigate = useNavigate();
-
+  
   const [employeeAssignTo, setEmployeeAssignTo] = useState(false);
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
-
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  //#endregion
+  
+  //#region useEffect Hooks to handle device token and fetch data 
   useEffect(() => {
     // Check for stored device token
     const storedDeviceToken = sessionStorage.getItem("deviceToken");
@@ -121,8 +125,10 @@ const AddVendor = () => {
       //#endregion Fetch Country, State, and City Source
     };
     fetchData();
-    }, [formData.countryId, formData.stateId, departmentId])
+  }, [formData.countryId, formData.stateId, departmentId])
+  //#endregion
 
+  //#region Form Validation and Submission
   const validateForm = () => {
     const newErrors = {};
     if (!formData.companyName) newErrors.companyName = "Company Name is required";
@@ -213,7 +219,9 @@ const AddVendor = () => {
       }
     }
   };
+  //#endregion
 
+  //#region Handle Change Function
   const handleChange = (e) => {
     const { name, value } = e.target;
     
@@ -238,11 +246,13 @@ const AddVendor = () => {
   
     // Update form data for all fields
     setFormData((prev) => ({ ...prev, [name]: value }));
-};
+  };
+  //#endregion
 
-
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Vendor</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -256,6 +266,7 @@ const AddVendor = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-4 dark:bg-dark">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -564,8 +575,10 @@ const AddVendor = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default AddVendor;
+//#endregion
 
 

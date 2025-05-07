@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useState, useEffect } from 'react';
 import { ScheduleCalService } from '../../service/ScheduleCalService';
 import { format, addDays, startOfWeek, endOfWeek, isSameDay, getMonth, getYear, getDate } from 'date-fns';
@@ -11,7 +12,9 @@ import { FaPlus, FaTimes } from 'react-icons/fa';
 import { PartnerService } from '../../service/PartnerService';
 import { ClientCompanyService } from '../../service/ClientCompanyService';
 import { VendorService } from '../../service/VendorService';
+//#endregion
 
+//#region Moths, Days Names, Hours, and Themes
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
@@ -34,8 +37,11 @@ const themes = [
   { value: 'yellow', label: 'Yellow' },
   { value: 'purple', label: 'Purple' },
 ];
+//#endregion
 
+//#region Component: PCVSchedule
 const PCVSchedule = () => {
+  //#region State Variables
   const [currentDate, setCurrentDate] = useState(new Date()); // Single source of truth for current date
   const [month, setMonth] = useState(getMonth(new Date()));
   const [year, setYear] = useState(getYear(new Date()));
@@ -76,11 +82,11 @@ const PCVSchedule = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [meetingLinkError, setMeetingLinkError] = useState('');
   const urlRegex = /^(https?:\/\/(?:www\.)?(?:zoom\.us|teams\.microsoft\.com|meet\.google\.com)\/.*)$/;
-
-  const role = sessionStorage.getItem('role');
+  //#endregion
 
   // const userIdForSchedule = sessionStorage.getItem('LoginUserId');
 
+  //#region Event Data
   // Fetch events from the server when the component mounts
   const fetchEvents = async () => {
     try {
@@ -105,7 +111,9 @@ const PCVSchedule = () => {
   useEffect(() => {
     fetchEvents();
   }, [userId]);
+  //#endregion
 
+  //#region Fetch Department, Admin, Partner, Company, and Vendor Lists
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -153,7 +161,9 @@ const PCVSchedule = () => {
 
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Fetch Month, Year, Week, and Days
   useEffect(() => {
     setMonth(getMonth(currentDate));
     setYear(getYear(currentDate));
@@ -192,19 +202,9 @@ const PCVSchedule = () => {
   
     getDays();
   }, [viewMode, currentDate, month, year]);
+  //#endregion
 
-  const formatTime = (time) => {
-    if (!time) return '';
-    const [hours, minutes] = time.split(":");
-    return `${hours}:${minutes}`;
-  };
-
-  const formatEventDate = (date) => {
-    if (!date) return '';
-    const eventDate = new Date(date);
-    return format(eventDate, 'EEE, MMM dd, yyyy');
-  };
-
+  //#region Event Handlers
   const fetchEventDetails = async (scheduleId) => {
     try {
       // debugger;
@@ -232,10 +232,6 @@ const PCVSchedule = () => {
     } catch (error) {
       console.error('Error fetching schedule by ID:', error);
     }
-  };
-
-  const isToday = (date) => {
-    return isSameDay(new Date(), date);
   };
 
   const showEventModal = (date) => {
@@ -268,6 +264,32 @@ const PCVSchedule = () => {
     }
   };
 
+  const showMoreEventsModal = (date) => {
+    setMoreEventsDate(date.toDateString());
+    setOpenMoreEventsModal(true); // Open the More Events modal
+    // console.log("More Events for date:", date);
+  };
+
+  const handleMeetingLinkChange = (e) => {
+    const value = e.target.value;
+    setEventMeetingLink(value);
+  
+    // Validate URL format
+    if (value && !urlRegex.test(value)) {
+      setMeetingLinkError('Please enter a valid Google Meet/Zoom link');
+    } else {
+      setMeetingLinkError('');
+    }
+  };
+
+  const formatTime = (time) => {
+    if (!time) return '';
+    const [hours, minutes] = time.split(":");
+    return `${hours}:${minutes}`;
+  };
+  //#endregion
+
+  //#region Add Event, Update Event, Delete Event, Clear Event Form, and View Mode Change
   const addEvent = async () => {
 
     // Validate meeting link before proceeding
@@ -418,7 +440,9 @@ const PCVSchedule = () => {
     // }
     // For day view, we keep the current date
   };
+  //#endregion
 
+  //#region Navigation Functions
   const navigateMonth = (direction) => {
     const newMonth = month + direction;
     const newYear = getYear(new Date(year, newMonth, 1));
@@ -453,31 +477,9 @@ const PCVSchedule = () => {
       setCurrentDate(newDate); // Otherwise, go to the new date
     }
   };
-
-  const getWeekRangeString = () => {
-    const start = startOfWeek(currentWeek);
-    const end = endOfWeek(currentWeek);
-    return `${format(start, 'MMM dd, yyyy')} - ${format(end, 'MMM dd, yyyy')}`;
-  };
-
-  const showMoreEventsModal = (date) => {
-    setMoreEventsDate(date.toDateString());
-    setOpenMoreEventsModal(true); // Open the More Events modal
-    // console.log("More Events for date:", date);
-  };
-
-  const handleMeetingLinkChange = (e) => {
-    const value = e.target.value;
-    setEventMeetingLink(value);
+  //#endregion
   
-    // Validate URL format
-    if (value && !urlRegex.test(value)) {
-      setMeetingLinkError('Please enter a valid Google Meet/Zoom link');
-    } else {
-      setMeetingLinkError('');
-    }
-  };
-  
+  //#region Render
   return (
     <div className="antialiased sans-serif h-screen">
       <h1 className="font-semibold md:mb-[-12px] lg:mb-[-12px] text-2xl">
@@ -1480,6 +1482,8 @@ const PCVSchedule = () => {
       )}
     </div>
   );
+  //#region Render
 };
 
 export default PCVSchedule;
+//#region Render

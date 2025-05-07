@@ -17,7 +17,7 @@ import { UAParser } from "ua-parser-js";
 
 //#region Component: AddEmployee
 const AddEmployee = () => {
-  //#region State
+  //#region State Initialization
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",

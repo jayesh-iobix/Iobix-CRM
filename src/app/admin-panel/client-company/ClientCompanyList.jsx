@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -5,22 +6,24 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
+//#endregion
 
+//#region Component: ClientCompanyList
 const ClientCompanyList = () => {
+  //#region State variables
   const [clientCompanys, setClientCompanys] = useState([]);
   const [filteredClientCompanys, setFilteredClientCompanys] = useState([]);
-  const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
-  const [departmentFilter, setDepartmentFilter] = useState(""); // State for department filter
+  const [clientFilter, setClientFilter] = useState(""); // State for employee filter
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region useEffect: Fetch ClientCompanys Data
   useEffect(() => {
     const fetchClientCompanys = async () => {
       try {
@@ -36,41 +39,48 @@ const ClientCompanyList = () => {
     };
     fetchClientCompanys();
   }, []);
+  //#endregion
 
+  //#region useEffect: Filter ClientCompanys
   // Function to filter tasks based on selected employee name
-  const handleEmployeeFilterChange = (event) => {
-    setEmployeeFilter(event.target.value);
+  const handleClientFilterChange = (event) => {
+    setClientFilter(event.target.value);
   };
 
-  // Handle department filter change
-  const handleDepartmentChange = (event) => {
-    setDepartmentFilter(event.target.value);
+  // Function to filter tasks based on selected department
+  useEffect(() => {
+    // Apply filters to the clientCompanys array
+    let filtered = clientCompanys;
+      
+    // Filter by client name
+    if (clientFilter) {
+      filtered = filtered.filter((client) =>
+        client.companyName.toLowerCase().includes(clientFilter.toLowerCase())
+      );
+    }
+
+    setFilteredClientCompanys(filtered); // Update filtered clientCompanys based on all filters
+
+    setTotalItems(filtered.length); // Update total items for pagination
+    setCurrentPage(1); // Reset to the first page when a new filter is applied
+
+  }, [clientFilter, clientCompanys]);
+  //#endregion
+
+  //#region Delete CLick and Delete ClientCompany 
+  // Function to handle delete button click
+  const handleDeleteClick = (clientRegistrationId) => {
+    setDeleteId(clientRegistrationId);
+    setIsPopupOpen(true); // Open popup
+  };
+  
+  // Function to handle popup close without deleting
+  const handlePopupClose = () => {
+    setIsPopupOpen(false); // Close popup without deleting
+    setDeleteId(null); // Reset the ID
   };
 
-//   useEffect(() => {
-//     // Apply filters to the clientCompanys array
-//     let filtered = clientCompanys;
-
-//     // Filter by employee name
-//     if (employeeFilter) {
-//       filtered = filtered.filter((employee) =>
-//         employee.name.toLowerCase().includes(employeeFilter.toLowerCase())
-//       );
-//     }
-
-//     // Filter by department
-//     if (departmentFilter) {
-//       filtered = filtered.filter(
-//         (employee) => employee.departmentName === departmentFilter
-//       );
-//     }
-
-//     setFilteredClientCompanys(filtered); // Update filtered clientCompanys based on all filters
-//     setTotalItems(filtered.length); 
-//     setCurrentPage(1); // Reset to the first page when a new filter is applied
-//   }, [employeeFilter, departmentFilter, clientCompanys]);
-
-
+  // Function to delete a clientCompany 
   const deleteClientCompany = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -88,32 +98,24 @@ const ClientCompanyList = () => {
       alert("Failed to delete client company");
     }
   };
+  //#endregion
 
-  const handleDeleteClick = (clientRegistrationId) => {
-    setDeleteId(clientRegistrationId);
-    setIsPopupOpen(true); // Open popup
-  };
-
-  const handlePopupClose = () => {
-    setIsPopupOpen(false); // Close popup without deleting
-    setDeleteId(null); // Reset the ID
-  };
-
-//   const handleDownloadReport = async () => {
-//     setIsSubmitting(true);
-//     try {
-//       // Wait for the report download to complete
-//       await ReportService.downloadEmployeeReport();
-//       // Optionally, add a success message or additional logic after the download
-//       toast.success("Report downloaded successfully!");
-//     } catch (error) {
-//       console.error("Error downloading report:", error);
-//       toast.error("Failed to download report.");
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   }
-  
+  //#region Download Report
+  // const handleDownloadReport = async () => {
+  //   setIsSubmitting(true);
+  //   try {
+  //     // Wait for the report download to complete
+  //     await ReportService.downloadEmployeeReport();
+  //     // Optionally, add a success message or additional logic after the download
+  //     toast.success("Report downloaded successfully!");
+  //   } catch (error) {
+  //     console.error("Error downloading report:", error);
+  //     toast.error("Failed to download report.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // }
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -127,8 +129,10 @@ const ClientCompanyList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Client Company List</h1>
         <div className="flex">
@@ -155,16 +159,17 @@ const ClientCompanyList = () => {
       </div>
 
       {/* Filters Section */}
-      {/* <div className="flex gap-4 my-4">
+      <div className="flex gap-4 my-4">
         <input
           type="text"
-          value={employeeFilter}
-          onChange={handleEmployeeFilterChange}
-          placeholder="Search Employee"
+          value={clientFilter}
+          onChange={handleClientFilterChange}
+          placeholder="Search Company Name"
           className="p-2 outline-none rounded border border-gray-300"
         />
-      </div> */}
+      </div>
 
+      {/* Client Company Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -401,6 +406,8 @@ const ClientCompanyList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default ClientCompanyList;
+//#endregion

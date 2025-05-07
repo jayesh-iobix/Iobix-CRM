@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { BiPlusCircle, BiSolidPlusCircle, BiSolidXCircle } from "react-icons/bi";
 
+//#region Component: CompanyForm
 const CompanyForm = () => {
+  //#region State variables
   const [formData, setFormData] = useState({
     companyName: '',
     businessOverview: '',
@@ -18,7 +20,9 @@ const CompanyForm = () => {
   const [useCases, setUseCases] = useState([{ id: 1, value: '' }]);
   const [products, setProducts] = useState([{ id: 1, value: '' }]);
   const [partnerships, setPartnerships] = useState([{ id: 1, value: '' }]);
+  //#endregion
 
+  //#region Handle State Changes
   // Handle Use Case Change
   const handleUseCaseChange = (id, value) => {
     setUseCases((prev) => prev.map((useCase) => (useCase.id === id ? { ...useCase, value } : useCase)));
@@ -34,16 +38,22 @@ const CompanyForm = () => {
     setPartnerships((prev) => prev.map((partnership) => (partnership.id === id ? { ...partnership, value } : partnership)));
   };
 
+  // Handle Input Change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   // Handle Add New Use Case
   const addUseCase = () => {
     const newId = useCases.length + 1;
     setUseCases((prev) => [...prev, { id: newId, value: '' }]);
   };
 
-   // Handle Add New Product
-   const addProduct = () => {
-    const newId = products.length + 1;
-    setProducts((prev) => [...prev, { id: newId, value: '' }]);
+  // Handle Add New Product
+  const addProduct = () => {
+   const newId = products.length + 1;
+   setProducts((prev) => [...prev, { id: newId, value: '' }]);
   };
 
   // Handle Add New Partnership
@@ -57,22 +67,18 @@ const CompanyForm = () => {
     setUseCases((prev) => prev.filter((useCase) => useCase.id !== id));
   };
 
-   // Handle Remove Product
-   const removeProduct = (id) => {
-    setProducts((prev) => prev.filter((product) => product.id !== id));
+  // Handle Remove Product
+  const removeProduct = (id) => {
+   setProducts((prev) => prev.filter((product) => product.id !== id));
   };
 
   // Handle Remove Partnership
   const removePartnership = (id) => {
     setPartnerships((prev) => prev.filter((partnership) => partnership.id !== id));
   };
+  //#endregion
 
-  // Handle Input Change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
+  //#region Handle Submit
   // Handle Submit
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -81,13 +87,17 @@ const CompanyForm = () => {
     console.log('Products:', products);
     console.log('Partnerships:', partnerships);
   };
+  //#endregion
 
+  //#region Render
   return (
     <div className="max-w-4xl mx-auto item-center shadow-lg rounded-lg p-4 bg-white">
+      {/* Header Section */}
       <h2 className="text-2xl font-semibold item-center text-center mb-6">
         Profile
       </h2>
 
+      {/* Form Section */}
       <form onSubmit={handleSubmit}>
         {/* Company Information */}
         <fieldset className="mb-6">
@@ -396,6 +406,8 @@ const CompanyForm = () => {
       </form>
     </div>
   );
+  //#endregion
 };
 
 export default CompanyForm;
+//#endregion

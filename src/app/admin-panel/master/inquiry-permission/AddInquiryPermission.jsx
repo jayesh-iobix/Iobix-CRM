@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,9 +9,11 @@ import { EmployeeService } from "../../../service/EmployeeService";
 import { InquiryPermissionService } from "../../../service/InquiryPermissionService";
 import { InquiryTypeService } from "../../../service/InquiryTypeService";
 import Select from "react-select"; // Import react-select for searchable dropdown
+//#endregion
 
-
+//#region Component: AddInquiryPermission
 const AddInquiryPermission = () => {
+  //#region State Variables
   const [userId, setUserId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [inquiryTypeIds, setInquiryTypeIds] = useState([]);
@@ -21,7 +24,9 @@ const AddInquiryPermission = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect - Fetch Department data
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -62,7 +67,9 @@ const AddInquiryPermission = () => {
     };
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Validation
   const validateForm = () => {
     const newErrors = {};
     if (!userId) newErrors.userId  = "User is required";
@@ -70,7 +77,9 @@ const AddInquiryPermission = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  //#endregion
 
+  //#region Event Handlers
   const handleSelectChange = (selectedOptions, field) => {
     const selectedValues = selectedOptions ? selectedOptions.map((option) => option.value) : [];
     if (field === "inquiryTypeId") {
@@ -86,7 +95,6 @@ const AddInquiryPermission = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    debugger
     if (!validateForm()) return;
 
     const inquiryPermissionData = {
@@ -109,9 +117,12 @@ const AddInquiryPermission = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Inquiry Permission</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -125,6 +136,7 @@ const AddInquiryPermission = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -223,6 +235,8 @@ const AddInquiryPermission = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default AddInquiryPermission;
+//#endregion

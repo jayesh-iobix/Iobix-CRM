@@ -1,11 +1,17 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
 import { AnnouncementService } from "../../service/AnnouncementService"; // Assuming this service is already set
 import { motion } from "framer-motion"; // For smooth animations
+//#endregion
 
+//#region Component: AttendanceList
 const Announcement = () => {
+  //#region State Variables
   const [announcements, setAnnouncements] = useState([]);
-
+  //#endregion
+  
+  //#region useEffect: Fetch Attendance Data
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
@@ -18,7 +24,9 @@ const Announcement = () => {
 
     fetchAnnouncements();
   }, []);
+  //#endregion
 
+  //#region Format Date
   // Function to format the date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -33,7 +41,9 @@ const Announcement = () => {
       hour12: true,
     });
   };
+  //#endregion
 
+  //#region Render
   return (
     <div className="overflow-x-auto bg-white px-4 pt-3 pb-4 rounded-sm border border-gray-200 grid">
       <strong className="text-gray-700 font-medium">Recent Announcements</strong>
@@ -85,6 +95,8 @@ const Announcement = () => {
       </div>
     </div>
   );
+  //#endregion
 };
 
 export default Announcement;
+//#endregion

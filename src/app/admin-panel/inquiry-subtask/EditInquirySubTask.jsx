@@ -1,18 +1,20 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { EmployeeService } from "../../service/EmployeeService";
-import { TaskService } from "../../service/TaskService";
 import { DepartmentService } from "../../service/DepartmentService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { PartnerService } from "../../service/PartnerService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
-import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { InquirySubTaskService } from "../../service/InquirySubTaskService";
 import { VendorService } from "../../service/VendorService";
+//#endregion
 
+//#region Component: EditInquirySubTask
 const EditInquirySubTask = () => {
+  //#region State Variables
   const [taskName, setTaskName] = useState("");
   const [partnerRegistrationId, setPartnerRegistrationId] = useState("");
   const [clientRegistrationId, setClientRegistrationId] = useState("");
@@ -39,15 +41,15 @@ const EditInquirySubTask = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selection, setSelection] = useState("partner"); // Add this to track the radio button selection (partner, client, employee)
   const navigate = useNavigate();
-
   const { id } = useParams(); // Get the task ID from the URL parameters
+  //#endregion
 
+  //#region useEffect: Fetch Sub Task Data
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
         const taskResponse = await InquirySubTaskService.getInquirySubTasksById(id);
         const taskData = taskResponse.data;
-        console.log(taskData)
 
         setInquiryTaskAllocationId(taskData.inquiryTaskAllocationId);
         setInquiryRegistrationId(taskData.inquiryRegistrationId);
@@ -105,7 +107,9 @@ const EditInquirySubTask = () => {
 
     fetchTaskData();
   }, [id, departmentId]); // Fetch data when task ID or department ID changes
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -159,16 +163,21 @@ const EditInquirySubTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Handle File Change
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setTaskDocument(file); // Store the selected document
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Inquiry Sub Task</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -182,6 +191,7 @@ const EditInquirySubTask = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -483,6 +493,8 @@ const EditInquirySubTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditInquirySubTask;
+//#endregion

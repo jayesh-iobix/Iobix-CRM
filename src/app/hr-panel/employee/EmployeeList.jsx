@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService";
 
 const EmployeeList = () => {
+  //#region State variables
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
@@ -15,12 +16,12 @@ const EmployeeList = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region useEffect: Fetch Employee Data
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -36,11 +37,17 @@ const EmployeeList = () => {
     };
     fetchEmployees();
   }, []);
+  //#endregion
 
+  //#region Handlers: Filtering
   // Function to filter tasks based on selected employee name
   const handleEmployeeFilterChange = (event) => {
     setEmployeeFilter(event.target.value);
   };
+
+  const uniqueDepartments = [
+    ...new Set(employees.map((employee) => employee.departmentName)),
+  ];
 
   // Handle department filter change
   const handleDepartmentChange = (event) => {
@@ -74,12 +81,9 @@ const EmployeeList = () => {
     setTotalItems(filtered.length); 
     setCurrentPage(1); // Reset to the first page when a new filter is applied
   }, [employeeFilter, departmentFilter, employees]);
+  //#endregion
 
-  const uniqueDepartments = [
-    ...new Set(employees.map((employee) => employee.departmentName)),
-  ];
-
-
+  //#region Delete Logic
   const deleteEmployee = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -107,7 +111,9 @@ const EmployeeList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
+  //#region Download Report
   const handleDownloadReport = async () => {
     setIsSubmitting(true);
     try {
@@ -122,7 +128,7 @@ const EmployeeList = () => {
       setIsSubmitting(false);
     }
   }
-  
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -136,8 +142,10 @@ const EmployeeList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header + Buttons */}
       <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">Employee List</h1>
         <div className="flex flex-wrap gap-2 mt-2 md:mt-1 lg:mt-1 xl:mt-1">
@@ -190,6 +198,7 @@ const EmployeeList = () => {
         </select>
       </div>
 
+      {/* Employee Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -273,7 +282,7 @@ const EmployeeList = () => {
         </table>
       </div>
 
-      {/* Confirmation Popup */}
+      {/* Delete Confirmation Popup */}
       {isPopupOpen && (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-50">
           <div className="bg-white p-5 rounded-lg shadow-lg max-w-full sm:max-w-lg md:max-w-lg lg:max-w-md xl:max-w-lg w-11/12">
@@ -418,6 +427,8 @@ const EmployeeList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default EmployeeList;
+//#endregion

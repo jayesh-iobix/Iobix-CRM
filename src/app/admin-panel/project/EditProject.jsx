@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -9,66 +10,72 @@ import { InquiryService } from '../../service/InquiryService';
 import { PartnerService } from '../../service/PartnerService';
 import { ClientCompanyService } from '../../service/ClientCompanyService';
 import { VendorService } from '../../service/VendorService';
+//#endregion
 
+//#region InputField Component
 const InputField = ({ label, value, onChange, name, type = 'text', error, className }) => (
-    <div className={`w-full mb-2 px-3 ${className}`}>
-      <label className="block text-base font-medium">{label}</label>
-      {type === 'textarea' ? (
-        <textarea
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={label}
-          className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
-          rows="3"
-        />
-      ): type === 'file' ? (
-        <input
-          name={name}
-          type="file"
-          onChange={onChange}
-          className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
-        />
-      ) : (
-        <input
-          name={name}
-          type={type}
-          value={value}
-          onChange={onChange}
-          placeholder={label}
-          className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
-        />
-      )}
-      {error && <p className="text-red-500 text-xs">{error}</p>}
-    </div>
-  );
-  
-  const SelectField = ({ label, value, onChange, name, options, error }) => (
-    <div className="w-full mb-2 px-3 md:w-1/3">
-      <label className="block text-base font-medium">{label}</label>
-      <select
+  <div className={`w-full mb-2 px-3 ${className}`}>
+    <label className="block text-base font-medium">{label}</label>
+    {type === 'textarea' ? (
+      <textarea
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
-      >
-        <option value="" className="text-gray-400">--Select {label}--</option>
-        {options.length > 0 ? (
-          options.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))
-        ) : (
-          <option value="" disabled>No options available</option>
-        )}
-      </select>
-      {error && <p className="text-red-500 text-xs">{error}</p>}
-    </div>
-  );
+        placeholder={label}
+        className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+        rows="3"
+      />
+    ): type === 'file' ? (
+      <input
+        name={name}
+        type="file"
+        onChange={onChange}
+        className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+      />
+    ) : (
+      <input
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={label}
+        className="w-full mb-2 bg-transparent rounded-md border py-[10px] px-4 text-dark border-active"
+      />
+    )}
+    {error && <p className="text-red-500 text-xs">{error}</p>}
+  </div>
+);
+//#endregion
 
+//#region SelectField Component
+const SelectField = ({ label, value, onChange, name, options, error }) => (
+  <div className="w-full mb-2 px-3 md:w-1/3">
+    <label className="block text-base font-medium">{label}</label>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+    >
+      <option value="" className="text-gray-400">--Select {label}--</option>
+      {options.length > 0 ? (
+        options.map((item) => (
+          <option key={item.id} value={item.id}>
+            {item.name}
+          </option>
+        ))
+      ) : (
+        <option value="" disabled>No options available</option>
+      )}
+    </select>
+    {error && <p className="text-red-500 text-xs">{error}</p>}
+  </div>
+);
+//#endregion
+
+//#region Component: EditProject Component
 const EditProject = () => {
-  const { id } = useParams(); // Extract inquiry ID from URL
+  //#region State Variables
   const [formData, setFormData] = useState({
     // partnerRegistrationId: '',
     // clientRegistrationId: '',
@@ -85,7 +92,6 @@ const EditProject = () => {
     specialNotes: '',
     inquiryDocuments: null,
   });
-
   const [partnerList, setPartnerList] = useState([]);
   const [clientCompanyList, setClientCompanyList] = useState([]);
   const [vendorList, setVendorList] = useState([]);
@@ -95,7 +101,10 @@ const EditProject = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { id } = useParams(); // Extract inquiry ID from URL
+  //#endregion
 
+  //#region Data Fetching
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -126,7 +135,9 @@ const EditProject = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Event Handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -206,9 +217,12 @@ const EditProject = () => {
 
     setIsSubmitting(false);
   };
+  //#endregion
 
+  //#region Render
   return (
     <div>
+      {/* Header + Buttons */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Project</h1>
         <motion.button
@@ -225,88 +239,13 @@ const EditProject = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
 
-            {/* Radio buttons for selecting Partner or Client Company */}
-            {/* <div className="w-full mb-4 px-3">
-              <label className="block text-base font-medium">Created for:</label>
-              <div className="flex items-center gap-6">
-                <label>
-                  <input
-                    type="radio"
-                    name="createdFor"
-                    value="partner"
-                    checked={selectedType === 'partner'}
-                    onChange={() => setSelectedType('partner')}
-                    className="mr-2"
-                  />
-                  Partner
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="createdFor"
-                    value="clientCompany"
-                    checked={selectedType === 'clientCompany'}
-                    onChange={() => setSelectedType('clientCompany')}
-                    className="mr-2"
-                  />
-                  Client Company
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="createdFor"
-                    value="vendor"
-                    checked={selectedType === 'vendor'}
-                    onChange={() => setSelectedType('vendor')}
-                    className="mr-2"
-                  />
-                  Vendor
-                </label>
-              </div>
-            </div> */}
-
-            {/* Conditionally render Partner or Client Company drop-down */}
-            {/* {selectedType === 'partner' && (
-              <SelectField
-                label="Partner"
-                value={formData.partnerRegistrationId}
-                onChange={handleInputChange}
-                name="partnerRegistrationId"
-                options={partnerList.map(item => ({ id: item.partnerRegistrationId, name: item.companyName }))}
-                error={errors.partnerRegistrationId}
-                className="md:w-1/3"
-              />
-            )}
-
-            {selectedType === 'clientCompany' && (
-              <SelectField
-                label="Client Company"
-                value={formData.clientRegistrationId}
-                onChange={handleInputChange}
-                name="clientRegistrationId"
-                options={clientCompanyList.map(item => ({ id: item.clientRegistrationId, name: item.companyName }))}
-                error={errors.clientRegistrationId}
-                className="md:w-1/3"
-              />
-            )}
-
-            {selectedType === 'vendor' && (
-              <SelectField
-                label="Vendor"
-                value={formData.vendorId}
-                onChange={handleInputChange}
-                name="vendorId"
-                options={vendorList.map(item => ({ id: item.vendorId, name: item.companyName }))}
-                error={errors.vendorId}
-                className="md:w-1/3"
-              />
-            )} */}
-
             {/* Add the rest of the fields just like AddProject component */}
+            {/* Project Title Field */}
             <InputField
               label="Project Title"
               value={formData.inquiryTitle}
@@ -315,6 +254,7 @@ const EditProject = () => {
               error={errors.inquiryTitle}
               className="md:w-1/3"
             />
+            {/* Project Location Field */}
             <InputField
               label="Project Location"
               value={formData.inquiryLocation}
@@ -323,6 +263,7 @@ const EditProject = () => {
               error={errors.inquiryLocation}
               className="md:w-1/3"
             />
+            {/* Project Type */}
             <SelectField
               label="Project Type"
               value={formData.inquiryTypeId}
@@ -332,6 +273,7 @@ const EditProject = () => {
               error={errors.inquiryTypeId}
               className="md:w-1/3"
             />
+             {/* Project Source */}
             <SelectField
               label="Project Source"
               value={formData.inquirySourceId}
@@ -341,6 +283,7 @@ const EditProject = () => {
               error={errors.inquirySourceId}
               className="md:w-1/3"
             />
+            {/* Customer Name */}
             <InputField
               label="Customer Name"
               value={formData.customerName}
@@ -349,6 +292,7 @@ const EditProject = () => {
               error={errors.customerName}
               className="md:w-1/3"
             />
+            {/* Customer Contact Info */}
             <InputField
               label="Customer Contact Info"
               value={formData.customerContactInfo}
@@ -357,6 +301,7 @@ const EditProject = () => {
               error={errors.customerContactInfo}
               className="md:w-1/3"
             />
+            {/* Estimated Value */}
             <InputField
               label="Estimated Value"
               type="number"
@@ -366,6 +311,7 @@ const EditProject = () => {
               error={errors.estimatedValue}
               className="md:w-1/3"
             />
+            {/* Priority Level */}
             <SelectField
               label="Priority Level"
               value={formData.priorityLevel}
@@ -379,6 +325,7 @@ const EditProject = () => {
               error={errors.priorityLevel}
               className="md:w-1/3"
             />
+            {/* Project Document */}
             <InputField
               label="Project Document"
               value={formData.inquiryDocuments}
@@ -388,6 +335,7 @@ const EditProject = () => {
               error={errors.inquiryDocuments}
               className="md:w-1/3"
             />
+            {/* Project Description */}
             <InputField
               label="Project Description"
               value={formData.inquiryDescription}
@@ -397,6 +345,7 @@ const EditProject = () => {
               error={errors.inquiryDescription}
               className="md:w-1/2"
             />
+            {/* Special Notes */}
             <InputField
               label="Special Notes"
               value={formData.specialNotes}
@@ -406,7 +355,7 @@ const EditProject = () => {
               error={errors.specialNotes}
               className="md:w-1/2"
             />
-
+             {/* Submit Button */}
             <div className="w-full px-3">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -425,6 +374,8 @@ const EditProject = () => {
       </section>
     </div>
   );
+  //#endregion
 };
 
 export default EditProject;
+//#endregion

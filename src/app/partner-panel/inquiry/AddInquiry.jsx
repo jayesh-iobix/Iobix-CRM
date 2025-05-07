@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,7 +8,9 @@ import { InquirySourceService } from '../../service/InquirySourceService';
 import { toast } from 'react-toastify';
 import { InquiryService } from '../../service/InquiryService';
 import { el } from 'date-fns/locale';
+//#endregion
 
+//#region InputField Component
 const InputField = ({ label, value, onChange, name, type = 'text', error, className }) => (
   <div className={`w-full mb-2 px-3 ${className}`}>
     <label className="block text-base font-medium">{label}</label>
@@ -40,7 +43,9 @@ const InputField = ({ label, value, onChange, name, type = 'text', error, classN
     {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
+//#endregion
 
+//#region SelectField Component
 const SelectField = ({ label, value, onChange, name, options, error }) => (
   <div className="w-full mb-2 px-3 md:w-1/3">
     <label className="block text-base font-medium">{label}</label>
@@ -64,8 +69,11 @@ const SelectField = ({ label, value, onChange, name, options, error }) => (
     {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
+//#endregion
 
+//#region Component: AddInquiry Component
 const AddInquiry = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
     inquiryTitle: '',
     inquiryLocation: '',
@@ -90,7 +98,9 @@ const AddInquiry = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Data Fetching
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -105,7 +115,9 @@ const AddInquiry = () => {
     };
     fetchData();
   }, []);
+  //#endregion
 
+  //#region Event Handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -207,9 +219,12 @@ const AddInquiry = () => {
     
     setIsSubmitting(false);
   };
+  //#endregion
 
+  //#region Render
   return (
     <div>
+      {/* Header + Buttons */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Project</h1>
         <motion.button
@@ -226,6 +241,7 @@ const AddInquiry = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -357,6 +373,8 @@ const AddInquiry = () => {
       </section>
     </div>
   );
+  //#endregion
 };
 
 export default AddInquiry;
+//#endregion

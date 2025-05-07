@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoClose } from 'react-icons/io5';
@@ -5,13 +6,17 @@ import { FaUser } from "react-icons/fa";
 import { EmployeeService } from '../../service/EmployeeService';
 import { motion } from "framer-motion"; // Import framer-motion
 import { ProfileService } from '../../service/ProfileService';
+//#endregion
 
-
+//#region Component: PartnerProfile
 const PartnerProfile = () => {
 
+ //#region State Variables
  const [partnerDetails, setPartnerDetails] = useState("");
  const navigate = useNavigate();
-
+ //#endregion
+ 
+ //#region Fetch Profile Details Role vise
  const role = sessionStorage.getItem("role");
 
   const fetchPartnerDetails = async () => {
@@ -51,11 +56,12 @@ const PartnerProfile = () => {
     return `${day}/${month}/${year}`;
   };
   
-
   useEffect(() => {
     fetchPartnerDetails()
   },[])
+  //#endregion
 
+  //#region Render
   return (
     <div className="mx-auto bg-white rounded-lg shadow-lg p-6 max-w-full w-full">
       {/* Container for Image and Name */}
@@ -193,6 +199,8 @@ const PartnerProfile = () => {
       </div>
     </div>
   );
+  //#region Render
 };
 
 export default PartnerProfile;
+//#region Render

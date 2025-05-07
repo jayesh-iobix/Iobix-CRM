@@ -1,8 +1,12 @@
+//#region Imports
 import React, { useState, useEffect } from 'react';
 import { HelpSupportService } from '../../service/HelpSupportService';
 import { toast } from 'react-toastify';
+//#endregion
 
+//#region Component: GetHelpSupport
 const GetHelpSupport = () => {
+  //#region State Variables
   const [activeTab, setActiveTab] = useState('tickets');
   const [tickets, setTickets] = useState([]);
   const [contacts, setContacts] = useState([]);
@@ -11,12 +15,16 @@ const GetHelpSupport = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [viewType, setViewType] = useState('tickets');
+  //#endregion
 
+  //#region useEffect - Data Fetching
   useEffect(() => {
     fetchTickets();
     fetchContacts();
   }, []);
+  //#endregion
 
+  //#region Data Fetching Methods
   const fetchTickets = async () => {
     setLoading(prev => ({ ...prev, tickets: true }));
     try {
@@ -40,7 +48,9 @@ const GetHelpSupport = () => {
       setLoading(prev => ({ ...prev, contacts: false }));
     }
   };
+  //#endregion
 
+  //#region Modal Handling
   const handleView = (item, type) => {
     setSelectedItem(item);
     setViewType(type);
@@ -51,7 +61,9 @@ const GetHelpSupport = () => {
     setShowViewModal(false);
     setSelectedItem(null);
   };
+  //#endregion
 
+  //#region Deletion Handling
   const handleDelete = async (id, type) => {
     try {
       if (type === 'tickets') {
@@ -75,7 +87,9 @@ const GetHelpSupport = () => {
       console.error('Delete failed:', err);
     }
   };
+  //#endregion
 
+  //#region Render Table
   const renderTable = (items, type) => {
     if (loading[type]) return <p className="text-center py-4">Loading {type}...</p>;
     if (error[type]) return <p className="text-red-500 text-center py-4">Error: {error[type]}</p>;
@@ -127,7 +141,9 @@ const GetHelpSupport = () => {
       </div>
     );
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
       <div className="p-6 bg-white rounded-2xl shadow-md">
@@ -194,8 +210,10 @@ const GetHelpSupport = () => {
       )}
     </>
   );
+  //#endregion
 };
 
 export default GetHelpSupport;
+//#endregion
 
 

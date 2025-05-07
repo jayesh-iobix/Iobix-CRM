@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -7,9 +8,11 @@ import { TaskService } from "../../../service/TaskService";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: EditAssignTask
 const EditAssignTask = () => {
+  //#region State Variables
   const [taskName, setTaskName] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
   const [taskPriority, setTaskPriority] = useState("");
@@ -25,7 +28,9 @@ const EditAssignTask = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams(); // Get task ID from URL
+  //#endregion
 
+  //#region Fetch Task and Employees
   useEffect(() => {
 
     const fetchTask = async () => {
@@ -78,7 +83,9 @@ const EditAssignTask = () => {
     
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Form Validation & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -128,9 +135,12 @@ const EditAssignTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Task</h1>
         <div className="flex">
@@ -161,6 +171,7 @@ const EditAssignTask = () => {
         </div>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8 mb-10">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -329,6 +340,8 @@ const EditAssignTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditAssignTask;
+//#endregion

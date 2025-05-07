@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -5,22 +6,25 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService";
 import { PartnerService } from "../../service/PartnerService";
+//#endregion
 
+//#region Component: PartnerList
 const PartnerList = () => {
+  //#region State variables
   const [partners, setPartners] = useState([]);
   const [filteredPartners, setFilteredPartners] = useState([]);
-  const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
-  const [departmentFilter, setDepartmentFilter] = useState(""); // State for department filter
+  const [partnerFilter, setPartnerFilter] = useState(""); // State for employee filter
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region useEffect: Fetch Partners Data
+  // Fetch partners data from the API when the component mounts
   useEffect(() => {
     const fetchPartners = async () => {
       try {
@@ -36,18 +40,47 @@ const PartnerList = () => {
     };
     fetchPartners();
   }, []);
+  //#endregion
 
-  // Function to filter tasks based on selected employee name
-  const handleEmployeeFilterChange = (event) => {
-    setEmployeeFilter(event.target.value);
+  //#region useEffect: Filter Partner
+    // Function to filter tasks based on selected employee name
+    const handlePartnerFilterChange = (event) => {
+      setPartnerFilter(event.target.value);
+    };
+  
+    useEffect(() => {
+      // Apply filters to the partners array
+      let filtered = partners;
+        
+      // Filter by partner name
+      if (partnerFilter) {
+        filtered = filtered.filter((partner) =>
+          partner.companyName.toLowerCase().includes(partnerFilter.toLowerCase())
+        );
+      }
+  
+      setFilteredPartners(filtered); // Update filtered partners based on all filters
+  
+      setTotalItems(filtered.length); // Update total items for pagination
+      setCurrentPage(1); // Reset to the first page when a new filter is applied
+  
+    }, [partnerFilter, partners]);
+    //#endregion
+
+    //#region Delete CLick and Delete Partner 
+  // Function to handle delete button click
+  const handleDeleteClick = (partnerRegistrationId) => {
+    setDeleteId(partnerRegistrationId);
+    setIsPopupOpen(true); // Open popup
   };
 
-  // Handle department filter change
-  const handleDepartmentChange = (event) => {
-    setDepartmentFilter(event.target.value);
+  // Function to handle popup close without deleting
+  const handlePopupClose = () => {
+    setIsPopupOpen(false); // Close popup without deleting
+    setDeleteId(null); // Reset the ID
   };
 
-
+  // Function to delete a clientCompany
   const deletePartner = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -65,16 +98,7 @@ const PartnerList = () => {
       alert("Failed to delete partner");
     }
   };
-
-  const handleDeleteClick = (partnerRegistrationId) => {
-    setDeleteId(partnerRegistrationId);
-    setIsPopupOpen(true); // Open popup
-  };
-
-  const handlePopupClose = () => {
-    setIsPopupOpen(false); // Close popup without deleting
-    setDeleteId(null); // Reset the ID
-  };
+  //#endregion
   
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -88,8 +112,10 @@ const PartnerList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Partners List</h1>
         <div className="flex">
@@ -106,16 +132,17 @@ const PartnerList = () => {
       </div>
 
       {/* Filters Section */}
-      {/* <div className="flex gap-4 my-4">
+      <div className="flex gap-4 my-4">
         <input
           type="text"
-          value={employeeFilter}
-          onChange={handleEmployeeFilterChange}
-          placeholder="Search Employee"
+          value={partnerFilter}
+          onChange={handlePartnerFilterChange}
+          placeholder="Search Company Name"
           className="p-2 outline-none rounded border border-gray-300"
         />
-      </div> */}
+      </div>
 
+      {/* Partner Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -333,6 +360,8 @@ const PartnerList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default PartnerList;
+//#endregion

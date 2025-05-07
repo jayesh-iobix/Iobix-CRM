@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowDown, FaArrowRight } from "react-icons/fa";
 import { useParams } from "react-router-dom";
@@ -6,10 +7,12 @@ import { TaskService } from "../../../service/TaskService";
 import { SubTaskService } from "../../../service/SubTaskService";
 import { motion } from "framer-motion"; // Import framer-motion
 import { ReportService } from "../../../service/ReportService";
+//#endregion
 
-
+//#region Component: UserTaskList
 const UserTaskList = () => {
 
+  //#region State Variables
   const { id } = useParams();
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
@@ -24,29 +27,43 @@ const UserTaskList = () => {
   const [yearFilter, setYearFilter] = useState("");  // State for year filter
   const [monthFilter, setMonthFilter] = useState(""); // State for month filter
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region Filter Data
   // Get the list of unique years and months for the filter dropdowns
-const uniqueYears = [...new Set(tasks.map((task) => new Date(task.taskStartingDate).getFullYear()))];
-const uniqueMonths = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+  const uniqueYears = [...new Set(tasks.map((task) => new Date(task.taskStartingDate).getFullYear()))];
+  const uniqueMonths = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
+  useEffect(() => {
+    // Automatically set current year and month
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear().toString();
+    const currentMonth = (currentDate.getMonth() + 1).toString(); // Months are 0-indexed, so add 1
+
+    setYearFilter(currentYear); // Set current year
+    setMonthFilter(currentMonth); // Set current month
+
+    fetchTasks(); // Fetch tasks on mount
+  }, [id]); // Dependency array includes 'id' to ensure fetch happens when 'id' changes
+  //#endregion
+
+  //#region Tasks, Sub-Tasks, and Employee
   const fetchTasks = async () => {
     try {
       const result = await TaskService.getUserTaskByEmployeeId(id);
@@ -64,8 +81,8 @@ const uniqueMonths = [
     }
   };
 
-   // Function to fetch sub-tasks by task allocation ID
-   const getSubTasksByTaskAllocationId = async (taskAllocationId) => {
+  // Function to fetch sub-tasks by task allocation ID
+  const getSubTasksByTaskAllocationId = async (taskAllocationId) => {
     try {
       const response = await SubTaskService.getUserSubTaskByEmployeeId(
         taskAllocationId,
@@ -88,21 +105,11 @@ const uniqueMonths = [
   };
 
   useEffect(() => {
-    // Automatically set current year and month
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear().toString();
-    const currentMonth = (currentDate.getMonth() + 1).toString(); // Months are 0-indexed, so add 1
-
-    setYearFilter(currentYear); // Set current year
-    setMonthFilter(currentMonth); // Set current month
-
-    fetchTasks(); // Fetch tasks on mount
-  }, [id]); // Dependency array includes 'id' to ensure fetch happens when 'id' changes
-
-  useEffect(() => {
     fetchTasks();
   }, [departmentId]);
-
+  //#endregion
+  
+  //#region Toggle Row Expansion
   const toggleRow = async (taskAllocationId) => {
     const newExpandedRows = { ...expandedRows };
     const isExpanded = newExpandedRows[taskAllocationId];
@@ -130,7 +137,9 @@ const uniqueMonths = [
     }
     setExpandedRows(newExpandedRows);
   };
+  //#endregion
 
+  //#region Handlers: Filtering
   useEffect(() => {
     let filtered = tasks;
   
@@ -174,7 +183,25 @@ const uniqueMonths = [
     setCurrentPage(1); // Reset to the first page when a new filter is applied
   }, [employeeFilter, priorityFilter, statusFilter, tasks, yearFilter, monthFilter]);
   
+  // Function to filter tasks based on selected priority
+  const handlePriorityFilterChange = (event) => {
+    setPriorityFilter(event.target.value);
+  };
 
+  // Function to filter tasks based on selected status
+  const handleStatusFilterChange = (event) => {
+    setStatusFilter(event.target.value);
+  };
+
+  // Get the list of unique employees (task takers) and priorities for the filter dropdowns
+  const uniqueEmployees = [
+    ...new Set(tasks.map((task) => task.taskAssignToName)),
+  ];
+  const uniquePriorities = [...new Set(tasks.map((task) => task.taskPriority))];
+  const uniqueStatuses = [...new Set(tasks.map((task) => task.taskStatusName))];
+  //#endregion
+
+  //#region Status Color Logic
   // Function to set the color based on the task status
   const getStatusColor = (taskStatusName) => {
     switch (taskStatusName) {
@@ -188,62 +215,50 @@ const uniqueMonths = [
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
+  //#endregion
 
+  //#region Task and Sub-task Date Handling
   // Function to format the date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString(); // You can customize the date format as needed
   };
+  //#endregion
+  
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredTasks.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Function to filter tasks based on selected priority
-  const handlePriorityFilterChange = (event) => {
-    setPriorityFilter(event.target.value);
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
+  //#endregion
 
-  // Function to filter tasks based on selected status
-  const handleStatusFilterChange = (event) => {
-    setStatusFilter(event.target.value);
+  //#region Download Report
+  const handleDownloadReport = async (year, month) => {
+    setIsSubmitting(true);
+    // debugger;
+    try {
+      // Wait for the report download to complete with the selected year and month
+      await ReportService.downloadTaskReport(id, year, month);
+      // Optionally, add a success message or additional logic after the download
+      toast.success("Report downloaded successfully!");
+    } catch (error) {
+      console.error("Error downloading report:", error);
+      toast.error("Failed to download report.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-
-    // Get the list of unique employees (task takers) and priorities for the filter dropdowns
-    const uniqueEmployees = [
-      ...new Set(tasks.map((task) => task.taskAssignToName)),
-    ];
-    const uniquePriorities = [...new Set(tasks.map((task) => task.taskPriority))];
-    const uniqueStatuses = [...new Set(tasks.map((task) => task.taskStatusName))];
+  //#endregion
   
-    //#region Pagination logic
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredTasks.slice(indexOfFirstItem, indexOfLastItem);
-  
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-  
-    const handlePageChange = (pageNumber) => {
-      setCurrentPage(pageNumber);
-    };
-    //#endregion
-
-    const handleDownloadReport = async (year, month) => {
-
-      setIsSubmitting(true);
-      // debugger;
-      try {
-        // Wait for the report download to complete with the selected year and month
-        await ReportService.downloadTaskReport(id, year, month);
-        // Optionally, add a success message or additional logic after the download
-        toast.success("Report downloaded successfully!");
-      } catch (error) {
-        console.error("Error downloading report:", error);
-        toast.error("Failed to download report.");
-      } finally {
-        setIsSubmitting(false);
-      }
-    };
-    
-
+  //#region Render
   return (
     <>
+      {/* Header Section + Buttons */}
       <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">User Task List</h1>
 
@@ -321,6 +336,7 @@ const uniqueMonths = [
         </select>
       </div>
 
+      {/* Task List Section */}
       <div className="grid overflow-x-auto shadow-xl">
         <table className="min-w-full bg-white border border-gray-200">
           <thead className="bg-gray-900 border-b">

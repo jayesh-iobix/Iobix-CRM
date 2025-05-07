@@ -1,32 +1,39 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
 import { SubTaskService } from "../../../service/SubTaskService";
 import { motion } from "framer-motion"; // Import framer-motion
-// import ChatComponent from "../../employee-chat/ChatComponent";
+//#endregion
 
-
+//#region Component: ViewSubTask
 const ViewSubTask = () => {
 
+  //#region State Variables
   const { id } = useParams();
   const navigate = useNavigate();
   const [taskDetails, setTaskDetails] = useState({});
+  //#endregion
 
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-            const subTaskResult = await SubTaskService.getSubTaskById(id);
-            if (subTaskResult?.data) {
-              setTaskDetails(subTaskResult.data);
-            }
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      };
-  
-      fetchData();
-    }, [id]);
+  //#region Fetch Sub-Task Data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+          const subTaskResult = await SubTaskService.getSubTaskById(id);
+          if (subTaskResult?.data) {
+            setTaskDetails(subTaskResult.data);
+          }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
+    fetchData();
+  }, [id]);
+  //#endregion
+
+  //#region Function to get status color & format date
+  // Function to get status color based on the status name
   const getStatusColor = (status) => {
     const statusColors = {
       Pending: "text-red-500 bg-red-100",
@@ -41,12 +48,14 @@ const ViewSubTask = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString(); // You can customize the date format as needed
   };
+  //#endregion
 
-
+  //#region Render
   return (
     <>
       <div className="container mx-auto mb-10">
         <div className="bg-white px-10 p-8 rounded-lg shadow-lg space-y-8">
+          {/* Header Section */}
           <div className="flex justify-between items-center border-b pb-4">
             <h1 className="font-semibold text-3xl">Sub Task Details</h1>
             <div className="flex">
@@ -76,6 +85,8 @@ const ViewSubTask = () => {
               </motion.button>
             </div>
           </div>
+
+          {/* Sub Task Details Section */}
           <div className="space-y-5">
             <div className="flex justify-between">
               <p>
@@ -144,6 +155,8 @@ const ViewSubTask = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default ViewSubTask;
+//#endregion

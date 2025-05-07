@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -10,9 +11,12 @@ import { toast } from "react-toastify";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { PartnerService } from "../../service/PartnerService";
 import { InquiryPermissionService } from "../../service/InquiryPermissionService";
+//#endregion
 
+//#region Component: UserViewInquiry
 const UserViewInquiry = () => {
 
+  //#region State Variables
   const [formData, setFormData] = useState({
     inquiryTitle: '',
     inquiryLocation: '',
@@ -56,7 +60,9 @@ const UserViewInquiry = () => {
   
   const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Project Data
   const fetchData = async () => {
     try {
       // Fetch Inquiry
@@ -112,12 +118,16 @@ const UserViewInquiry = () => {
   useEffect(() => {
     fetchData();
   }, [id, departmentId]);
+  //#endregion
 
+  //#region Function to handle tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Project Take, Submit & Transfer Submit
   const handleTakeInquiry = async () => {
 
     // debugger;
@@ -152,12 +162,6 @@ const UserViewInquiry = () => {
     // Close the popup after submission
     // setIsPopupVisible(false);
   };
-
-  // Function to handle opening the popup and setting the current task
-  // const handleTransferInquiry = (inquiry) => {
-  //   setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
-  //   setTransferPopupVisible(true); // Show the popup
-  // };
 
   //Function to submit the api
   const handleInquirySubmit = async (event) => {
@@ -281,6 +285,7 @@ const UserViewInquiry = () => {
     // Close the popup after submission
     // setIsPopupVisible(false);
   };
+  //#endregion
 
   // const handleForwardSubmit = async (event) => {
   //   event.preventDefault();
@@ -323,8 +328,10 @@ const UserViewInquiry = () => {
   //   // setIsPopupVisible(false);
   // };
 
+  //#region Render
   return (
     <>
+      {/* Header Section + Button */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -608,88 +615,6 @@ const UserViewInquiry = () => {
           </div>
         </div>
       )}
-      
-      {/* {forwardPopupVisible && (
-        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
-            <h2 className="text-xl font-semibold mb-4">Forward Inquiry</h2>
-            <form>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Select Department
-                </label>
-                <select
-                  value={departmentId}
-                  onChange={(e) => setDepartmentId(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-md border border-active"
-                >
-                  <option value="">--Select Department--</option>
-                  {departments.map((department) => (
-                    <option
-                      key={department.departmentId}
-                      value={department.departmentId}
-                    >
-                      {department.departmentName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Forward to:
-                </label>
-
-                <select
-                  value={inquiryForwardedTo}
-                  onChange={(e) => setInquiryForwardedTo(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-md border border-active"
-                >
-                  <option value="">--Select Employee--</option>
-                  {employeeList.map((employee) => (
-                    <option
-                      key={employee.employeeId}
-                      value={employee.employeeId}
-                    >
-                      {employee.firstName + " " + employee.lastName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  FollowUp Description
-                </label>
-                <textarea
-                  value={inquiryFollowUpDescription}
-                  onChange={(e) =>
-                    setInquiryFollowUpDescription(e.target.value)
-                  }
-                  className="w-full mt-1 px-3 py-2 rounded-md border border-active"
-                  rows="4"
-                />
-              </div>
-
-              <div className="flex flex-col md:flex-row justify-end gap-4">
-                <button
-                  type="button"
-                  onClick={() => setForwardPopupVisible(false)}
-                  className="px-7 py-2 bg-gray-300 text-black rounded border-active"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleInquirySubmit}
-                  className="px-4 py-2 bg-blue-500 text-white rounded border-active"
-                >
-                  Forward
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )} */}
 
       {/* Transfer Inquiry Popup */}
       {transferPopupVisible && (
@@ -947,17 +872,10 @@ const UserViewInquiry = () => {
           </div>
         </div>
       </section>
-
-      {/* <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
-        <div className="md:px-2 lg:px-2 px-7">
-            <div className="flex">
-            <div className="test-base me-2 text-l">Inquiry Forwarded :</div>
-            <div className="text-red-500">{inquiryForwadedeData}</div>
-            </div>
-        </div>
-      </section> */}
     </>
   );
+  //#endregion
 };
 
 export default UserViewInquiry;
+//#endregion

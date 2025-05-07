@@ -1,27 +1,25 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { LeaveTypeService } from "../../../service/LeaveTypeService";
+//#endregion
 
-
+//#region Component: LeaveTypeList
 const LeaveTypeList = () => {
+  //#region State Variables
   const [leaveTypeList, setLeaveTypeList] = useState([]);
-
   const [leaveTypeName , setLeaveTypeName ] = useState("");
 
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [deleteId, setDeleteId] = useState(null); // Store the leaveTypeId to delete
   const [isActive, setIsActive] = useState(false); // State for Active status
-
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
-
-  //const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLeaveTypes = async () => {
@@ -37,7 +35,9 @@ const LeaveTypeList = () => {
     };
     fetchLeaveTypes();
   }, []);
+  //#endregion
 
+  //#region Delete Logic
   const deleteLeaveType = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -66,7 +66,9 @@ const LeaveTypeList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
+  //#region IsActive Logic
   const handleCheckboxChange = async (checked, leaveTypeId, item) => {
     // Optimistically update the UI by changing the `isActive` for the current row
     const updatedLeaveTypes = leaveTypeList.map((item) =>
@@ -106,21 +108,24 @@ const LeaveTypeList = () => {
       // Revert UI change if needed
     }
   };
+  //#endregion
   
-   //#region Pagination logic
-   const indexOfLastItem = currentPage * itemsPerPage;
-   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-   const currentItems = leaveTypeList.slice(indexOfFirstItem, indexOfLastItem);
- 
-   const totalPages = Math.ceil(totalItems / itemsPerPage);
- 
-   const handlePageChange = (pageNumber) => {
-     setCurrentPage(pageNumber);
-   };
-   //#endregion
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = leaveTypeList.slice(indexOfFirstItem, indexOfLastItem);
 
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  //#endregion
+
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Leave Type List</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -134,6 +139,7 @@ const LeaveTypeList = () => {
         </motion.button>
       </div>
 
+      {/* Inquiry Origin Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -363,9 +369,10 @@ const LeaveTypeList = () => {
           </div>
         </div>
       </div>
-      
     </>
   );
+  //#endregion
 };
 
 export default LeaveTypeList;
+//#endregion

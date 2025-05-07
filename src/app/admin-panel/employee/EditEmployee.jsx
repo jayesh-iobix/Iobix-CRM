@@ -11,7 +11,7 @@ import { EmployeeLeaveTypeService } from "../../service/EmployeeLeaveTypeService
 import { toast } from "react-toastify";
 //#endregion
 
-//#region Component: AddEmployee
+//#region Component: EditEmployee
 const EditEmployee = () => {
 
   //#region State Initialization
@@ -40,8 +40,6 @@ const EditEmployee = () => {
     probationPeriod: "",
     employeeLeaveTypeId: "",
   });
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
   const [employeeLeaveTypeList, setEmployeeLeaveTypeList] = useState([]);
   const [designationList, setDesignationList] = useState([]);
@@ -50,6 +48,8 @@ const EditEmployee = () => {
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
 
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   //#endregion
@@ -181,9 +181,10 @@ const EditEmployee = () => {
   };
   //#endregion
 
-  //#region JSX Renderin
+  //#region JSX Rendering
   return (
     <>
+      {/* Header + Buttons */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Employee</h1>
         <motion.button
@@ -200,6 +201,7 @@ const EditEmployee = () => {
         </motion.button>
       </div>
 
+      {/* Form Container */}
       <section className="bg-white shadow-sm m-1 py-8 pt-4 dark:bg-dark">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt-5 flex flex-wrap">

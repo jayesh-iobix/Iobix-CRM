@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -5,8 +6,11 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService";
 import { ICPService } from "../../service/ICPService";
+//#endregion
 
+//#region Component: InquiryModuleList
 const InquiryModuleList = () => {
+  //#region State Variables
   const [icps, setIcps] = useState([]);
   const [filteredIcps, setFilteredIcps] = useState([]);
   const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
@@ -15,12 +19,12 @@ const InquiryModuleList = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region Fetch ICPs
   useEffect(() => {
     const fetchIcps = async () => {
       try {
@@ -36,7 +40,9 @@ const InquiryModuleList = () => {
     };
     fetchIcps();
   }, []);
+  //#endregion
 
+  //#region Filter Logic
   // Function to filter tasks based on selected employee name
   const handleEmployeeFilterChange = (event) => {
     setEmployeeFilter(event.target.value);
@@ -70,7 +76,9 @@ const InquiryModuleList = () => {
 //     setCurrentPage(1); // Reset to the first page when a new filter is applied
 //   }, [employeeFilter, departmentFilter, Icps]);
 
+//#endregion
 
+  //#region Delete ICPs Logic
   const deleteICP = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -98,23 +106,8 @@ const InquiryModuleList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
-
-//   const handleDownloadReport = async () => {
-//     setIsSubmitting(true);
-//     try {
-//       // Wait for the report download to complete
-//       await ReportService.downloadEmployeeReport();
-//       // Optionally, add a success message or additional logic after the download
-//       toast.success("Report downloaded successfully!");
-//     } catch (error) {
-//       console.error("Error downloading report:", error);
-//       toast.error("Failed to download report.");
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   }
+  //#endregion
   
-
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -127,8 +120,10 @@ const InquiryModuleList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section and Buttons */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Ideal Custom Profile List</h1>
         <div className="flex">
@@ -165,6 +160,7 @@ const InquiryModuleList = () => {
         />
       </div> */}
 
+      {/* Form Section */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -390,6 +386,8 @@ const InquiryModuleList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default InquiryModuleList;
+//#endregion

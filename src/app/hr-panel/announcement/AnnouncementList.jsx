@@ -1,11 +1,15 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { AnnouncementService } from "../../service/AnnouncementService";
+//#endregion
 
+//#region Component: AnnouncementList
 const AnnouncementList = () => {
+  //#region State variables
   const [announcements, setAnnouncements] = useState([]);
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
@@ -14,6 +18,12 @@ const AnnouncementList = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
+  const [totalItems, setTotalItems] = useState(0);
+  //#endregion
+
+  //#region Role and Navigation
   const role = sessionStorage.getItem("role")
 
   const navigateTo = 
@@ -22,13 +32,9 @@ const AnnouncementList = () => {
   : role === 'user' 
   ? '/user/announcement-list/add-announcement' 
   : '/announcement-list/add-announcement'; // Optional default route if role is unknown
-
-  //#region Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
-  const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region Fetch Announcements
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
@@ -44,7 +50,9 @@ const AnnouncementList = () => {
     };
     fetchAnnouncements();
   }, []);
+  //#endregion
 
+  //#region Filter Logic
   // Function to filter tasks based on selected employee name
   const handleEmployeeFilterChange = (event) => {
     setEmployeeFilter(event.target.value);
@@ -86,8 +94,9 @@ const AnnouncementList = () => {
   const uniqueDepartments = [
     ...new Set(announcements.map((announcement) => announcement.departmentName)),
   ];
+  //#endregion
 
-
+  //#region Delete Announcement Logic
   const deleteAnnouncement = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
@@ -114,8 +123,10 @@ const AnnouncementList = () => {
   const handlePopupClose = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
-  };  
+  }; 
+  //#endregion 
 
+  //#region Format Date
   // Function to format the date
   const formatDate = (dateString) => {
     if (dateString === "" || dateString === null) {
@@ -136,7 +147,7 @@ const AnnouncementList = () => {
       hour12: true, // 12-hour format (use false for 24-hour)
     });
   };
-  
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -150,8 +161,10 @@ const AnnouncementList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">Announcement List</h1>
         <div className="flex flex-wrap gap-2 mt-2 md:mt-1 lg:mt-1 xl:mt-1">
@@ -192,6 +205,7 @@ const AnnouncementList = () => {
         </select>
       </div> */}
 
+      {/* Announcement Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -424,6 +438,9 @@ const AnnouncementList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default AnnouncementList;
+//#endregion
+

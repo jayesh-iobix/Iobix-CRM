@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,9 +7,11 @@ import { DepartmentService } from "../../../service/DepartmentService";
 import { EmployeeService } from "../../../service/EmployeeService";
 import { TaskService } from "../../../service/TaskService";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: AssignTask
 const AssignTask = () => {
+  //#region State Variables
   const [taskName, setTaskName] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
   const [taskPriority, setTaskPriority] = useState("");
@@ -23,9 +26,11 @@ const AssignTask = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [manualNotification, setManualNotification] = useState(false);
-    const [notifications, setNotifications] = useState([{ reminderDateTime: ""}]);
+  const [notifications, setNotifications] = useState([{ reminderDateTime: ""}]);
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Department and Employee Data
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -49,7 +54,9 @@ const AssignTask = () => {
 
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Form Validation & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -109,7 +116,9 @@ const AssignTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Notification Management
   const handleAddNotification = () => {
     setNotifications([...notifications, { reminderDateTime: "" }]);
   };
@@ -127,9 +136,12 @@ const AssignTask = () => {
     const updatedNotifications = notifications.filter((_, i) => i !== index);
     setNotifications(updatedNotifications);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Task</h1>
         <motion.button
@@ -146,6 +158,7 @@ const AssignTask = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -379,6 +392,8 @@ const AssignTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default AssignTask;
+//#endregion

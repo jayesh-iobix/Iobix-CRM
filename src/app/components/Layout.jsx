@@ -1,12 +1,14 @@
+//#region Imports
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Header from './Header'
+//#endregion
 
+//#region  Component: Layout
 const Layout = () => {
-  // debugger;
+  //#region  Get Background colour role vise 
   const role = sessionStorage.getItem('role');
-  
   const getBgColor = (role) => {
     switch (role) {
       case 'admin':
@@ -17,6 +19,9 @@ const Layout = () => {
         return '#EDF4F8'; // Default color
     }
   };
+  //#endregion
+
+  //#region Render
   return (
 
      <div 
@@ -31,7 +36,9 @@ const Layout = () => {
 				</div>
 			</div>
     </div>
-  )
+  );
+  //#endregion
 }
 
 export default Layout
+//#endregion

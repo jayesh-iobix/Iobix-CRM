@@ -1,23 +1,26 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { InquirySourceService } from "../../../service/InquirySourceService";
+//#endregion
 
+//#region Component: InquirySourceList
 const InquirySourceList = () => {
+
+  //#region State Variables
   const [inquirySourceList, setInquirySourceList] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
-  //const navigate = useNavigate();
-
+  //#region useEffect: Fetch InquirySource Data
   useEffect(() => {
     const fetchInquirySource = async () => {
       try {
@@ -32,8 +35,10 @@ const InquirySourceList = () => {
     };
     fetchInquirySource();
   }, []);
+  //#endregion
 
-   const deleteInquirySource = async () => {
+  //#region Delete Logic
+  const deleteInquirySource = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
       const response = await InquirySourceService.deleteInquirySource(deleteId);
@@ -62,59 +67,66 @@ const InquirySourceList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
+  //#region IsActive Logic
   const handleCheckboxChange = async (checked, inquirySourceId, item) => {
-      // Optimistically update the UI by changing the `isActive` for the current row
-      const updatedInquirySource = inquirySourceList.map((item) =>
-        item.inquirySourceId  === inquirySourceId  ? { ...item, isActive: checked } : item
-      );
-      
-      setInquirySourceList(updatedInquirySource); // Update the state immediately
-  
-      try {
-        // Prepare the data for the API call
-        const inquirySourceData = {
-          inquirySourceName : item.inquirySourceName ,
-          isActive: checked, // Only update the isActive field
-        };
-  
-        //console.log(inquirySourceData)
-        debugger;
-        // Call the update API to update the `isActive` field on the server
-        const updatedInquirySource = await InquirySourceService.updateInquirySource(
-          inquirySourceId ,
+    // Optimistically update the UI by changing the `isActive` for the current row
+    const updatedInquirySource = inquirySourceList.map((item) =>
+      item.inquirySourceId === inquirySourceId
+        ? { ...item, isActive: checked }
+        : item
+    );
+
+    setInquirySourceList(updatedInquirySource); // Update the state immediately
+
+    try {
+      // Prepare the data for the API call
+      const inquirySourceData = {
+        inquirySourceName: item.inquirySourceName,
+        isActive: checked, // Only update the isActive field
+      };
+
+      //console.log(inquirySourceData)
+      debugger;
+      // Call the update API to update the `isActive` field on the server
+      const updatedInquirySource =
+        await InquirySourceService.updateInquirySource(
+          inquirySourceId,
           inquirySourceData
         );
-        //console.log(updatedInquirySource); // If successful, log the response
-  
-        // Check the response from the API and display a success message
-        if (updatedInquirySource) {
-          toast.success("Inquiry Source Updated Successfully.");
-        } else {
-          throw new Error("Failed to update inquiry source.");
-        }
-      } catch (error) {
-        console.error(
-          "Error updating inquiry source:",
-          error.response?.data || error.message
-        );
-        toast.error("Error updating inquiry source.");
-        // Revert UI change if needed
+      //console.log(updatedInquirySource); // If successful, log the response
+
+      // Check the response from the API and display a success message
+      if (updatedInquirySource) {
+        toast.success("Inquiry Source Updated Successfully.");
+      } else {
+        throw new Error("Failed to update inquiry source.");
       }
-    };
+    } catch (error) {
+      console.error(
+        "Error updating inquiry source:",
+        error.response?.data || error.message
+      );
+      toast.error("Error updating inquiry source.");
+      // Revert UI change if needed
+    }
+  };
+  //#endregion
 
-   //#region Pagination logic
-   const indexOfLastItem = currentPage * itemsPerPage;
-   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-   const currentItems = inquirySourceList.slice(indexOfFirstItem, indexOfLastItem);
- 
-   const totalPages = Math.ceil(totalItems / itemsPerPage);
- 
-   const handlePageChange = (pageNumber) => {
-     setCurrentPage(pageNumber);
-   };
-   //#endregion
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = inquirySourceList.slice(indexOfFirstItem, indexOfLastItem);
 
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  //#endregion
+
+  //#region Render
   return (
     <>
       <div className="flex justify-between items-center my-3">
@@ -367,6 +379,8 @@ const InquirySourceList = () => {
       </div>
     </>
   );
+  //#endregion
 }
 
 export default InquirySourceList
+//#endregion

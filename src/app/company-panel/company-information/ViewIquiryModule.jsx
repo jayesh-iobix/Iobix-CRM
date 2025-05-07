@@ -1,30 +1,37 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
 import { motion } from "framer-motion"; // Import framer-motion
 import { ICPService } from "../../service/ICPService";
+//#endregion
 
-
+//#region Component: ViewIquiryModule
 const ViewIquiryModule = () => {
 
+  //#region State Variables
   const { id } = useParams();
   const navigate = useNavigate();
   const [icpDetails, setIcpDetails] = useState({});
+  //#endregion
 
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          // First try to fetch task data from TaskService
-          const icpResult = await ICPService.getByIdICP(id);
-            setIcpDetails(icpResult.data);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      };
-  
-      fetchData();
-    }, [id]);
+  //#region Fetch ICP By Id
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // First try to fetch task data from TaskService
+        const icpResult = await ICPService.getByIdICP(id);
+          setIcpDetails(icpResult.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
+    fetchData();
+  }, [id]);
+  //#endregion
+
+  //#region Function to get status color & format date
   const getStatusColor = (status) => {
     const statusColors = {
       Pending: "text-red-500 bg-red-100",
@@ -39,12 +46,14 @@ const ViewIquiryModule = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString(); // You can customize the date format as needed
   };
+  //#endregion
   
-
+  //#region Render
   return (
     <>
       <div className="container mx-auto mb-10 flex-wrap">
         <div className="bg-white px-4 sm:px-10 p-8 rounded-lg shadow-lg space-y-8">
+          {/* Header Section and Buttons */}
           <div className="flex items-center lg:justify-between border-b justify-center pb-4 flex-wrap gap-3">
             <h1 className="font-semibold text-3xl">Ideal Cutomer Details</h1>
             <div className="flex">
@@ -77,6 +86,7 @@ const ViewIquiryModule = () => {
               </motion.button>
             </div>
           </div>
+          {/* ICP Details Section */}
           <div className="space-y-5">
             {/* Segmentation */}
             <div className="mb-6">
@@ -313,6 +323,8 @@ const ViewIquiryModule = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default ViewIquiryModule;
+//#endregion

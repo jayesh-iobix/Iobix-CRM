@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -7,7 +8,9 @@ import { InquirySourceService } from '../../service/InquirySourceService';
 import { toast } from 'react-toastify';
 import { InquiryService } from '../../service/InquiryService';
 import { el } from 'date-fns/locale';
+//#endregion
 
+//#region InputField Component
 const InputField = ({ label, value, onChange, name, type = 'text', error, className }) => (
   <div className={`w-full mb-2 px-3 ${className}`}>
     <label className="block text-base font-medium">{label}</label>
@@ -40,7 +43,9 @@ const InputField = ({ label, value, onChange, name, type = 'text', error, classN
     {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
+//#endregion
 
+//#region SelectField Component
 const SelectField = ({ label, value, onChange, name, options, error }) => (
   <div className="w-full mb-2 px-3 md:w-1/3">
     <label className="block text-base font-medium">{label}</label>
@@ -64,8 +69,11 @@ const SelectField = ({ label, value, onChange, name, options, error }) => (
     {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
+//#endregion
 
+//#region Component: EditInquiry Componen
 const EditInquiry = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
     inquiryTitle: '',
     inquiryLocation: '',
@@ -80,19 +88,15 @@ const EditInquiry = () => {
     specialNotes: '',  // Replaced reasonForClosure with specialNotes
     inquiryDocuments: '', // Store file here
   });
-
-   const { id } = useParams();
-
-  const role = sessionStorage.getItem("role");
-  // console.log(role);
-
+  const { id } = useParams();
   const [inquiryTypeList, setInquiryTypeList] = useState([]);
   const [inquirySourceList, setInquirySourceList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Data Fetching
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -110,7 +114,9 @@ const EditInquiry = () => {
     };
     fetchData();
   }, []);
+  //#endregion
 
+  //#region Event Handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -178,9 +184,12 @@ const EditInquiry = () => {
     
     setIsSubmitting(false);
   };
+  //#endregion
 
+  //#region Render
   return (
     <div>
+      {/* Header + Buttons */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Inquiry</h1>
         <motion.button
@@ -197,6 +206,7 @@ const EditInquiry = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -320,6 +330,8 @@ const EditInquiry = () => {
       </section>
     </div>
   );
+  //#endregion
 };
 
 export default EditInquiry;
+//#endregion

@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,7 +8,9 @@ import { InquirySourceService } from '../../service/InquirySourceService';
 import { toast } from 'react-toastify';
 import { InquiryService } from '../../service/InquiryService';
 import { ClientCompanyService } from '../../service/ClientCompanyService';
+//#endregion
 
+//#region InputField Component
 const InputField = ({ label, value, onChange, name, type = 'text', error, className }) => (
   <div className={`w-full mb-2 px-3 ${className}`}>
     <label className="block text-base font-medium">{label}</label>
@@ -40,7 +43,9 @@ const InputField = ({ label, value, onChange, name, type = 'text', error, classN
     {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
+//#endregion
 
+//#region SelectField Component
 const SelectField = ({ label, value, onChange, name, options, error }) => (
   <div className="w-full mb-2 px-3 md:w-1/3">
     <label className="block text-base font-medium">{label}</label>
@@ -64,8 +69,11 @@ const SelectField = ({ label, value, onChange, name, options, error }) => (
     {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
+//#endregion
 
+//#region Component: CreateClientInqry Component
 const CreateClientInqry = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
     clientRegistrationId: '',
     inquiryTitle: '',
@@ -81,15 +89,15 @@ const CreateClientInqry = () => {
     specialNotes: '',  // Replaced reasonForClosure with specialNotes
     inquiryDocuments: null, // Store file here
   });
-
   const [clientCompanyList, setClientCompanyList] = useState([]);
   const [inquiryTypeList, setInquiryTypeList] = useState([]);
   const [inquirySourceList, setInquirySourceList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Data Fetching
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -108,7 +116,9 @@ const CreateClientInqry = () => {
     };
     fetchData();
   }, []);
+  //#endregion
 
+  //#region Event Handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -118,14 +128,12 @@ const CreateClientInqry = () => {
     const { name, files } = e.target;
     setFormData(prev => ({ ...prev, [name]: files[0] }));  // Storing the first file
   };  
-
+  //#endregion
+  
+  //#region Submit Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // debugger;
-    // Add form validation logic here
-    // Add form validation and submission logic here
 
     const formDataToSend = new FormData();
     Object.keys(formData).forEach((key) => {
@@ -159,9 +167,12 @@ const CreateClientInqry = () => {
     
     setIsSubmitting(false);
   };
+  //#endregion
 
+  //#region Render
   return (
     <div>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Client Company Inquiry</h1>
         <motion.button
@@ -178,9 +189,11 @@ const CreateClientInqry = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
+            {/* Select Client Company Field*/}
             <SelectField
               label="Client Company"
               value={formData.clientRegistrationId}
@@ -190,6 +203,7 @@ const CreateClientInqry = () => {
               error={errors.clientRegistrationId}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Inquiry Title Field */}
             <InputField
               label="Inquiry Title"
               value={formData.inquiryTitle}
@@ -198,6 +212,7 @@ const CreateClientInqry = () => {
               error={errors.inquiryTitle}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Inquiry Location Field */}
             <InputField
               label="Inquiry Location"
               value={formData.inquiryLocation}
@@ -206,6 +221,7 @@ const CreateClientInqry = () => {
               error={errors.inquiryLocation}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Inquiry Type Field */}
             <SelectField
               label="Inquiry Type"
               value={formData.inquiryTypeId}
@@ -215,6 +231,7 @@ const CreateClientInqry = () => {
               error={errors.inquiryTypeId}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Inquiry Source Field */}
             <SelectField
               label="Inquiry Source"
               value={formData.inquirySourceId}
@@ -224,6 +241,7 @@ const CreateClientInqry = () => {
               error={errors.inquirySourceId}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Inquiry Customer Name */}
             <InputField
               label="Customer Name"
               value={formData.customerName}
@@ -232,6 +250,7 @@ const CreateClientInqry = () => {
               error={errors.customerName}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Customer Contact Info Field */}
             <InputField
               label="Customer Contact Info"
               value={formData.customerContactInfo}
@@ -240,6 +259,7 @@ const CreateClientInqry = () => {
               error={errors.customerContactInfo}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Estimated Value Field */}
             <InputField
               label="Estimated Value"
               type="number"
@@ -249,6 +269,7 @@ const CreateClientInqry = () => {
               error={errors.estimatedValue}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
+            {/* Priority Level Field */}
             <SelectField
               label="Priority Level"
               value={formData.priorityLevel}
@@ -262,7 +283,7 @@ const CreateClientInqry = () => {
               error={errors.priorityLevel}
               className="md:w-1/3" // Applied w-1/2 for Inquiry Description
             />
-            
+            {/* Inquiry Document Field */}
             <InputField
               label="Inquiry Document"
               value={formData.inquiryDocuments}
@@ -272,19 +293,7 @@ const CreateClientInqry = () => {
               error={errors.inquiryDocuments}
               className="md:w-1/3"
             />
-
-            {/* <SelectField
-              label="Inquiry Status"
-              value={formData.inquiryStatus}
-              onChange={handleInputChange}
-              name="inquiryStatus"
-              options={[
-                { id: '1', name: 'Open' },
-                { id: '2', name: 'Close' },
-                { id: '3', name: 'Pending' },
-              ]}
-              error={errors.inquiryStatus}
-            /> */}
+            {/* Inquiry Description Field */}
             <InputField
               label="Inquiry Description"
               value={formData.inquiryDescription}
@@ -294,6 +303,7 @@ const CreateClientInqry = () => {
               error={errors.inquiryDescription}
               className="md:w-1/2" // Applied w-1/2 for Inquiry Description
             />
+            {/* Special Notes Field */}
             <InputField
               label="Special Notes"  // Replaced reasonForClosure with specialNotes
               value={formData.specialNotes}
@@ -303,7 +313,7 @@ const CreateClientInqry = () => {
               error={errors.specialNotes}
               className="md:w-1/2" // Applied w-1/2 for Inquiry Description
             />
-
+            {/* Submit Button */}
             <div className="w-full px-3">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -322,6 +332,8 @@ const CreateClientInqry = () => {
       </section>
     </div>
   );
+  //#endregion
 };
 
 export default CreateClientInqry;
+//#endregion

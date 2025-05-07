@@ -1,12 +1,16 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import CreateClientInqryList from "../../admin-panel/create-client-inquiry/CreateClientInqryList";
 import CreatePartnerInqryList from "../../admin-panel/create-partner-inquiry/CreatePartnerInqryList";
+//#endregion
 
+//#region Component: CreateInquiryList
 const CreateInquiryList = () => {
 
+  //#region State Variables
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -36,17 +40,20 @@ const CreateInquiryList = () => {
   });
 
   const [activeTab, setActiveTab] = useState(1);
-
-  // const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Function Tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex flex-wrap justify-between items-center listmy-3">
         <h1 className="font-semibold text-xl sm:text-2xl">Create Inquiry</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -63,6 +70,7 @@ const CreateInquiryList = () => {
         </div>
       </div>
 
+      {/* Project List Table */}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <form className="container">
           <div className="md:px-2 lg:px-2 px-7">
@@ -107,8 +115,10 @@ const CreateInquiryList = () => {
       
     </>
   );
+  //#endregion
 };
 
 export default CreateInquiryList;
+//#endregion
 
 

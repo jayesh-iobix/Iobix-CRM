@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -10,22 +11,22 @@ import { InquirySubTaskService } from "../../service/InquirySubTaskService";
 import { PartnerService } from "../../service/PartnerService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { VendorService } from "../../service/VendorService";
+//#endregion 
 
+//#region  Component: AddInquirySubTask
 const AddInquirySubTask = () => {
-  // const [subTaskAllocationId, setSubTaskAllocationId] = useState("");
+  //#region State Initialization
   const [inquiryTaskAllocationId, setInquiryTaskAllocationId] = useState("");
   const [partnerRegistrationId, setPartnerRegistrationId] = useState("");
   const [clientRegistrationId, setClientRegistrationId] = useState("");
   const [vendorId, setVendorId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [taskName, setTaskName] = useState("");
-  const [taskAssignTo, setTaskAssignTo] = useState("");
   const [taskDocument, setTaskDocument] = useState("");
   const [taskPriority, setTaskPriority] = useState("");
   const [taskType, setTaskType] = useState("");
   const [taskStartingDate, setTaskStartingDate] = useState("");
   const [taskExpectedCompletionDate, setTaskExpectedCompletionDate] = useState("");
-  const [taskCompletionDate, settaskCompletionDate] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [departments, setDepartments] = useState([]);
   const [departmentId, setDepartmentId] = useState("");
@@ -41,8 +42,9 @@ const AddInquirySubTask = () => {
   const [notifications, setNotifications] = useState([{ reminderDateTime: ""}]);
   const navigate = useNavigate();
   const {id} = useParams();
+  //#endregion
   
-
+  //#region Fetch Employees, Departments, Partner, Client, and Vendor  
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -72,7 +74,9 @@ const AddInquirySubTask = () => {
 
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Form Validation & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -174,17 +178,22 @@ const AddInquirySubTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region File Handling
+  // Handle file change (file upload)
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setTaskDocument(file);  // Store the selected document
     }
   };
-
-   // Handle adding new notification row
-   const handleAddNotification = () => {
-    setNotifications([...notifications, { reminderDateTime: "" }]);
+  //#endregion
+  
+  //#region Notification Management
+  // Handle adding new notification row
+  const handleAddNotification = () => {
+   setNotifications([...notifications, { reminderDateTime: "" }]);
   };
 
   // Handle change in notification input fields
@@ -200,9 +209,12 @@ const AddInquirySubTask = () => {
     const updatedNotifications = notifications.filter((_, i) => i !== index);
     setNotifications(updatedNotifications);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Inquiry Sub Task</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -216,6 +228,7 @@ const AddInquirySubTask = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -647,6 +660,8 @@ const AddInquirySubTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default AddInquirySubTask;
+//#endregion

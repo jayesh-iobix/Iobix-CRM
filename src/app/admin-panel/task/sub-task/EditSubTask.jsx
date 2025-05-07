@@ -1,14 +1,16 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft, FaEye } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { EmployeeService } from "../../../service/EmployeeService";
-import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { SubTaskService } from "../../../service/SubTaskService";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: EditSubTask
 const EditSubTask = () => {
+  //#region State Variables
   const [taskAllocationId, setTaskAllocationId] = useState("");
   const [taskName, setTaskName] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
@@ -24,9 +26,10 @@ const EditSubTask = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams(); // Get task ID from URL
+  //#endregion
 
+  //#region Fetch Sub-Task and Employees
   useEffect(() => {
-
     const fetchTask = async () => {
       try {
         const taskResult = await SubTaskService.getSubTaskById(id); // Assuming TaskService has a method to fetch a single task by ID
@@ -64,18 +67,22 @@ const EditSubTask = () => {
         const departmentResult = await DepartmentService.getDepartments();
         setDepartments(departmentResult.data); // Set the 'data' array to the state\
 
-        if(departmentId){
-          const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
+        if (departmentId) {
+          const employeeResult = await EmployeeService.getEmployeeByDepartment(
+            departmentId
+          );
           setEmployeeList(employeeResult.data);
         }
       } catch (error) {
         console.error("Error fetching employee list:", error);
       }
     };
-    
+
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Form Validation & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -125,34 +132,28 @@ const EditSubTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Sub Task</h1>
         <div className="flex">
-          {/* <Link
-            to={`/task/create-subtask/${id}`}
-            className="bg-[#0296D6] text-white flex gap-2 mx-2 py-2 px-4 rounded hover:no-underline"
-          >
-            Add Sub Task <span className="mt-[2px]"> <FaPlus size={14} /></span>
-          </Link> */}
-
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Link
-            to="/task/task-list"
-            className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
-          >
-            <FaArrowLeft size={16} />
-            Back
-          </Link>
+          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <Link
+              to="/task/task-list"
+              className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
+            >
+              <FaArrowLeft size={16} />
+              Back
+            </Link>
           </motion.button>
         </div>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8 mb-10">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -173,9 +174,11 @@ const EditSubTask = () => {
               )}
             </div>
 
-               {/* Select Department */}
-               <div className="w-full mb-2 px-3 md:w-1/2">
-              <label className="block text-base font-medium">Select Department</label>
+            {/* Select Department */}
+            <div className="w-full mb-2 px-3 md:w-1/2">
+              <label className="block text-base font-medium">
+                Select Department
+              </label>
               <select
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
@@ -183,12 +186,17 @@ const EditSubTask = () => {
               >
                 <option value="">--Select Department--</option>
                 {departments.map((department) => (
-                  <option key={department.departmentId} value={department.departmentId}>
+                  <option
+                    key={department.departmentId}
+                    value={department.departmentId}
+                  >
                     {department.departmentName}
                   </option>
                 ))}
               </select>
-              {errors.taskAssignTo && <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>}
+              {errors.taskAssignTo && (
+                <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>
+              )}
             </div>
 
             {/* Assign To */}
@@ -206,7 +214,9 @@ const EditSubTask = () => {
                   </option>
                 ))}
               </select>
-              {errors.taskAssignTo && <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>}
+              {errors.taskAssignTo && (
+                <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>
+              )}
             </div>
 
             {/* Task Type */}
@@ -285,15 +295,15 @@ const EditSubTask = () => {
             </div>
 
             <div className="w-full px-3">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              type="submit"
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                type="submit"
                 className={`px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-[#2564ebdb] active:border-[#a8adf4] outline-none active:border-2 focus:ring-2 ring-blue-300 ${
                   isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isSubmitting}
-            >
+              >
                 {isSubmitting ? "Submitting..." : "Update Task"}
               </motion.button>
               {/* <button
@@ -311,6 +321,8 @@ const EditSubTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditSubTask;
+//#endregion

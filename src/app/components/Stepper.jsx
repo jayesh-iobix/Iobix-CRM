@@ -1,6 +1,8 @@
 import React from "react";
 
+//#region Component: Stepper
 const Stepper = ({ steps = [], currentStep = 1 }) => {
+  //#region Render
   return (
     <div className="w-full">
       {/* Stepper Header */}
@@ -9,6 +11,7 @@ const Stepper = ({ steps = [], currentStep = 1 }) => {
           const isActive = currentStep === index + 1;
           const isCompleted = currentStep > index + 1;
 
+          //#region Render
           return (
             <div key={index} className="flex items-center w-full">
               <div className="flex flex-col items-center">
@@ -47,15 +50,16 @@ const Stepper = ({ steps = [], currentStep = 1 }) => {
               )}
             </div>
           );
+          //#endregion
         })}
       </div>
 
       {/* Step Content */}
-      <div className="mt-6">
-        {steps[currentStep - 1]?.component}
-      </div>
+      <div className="mt-6">{steps[currentStep - 1]?.component}</div>
     </div>
   );
+  //#endregion
 };
 
 export default Stepper;
+//#endregion

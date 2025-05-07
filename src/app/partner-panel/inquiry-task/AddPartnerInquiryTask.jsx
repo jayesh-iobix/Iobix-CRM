@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -11,8 +12,11 @@ import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { id } from "date-fns/locale";
 import { CommonService } from "../../service/CommonService";
+//#endregion
 
+//#region  Component: AddPartnerInquiryTask
 const AddPartnerInquiryTask = () => {
+  //#region State Initialization
   const [taskName, setTaskName] = useState("");
   const [partnerRegistrationId, setPartnerRegistrationId] = useState("");
   const [clientRegistrationId, setClientRegistrationId] = useState("");
@@ -40,7 +44,9 @@ const AddPartnerInquiryTask = () => {
   const navigate = useNavigate();
 
   const {id} = useParams();
+  //#endregion
 
+  //#region Fetch Employees, Departments, Partner, Client, and Admin 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -55,16 +61,6 @@ const AddPartnerInquiryTask = () => {
 
         const employeeResult = await EmployeeService.getInquiryTransferEmployees(id);
         setEmployeeList(employeeResult.data);
-
-        // const departmentResult = await DepartmentService.getDepartments();
-        // const activeDepartments = departmentResult.data.filter(department => department.isActive === true);
-        // setDepartmentList(activeDepartments);
-
-        // if (departmentId) {
-        //   // Fetch Employee from department
-        //   const employeeResult = await EmployeeService.getEmployeeByDepartment(departmentId);
-        //   setEmployeeList(employeeResult.data);
-        // }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -72,7 +68,9 @@ const AddPartnerInquiryTask = () => {
 
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Form Validation & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -147,14 +145,18 @@ const AddPartnerInquiryTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region File Handling
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setTaskDocument(file);  // Store the selected document
     }
   };
+  //#endregion
 
+  //#region Notification Management
   // Handle adding new notification row
   const handleAddNotification = () => {
     setNotifications([...notifications, { reminderDateTime: "" }]);
@@ -173,9 +175,12 @@ const AddPartnerInquiryTask = () => {
     const updatedNotifications = notifications.filter((_, i) => i !== index);
     setNotifications(updatedNotifications);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Inquiry Task</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -189,6 +194,7 @@ const AddPartnerInquiryTask = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -583,6 +589,8 @@ const AddPartnerInquiryTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default AddPartnerInquiryTask;
+//#endregion

@@ -1,7 +1,7 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { TaskService } from "../../../service/TaskService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { DepartmentService } from "../../../service/DepartmentService";
@@ -9,11 +9,12 @@ import { EmployeeService } from "../../../service/EmployeeService";
 import { InquiryPermissionService } from "../../../service/InquiryPermissionService";
 import { InquiryTypeService } from "../../../service/InquiryTypeService";
 import Select from "react-select"; // Import react-select for searchable dropdown
-import { CommonService } from "../../../service/CommonService";
-import de from "date-fns/locale/de";
+//#endregion
 
-
+//#region Component: EditInquiryPermission
 const EditInquiryPermission = () => {
+
+  //#region State Variables
   const [userId, setUserId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [inquiryTypeIds, setInquiryTypeIds] = useState([]);
@@ -23,9 +24,11 @@ const EditInquiryPermission = () => {
   const [inquiryTypeList, setInquiryTypeList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
   const {id} = useParams();
+  const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect - Fetch Employee, Department and Inquiry Permission data
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -33,7 +36,6 @@ const EditInquiryPermission = () => {
         // Fetch Inquiry Permission
         const inquiryPermissionResult = await InquiryPermissionService.getByIdInquiryPermission(id);
         const inquiryPermissionData = inquiryPermissionResult.data;
-        // console.log(inquiryPermissionData);
         setUserId(inquiryPermissionData.userId);
         setDepartmentId(inquiryPermissionData.departmentId);
         setInquiryTypeIds(inquiryPermissionData.inquiryTypeIds);
@@ -46,19 +48,10 @@ const EditInquiryPermission = () => {
         setDepartmentList(activeDepartments);
 
         if (departmentId) {
-          // debugger;
-          // if(departmentId === "Admin") {
-            // Fetch Admin
-            // console.log("Admin Department Selected");
-            // const adminResult = await CommonService.getAdmin();
-            // setEmployeeList(adminResult.data);
-          // } else {
-            // Fetch Employee from department
           const employeeResult = await EmployeeService.getEmployeeByDepartment(
             departmentId
           );
           setEmployeeList(employeeResult.data);
-        // }
         }
 
         // Fetch Inquiry Type
@@ -74,7 +67,9 @@ const EditInquiryPermission = () => {
     };
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Validation Function 
   const validateForm = () => {
     const newErrors = {};
     if (!userId) newErrors.userId  = "User is required";
@@ -82,7 +77,9 @@ const EditInquiryPermission = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+  //#endregion
+  
+ //#region Event Handler
   const handleSelectChange = (selectedOptions, field) => {
     const selectedValues = selectedOptions ? selectedOptions.map((option) => option.value) : [];
     if (field === "inquiryTypeId") {
@@ -98,7 +95,6 @@ const EditInquiryPermission = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    debugger
     if (!validateForm()) return;
 
     const inquiryPermissionData = {
@@ -121,9 +117,12 @@ const EditInquiryPermission = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Inquiry Permission</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -137,6 +136,7 @@ const EditInquiryPermission = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -238,6 +238,8 @@ const EditInquiryPermission = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditInquiryPermission;
+//#endregion

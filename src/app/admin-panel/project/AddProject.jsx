@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,7 +10,9 @@ import { InquiryService } from '../../service/InquiryService';
 import { PartnerService } from '../../service/PartnerService';
 import { ClientCompanyService } from '../../service/ClientCompanyService';
 import { VendorService } from '../../service/VendorService';
+//#endregion
 
+//#region InputField Component
 const InputField = ({ label, value, onChange, name, type = 'text', error, className }) => (
   <div className={`w-full mb-2 px-3 ${className}`}>
     <label className="block text-base font-medium">{label}</label>
@@ -42,7 +45,9 @@ const InputField = ({ label, value, onChange, name, type = 'text', error, classN
     {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
+//#endregion
 
+//#region SelectField Component
 const SelectField = ({ label, value, onChange, name, options, error }) => (
   <div className="w-full mb-2 px-3 md:w-1/3">
     <label className="block text-base font-medium">{label}</label>
@@ -66,8 +71,11 @@ const SelectField = ({ label, value, onChange, name, options, error }) => (
     {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
+//#endregion
 
+//#region Component: AddProject Component
 const AddProject = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
     partnerRegistrationId: '',
     clientRegistrationId: '',
@@ -85,7 +93,6 @@ const AddProject = () => {
     specialNotes: '',  // Replaced reasonForClosure with specialNotes
     inquiryDocuments: null, // Store file here
   });
-
   const [partnerList, setPartnerList] = useState([]);
   const [clientCompanyList, setClientCompanyList] = useState([]);
   const [vendorList, setVendorList] = useState([]);
@@ -95,7 +102,9 @@ const AddProject = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedType, setSelectedType] = useState('partner'); // New state for selecting Partner or Client Company
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Data Fetching
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -119,7 +128,9 @@ const AddProject = () => {
     };
     fetchData();
   }, []);
+  //#endregion
 
+  //#region Event Handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -222,9 +233,12 @@ const AddProject = () => {
     
     setIsSubmitting(false);
   };
+  //#endregion
 
+  //#region Render
   return (
     <div>
+      {/* Header + Buttons */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Project</h1>
         <motion.button
@@ -241,6 +255,7 @@ const AddProject = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -322,25 +337,7 @@ const AddProject = () => {
               />
             )}
 
-            {/* <SelectField
-              label="Partner"
-              value={formData.partnerRegistrationId}
-              onChange={handleInputChange}
-              name="partnerRegistrationId"
-              options={partnerList.map(item => ({ id: item.partnerRegistrationId, name: item.companyName}))}
-              error={errors.partnerRegistrationId}
-              className="md:w-1/3" 
-            />
-            <SelectField
-              label="Client Company"
-              value={formData.clientRegistrationId}
-              onChange={handleInputChange}
-              name="clientRegistrationId"
-              options={clientCompanyList.map(item => ({ id: item.clientRegistrationId, name: item.companyName}))}
-              error={errors.clientRegistrationId}
-              className="md:w-1/3" // Applied w-1/2 for Inquiry Description
-            /> */}
-
+            {/* Project Title Field */}
             <InputField
               label="Project Title"
               value={formData.inquiryTitle}
@@ -349,6 +346,7 @@ const AddProject = () => {
               error={errors.inquiryTitle}
               className="md:w-1/3" 
             />
+            {/* Project Location Field */}
             <InputField
               label="Project Location"
               value={formData.inquiryLocation}
@@ -357,6 +355,7 @@ const AddProject = () => {
               error={errors.inquiryLocation}
               className="md:w-1/3" 
             />
+            {/* Project Type */}
             <SelectField
               label="Project Type"
               value={formData.inquiryTypeId}
@@ -366,6 +365,7 @@ const AddProject = () => {
               error={errors.inquiryTypeId}
               className="md:w-1/3" 
             />
+            {/* Project Source */}
             <SelectField
               label="Project Source"
               value={formData.inquirySourceId}
@@ -375,6 +375,7 @@ const AddProject = () => {
               error={errors.inquirySourceId}
               className="md:w-1/3" 
             />
+            {/* Customer Name */}
             <InputField
               label="Customer Name"
               value={formData.customerName}
@@ -383,6 +384,7 @@ const AddProject = () => {
               error={errors.customerName}
               className="md:w-1/3" 
             />
+            {/* Customer Contact Info */}
             <InputField
               label="Customer Contact Info"
               value={formData.customerContactInfo}
@@ -391,6 +393,7 @@ const AddProject = () => {
               error={errors.customerContactInfo}
               className="md:w-1/3" 
             />
+            {/* Estimated Value */}
             <InputField
               label="Estimated Value"
               type="number"
@@ -400,6 +403,7 @@ const AddProject = () => {
               error={errors.estimatedValue}
               className="md:w-1/3" 
             />
+            {/* Priority Level */}
             <SelectField
               label="Priority Level"
               value={formData.priorityLevel}
@@ -413,6 +417,7 @@ const AddProject = () => {
               error={errors.priorityLevel}
               className="md:w-1/3" 
             />
+            {/* Project Document */}
             <InputField
               label="Project Document"
               value={formData.inquiryDocuments}
@@ -422,6 +427,7 @@ const AddProject = () => {
               error={errors.inquiryDocuments}
               className="md:w-1/3"
             />
+            {/* Project Description */}
             <InputField
               label="Project Description"
               value={formData.inquiryDescription}
@@ -431,6 +437,7 @@ const AddProject = () => {
               error={errors.inquiryDescription}
               className="md:w-1/2" // Applied w-1/2 for Project Description
             />
+            {/* Special Notes */}
             <InputField
               label="Special Notes"  // Replaced reasonForClosure with specialNotes
               value={formData.specialNotes}
@@ -440,7 +447,7 @@ const AddProject = () => {
               error={errors.specialNotes}
               className="md:w-1/2" 
             />
-
+            {/* Submit Button */}
             <div className="w-full px-3">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -459,6 +466,8 @@ const AddProject = () => {
       </section>
     </div>
   );
+  //#endregion
 };
 
 export default AddProject;
+//#endregion

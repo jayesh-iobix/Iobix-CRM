@@ -1,19 +1,22 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { AuthService } from "../service/AuthService";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import Logo from "../../assets/iobix-technolabs.png"
 import { toast } from "react-toastify";
+//#endregion
 
+//#region Component: ForgotPassword
 const ForgotPassword = () => {
+  //#region State Variables
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const navigate = useNavigate();
+  //#region State Variables
 
-
+  //#region Form Validation and Submission
   const validateForm = () => {
     const newErrors = {};
     if (!email) newErrors.email = "User name is required";
@@ -41,8 +44,9 @@ const ForgotPassword = () => {
     }
 
   };
+  //#endregion
 
-
+  //#region Render
   return (
     <div className="w-full min-h-screen flex items-center justify-center flex-col lg:flex-row bg-[#f3f4f6] bg-signin">
       <div className="w-full lg:w-auto md:w-auto flex gap-0 lg:gap-40 md:gap-38 flex-col md:flex-row items-center justify-center">
@@ -113,8 +117,10 @@ const ForgotPassword = () => {
       </div>
     </div>
   );
+  //#endregion
 };
 
 export default ForgotPassword;
+//#endregion
 
 

@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,9 +7,12 @@ import { EmployeeService } from "../../../service/EmployeeService";
 import { TaskService } from "../../../service/TaskService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
-
+//#region Component: UserCreateTask
 const UserCreateTask = () => {
+
+  //#region State Variables
   const [taskName, setTaskName] = useState("");
   const [taskAssignTo, setTaskAssignTo] = useState("");
   const [taskPriority, setTaskPriority] = useState("");
@@ -23,7 +27,9 @@ const UserCreateTask = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Department and Employee Data
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -46,7 +52,9 @@ const UserCreateTask = () => {
 
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Form Validation & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -90,9 +98,12 @@ const UserCreateTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Task</h1>
         <motion.button
@@ -109,6 +120,7 @@ const UserCreateTask = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -268,6 +280,8 @@ const UserCreateTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default UserCreateTask;
+//#endregion

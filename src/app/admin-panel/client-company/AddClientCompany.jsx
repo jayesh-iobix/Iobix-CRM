@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,13 +10,14 @@ import { getToken } from "firebase/messaging";
 import { EmployeeService } from "../../service/EmployeeService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
-import { EmployeeLeaveTypeService } from "../../service/EmployeeLeaveTypeService";
 import { InquirySourceService } from "../../service/InquirySourceService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { DepartmentService } from "../../service/DepartmentService";
+//#endregion Imports
 
-
+//#region Component: AddClientCompany
 const AddClientCompany = () => {
+  //#region State Variables
   const [formData, setFormData] = useState({
     companyName: "",
     companyRegistrationNumber : "",
@@ -33,26 +35,23 @@ const AddClientCompany = () => {
     companyWebsite : "",
     relationalManagerId : "",
   });
-
   const [departmentId, setDepartmentId] = useState(""); // State for Department ID
-  const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
   const [inquirySourceList, setInquirySourceList] = useState([]);
-  
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [employeeLeaveTypeList, setEmployeeLeaveTypeList] = useState([]);
-  const [designationList, setDesignationList] = useState([]);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
-  const navigate = useNavigate();
-
   const [employeeAssignTo, setEmployeeAssignTo] = useState(false);
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
-
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  //#endregion
+  
+  //#region useEffect Hooks to handle device token and fetch data  
+  // Check for device token and device ID on component mount
   useEffect(() => {
     // Check for stored device token
     const storedDeviceToken = sessionStorage.getItem("deviceToken");
@@ -124,8 +123,11 @@ const AddClientCompany = () => {
       //#endregion Fetch Country, State, and City Source
     };
     fetchData();
-    }, [formData.countryId, formData.stateId, departmentId])
+  }, [formData.countryId, formData.stateId, departmentId])
+  //#endregion
 
+  //#region Form Validation and Submission
+  // Validate form data before submission
   const validateForm = () => {
     const newErrors = {};
     if (!formData.companyName) newErrors.companyName = "Company Name is required";
@@ -147,6 +149,7 @@ const AddClientCompany = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     // debugger;
@@ -217,7 +220,9 @@ const AddClientCompany = () => {
       }
     }
   };
+  //#endregion 
 
+  //#region Handle Change Function
   const handleChange = (e) => {
     const { name, value } = e.target;
     
@@ -243,9 +248,12 @@ const AddClientCompany = () => {
     // Update form data for all fields
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Add Client Company</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -259,6 +267,7 @@ const AddClientCompany = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-4 dark:bg-dark">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -356,6 +365,8 @@ const AddClientCompany = () => {
               </>
             )}
 
+            {/* Form Fields */}
+            {/* Company Name, Registration Number, Email, Contact Person Name, GST Number, Website, Phone No., WhatsApp No., Contact Person Linkedin */}
             {[
               {
                 label: "Company Name",
@@ -557,6 +568,7 @@ const AddClientCompany = () => {
               </div>
             </div>
 
+            {/* Submit Button */}
             <div className="w-full flex px-3">
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -575,8 +587,10 @@ const AddClientCompany = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default AddClientCompany;
+//#endregion
 
 

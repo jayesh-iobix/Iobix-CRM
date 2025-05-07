@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -5,20 +6,22 @@ import { EmployeePermissionService } from "../../../service/EmployeePermissionSe
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { InquiryPermissionService } from "../../../service/InquiryPermissionService";
+//#endregion
 
+//#region Component: AdminInqryPermiList
 const AdminInqryPermiList = () => {
+  
+  //#region State Variables
   const [inquiryPermissionList, setInquiryPermissionList] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
-  //const navigate = useNavigate();
-
+  //#region useEffect: Fetch InquiryPermission Data
   useEffect(() => {
     const fetchInquiryPermission = async () => {
       try {
@@ -34,11 +37,15 @@ const AdminInqryPermiList = () => {
     };
     fetchInquiryPermission();
   }, []);
+  //#endregion
 
-   const deleteInquiryPermission = async () => {
+  //#region Delete Logic
+  const deleteInquiryPermission = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
-      const response = await InquiryPermissionService.deleteInquiryPermission(deleteId);
+      const response = await InquiryPermissionService.deleteInquiryPermission(
+        deleteId
+      );
       if (response.status === 1) {
         setInquiryPermissionList((pervInquiryPermission) =>
           pervInquiryPermission.filter(
@@ -64,65 +71,73 @@ const AdminInqryPermiList = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
-  const handleCheckboxChange = async (checked, inquiryPermissionId , item) => {
-      // Optimistically update the UI by changing the `isActive` for the current row
-      const updatedInquiryPermission = inquiryPermissionList.map((item) =>
-        item.inquiryPermissionId  === inquiryPermissionId  ? { ...item, isActive: checked } : item
-      );
+  //#region IsActive Logic
+  const handleCheckboxChange = async (checked, inquiryPermissionId, item) => {
+    // Optimistically update the UI by changing the `isActive` for the current row
+    const updatedInquiryPermission = inquiryPermissionList.map((item) =>
+      item.inquiryPermissionId === inquiryPermissionId
+        ? { ...item, isActive: checked }
+        : item
+    );
 
-      console.log(item)
-      
-      setInquiryPermissionList(updatedInquiryPermission); // Update the state immediately
-      try {
-        // Prepare the data for the API call
-        const inquiryPermissionData = {
-          userId : item.userId,
-          userName : item.userName,
-          inquiryTypeId : item.inquiryTypeId,
-          inquiryTypeIds: item.inquiryTypeIds,  // Send inquiryTypeIds as well
-          isActive: checked , // Only update the isActive field
-        };
-        
-        //console.log(inquiryPermissionData)
-        debugger;
-        // Call the update API to update the `isActive` field on the server
-        const updatedInquiryPermission = await InquiryPermissionService.updateInquiryPermission(
+    console.log(item);
+
+    setInquiryPermissionList(updatedInquiryPermission); // Update the state immediately
+    try {
+      // Prepare the data for the API call
+      const inquiryPermissionData = {
+        userId: item.userId,
+        userName: item.userName,
+        inquiryTypeId: item.inquiryTypeId,
+        inquiryTypeIds: item.inquiryTypeIds, // Send inquiryTypeIds as well
+        isActive: checked, // Only update the isActive field
+      };
+
+      //console.log(inquiryPermissionData)
+      debugger;
+      // Call the update API to update the `isActive` field on the server
+      const updatedInquiryPermission =
+        await InquiryPermissionService.updateInquiryPermission(
           inquiryPermissionId,
           inquiryPermissionData
         );
-        //console.log(updatedInquiryPermission); // If successful, log the response
-  
-        // Check the response from the API and display a success message
-        if (updatedInquiryPermission) {
-          toast.success("Inquiry Permission updated successfully.");
-        } else {
-          throw new Error("Failed to update inquiry permission.");
-        }
-      } catch (error) {
-        console.error(
-          "Error updating inquiry permission:",
-          error.response?.data || error.message
-        );
-        toast.error("Error updating inquiry permission.");
-        // Revert UI change if needed
+      //console.log(updatedInquiryPermission); // If successful, log the response
+
+      // Check the response from the API and display a success message
+      if (updatedInquiryPermission) {
+        toast.success("Inquiry Permission updated successfully.");
+      } else {
+        throw new Error("Failed to update inquiry permission.");
       }
-    };
+    } catch (error) {
+      console.error(
+        "Error updating inquiry permission:",
+        error.response?.data || error.message
+      );
+      toast.error("Error updating inquiry permission.");
+      // Revert UI change if needed
+    }
+  };
+  //#endregion
 
-   //#region Pagination logic
-   const indexOfLastItem = currentPage * itemsPerPage;
-   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-   const currentItems = inquiryPermissionList.slice(indexOfFirstItem, indexOfLastItem);
- 
-   const totalPages = Math.ceil(totalItems / itemsPerPage);
- 
-   const handlePageChange = (pageNumber) => {
-     setCurrentPage(pageNumber);
-   };
-   //#endregion
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = inquiryPermissionList.slice(indexOfFirstItem, indexOfLastItem);
 
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  //#endregion
+
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Admin Inquiry Permission List</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -136,6 +151,7 @@ const AdminInqryPermiList = () => {
         </motion.button>
       </div>
 
+      {/* Admin Inquiry Permission Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white">
           <thead className="bg-gray-900 border-b">
@@ -376,7 +392,9 @@ const AdminInqryPermiList = () => {
         </div>
       </div>
     </>
+    //#endregion
   );
 }
 
 export default AdminInqryPermiList
+//#endregion

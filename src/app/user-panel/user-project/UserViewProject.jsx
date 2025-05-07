@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -25,9 +26,12 @@ import EmpInquiryChatCreated from "../inquiry/EmpInquiryChatCreated";
 // import InquiryChat from "../inquiry/InquiryChat";
 // import InquiryTaskList from "../inquiry-task/InquiryTaskList";
 // import ChatInquiry from "./ChatInquiry";
+//#endregion
 
+//#region Component: UserViewProject
 const UserViewProject = () => {
 
+  //#region State Variables
   const [formData, setFormData] = useState({
     inquiryTitle: '',
     inquiryLocation: '',
@@ -61,8 +65,6 @@ const UserViewProject = () => {
   const [inquiryForwadedeData, setInquiryForwadedeData] = useState(""); 
   const [inquiryTransferdData, setInquiryTransferdData] = useState("");
   
-  // const [name, setName] = useState("")
-
   const [departments, setDepartments] = useState([]);
   const [clients, setClients] = useState([]);
   const [partners, setPartners] = useState([]);
@@ -80,7 +82,9 @@ const UserViewProject = () => {
   const role = sessionStorage.getItem("role");
   const userId = sessionStorage.getItem("LoginUserId");
   const [isCreatedAdmin, setIsCreatedAdmin] = useState(false);
+  //#endregion
 
+  //#region Fetch Project Data
   const fetchData = async () => {
     try {
       // Fetch Inquiry Permission
@@ -153,53 +157,16 @@ const UserViewProject = () => {
   useEffect(() => {
     fetchData();
   }, [id, departmentId]);
+  //#endregion
 
+  //#region Function to handle tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
-  const handleTakeInquiry = async () => {
-
-    // debugger;
-
-    try {
-      // debugger;
-      // Call the API to add the task note
-      const response = await InquiryService.takeInquiry(id);
-      if (response.status === 1) {
-        toast.success("Inquiry has Taken Successfully."); // Toast on success
-        // toast.success(response.message); // Toast on success
-        fetchData();
-      }
-      if (response.status === 2) {
-        toast.error("Inquiry has already Taken."); // Toast on success
-        // toast.success(response.message); // Toast on success
-        // fetchData();
-      }
-      // console.log("Inquiry has Taken successfully:", response);
-
-      // Optionally, you can update the task state or show a success message here
-    } catch (error) {
-      console.error(
-        "Error taking inquiry:",
-        error.response?.data || error.message
-      );
-      if (error.response?.data?.errors) {
-        console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-      }
-    }
-
-    // Close the popup after submission
-    // setIsPopupVisible(false);
-  };
-
-  // Function to handle opening the popup and setting the current task
-  // const handleTransferInquiry = (inquiry) => {
-  //   setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
-  //   setTransferPopupVisible(true); // Show the popup
-  // };
-
+  //#region Project Submit & Transfer Submit
   //Function to forward submit the api
   const handleInquirySubmit = async (event) => {
     event.preventDefault();
@@ -209,8 +176,6 @@ const UserViewProject = () => {
         toast.error("Please select an employee/client/partner to forward the inquiry and provide a follow-up description.");
         return; // Prevent form submission
     }
-
-    debugger;
 
     const inquiryData = {
       inquiryRegistrationId: id,
@@ -336,165 +301,12 @@ const UserViewProject = () => {
       // Close the popup after submission
       // setIsPopupVisible(false);
   };
+  //#endregion
 
-
-  // //Function to forward submit the api
-  // const handleInquirySubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   debugger;
-
-  //   const inquiryData = {
-  //     inquiryRegistrationId: id,
-  //     inquiryForwardedTo: 
-  //     (inquiryForwardedTo === "" && clientId !== "") ? clientId : 
-  //     (clientId === "" && inquiryForwardedTo !== "") ? inquiryForwardedTo : 
-  //     (inquiryForwardedTo === "" && clientId === "" ? null : inquiryForwardedTo),
-  //     // inquiryForwardedTo: inquiryForwardedTo === "" ? null : inquiryForwardedTo,
-  //     inquiryFollowUpDescription,
-  //     inquiryTransferTo: null
-  //     // inquiryTransferTo: inquiryTransferTo === "" ? null : inquiryTransferTo,
-  //     // taskTransferTo,
-  //   };
-
-  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-
-  //   try {
-  //     // Call the API to add the task note
-  //     const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryData);
-  //     if (response.status === 1) {
-  //        toast.success("Inquiry Forwarded Successfully."); // Toast on success
-  //       // if(inquiryForwardedTo === null || "") {
-  //       //   toast.success("Inquiry Transfer Successfully."); // Toast on success
-  //       // }
-  //       // toast.success(response.message); // Toast on success
-  //       // fetchInquiries();
-  //       setInquiryFollowUpDescription("");
-  //       setInquiryForwardedTo("");
-  //       setInquiryTransferTo("");
-  //       setDepartmentId("")
-  //     } 
-  //     else {
-  //       setInquiryFollowUpDescription("");
-  //       setInquiryForwardedTo("");
-  //       setInquiryTransferTo("");
-  //       setDepartmentId("")
-  //     }
-  //     // console.log("task transfer added successfully:", response);
-
-  //     // Optionally, you can update the task state or show a success message here
-  //     setForwardPopupVisible(false); // Close the popup
-  //     setTransferPopupVisible(false); // Close the popup
-  //   } catch (error) {
-  //     console.error(
-  //       "Error forwarding a inquiry:",
-  //       error.response?.data || error.message
-  //     );
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-  
-  //     // Close the popup after submission
-  //     // setIsPopupVisible(false);
-  // };
-
-  // //Function to transfer submit the api
-  // const handleTransferInquirySubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   debugger;
-
-  //   const inquiryData = {
-  //     inquiryRegistrationId: id,
-  //     inquiryForwardedTo:null,
-  //     // inquiryForwardedTo: inquiryForwardedTo === "" ? null : inquiryForwardedTo,
-  //     inquiryFollowUpDescription,
-  //     inquiryTransferTo,
-  //   };
-
-  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-
-  //   try {
-  //     // Call the API to add the task note
-  //     const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryData);
-  //     if (response.status === 1) {
-  //         toast.success("Inquiry Transfer Successfully."); // Toast on success
-  //       // toast.success(response.message); // Toast on success
-  //       // fetchInquiries();
-  //       setInquiryFollowUpDescription("");
-  //       setInquiryForwardedTo("");
-  //       setInquiryTransferTo("");
-  //       setDepartmentId("")
-  //     } 
-  //     else {
-  //       setInquiryFollowUpDescription("");
-  //       setInquiryForwardedTo("");
-  //       setInquiryTransferTo("");
-  //       setDepartmentId("")
-  //     }
-  //     // console.log("task transfer added successfully:", response);
-
-  //     // Optionally, you can update the task state or show a success message here
-  //     setForwardPopupVisible(false); // Close the popup
-  //     setTransferPopupVisible(false); // Close the popup
-  //   } catch (error) {
-  //     console.error(
-  //       "Error transfering a inquiry:",
-  //       error.response?.data || error.message
-  //     );
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-  
-  //     // Close the popup after submission
-  //     // setIsPopupVisible(false);
-  // };
-
-  // const handleForwardSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   // debugger;
-
-  //   const inquiryForwardData = {
-  //     inquiryRegistrationId: id,
-  //     inquiryForwardedTo,
-  //     inquiryFollowUpDescription,
-  //     // taskTransferTo,
-  //   };
-  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-
-  //   try {
-  //     // Call the API to add the task note
-  //     const response = await InquiryFollowUpService.addInquiryFollowUp(
-  //       inquiryForwardData
-  //     );
-  //     if (response.status === 1) {
-  //       toast.success("Inquiry Forwarded Successfully."); // Toast on success
-  //       // toast.success(response.message); // Toast on success
-  //       fetchData();
-  //     }
-  //     console.log("Inquiry Forwarded Successfully:", response);
-
-  //     // Optionally, you can update the task state or show a success message here
-  //     setForwardPopupVisible(false); // Close the popup
-  //   } catch (error) {
-  //     console.error(
-  //       "Error forwarding inquiry:",
-  //       error.response?.data || error.message
-  //     );
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-
-  //   // Close the popup after submission
-  //   // setIsPopupVisible(false);
-  // };
-
+  //#region Render
   return (
     <>
+      {/* Header Section + Button */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -1099,6 +911,8 @@ const UserViewProject = () => {
       /> */}
     </>
   );
+  //#endregion
 };
 
 export default UserViewProject;
+//#endregion

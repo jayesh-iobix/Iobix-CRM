@@ -1,18 +1,19 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { TaskService } from "../../../service/TaskService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
-import { DepartmentService } from "../../../service/DepartmentService";
-import { EmployeeService } from "../../../service/EmployeeService";
 import { InquiryPermissionService } from "../../../service/InquiryPermissionService";
 import { InquiryTypeService } from "../../../service/InquiryTypeService";
 import Select from "react-select"; // Import react-select for searchable dropdown
 import { CommonService } from "../../../service/CommonService";
+//#endregion
 
-
+//#region Component: EditAdminInqryPermi
 const EditAdminInqryPermi = () => {
+
+  //#region State Variables
   const [userId, setUserId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [inquiryTypeIds, setInquiryTypeIds] = useState([]);
@@ -21,9 +22,11 @@ const EditAdminInqryPermi = () => {
   const [inquiryTypeList, setInquiryTypeList] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
   const {id} = useParams();
+  const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect - Fetch Employee data
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -53,7 +56,9 @@ const EditAdminInqryPermi = () => {
     };
     fetchEmployees();
   }, [departmentId]);
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!userId) newErrors.userId  = "Admin is required";
@@ -77,7 +82,6 @@ const EditAdminInqryPermi = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    debugger
     if (!validateForm()) return;
 
     const inquiryPermissionData = {
@@ -99,9 +103,12 @@ const EditAdminInqryPermi = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Inquiry Permission</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -115,6 +122,7 @@ const EditAdminInqryPermi = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -181,6 +189,8 @@ const EditAdminInqryPermi = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditAdminInqryPermi;
+//#endregion

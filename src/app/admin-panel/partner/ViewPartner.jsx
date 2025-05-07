@@ -1,11 +1,15 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { PartnerService } from "../../service/PartnerService";
+//#endregion
 
+//#region Component: ViewPartner
 const ViewPartner = () => {
 
+  //#region State Variables
   const [formData, setFormData] = useState({
     firstName: "",
     middleName: "",
@@ -35,10 +39,11 @@ const ViewPartner = () => {
   });
 
   const [activeTab, setActiveTab] = useState(1);
-
   const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion
 
+  //#region Fetch Partner Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -61,14 +66,19 @@ const ViewPartner = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Function to handle tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Partner</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -94,6 +104,7 @@ const ViewPartner = () => {
         </div>
       </div>
 
+      {/* Tab Navigation and Partner Details Section*/}
       <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
         <form className="container">
           <div className="md:px-2 lg:px-2 px-7">
@@ -175,10 +186,10 @@ const ViewPartner = () => {
           </div>
         </form>
       </section>
-
-      
     </>
   );
+  //#endregion
 };
 
 export default ViewPartner;
+//#endregion

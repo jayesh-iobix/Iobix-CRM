@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
@@ -6,38 +7,44 @@ import { SubTaskService } from "../../../service/SubTaskService";
 import { motion } from "framer-motion"; // Import framer-motion
 import ChatComponent from "../../employee-chat/ChatComponent";
 // import ChatComponent from "../../employee-chat/ChatComponent";
+//#endregion
 
-
+//#region Component: ViewAssignSubTask
 const ViewAssignTask = () => {
 
+  //#region State Variables
   const { id } = useParams();
   const navigate = useNavigate();
   const [taskDetails, setTaskDetails] = useState({});
+  //#endregion
 
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          // First try to fetch task data from TaskService
-          const taskResult = await TaskService.getTaskById(id);
-          if (taskResult?.data) {
-            // If task is found, store in taskDetails
-            setTaskDetails(taskResult.data);
-          } else {
-            // If no task found, attempt to fetch from SubTaskService
-            const subTaskResult = await SubTaskService.getSubTaskById(id);
-            if (subTaskResult?.data) {
-              // If subtask is found, store in taskDetails
-              setTaskDetails(subTaskResult.data);
-            }
+  //#region Fetch Task Data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // First try to fetch task data from TaskService
+        const taskResult = await TaskService.getTaskById(id);
+        if (taskResult?.data) {
+          // If task is found, store in taskDetails
+          setTaskDetails(taskResult.data);
+        } else {
+          // If no task found, attempt to fetch from SubTaskService
+          const subTaskResult = await SubTaskService.getSubTaskById(id);
+          if (subTaskResult?.data) {
+            // If subtask is found, store in taskDetails
+            setTaskDetails(subTaskResult.data);
           }
-        } catch (error) {
-          console.error("Error fetching data:", error);
         }
-      };
-  
-      fetchData();
-    }, [id]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
+    fetchData();
+  }, [id]);
+  //#endregion
+
+  //#region Function to get status color & format date
   const getStatusColor = (status) => {
     const statusColors = {
       Pending: "text-red-500 bg-red-100",
@@ -52,14 +59,14 @@ const ViewAssignTask = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString(); // You can customize the date format as needed
   };
+  //#endregion
 
-
-  
-
+  //#region Render
   return (
     <>
       <div className="container mx-auto mb-10 flex-wrap">
         <div className="bg-white px-4 sm:px-6 md:px-10 p-6 md:p-8 rounded-lg shadow-lg space-y-8">
+          {/* Header Section */}
           <div className="flex flex-col sm:flex-row justify-between items-center border-b pb-4">
             <h1 className="font-semibold text-3xl sm:text-4xl">Task Details</h1>
             <div className="flex flex-wrap justify-center sm:justify-end gap-2 mt-4 sm:mt-0">
@@ -106,6 +113,8 @@ const ViewAssignTask = () => {
               </motion.button>
             </div>
           </div>
+
+          {/* Task Details Section */}
           <div className="space-y-5">
             <div className="flex flex-wrap justify-between gap-4">
               <p>
@@ -183,6 +192,8 @@ const ViewAssignTask = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default ViewAssignTask;
+//#endregion

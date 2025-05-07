@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -5,22 +6,26 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService";
 import { VendorService } from "../../service/VendorService";
+//#endregion
 
+//#region Component: VendorList
 const VendorList = () => {
+  //#region State variables
   const [vendors, setVendors] = useState([]);
   const [filteredVendors, setFilteredVendors] = useState([]);
-  const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
+  const [vendorFilter, setVendorFilter] = useState(""); // State for employee filter
   const [departmentFilter, setDepartmentFilter] = useState(""); // State for department filter
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region useEffect: Fetch Vendors Data
+  // Fetch vendors data from the API when the component mounts
   useEffect(() => {
     const fetchVendors = async () => {
       try {
@@ -36,40 +41,55 @@ const VendorList = () => {
     };
     fetchVendors();
   }, []);
+  //#endregion
 
+  //#region useEffect: Filter Partner
   // Function to filter tasks based on selected employee name
-  const handleEmployeeFilterChange = (event) => {
-    setEmployeeFilter(event.target.value);
+  const handleVendorFilterChange = (event) => {
+    setVendorFilter(event.target.value);
   };
 
-  // Handle department filter change
-  const handleDepartmentChange = (event) => {
-    setDepartmentFilter(event.target.value);
+  useEffect(() => {
+    // Apply filters to the vendors array
+    let filtered = vendors;
+      
+    // Filter by vendor name
+    if (vendorFilter) {
+      filtered = filtered.filter((vendor) =>
+        vendor.companyName.toLowerCase().includes(vendorFilter.toLowerCase())
+      );
+    }
+
+    setFilteredVendors(filtered); // Update filtered partners based on all filters
+
+    setTotalItems(filtered.length); // Update total items for pagination
+    setCurrentPage(1); // Reset to the first page when a new filter is applied
+
+  }, [vendorFilter, vendors]);
+    
+
+  useEffect(() => {
+    // Apply filters to the vendors array
+    let filtered = vendors;
+
+    // Filter by vendor name
+    if (vendorFilter) {
+      filtered = filtered.filter((vendor) =>
+        vendor.name.toLowerCase().includes(vendorFilter.toLowerCase())
+      );
+    }
+
+    setFilteredVendors(filtered); // Update filtered vendors based on all filters
+    setTotalItems(filtered.length); 
+    setCurrentPage(1); // Reset to the first page when a new filter is applied
+  }, [vendorFilter, vendors]);
+  //#endregion
+
+  //#region Delete CLick and Delete Vendor 
+  const handleDeleteClick = (vendorId) => {
+    setDeleteId(vendorId);
+    setIsPopupOpen(true); // Open popup
   };
-
-//   useEffect(() => {
-//     // Apply filters to the vendors array
-//     let filtered = vendors;
-
-//     // Filter by employee name
-//     if (employeeFilter) {
-//       filtered = filtered.filter((employee) =>
-//         employee.name.toLowerCase().includes(employeeFilter.toLowerCase())
-//       );
-//     }
-
-//     // Filter by department
-//     if (departmentFilter) {
-//       filtered = filtered.filter(
-//         (employee) => employee.departmentName === departmentFilter
-//       );
-//     }
-
-//     setFilteredVendors(filtered); // Update filtered vendors based on all filters
-//     setTotalItems(filtered.length); 
-//     setCurrentPage(1); // Reset to the first page when a new filter is applied
-//   }, [employeeFilter, departmentFilter, vendors]);
-
 
   const deleteVendor = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
@@ -89,15 +109,11 @@ const VendorList = () => {
     }
   };
 
-  const handleDeleteClick = (vendorId) => {
-    setDeleteId(vendorId);
-    setIsPopupOpen(true); // Open popup
-  };
-
   const handlePopupClose = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
+  //#endregion
 
 //   const handleDownloadReport = async () => {
 //     setIsSubmitting(true);
@@ -127,8 +143,10 @@ const VendorList = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Vendors List</h1>
         <div className="flex">
@@ -144,6 +162,18 @@ const VendorList = () => {
         </div>
       </div>
 
+      {/* Filters Section */}
+      <div className="flex gap-4 my-4">
+        <input
+          type="text"
+          value={vendorFilter}
+          onChange={handleVendorFilterChange}
+          placeholder="Search Company Name"
+          className="p-2 outline-none rounded border border-gray-300"
+        />
+      </div>
+
+      {/* Vendor Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -380,6 +410,8 @@ const VendorList = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default VendorList;
+//#endregion

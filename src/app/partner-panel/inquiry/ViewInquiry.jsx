@@ -1,13 +1,14 @@
+//#region Import
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryService } from "../../service/InquiryService";
 import Chat from "./Chat";
-
+//#endregion
 
 const ViewInquiry = () => {
-
+  //#region State Variables
   const [formData, setFormData] = useState({
     inquiryTitle: '',
     inquiryLocation: '',
@@ -33,7 +34,9 @@ const ViewInquiry = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
+  //#endregion
 
+  //#region State Variables
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,12 +59,16 @@ const ViewInquiry = () => {
 
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Function to handle tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
       <div className="flex flex-wrap justify-between items-center my-3">
@@ -238,6 +245,8 @@ const ViewInquiry = () => {
 
     </>
   );
+  //#endregion
 };
 
 export default ViewInquiry;
+//#endregion

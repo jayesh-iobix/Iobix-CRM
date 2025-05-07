@@ -1,3 +1,4 @@
+//#region Import
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit, FaPlus } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -7,27 +8,22 @@ import { InquiryService } from "../../service/InquiryService";
 import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
-import { toast } from "react-toastify";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { PartnerService } from "../../service/PartnerService";
 // import ApprovedClientInqry from "../approved-inquiry/ApprovedClientInqry";
 // import ApprovedPartnerInqry from "../approved-inquiry/ApprovedPartnerInqry";
-import InquiryTaskList from "../../admin-panel/inquiry-task/InquiryTaskList";
-import InquiryChat from "../../admin-panel/inquiry/InquiryChat";
 import UserInquiryTaskList from "../user-inquiry-task/UserInquiryTaskList";
-import PartnerInquiryTaskList from "../../partner-panel/inquiry-task/PartnerInquiryTaskList";
-import CreateInquiryTaskList from "../../partner-panel/inquiry-task/CreateInquiryTaskList";
-import UserCreatedInquiryTaskList from "../user-inquiry-task/UserCreatedInquiryTaskList";
-import EmployeeChat from "../employee-chat/ChatComponent";
 import EmpInquiryChat from "../inquiry/EmpInquiryChat";
-import InquiryChatCreated from "../../admin-panel/inquiry/InquiryChatCreated";
 import EmpInquiryChatCreated from "../inquiry/EmpInquiryChatCreated";
 // import InquiryChat from "../inquiry/InquiryChat";
 // import InquiryTaskList from "../inquiry-task/InquiryTaskList";
 // import ChatInquiry from "./ChatInquiry";
+//#endregion
 
+//#region Component: UserViewTaskProject 
 const UserViewTaskProject = () => {
 
+  //#region State Variables
   const [formData, setFormData] = useState({
     inquiryTitle: '',
     inquiryLocation: '',
@@ -74,7 +70,9 @@ const UserViewTaskProject = () => {
   const role = sessionStorage.getItem("role");
   const userId = sessionStorage.getItem("LoginUserId");
   const [isCreatedAdmin, setIsCreatedAdmin] = useState(false);
+  //#endregion
 
+  //#region Fetch Project Data
   const fetchData = async () => {
     try {
       // Fetch Inquiry Permission
@@ -147,14 +145,19 @@ const UserViewTaskProject = () => {
   useEffect(() => {
     fetchData();
   }, [id, departmentId]);
+  //#endregion
 
+  //#region Function to handle tab change
   // Function to handle tab change
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section + Button */}
       <div className="flex flex-wrap justify-between items-center my-3">
         <h1 className="font-semibold text-xl sm:text-2xl">View Project</h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
@@ -226,6 +229,8 @@ const UserViewTaskProject = () => {
       /> */}
     </>
   );
+  //#endregion
 };
 
 export default UserViewTaskProject;
+//#endregion

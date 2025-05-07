@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useRef, useState } from "react";
 import { FaEdit, FaEllipsisV, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -9,9 +10,11 @@ import { DepartmentService } from "../../service/DepartmentService";
 import { EmployeeService } from "../../service/EmployeeService";
 import { InquiryFollowUpService } from "../../service/InquiryFollowUpService";
 import { InquiryService } from "../../service/InquiryService";
+//#endregion
 
-
+//#region Component: ViewVendorProject
 const ViewVendorProject = () => {
+  //#region State Variables
   const [inquiries, setInquiries] = useState([]);
   const [inquiryRegistrationId, setInquiryRegistrationId] = useState("");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
@@ -34,39 +37,12 @@ const ViewVendorProject = () => {
   const [inquiryFollowUpDescription, setInquiryFollowUpDescription] = useState("");  
   const [inquiryHideShow, setInquiryHideShow] = useState(false);
   
-  
-  //#region  Popup useState
-  const [activeMenu, setActiveMenu] = useState(null); // Tracks the active menu by taskAllocationId
-  const [activeSubTaskMenu, setActiveSubTaskMenu] = useState(null); // Track the active sub-task menu
-
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [completionDateIsPopupVisible, setCompletionDateIsPopupVisible] = useState(false);
-  const [taskTransferIsPopupVisible, setTaskTransferIsPopupVisible] = useState(false);
-  const [subTaskTransferIsPopupVisible, setSubTaskTransferIsPopupVisible] = useState(false);
-  const [currentTask, setCurrentTask] = useState(null);
-  //#endregion
-  
-  //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Items per page
   const [totalItems, setTotalItems] = useState(0); // Total items count for pagination
   //#endregion
-  
-  const role = sessionStorage.getItem("role");
-  // console.log(role);
-  
-  const fetchInquiriePermission = async (id) => {
-    try {
-      // Fetch Inquiry
-      const inquiryPermission = await InquiryPermissionService.getAccessOfInquiryInAdmin(id);
-      setInquiryHideShow(inquiryPermission.data);
-      
-    } catch (error) {
-      console.error("Error fetching inquiries:", error);
-      setInquiryHideShow(false);
-    }
-  }
 
+  //#region Fetch Inquiries
   const fetchInquiries = async () => {
     try {
 
@@ -101,7 +77,9 @@ const ViewVendorProject = () => {
   useEffect(() => {
     fetchInquiries();
   }, [departmentId]);
+  //#endregion
   
+  //#region Dropdown Position Logic
   // Function to get the dropdown position (top or bottom) based on available space
   const getDropdownPosition = (inquiryRegistrationId, isLastRow) => {
     const button = buttonRefs.current[inquiryRegistrationId ];
@@ -120,7 +98,9 @@ const ViewVendorProject = () => {
     // Otherwise, open it below
     return { top: buttonRect.bottom - 5, left: buttonRect.left - 120 };
   };
+  //#endregion
   
+  //#region Filter Logic
   const handleInquiryFilterChange = (event) => {
     setInquiryFilter(event.target.value);
   };
@@ -154,7 +134,9 @@ const ViewVendorProject = () => {
     setTotalItems(filtered.length);
     setCurrentPage(1); // Reset page on filter change
   }, [inquiryFilter, categoryFilter, projectFilter, inquiries]);
+  //#endregion
   
+  //#region Delete Inquiry Logic
   const deleteInquiry = async () => {
     if (!deleteId) return;
     try {
@@ -182,7 +164,9 @@ const ViewVendorProject = () => {
     setIsPopupOpen(false);
     setDeleteId(null);
   };
+  //#endregion
   
+  //#region Dropdown Toggle Logic
   const toggleDropdown = (inquiryRegistrationId) => {
     // Toggle dropdown for the current task, close if it's already open
     setOpenDropdown((prev) =>
@@ -193,7 +177,9 @@ const ViewVendorProject = () => {
   const closeMenu = () => {
     setOpenDropdown(null);
   };
+  //#endregion
   
+  //#region Status Color Logic
   // Function to set the color based on the leave status
   const getStatusColor = (inquiryStatusName) => {
     switch (inquiryStatusName) {
@@ -209,7 +195,9 @@ const ViewVendorProject = () => {
         return "text-gray-500 bg-gray-100"; // Default color
     }
   };
+  //#endregion
   
+  //#region Forward/Transfer Inquiry Logic
   // Function to handle opening the popup and setting the current task
   const handleForwardInquiry = (inquiry) => {
     setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
@@ -276,45 +264,7 @@ const ViewVendorProject = () => {
     setInquiryRegistrationId(inquiry.inquiryRegistrationId); // Set the selected task data
     setTransferPopupVisible(true); // Show the popup
   };
-
-  // const handleTransferSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   // debugger;
-
-  //   const inquiryTransferData = {
-  //     inquiryRegistrationId,
-  //     inquiryForwardedTo,
-  //     inquiryFollowUpDescription
-  //     // taskTransferTo,
-  //   };
-  //   //console.log("Submitting task transfer data:", taskTransferData); // Log the data before submitting
-
-  //   try {
-  //     // Call the API to add the task note
-  //     const response = await InquiryFollowUpService.addInquiryFollowUp(inquiryTransferData);
-  //     if (response.status === 1) {
-  //       toast.success("Inquiry Forwarded Successfully."); // Toast on success
-  //       // toast.success(response.message); // Toast on success
-  //       fetchInquiries();
-  //     }
-  //     console.log("task transfer added successfully:", response);
-
-  //     // Optionally, you can update the task state or show a success message here
-  //     setForwardPopupVisible(false); // Close the popup
-  //   } catch (error) {
-  //     console.error(
-  //       "Error adding task note:",
-  //       error.response?.data || error.message
-  //     );
-  //     if (error.response?.data?.errors) {
-  //       console.log("Validation Errors:", error.response.data.errors); // This will help pinpoint specific fields causing the issue
-  //     }
-  //   }
-  
-  //     // Close the popup after submission
-  //     // setIsPopupVisible(false);
-  // };
+  //#endregion
 
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -328,8 +278,10 @@ const ViewVendorProject = () => {
   };
   //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */} 
       <div className="flex justify-between items-center my-3 flex-wrap">
         <h1 className="font-semibold text-2xl">Project List</h1>
         <div className="flex">
@@ -346,6 +298,7 @@ const ViewVendorProject = () => {
         </div>
       </div>
 
+      {/* Filter Section */}
       <div className="flex gap-4 my-4 flex-wrap">
         <input
           type="text"
@@ -379,6 +332,7 @@ const ViewVendorProject = () => {
         </select> */}
       </div>
 
+      {/* Inquiry List Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
@@ -901,6 +855,8 @@ const ViewVendorProject = () => {
       </div>
     </>
   );
+  //#endregion
 };
 
 export default ViewVendorProject;
+//#endregion

@@ -1,18 +1,25 @@
+//#region Imports
 import React, { useState, useEffect } from 'react';
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { EmployeePermissionService } from '../../../service/EmployeePermissionService';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
+//#endregion
 
+//#region Component: EditEmployeePermission
 const EditEmployeePermission = () => {
-  const { id } = useParams(); 
+
+  //#region State Variables
   const [permissionName, setPermissionName] = useState("");
   const [isActive, setIsActive] = useState(""); // New state for checkbox
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams(); 
   const navigate = useNavigate();
+  //#endregion
 
+  //#region useEffect - Fetch Employee Prmission data
   useEffect(() => {
     const fetchData = async () => {
       const employeePermission = await EmployeePermissionService.getByIdEmployeePermission(id);
@@ -21,7 +28,9 @@ const EditEmployeePermission = () => {
     };
     fetchData();
   }, [id]);
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!permissionName) newErrors.permissionName = 'Permission Name is required';
@@ -55,9 +64,12 @@ const EditEmployeePermission = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Employee Permission</h1>
         <motion.button
@@ -71,6 +83,7 @@ const EditEmployeePermission = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className='bg-white shadow-sm m-1 py-8 pt-'>
         <form onSubmit={handleSubmit} className='container'>
           <div className='-mx-4 px-10 mt- flex flex-wrap'>
@@ -117,6 +130,8 @@ const EditEmployeePermission = () => {
       </section>
     </>
   );
+  //#endregion
 }
 
 export default EditEmployeePermission
+//#endregion

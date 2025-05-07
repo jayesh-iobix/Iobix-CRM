@@ -1,11 +1,15 @@
+//#region Import
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion"; // Import framer-motion
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import { InquiryChatService } from "../../service/InquiryChatService";
 import { useParams } from "react-router-dom";
 import { debounce } from "lodash";
+//#endregion
 
+//#region Component: InquiryChatCreated
 const InquiryChatCreated = () => {
+  //#region State Initialization
   const [messages, setMessages] = useState([]); // State to store messages
   const [newMessage, setNewMessage] = useState(""); // State to store new message
   const [file, setFile] = useState(null); // State to store selected file
@@ -19,11 +23,12 @@ const InquiryChatCreated = () => {
   const { id } = useParams();
   const loginId = sessionStorage.getItem("LoginUserId");
   const role = sessionStorage.getItem("role");
+  //#endregion
 
+  //#region Data Fetching
   // Fetch initial chat data
   const fetchData = debounce(async () => {
-    
-    // debugger;
+
     if (chatPersonType === "createInquiryForwardedToPartner" && selectedPersonId != null) {
       const chatData = await InquiryChatService.getPartnerChatInAdmin(id, selectedPersonId);
 
@@ -55,16 +60,19 @@ const InquiryChatCreated = () => {
   useEffect(() => {
     fetchData();
   }, [id, selectedPersonId]);
+  //#endregion
 
+  //#region Scroll Handling
   // Scroll to the bottom when messages change
- 
   useEffect(() => {
     const chatContainer = document.getElementById("chatContainer");
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   }, [messages]);
+  //#endregion
 
+  //#region SignalR Connection
   // Set up SignalR connection
   useEffect(() => {
 
@@ -108,51 +116,9 @@ const InquiryChatCreated = () => {
       }
     };
   }, [selectedPersonId]);
+  //#endregion  
 
-  // useEffect(() => {
-
-  //   // Set up SignalR connection
-  //   const newConnection = new HubConnectionBuilder()
-  //     .withUrl("https://localhost:7292/inquirychathub") // Your SignalR Hub URL
-  //     .build();
-  
-  //   newConnection.start()
-  //     .then(() => {
-  //       console.log("Connected to SignalR Hub!");
-  //     })
-  //     .catch((error) => console.error("Error while starting connection: " + error));
-
-  //   debugger;
-  //   // Listen for incoming messages
-    
-  //   newConnection.on("ReceiveUserMessage", (chatMessage) => {
-  //     if (chatMessage.senderId !== loginId && (chatMessage.receiverId === selectedPersonId || role === 'admin' || role === 'user') && chatMessage.inquiryRegistrationId === id) {
-  //     setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
-  //     // console.log(messages);
-  //     }
-  //     console.log(chatMessage);
-  //   });
-
-  //   newConnection.on("ReceiveAdminMessage", (chatMessage) => {
-  //     if (chatMessage.senderId !== loginId && (chatMessage.receiverId === selectedPersonId || role === 'admin' || role === 'user') && chatMessage.inquiryRegistrationId === id) {
-  //       // Append the new message to the state
-  //       // const chatData =  InquiryChatService.getChatInAdmin(inquiryId, senderId);
-  //       setMessages((prevMessages) => [...prevMessages, chatMessage]);
-  //     }
-  //     console.log(chatMessage);
-  //   });
-  
-  //   setConnection(newConnection);
-  
-  //   // Cleanup on unmount
-  //   return () => {
-  //     if (newConnection) {
-  //       newConnection.stop();
-  //     }
-  //   };
-  // }, []);
-  
-
+  //#region Chat Person Handling
   // Fetch chat persons based on selected type (Partner, Client, Employee)
   const handleChatPersonTypeChange = async (event) => {
     const selectedType = event.target.value;
@@ -193,7 +159,9 @@ const InquiryChatCreated = () => {
       console.error("Error fetching inquiries:", error);
     }
   };
+  //#endregion
 
+  //#region Message Handling
   // Handle sending a message
   const handleSendMessage = async () => {
     if (newMessage.trim() || file) {
@@ -276,7 +244,9 @@ const InquiryChatCreated = () => {
       hour12: true,
     });
   };
+  //#endregion
 
+  //#region render
   return (
     <>
       {/* Select Chat Person Type */}
@@ -439,10 +409,11 @@ const InquiryChatCreated = () => {
       </section>
       ) : (
         <p>Please select an person to start the chat.</p>
-      )}
-        
+      )}  
     </>
   );
+  //#endregion
 };
 
 export default InquiryChatCreated;
+//#endregion

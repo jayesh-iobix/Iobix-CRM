@@ -1,3 +1,4 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -9,8 +10,11 @@ import { motion } from "framer-motion"; // Import framer-motion
 import { PartnerService } from "../../service/PartnerService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { InquiryTaskService } from "../../service/InquiryTaskService";
+//#endregion
 
+//#region Component: EditPartnerInquiryTask
 const EditPartnerInquiryTask = () => {
+  //#region State Variables
   const [taskName, setTaskName] = useState("");
   const [partnerRegistrationId, setPartnerRegistrationId] = useState("");
   const [clientRegistrationId, setClientRegistrationId] = useState("");
@@ -36,7 +40,9 @@ const EditPartnerInquiryTask = () => {
   const navigate = useNavigate();
 
   const { id } = useParams(); // Get the task ID from the URL parameters
+  //#endregion
 
+  //#region useEffect: Fetch Inquiry Task Data
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
@@ -96,7 +102,9 @@ const EditPartnerInquiryTask = () => {
 
     fetchTaskData();
   }, [id, departmentId]); // Fetch data when task ID or department ID changes
+  //#endregion
 
+  //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
     if (!taskName) newErrors.taskName = "Task name is required";
@@ -152,16 +160,21 @@ const EditPartnerInquiryTask = () => {
       setIsSubmitting(false);
     }
   };
+  //#endregion
 
+  //#region Handle File Change
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setTaskDocument(file); // Store the selected document
     }
   };
+  //#endregion
 
+  //#region Render
   return (
     <>
+      {/* Header Section */}
       <div className="flex justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">Edit Inquiry Task</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -175,6 +188,7 @@ const EditPartnerInquiryTask = () => {
         </motion.button>
       </div>
 
+      {/* Form Section */}
       <section className="bg-white rounded-lg shadow-lg m-1 py-8">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
@@ -443,6 +457,8 @@ const EditPartnerInquiryTask = () => {
       </section>
     </>
   );
+  //#endregion
 };
 
 export default EditPartnerInquiryTask;
+//#endregion

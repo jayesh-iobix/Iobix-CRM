@@ -1,18 +1,24 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import {IoDesktop, IoPeople } from "react-icons/io5";
 import { FaList } from "react-icons/fa";
 import { FaRightToBracket } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { DashboardService } from "../../service/DashboardService ";
+//#endregion
 
+//#region Component: DashboardStatsGrid
 const DashboardStatsGrid = () => {
+  //#region State Variables
   const [totalEmployeeCount, setTotalEmployeeCount] = useState("");
   const [totalDepartmentCount, setTotalDepartmentCount] = useState("");
   const [totalTaskCount, setTotalTaskCount] = useState("");
   const [pendingTaskCount, setPendingTaskCount] = useState("");
   const [inProgressTaskCount, setInProgressTaskCount] = useState("");
   const [completedTaskCount, setCompletedTaskCount] = useState("");
+  //#endregion
 
+  //#region Fetch Dashboard Data
   useEffect(() => {
     const fetchDashbordCount = async () => {
       try {
@@ -29,9 +35,12 @@ const DashboardStatsGrid = () => {
     };
     fetchDashbordCount();
   }, []);
+  //#endregion
 
+  //#region Render Dashboard Stats Grid
   return (
     <div className="flex flex-col md:flex-row w-full md:h-[150px] md:w-full gap-4">
+      {/* Total Employee Count */}
       <Link to="/employee-list" className="bg-[#d0cefa] rounded-[20px] p-4 flex-1 border-[#908cdc] border-solid border-[3px] flex items-center hover:no-underline animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#908CDC]">
           <IoPeople className="text-2xl text-white" />
@@ -46,6 +55,7 @@ const DashboardStatsGrid = () => {
         </div>
       </Link>
 
+      {/* Total Department Count */}
       <Link to="/master/department-list" className="bg-[#CEFADF] rounded-[20px] p-4 flex-1 border-[#71c589] border-solid border-[3px] flex items-center hover:no-underline animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#71c589]">
           <IoDesktop className="text-2xl text-white" />
@@ -60,6 +70,7 @@ const DashboardStatsGrid = () => {
         </div>
       </Link>
 
+      {/* Total Task Assign Count */}
       <Link to="/task/task-list" className="bg-[#d5edff] rounded-[20px] p-4 flex-1 border-[#5dade9] border-solid border-[3px] flex items-center hover:no-underline animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#5dade9]">
           <FaList className="text-2xl text-white" />
@@ -74,6 +85,7 @@ const DashboardStatsGrid = () => {
         </div>
       </Link>
 
+      {/* Total Working Task Count */}
       <div className="bg-[#FFEDD5] rounded-[20px] p-4 flex-1 border-[#ceaa79] border-solid border-[3px] flex items-center hover:no-underline animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#ceaa79]">
           <FaRightToBracket className="text-2xl text-white" />
@@ -89,9 +101,12 @@ const DashboardStatsGrid = () => {
       </div>
     </div>
   );
+  //#endregion
 }
 
 export default DashboardStatsGrid;
+//#endregion
+
 
 // function BoxWrapper({ children }) {
 //   return (

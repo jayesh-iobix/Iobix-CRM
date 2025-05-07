@@ -1,3 +1,4 @@
+//#region Imports
 import React, { Fragment, useEffect, useState } from "react";
 import { Menu, Popover, Transition } from "@headlessui/react";
 import {
@@ -14,8 +15,11 @@ import { toast } from "react-toastify";
 import { AuthService } from "../service/AuthService";
 import { messaging } from "../../firebase/firebase";
 import { onMessage } from "firebase/messaging";
+//#endregion
 
+//#region Component: Header
 export default function Header() {
+  //#region State Variables
   // State to handle modal visibility, task input, and button visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [workNote, setWorkNote] = useState("");
@@ -26,13 +30,16 @@ export default function Header() {
   // State for managing notifications and unread count
   const [notifications, setNotifications] = useState([]);
   const [notificationLength, setNotificationLength] = useState(0);
-
+  //#endregion
+  
+  //#region Variables
   const navigate = useNavigate();
-
   const role = sessionStorage.getItem("role");
   const userName = sessionStorage.getItem("UserName");
   const loginId = sessionStorage.getItem("LoginUserId");
+  //#endregion
 
+  //#region Effects
   useEffect(() => {
     // debugger;
     onMessage(messaging, (payload) => {
@@ -65,17 +72,14 @@ export default function Header() {
     });
   }, [notificationLength]); // Re-run effect when notificationLength changes
 
-  // Mark a notification as read
-  const handleMarkAsRead = (index) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notif, i) =>
-        i === index ? { ...notif, read: true } : notif
-      )
-    );
-    // Optionally, update notificationLength
-    setNotificationLength(prevLength => prevLength - 1);
-  };
+  useEffect(() => {
+    fetchIsOutTime();
+  }, []);
+  //#endregion
 
+  //#region Helper Functions
+
+  // Fetch out-time button visibility
   const fetchIsOutTime = async () => {
     try {
       const res = await AuthService.getBasicDetail();
@@ -88,10 +92,18 @@ export default function Header() {
     }
   };
 
-  useEffect(() => {
-    fetchIsOutTime();
-  }, []);
-
+  // Mark a notification as read
+  const handleMarkAsRead = (index) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notif, i) =>
+        i === index ? { ...notif, read: true } : notif
+      )
+    );
+    // Optionally, update notificationLength
+    setNotificationLength(prevLength => prevLength - 1);
+  };
+  
+  // Logout Function
   const handleLogout = () => {
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -105,12 +117,14 @@ export default function Header() {
     }
   };
 
+  // OutTime Click
   const handleOutTimeClick = async() => {
     // Show modal when clicking Out Time button
     setIsModalOpen(true);
 
   };
 
+  // InTime Click
   const handleInTimeClick = async () => {
 
     try {
@@ -128,16 +142,19 @@ export default function Header() {
     // Add any additional logic for handling In Time
   };
 
+  // handle Close Modal Click
   const handleCloseModal = () => {
     // Close modal
     setIsModalOpen(false);
   };
 
+  // Handle WorkNote Change
   const handleWorkNoteChange = (e) => {
     // Handle textarea input change
     setWorkNote(e.target.value);
   };
 
+  // Submit Worknote
   const handleSubmitWorkNote = async(e) => {
 
     e.preventDefault(); // Prevent the default form submission behavior
@@ -170,10 +187,13 @@ export default function Header() {
     setWorkNote(""); // Clear the workNote input
     setOutDateTime(""); // Clear the outDateTime  input
   };
+  //#endregion
 
+  //#region Render JSX
   return (
     <div className="bg-white h-16 px-4 flex items-center border-b m-2 rounded-full border-gray-200 shadow-sm shadow-[#d0ecfc] justify-between">
       <div className="relative">
+        {/* Search Bar (Commented Out) */}
         {/* <HiOutlineSearch
           fontSize={20}
           className="text-gray-400 absolute top-1/2 left-3 -translate-y-1/2"

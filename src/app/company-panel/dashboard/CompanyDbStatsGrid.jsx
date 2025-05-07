@@ -1,21 +1,22 @@
+//#region Imports
 import React, { useEffect, useState } from "react";
 import {IoDesktop, IoPeople } from "react-icons/io5";
 import { FaList } from "react-icons/fa";
 import { FaRightToBracket } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { DashboardService } from "../../service/DashboardService ";
-// import { DashboardService } from "../../service/DashboardService ";
+//#endregion
 
+//#region Component: CompanyDbStatsGrid
 const CompanyDbStatsGrid = () => {
+  //#region State Variables
   const [totalReceiveProjectCount, setTotalReceiveProjectCount] = useState("");
   const [totalCreateProjectCount, setTotalCreateProjectCount] = useState("");
   const [totalProjectCount, setTotalProjectCount] = useState("");
   const [totalTaskCount, setTotalTaskCount] = useState("");
+  //#endregion
 
-  const [pendingTaskCount, setPendingTaskCount] = useState("");
-  const [inProgressTaskCount, setInProgressTaskCount] = useState("");
-  const [completedTaskCount, setCompletedTaskCount] = useState("");
-
+  //#region Fetch Dashboard Data
   useEffect(() => {
     const fetchDashbordCount = async () => {
       try {
@@ -38,10 +39,12 @@ const CompanyDbStatsGrid = () => {
     };
     fetchDashbordCount();
   }, []);
+  //#endregion
 
+  //#region Render
   return (
     <div className="flex flex-col md:flex-row w-full md:h-[150px] md:w-full gap-4">
-
+      {/* Total Projects Count */}
       <div className="bg-[#CEFADF] rounded-[20px] p-4 flex-1 border-[#71c589] border-solid border-[3px] flex items-center hover:no-underline animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#71c589]">
           <IoDesktop className="text-2xl text-white" />
@@ -59,6 +62,7 @@ const CompanyDbStatsGrid = () => {
         </div>
       </div>
 
+      {/* Total Created Count */}
       <Link
         to="/company/project-list"
         className="bg-[#d5edff] rounded-[20px] p-4 flex-1 border-[#5dade9] border-solid border-[3px] flex items-center hover:no-underline animated-box"
@@ -79,6 +83,7 @@ const CompanyDbStatsGrid = () => {
         </div>
       </Link>
 
+      {/* Total Received Count */}
       <Link
         to="/company/get-project-list"
         className="bg-[#FFEDD5] rounded-[20px] p-4 flex-1 border-[#ceaa79] border-solid border-[3px] flex items-center hover:no-underline animated-box"
@@ -99,6 +104,7 @@ const CompanyDbStatsGrid = () => {
         </div>
       </Link>
 
+      {/* Total Tasks Count */}
       <div className="bg-[#d0cefa] rounded-[20px] p-4 flex-1 border-[#908cdc] border-solid border-[3px] flex items-center hover:no-underline animated-box">
         <div className="rounded-full h-12 w-12 flex items-center justify-center bg-[#908CDC]">
           <IoPeople className="text-2xl text-white" />
@@ -115,14 +121,8 @@ const CompanyDbStatsGrid = () => {
       </div>
     </div>
   );
+  //#endregion
 };
 
 export default CompanyDbStatsGrid;
-
-// function BoxWrapper({ children }) {
-//   return (
-//     <div className="bg-[#d0cefa] rounded-[20px] p-4 flex-1 border-[#908cdc] border-solid border-[3px] flex items-center">
-//       {children}
-//     </div>
-//   );
-// }
+//#endregion
