@@ -10,11 +10,19 @@ import { toast } from "react-toastify";
 const ForgotPassword = () => {
   //#region State Variables
   const [email, setEmail] = useState("");
+  const [baseUrl, setBaseUrl] = useState('');
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   //#region State Variables
+
+   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setBaseUrl(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`);
+      // console.log(baseUrl);
+    }
+   }, []);
 
   //#region Form Validation and Submission
   const validateForm = () => {
@@ -28,8 +36,10 @@ const ForgotPassword = () => {
     e.preventDefault();
     
     if (!validateForm()) return;
-        
-    const signInData = { email };
+    
+    // debugger;
+    const signInData = { email, baseUrl };
+    
     
     try {
       const response = await AuthService.forgotPassword(signInData);

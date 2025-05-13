@@ -83,17 +83,17 @@ const EmpInquiryChatCreated = () => {
   
     newConnection.start()
       .then(() => {
-        console.log("Connected to SignalR Hub!");
+        // console.log("Connected to SignalR Hub!");
       })
       .catch((error) => console.error("Error while starting connection: " + error));
 
-    debugger;
+    // debugger;
     // Listen for incoming messages
     
     newConnection.on("ReceiveUserMessage", (chatMessage) => {
       if (chatMessage.senderId !== loginId && chatMessage.inquiryRegistrationId === id) {
       setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
-      console.log(messages);
+      // console.log(messages);
       }
     });
 
@@ -168,7 +168,7 @@ const EmpInquiryChatCreated = () => {
         // sentDate: new Date().toISOString(),
       };
 
-      debugger;
+      // debugger;
 
       const formData = new FormData();
       if (file) {

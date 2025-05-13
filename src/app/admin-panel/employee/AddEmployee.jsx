@@ -43,8 +43,6 @@ const AddEmployee = () => {
     probationPeriod: "",
     employeeLeaveTypeId: "",
   });
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
   const [employeeLeaveTypeList, setEmployeeLeaveTypeList] = useState([]);
   const [designationList, setDesignationList] = useState([]);
@@ -52,6 +50,10 @@ const AddEmployee = () => {
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
+
+  const [baseUrl, setBaseUrl] = useState('');
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
   const navigate = useNavigate();
@@ -80,6 +82,11 @@ const AddEmployee = () => {
         }
       };
       getDeviceToken();
+    }
+
+    if (typeof window !== 'undefined') {
+      setBaseUrl(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`);
+      // console.log(baseUrl);
     }
 
     // Get the device ID using FingerprintJS
@@ -232,6 +239,7 @@ const AddEmployee = () => {
           employeeLeaveTypeId:
             formData.employeeLeaveTypeId === "" ? null : formData.employeeLeaveTypeId, // Convert empty string to null
           deviceInfoVM: deviceInfoVM, // Include the device information,
+          baseUrl,
         };
         const response = await EmployeeService.addEmployee(employeeData); // Call the service
         if (response.status === 1) {

@@ -35,17 +35,16 @@ const AddVendor = () => {
     companyWebsite : "",
     relationalManagerId : "",
   });
-
   const [departmentId, setDepartmentId] = useState(""); // State for Department ID
+  const [employeeAssignTo, setEmployeeAssignTo] = useState(false);
   const [inquirySourceList, setInquirySourceList] = useState([]);
-  
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
-  
-  const [employeeAssignTo, setEmployeeAssignTo] = useState(false);
+
+  const [baseUrl, setBaseUrl] = useState('');
   const [deviceId, setDeviceId] = useState(null); // State to store the device ID
   const [deviceToken, setDeviceToken] = useState(null);
   const [errors, setErrors] = useState({});
@@ -77,6 +76,11 @@ const AddVendor = () => {
         }
       };
       getDeviceToken();
+    }
+
+    if (typeof window !== 'undefined') {
+      setBaseUrl(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`);
+      // console.log(baseUrl);
     }
 
     // Get the device ID using FingerprintJS
@@ -179,6 +183,7 @@ const AddVendor = () => {
             stateId: formData.stateId === "" ? 0 : formData.stateId,
             cityId: formData.cityId === "" ? 0 : formData.cityId,
             relationalManagerId : formData.relationalManagerId === "" ? null : formData.relationalManagerId,
+            // baseUrl,
             deviceInfoVM,
         }
         const response = await VendorService.addVendor(companyData); // Call the service

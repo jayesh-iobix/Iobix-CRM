@@ -7,7 +7,7 @@ import { FiMenu, FiX } from "react-icons/fi";
 import classNames from "classnames";
 import logo from "../../assets/iobix-technolabs.png";
 import { jwtDecode } from "jwt-decode";
-import { DASHBOARD_SIDEBAR_BOTTOM_LINKS, getDashboardSidebarBottomLinks, DASHBOARD_SIDEBAR_LINKS, USER_DASHBOARD_SIDEBAR_LINKS, COMPANY_DASHBOARD_SIDEBAR_LINKS, PARTNER_DASHBOARD_SIDEBAR_LINKS, IT_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS, BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS, VENDOR_DASHBOARD_SIDEBAR_LINKS, HR_DASHBOARD_SIDEBAR_LINKS } from "../sidebar-links";
+import { DASHBOARD_SIDEBAR_BOTTOM_LINKS, DASHBOARD_SIDEBAR_LINKS, USER_DASHBOARD_SIDEBAR_LINKS, COMPANY_DASHBOARD_SIDEBAR_LINKS, PARTNER_DASHBOARD_SIDEBAR_LINKS, IT_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS, BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS, VENDOR_DASHBOARD_SIDEBAR_LINKS, HR_DASHBOARD_SIDEBAR_LINKS } from "../sidebar-links";
 import { DepartmentService } from "../service/DepartmentService";
 import { AuthService } from "../service/AuthService";
 import '../../../src/App.css';

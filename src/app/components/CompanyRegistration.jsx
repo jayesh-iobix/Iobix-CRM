@@ -35,6 +35,7 @@ const CompanyRegistration = () => {
     companyWebsite : "",
   });  // State for form data
   const [inquirySource, setInquirySource] = useState("");  // State for Inquiry Source
+  const [baseUrl, setBaseUrl] = useState('');
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -52,6 +53,7 @@ const CompanyRegistration = () => {
   useEffect(() => {
     // Check for stored device token
     const storedDeviceToken = sessionStorage.getItem("deviceToken");
+
     if (storedDeviceToken) {
       setDeviceToken(storedDeviceToken);
     } 
@@ -72,6 +74,11 @@ const CompanyRegistration = () => {
         }
       };
       getDeviceToken();
+    }
+
+    if (typeof window !== 'undefined') {
+      setBaseUrl(`${window.location.protocol}//${window.location.hostname}:${window.location.port}`);
+      // console.log(baseUrl);
     }
 
     // Get the device ID using FingerprintJS
@@ -153,6 +160,7 @@ const CompanyRegistration = () => {
       ...formData,
       stateId: formData.stateId === "" ? 0 : formData.stateId, // Convert empty string to 0
       cityId: formData.cityId === "" ? 0 : formData.cityId, // Convert empty string to 0
+      baseUrl,
       deviceInfoVM,
       // role: "IsClient",
     }
