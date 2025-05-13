@@ -47,7 +47,7 @@ const LeaveTypeList = () => {
           prevLeaveTypes.filter((leaveType) => leaveType.leaveTypeId  !== deleteId)
         );
         toast.error("Leave Type Deleted Successfully"); // Toast on success
-        toast.error(response.message); // Toast on success
+        // toast.error(response.message); // Toast on success
         setIsPopupOpen(false); // Close popup after deletion
         setDeleteId(null); // Reset leaveTypeIdToDelete
       }

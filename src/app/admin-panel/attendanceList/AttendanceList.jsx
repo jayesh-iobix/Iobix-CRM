@@ -154,7 +154,7 @@ const AttendanceList = () => {
   return (
     <div className="mt-4 ">
       {/* Header Section */}
-      <div className="flex justify-between items-center my-3 flex-wrap">
+      <div className="flex flex-col sm:flex-row justify-between items-center my-3">
         <h1 className="font-semibold text-2xl ">Attendance List for {year}</h1>
 
         {/* Download Report Button */}

@@ -80,7 +80,7 @@ const AddEmployeeLeaveType = () => {
         const response = await EmployeeLeaveTypeService.addEmployeeLeaveType(employeeLeaveTypeData);
         if (response.status === 1) {
           navigate(-1);
-          toast.success("Employee Leave Type added successfully");
+          toast.success("Employee Leave Type Added Successfully");
         }
         // Reset the form
         setEmployeeLeaveTypeName("");

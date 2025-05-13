@@ -100,7 +100,7 @@ const CreateTask = () => {
     try {
       const response = await TaskService.addTask(taskData); // Make sure the service is configured to send data to your backend
       if (response.status === 1) {
-        toast.success(response.message); // Toast on success
+        toast.success("Task Created Successfully"); // Toast on success
         setTaskName('');
         setTaskAssignTo('');
         setTaskPriority('');
@@ -112,10 +112,11 @@ const CreateTask = () => {
         setNotifications([{ reminderDateTime: "" }]); // Clear notifications
         navigate(-1);
         // navigate("/task/task-list");
+        // toast.success(response.message); // Toast on success
       }
     } catch (error) {
-      console.error("Error adding task:", error);
       toast.error("Failed to add task.");
+      console.error("Error adding task:", error);
     } finally {
       setIsSubmitting(false);
     }

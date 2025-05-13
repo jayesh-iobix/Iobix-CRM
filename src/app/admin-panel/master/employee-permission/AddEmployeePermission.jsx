@@ -47,8 +47,10 @@ const AddEmployeePermission = () => {
       try {
         const response = await EmployeePermissionService.addEmployeePermission(employeePermissionData);
         if (response.status === 1) {
-          navigate('/master/employeepermission-list');
-          toast.success(response.message); // Toast on success
+          navigate(-1);
+          toast.success("Employee Permission Added Succesfully"); // Toast on success
+          // navigate('/master/employeepermission-list');
+          // toast.success(response.message); // Toast on success
         }
         // Reset the form
         setPermissionName('');

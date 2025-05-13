@@ -53,8 +53,9 @@ const EditDepartment = () => {
         const response = await DepartmentService.updateDepartments(id, departmentData);
         if (response.status === 1) {
           navigate(-1);
-          toast.success(response.message); // Toast on success
+          toast.success("Department Updated Successfully"); // Toast on success
           // navigate('/master/department-list');
+          // toast.success(response.message); // Toast on success
         }
         setDepartmentName('');
       } catch (error) {

@@ -238,7 +238,7 @@ export default function Header() {
             <div className="bg-white rounded-lg p-4 sm:p-6 w-full sm:w-1/3 md:w-1/4 lg:w-1/3 shadow-lg">
               <h2 className="text-xl font-semibold mb-4">Enter WorkNote</h2>
               <textarea
-                className="w-full h-32 p-2 border border-gray-300 rounded-md"
+                className="w-full h-32 p-2 border border-gray-300 rounded-md border-active"
                 value={workNote}
                 onChange={handleWorkNoteChange}
                 placeholder="Describe the workNote..."
@@ -273,7 +273,7 @@ export default function Header() {
                   onChange={(e) => {
                     setOutDateTime(e.target.value);
                   }}
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md border-active"
                 />
               )}
               <div className="mt-4 flex flex-col sm:flex-row justify-end gap-2">

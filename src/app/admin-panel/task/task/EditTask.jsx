@@ -114,21 +114,24 @@ const EditTask = () => {
     try {
       const response = await TaskService.updateTask(id, taskData);
       if (response.status === 1) {
-        toast.success(response.message); // Toast on success
-        navigate("/task/task-list");
+        navigate(-1);
+        toast.success("Task Updated Successfully"); // Toast on success
+        // navigate("/task/task-list");
+        // toast.success(response.message); // Toast on success
       }
     } catch (error) {
-      //console.error("Error updating task:", error);
-      if (error.response) {
-        //console.error("Error Response:", error.response);
-        alert(
-          `Failed to update task. Error: ${
-            error.response.data.message || error.message
-          }`
-        );
-      } else {
-        alert("Failed to update task due to network error.");
-      }
+      toast.error("Failed to update task")
+      // console.error("Error updating task:", error);
+      // if (error.response) {error
+      //   //console.error("Error Response:", .response);
+      //   alert(
+      //     `Failed to update task. Error: ${
+      //       error.response.data.message || error.message
+      //     }`
+      //   );
+      // } else {
+      //   alert("Failed to update task due to network error.");
+      // }
     } finally {
       setIsSubmitting(false);
     }

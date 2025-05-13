@@ -133,33 +133,50 @@ const AddProject = () => {
   //#region Event Handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Regex for 10-digit number validation
+    const phoneNumberRegex = /^[0-9]{10}$/;
+    
+    // If the field is either phoneNumber or whatsAppNumber, validate the input
+    if (name === "customerContactInfo" && value && !phoneNumberRegex.test(value)) {
+      setErrors((prev) => ({ ...prev, [name]: "Please enter a valid 10-digit number" }));
+    } else {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
 
     // If Partner is selected, reset clientRegistrationId, and vice versa
-    if (name === 'partnerRegistrationId' && selectedType === 'partner') {
-        setFormData(prev => ({
-          ...prev,
-          [name]: value,
-          clientRegistrationId: null, // Reset clientRegistrationId
-          vendorId: null // Reset vendorId
-        }));
-      } else if (name === 'clientRegistrationId' && selectedType === 'clientCompany') {
-        setFormData(prev => ({
-          ...prev,
-          [name]: value,
-          partnerRegistrationId: null, // Reset partnerRegistrationId
-          vendorId: null // Reset vendorId
-        }));
-      } else if (name === 'vendorId' && selectedType === 'vendor') {
-        setFormData(prev => ({
-          ...prev,
-          [name]: value,
-          clientRegistrationId: null, // Reset clientRegistrationId,
-          partnerRegistrationId: null // Reset partnerRegistrationId
-        }));
-      } else {
-        setFormData(prev => ({ ...prev, [name]: value }));
-      }
+    if (['partnerRegistrationId', 'clientRegistrationId', 'vendorId'].includes(name)) {
+      // Reset other fields based on selected type
+      const resetFields = { partnerRegistrationId: '', clientRegistrationId: '', vendorId: '' };
+      resetFields[name] = value;
+      setFormData(prev => ({ ...prev, ...resetFields }));
+    }
+    // if (name === 'partnerRegistrationId' && selectedType === 'partner') {
+    //     setFormData(prev => ({
+    //       ...prev,
+    //       [name]: value,
+    //       clientRegistrationId: null, // Reset clientRegistrationId
+    //       vendorId: null // Reset vendorId
+    //     }));
+    //   } else if (name === 'clientRegistrationId' && selectedType === 'clientCompany') {
+    //     setFormData(prev => ({
+    //       ...prev,
+    //       [name]: value,
+    //       partnerRegistrationId: null, // Reset partnerRegistrationId
+    //       vendorId: null // Reset vendorId
+    //     }));
+    //   } else if (name === 'vendorId' && selectedType === 'vendor') {
+    //     setFormData(prev => ({
+    //       ...prev,
+    //       [name]: value,
+    //       clientRegistrationId: null, // Reset clientRegistrationId,
+    //       partnerRegistrationId: null // Reset partnerRegistrationId
+    //     }));
+    //   } else {
+    //     setFormData(prev => ({ ...prev, [name]: value }));
+    //   }
   };
 
   const handleFileChange = (e) => {
@@ -167,37 +184,63 @@ const AddProject = () => {
     setFormData(prev => ({ ...prev, [name]: files[0] }));  // Storing the first file
   };  
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.inquiryTitle) newErrors.inquiryTitle = "Project Title is required";
+    if (!formData.inquiryLocation) newErrors.inquiryLocation = "Project Location is required";
+    if (!formData.inquiryDescription) newErrors.inquiryDescription = "Project Description is required";
+    if (!formData.inquiryTypeId) newErrors.inquiryTypeId = "Project Type is required.";
+    if (!formData.customerName) newErrors.customerName = "Customer Name is required.";
+    if (!formData.priorityLevel) newErrors.priorityLevel = "Priority Level is required.";
+    if (!formData.inquiryDescription) newErrors.inquiryDescription = "Project Description is required.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    // setIsSubmitting(true);
 
     // debugger;
     // Add form validation logic here
     // Add form validation and submission logic here
 
+    if (!validateForm()) return;
 
     const formDataToSend = new FormData();
 
     // Conditionally append values based on selected type (Partner or Client Company)
-    if (selectedType === 'partner') {
-      if (formData.partnerRegistrationId) {
-        formDataToSend.append('partnerRegistrationId', formData.partnerRegistrationId);
-      }
-    } else if (selectedType === 'clientCompany') {
-      if (formData.clientRegistrationId) {
-        formDataToSend.append('clientRegistrationId', formData.clientRegistrationId);
-      }
-    } else if (selectedType === 'vendor') {
-      if (formData.vendorId) {
-        formDataToSend.append('vendorId', formData.vendorId);
-      }
+    // Conditionally append values based on selected type
+    if (selectedType === 'partner' && formData.partnerRegistrationId) {
+      formDataToSend.append('partnerRegistrationId', formData.partnerRegistrationId);
+    } else if (selectedType === 'clientCompany' && formData.clientRegistrationId) {
+      formDataToSend.append('clientRegistrationId', formData.clientRegistrationId);
+    } else if (selectedType === 'vendor' && formData.vendorId) {
+      formDataToSend.append('vendorId', formData.vendorId);
     }
+
+    // if (selectedType === 'partner') {
+    //   if (formData.partnerRegistrationId) {
+    //     formDataToSend.append('partnerRegistrationId', formData.partnerRegistrationId);
+    //   }
+    // } else if (selectedType === 'clientCompany') {
+    //   if (formData.clientRegistrationId) {
+    //     formDataToSend.append('clientRegistrationId', formData.clientRegistrationId);
+    //   }
+    // } else if (selectedType === 'vendor') {
+    //   if (formData.vendorId) {
+    //     formDataToSend.append('vendorId', formData.vendorId);
+    //   }
+    // }
   
     // Append other form fields to FormData
     Object.keys(formData).forEach((key) => {
-      if (key !== 'partnerRegistrationId' && key !== 'clientRegistrationId' && key !== 'vendorId') {
+      if (!['partnerRegistrationId', 'clientRegistrationId', 'vendorId'].includes(key)) {
         formDataToSend.append(key, formData[key]);
       }
+      // if (key !== 'partnerRegistrationId' && key !== 'clientRegistrationId' && key !== 'vendorId') {
+      //   formDataToSend.append(key, formData[key]);
+      // }
     });
 
     // const formDataToSend = new FormData();
@@ -207,6 +250,8 @@ const AddProject = () => {
 
     // console.log(formDataToSend);
     // console.log(formData);
+
+    setIsSubmitting(true);
 
     try {
       const result = await InquiryService.addInquiryByAdmin(formDataToSend);
@@ -230,8 +275,10 @@ const AddProject = () => {
       console.error("Error submitting form:", error);
       setErrors({ general: "Something went wrong, please try again later." });
     }
-    
-    setIsSubmitting(false);
+    finally {
+      setIsSubmitting(false);
+      // setLoading(false); // Stop loading spinner after request
+    }    
   };
   //#endregion
 

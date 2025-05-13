@@ -13,17 +13,23 @@ export const TaskNoteList = () => {
   const { id } = useParams();
   const [taskNotes, setTaskNotes] = useState([]);
   const navigate = useNavigate("")
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
+  const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
-  //#region Fetch Task Note
+  //#region Fetch Task Note Dta
   useEffect(() => {
     const fetchTaskNotes = async () => {
       try {
         const result = await TaskNoteService.getTaskNoteByTaskId(id);
         setTaskNotes(result.data);
-        console.log(result.data);
+        setTotalItems(result.data.length); // Set total items for pagination
+        // console.log(result.data);
       } catch (error) {
-        console.error("Error fetching tasks:", error);
+        console.error("Error fetching task notes:", error);
         setTaskNotes([]);
       }
     };
@@ -56,6 +62,18 @@ export const TaskNoteList = () => {
   };
   //#endregion
 
+  //#region Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = taskNotes.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  //#endregion
+
   //#region Render
   return (
     <>
@@ -76,19 +94,19 @@ export const TaskNoteList = () => {
         </motion.button>
     </div>
 
-    {/* Task Note List Table */}
+    {/* Task Note List Table Section*/}
     <div className="grid overflow-x-auto shadow-xl">
       <table className="min-w-full bg-white border border-gray-200">
         <thead className="bg-gray-900 border-b">
           <tr>
             <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
+              Task Date
+            </th>
+            <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
               Task Name
             </th>
             <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
               Created By
-            </th>
-            <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
-              Task Date
             </th>
             <th className="text-left py-3 px-4 uppercase font-semibold text-sm text-[#939393]">
               Task Time In
@@ -111,17 +129,23 @@ export const TaskNoteList = () => {
           </tr>
         </thead>
         <tbody>
-          {taskNotes.map((item) => (
+          {currentItems.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="text-center py-3 px-4 text-gray-700">
+                No task note found.
+              </td>
+            </tr>
+          ) : (currentItems.map((item) => (
             <tr
               key={item.taskNoteId}
               className="border-b hover:bg-gray-50"
             >
+              <td className="py-3 px-4 text-gray-700">{formatDate(item.taskDate)}</td>
               <td className="py-3 px-4 text-gray-700">{item.taskName}</td>
               <td className="py-3 px-4 text-gray-700">{item.taskCreatedByName}</td>
               {/* <td className="py-3 px-4 text-gray-700">
                 {item.taskAssignToName}
               </td> */}
-              <td className="py-3 px-4 text-gray-700">{formatDate(item.taskDate)}</td>
               <td className="py-3 px-4 text-gray-700">
                 {item.taskTimeIn}
               </td>
@@ -163,9 +187,115 @@ export const TaskNoteList = () => {
                 {/* </div> */}
               {/* </td> */}
             </tr>
-          ))}
+          )))}
         </tbody>
       </table>
+    </div>
+
+    {/* Pagination Section */}
+    <div
+      className={`flex mt-4 items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 shadow-lg`}
+    >
+      <div className="flex flex-1 justify-between sm:hidden">
+        <motion.button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          Previous
+        </motion.button>
+        <motion.button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          Next
+        </motion.button>
+      </div>
+      <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm text-gray-700">
+            Showing
+            <span className="font-semibold mx-1">{indexOfFirstItem + 1}</span>
+            to
+            <span className="font-semibold mx-1">
+              {Math.min(indexOfLastItem, totalItems)}
+            </span>
+            of
+            <span className="font-semibold mx-1">{totalItems}</span>
+            results
+          </p>
+        </div>
+        <div>
+          <nav
+            className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+            aria-label="Pagination"
+          >
+            <motion.button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <span className="sr-only">Previous</span>
+              <svg
+                className="size-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </motion.button>
+            {/* Pagination Buttons */}
+            {[...Array(totalPages)].map((_, index) => (
+              <motion.button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
+                  currentPage === index + 1
+                    ? "bg-indigo-600"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                {index + 1}
+              </motion.button>
+            ))}
+            <motion.button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <span className="sr-only">Next</span>
+              <svg
+                className="size-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </motion.button>
+          </nav>
+        </div>
+      </div>
     </div>
   </>
   )

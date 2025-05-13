@@ -259,7 +259,7 @@ const AddAnnouncement = () => {
           value={nameFilter}
           onChange={(e) => setNameFilter(e.target.value)}
           placeholder="Enter name"
-          className="border border-gray-300 px-4 py-2 rounded-md w-full"
+          className="border border-gray-300 px-4 py-2 rounded-md w-full border-active"
         />
       </div>
 
@@ -349,7 +349,7 @@ const AddAnnouncement = () => {
                 type="text"
                 value={announcementTitle}
                 onChange={(e) => setAnnouncementTitle(e.target.value)}
-                className="border border-gray-300 px-4 py-2 rounded-md w-full"
+                className="border border-gray-300 px-4 py-2 rounded-md w-full border-active"
               />
             </div>
 
@@ -360,7 +360,7 @@ const AddAnnouncement = () => {
               <textarea
                 value={announcementMessage}
                 onChange={(e) => setAnnouncementMessage(e.target.value)}
-                className="border border-gray-300 px-4 py-2 rounded-md w-full"
+                className="border border-gray-300 px-4 py-2 rounded-md w-full border-active"
                 rows="4"
               />
             </div>
@@ -375,7 +375,7 @@ const AddAnnouncement = () => {
                   type="datetime-local"
                   value={announcementDateTime}
                   onChange={(e) => setAnnouncementDateTime(e.target.value)}
-                  className="border border-gray-300 px-4 py-2 rounded-md w-full"
+                  className="border border-gray-300 px-4 py-2 rounded-md w-full border-active"
                 />
               </div>
             )}

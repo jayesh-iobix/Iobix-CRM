@@ -15,6 +15,8 @@ import { motion } from "framer-motion"; // Import framer-motion
 //#region Component: TaskList
 const TaskList = () => {
   //#region State Variables
+  const userId = sessionStorage.getItem("LoginUserId")
+
   const [tasks, setTasks] = useState([]);
   const [taskAllocationId, setTaskAllocationId] = useState("");
   const [subTaskAllocationId, setSubTaskAllocationId] = useState("");
@@ -637,13 +639,15 @@ const TaskList = () => {
       // Call the API to add the task note
       const response = await TaskNoteService.addTaskNote(taskNoteData);
       if(response.status === 1){
-        toast.success(response.message); // Toast on success
+        toast.success("Task Note Added Successfully"); // Toast on success
+        // toast.success(response.message); // Toast on success
       }
       // console.log("Task note added successfully:", response);
 
       // Optionally, you can update the task state or show a success message here
       setIsPopupVisible(false); // Close the popup
     } catch (error) {
+      toast.error("Error adding task note")
       console.error(
         "Error adding task note:",
         error.response?.data || error.message
@@ -841,6 +845,7 @@ const TaskList = () => {
                               </Link>
                             </motion.button> */}
 
+                            {(item.taskAssignTo === userId || item.taskAssignBy === userId) && (
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
@@ -853,6 +858,7 @@ const TaskList = () => {
                                 <IoTime size={24} />
                               </Link>
                             </motion.button>
+                            )}
 
                             <motion.button
                               whileHover={{ scale: 1.1 }}
@@ -1155,6 +1161,7 @@ const TaskList = () => {
                                                 </Link>
                                               </motion.button> */}
 
+                                              {(subTask.taskAssignTo === userId || subTask.taskAssignBy === userId) && (
                                               <motion.button
                                                 whileHover={{ scale: 1.1 }}
                                                 whileTap={{ scale: 0.9 }}
@@ -1167,6 +1174,7 @@ const TaskList = () => {
                                                   <IoTime size={24} />
                                                 </Link>
                                               </motion.button>
+                                              )}
 
                                               <motion.button
                                                 whileHover={{ scale: 1.1 }}

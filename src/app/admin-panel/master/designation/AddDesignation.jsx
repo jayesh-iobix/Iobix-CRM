@@ -71,9 +71,10 @@ const AddDesignation = () => {
         );
         if (response.status === 1) {
           navigate(-1);
-          toast.success(response.message); // Toast on success
+          toast.success("Designation Added Successfully"); // Toast on success
           // console.log("Designation added successfully:", response);
           // navigate("/master/designation-list");
+          // toast.success(response.message); // Toast on success
         }
         // Reset the form
         setDesignationName("");

@@ -104,7 +104,7 @@ const EmployeeLeaveTypeList = () => {
 
       // Check the response from the API and display a success message
       if (updatedEmployeeLeaveType) {
-        toast.success("Employee Leave Type updated successfully.");
+        toast.success("Employee Leave Type Updated Successfully.");
       } else {
         throw new Error("Failed to update event type.");
       }
@@ -145,7 +145,7 @@ const EmployeeLeaveTypeList = () => {
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = employeeLeaveTypeList.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredEmployeeLeaveTypeList.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 

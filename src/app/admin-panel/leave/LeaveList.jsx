@@ -166,7 +166,7 @@ const LeaveList = () => {
     <div className="mt-4">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl sm:text-3xl">
+        <h1 className="font-semibold text-2xl">
           Leave Records for {year}
         </h1>
 

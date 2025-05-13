@@ -271,8 +271,8 @@ const AddEmployee = () => {
         });
         setErrors({});
       } catch (error) {
+        toast.error("Failed to add employee. Please try again.")
         console.error("Error adding employee:", error);
-        alert("Failed to add employee. Please try again.");
       } finally {
         setIsSubmitting(false);
       }

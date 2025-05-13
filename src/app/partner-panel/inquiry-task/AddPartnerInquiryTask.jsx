@@ -50,12 +50,6 @@ const AddPartnerInquiryTask = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const partnerResult = await PartnerService.getPartner();
-        setPartnerList(partnerResult.data.filter(item => item.isActive));
-
-        const clientCompanyResult = await ClientCompanyService.getClientCompany();
-        setClientCompanyList(clientCompanyResult.data.filter(item => item.isActive));
-
         const adminResult = await CommonService.getAdminWithoutSA();
         setAdminList(adminResult.data);
 
@@ -203,26 +197,6 @@ const AddPartnerInquiryTask = () => {
             <div className="w-full mb-6 px-3">
               <label className="block text-base font-medium">Assign Task To:</label>
               <div className="flex gap-4">
-                {/* <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="assignTo"
-                    value="partner"
-                    checked={selection === "partner"}
-                    onChange={() => setSelection("partner")}
-                  />
-                  <span className="ml-2">Partner</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="assignTo"
-                    value="client"
-                    checked={selection === "client"}
-                    onChange={() => setSelection("client")}
-                  />
-                  <span className="ml-2">Client Company</span>
-                </label> */}
                 <label className="flex items-center">
                   <input
                     type="radio"
@@ -295,72 +269,6 @@ const AddPartnerInquiryTask = () => {
                 </div>
               </div>
             )}
-
-            {/* Partner Select */}
-            {/* {selection === "partner" && (
-              <div className="w-full mb-2 px-3 md:w-1/3">
-                <label className="block text-base font-medium">Partner</label>
-                <div className="relative z-20">
-                  <select
-                    value={partnerRegistrationId}
-                    onChange={(e) => setPartnerRegistrationId(e.target.value)}
-                    name="partnerRegistrationId"
-                    className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
-                  >
-                    <option value="" className="text-gray-400">
-                      --Select Partner--
-                    </option>
-                    {partnerList.length > 0 ? (
-                      partnerList.map((partnerItem) => (
-                        <option
-                          key={partnerItem.partnerRegistrationId}
-                          value={partnerItem.partnerRegistrationId}
-                        >
-                          {partnerItem.companyName}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>
-                        No Partner available
-                      </option>
-                    )}
-                  </select>
-                </div>
-              </div>
-            )} */}
-
-            {/* Client Company Select */}
-            {/* {selection === "client" && (
-              <div className="w-full mb-2 px-3 md:w-1/3">
-                <label className="block text-base font-medium">Client Company</label>
-                <div className="relative z-20">
-                  <select
-                    value={clientRegistrationId}
-                    onChange={(e) => setClientRegistrationId(e.target.value)}
-                    name="clientRegistrationId"
-                    className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
-                  >
-                    <option value="" className="text-gray-400">
-                      --Select Client Company--
-                    </option>
-                    {clientCompanyList.length > 0 ? (
-                      clientCompanyList.map((clientItem) => (
-                        <option
-                          key={clientItem.clientRegistrationId}
-                          value={clientItem.clientRegistrationId}
-                        >
-                          {clientItem.companyName}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>
-                        No Client Company available
-                      </option>
-                    )}
-                  </select>
-                </div>
-              </div>
-            )} */}
 
             {/* Employee Select */}
             {selection === "employee" && (

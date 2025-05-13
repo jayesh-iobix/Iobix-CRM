@@ -121,7 +121,7 @@ const EditEmployeeLeaveType = () => {
         const response = await EmployeeLeaveTypeService.updateEmployeeLeaveTypes(id, employeeLeaveTypeData);
         if (response.status === 1) {
           navigate(-1);
-          toast.success("Employee Leave Type updated successfully");
+          toast.success("Employee Leave Type Updated Successfully");
         }
         // Reset the form
         setEmployeeLeaveTypeName("");

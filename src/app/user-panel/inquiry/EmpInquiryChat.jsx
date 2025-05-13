@@ -22,7 +22,6 @@ const EmpInquiryChat = () => {
   const [inquiries, setInquiries] = useState([]); // State for storing inquiries
   const { id } = useParams();
   const loginId = sessionStorage.getItem("LoginUserId");
-  const role = sessionStorage.getItem("role");
   //#endregion
 
   //#region Fetch Initial Chat Data

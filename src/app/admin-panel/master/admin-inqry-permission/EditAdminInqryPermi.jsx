@@ -93,9 +93,10 @@ const EditAdminInqryPermi = () => {
     try {
       const response = await InquiryPermissionService.updateInquiryPermission(id,inquiryPermissionData);
       if (response.status === 1) {
+        navigate(-1);
         toast.success("Inquiry Permission Updated Sucesfully"); // Toast on success
         // toast.success(response.message); // Toast on success
-        navigate(-1);}
+      }
     } catch (error) {
       console.error("Error adding inquiry permission:", error);
       toast.error("Failed to add inquiry permission.");
@@ -181,7 +182,7 @@ const EditAdminInqryPermi = () => {
                 }`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Update Inquiry Permission"}
+                {isSubmitting ? "Submitting..." : "Update"}
               </motion.button>
             </div>
           </div>

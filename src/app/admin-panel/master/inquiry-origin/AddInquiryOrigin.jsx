@@ -50,9 +50,9 @@ const AddInquiryOrigin = () => {
         );
         if (response.status === 1) {
           navigate(-1);
-          // navigate('/master/inquiryorigin-list');
           toast.success("Inquiry Origin Added Successfully"); // Toast on success
-          toast.success(response.message); // Toast on success
+          // navigate('/master/inquiryorigin-list');
+          // toast.success(response.message); // Toast on success
         }
         // Reset the form
         setInquiryOriginName("");

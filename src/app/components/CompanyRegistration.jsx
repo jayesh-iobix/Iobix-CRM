@@ -157,7 +157,7 @@ const CompanyRegistration = () => {
       // role: "IsClient",
     }
     
-    console.log(companyData)
+    // console.log(companyData)
     // debugger;
     
     // const signInData = { email, password };
@@ -190,6 +190,27 @@ const CompanyRegistration = () => {
   //#region Handle Change Function
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Regex for 10-digit number validation
+    const phoneNumberRegex = /^[0-9]{10}$/;
+
+    // If the field is either phoneNumber or whatsAppNumber, validate the input
+    if (name === "phoneNumber" || name === "whatsAppNumber") {
+      if (value && !phoneNumberRegex.test(value)) {
+        // Only allow 10 digits
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "Please enter a valid 10-digit number",
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "",
+        }));
+      }
+    }
+
+    // Update form data for all fields
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
   //#endregion

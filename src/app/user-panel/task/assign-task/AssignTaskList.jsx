@@ -28,6 +28,7 @@ import { motion } from "framer-motion"; // Import framer-motion
 const AssignTaskList = () => {
   //#region State Variables
   const userId = sessionStorage.getItem("LoginUserId")
+
   const [tasks, setTasks] = useState([]);
   const [taskAllocationId, setTaskAllocationId] = useState("");
   const [subTaskAllocationId, setSubTaskAllocationId] = useState("");
@@ -801,21 +802,34 @@ const AssignTaskList = () => {
                           {item.taskStatusName}
                         </span>
                       </td>
-                      <td className="py-3 px-4">
-                        <div className="flex gap-3">
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <Link
-                              to={`/user/view-assign-task/${item.taskAllocationId}`}
-                              className="text-green-500 hover:text-green-700"
-                            >
-                              <FaEye size={24} />
-                            </Link>
-                          </motion.button>
 
-                          {/* <motion.button
+                      <td className="py-3 px-4">
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                        >
+                          <Link
+                            to={`/user/view-assign-task/${item.taskAllocationId}`}
+                            className="text-green-500 hover:text-green-700"
+                          >
+                            <FaEye size={24} />
+                          </Link>
+                        </motion.button>
+                        {item.taskAssignBy === userId && (
+                          <div className="flex gap-3">
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <Link
+                                to={`/user/view-assign-task/${item.taskAllocationId}`}
+                                className="text-green-500 hover:text-green-700"
+                              >
+                                <FaEye size={24} />
+                              </Link>
+                            </motion.button>
+
+                            {/* <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                             >
@@ -826,218 +840,220 @@ const AssignTaskList = () => {
                                 <FaEdit size={24} />
                               </Link>
                             </motion.button> */}
-                          {/* </button> */}
+                            {/* </button> */}
 
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <Link
-                              to={`/user/tasknote-list/${item.taskAllocationId}`}
-                              className="text-yellow-500 hover:text-yellow-700"
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
                             >
-                              {/* <FaRegFileLines size={24} /> */}
-                              <IoTime size={24} />
-                            </Link>
-                          </motion.button>
+                              <Link
+                                to={`/user/tasknote-list/${item.taskAllocationId}`}
+                                className="text-yellow-500 hover:text-yellow-700"
+                              >
+                                {/* <FaRegFileLines size={24} /> */}
+                                <IoTime size={24} />
+                              </Link>
+                            </motion.button>
 
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() =>
-                              handleDeleteClick(item.taskAllocationId)
-                            }
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <FaTrash size={22} />
-                          </motion.button>
-
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() =>
-                              toggleDropdown(item.taskAllocationId)
-                            }
-                            className="text-gray-500 hover:text-gray-700"
-                            ref={(el) =>
-                              (buttonRefs.current[item.taskAllocationId] = el)
-                            }
-                          >
-                            <FaEllipsisV size={24} />
-                          </motion.button>
-
-                          {/* Render dropdown above or below based on space */}
-                          {openDropdown === item.taskAllocationId && (
-                            <div
-                              className="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-                              style={getDropdownPosition(
-                                item.taskAllocationId,
-                                isLastRow
-                              )}
-                              onMouseLeave={closeMenu}
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() =>
+                                handleDeleteClick(item.taskAllocationId)
+                              }
+                              className="text-red-500 hover:text-red-700"
                             >
-                              <ul className="py-2 text-sm text-gray-800 cursor-pointer dark:text-gray-200">
-                                <li>
-                                  <span
-                                    onClick={() =>
-                                      handleTaskStartAndEndDate(item)
-                                    }
-                                    className="block px-4 py-2 hover:bg-gray-100 hover:no-underline dark:hover:bg-gray-600 dark:hover:text-white"
-                                  >
-                                    Task Updates
-                                  </span>
-                                </li>
-                                <li>
-                                  <span
-                                    onClick={() => handleEyeClick(item)}
-                                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                  >
-                                    Daily Note
-                                  </span>
-                                </li>
-                                {item.taskAssignBy === userId && (
-                                <li>
-                                  <span
-                                    onClick={() => handleTaskTransfer(item)}
-                                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                  >
-                                    Task Transfer
-                                  </span>
-                                </li>
+                              <FaTrash size={22} />
+                            </motion.button>
+
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() =>
+                                toggleDropdown(item.taskAllocationId)
+                              }
+                              className="text-gray-500 hover:text-gray-700"
+                              ref={(el) =>
+                                (buttonRefs.current[item.taskAllocationId] = el)
+                              }
+                            >
+                              <FaEllipsisV size={24} />
+                            </motion.button>
+
+                            {/* Render dropdown above or below based on space */}
+                            {openDropdown === item.taskAllocationId && (
+                              <div
+                                className="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+                                style={getDropdownPosition(
+                                  item.taskAllocationId,
+                                  isLastRow
                                 )}
-                              </ul>
-                              {startDateIsPopupVisible && (
-                                <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
-                                  <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
-                                    <h2 className="text-xl font-semibold mb-4">
-                                      Task Updates
-                                    </h2>
-                                    <form>
-                                      <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                          Task Actual Start Date
-                                        </label>
-                                        <input
-                                          type="date"
-                                          value={actualStartingDate}
-                                          onChange={(e) =>
-                                            handleStartDateChange(e)
-                                          }
-                                          className="w-full mt-1 px-3 py-2 border rounded-md border-active"
-                                        />
-                                      </div>
-
-                                      <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                          Task End Date
-                                        </label>
-                                        <input
-                                          type="date"
-                                          value={taskCompletionDate}
-                                          onChange={(e) =>
-                                            handleCompletionDateChange(e)
-                                          }
-                                          className="w-full mt-1 px-3 py-2 border rounded-md border-active"
-                                        />
-                                      </div>
-
-                                      <div className="flex flex-col md:flex-row justify-end gap-4">
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            setStartDateIsPopupVisible(false)
-                                          }
-                                          className="px-7 py-2 bg-gray-300 text-black rounded border-active"
-                                        >
-                                          Cancel
-                                        </button>
-                                      </div>
-                                    </form>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                          {taskTransferIsPopupVisible && (
-                            <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
-                              <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
-                                <h2 className="text-xl font-semibold mb-4">
-                                  Task Updates
-                                </h2>
-                                <form>
-                                  <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                      Select Department
-                                    </label>
-                                    <select
-                                      value={departmentId}
-                                      onChange={(e) =>
-                                        setDepartmentId(e.target.value)
-                                      }
-                                      className="w-full mt-1 px-3 py-2 rounded-md border border-active"
-                                    >
-                                      <option value="">
-                                        --Select Department--
-                                      </option>
-                                      {departments.map((department) => (
-                                        <option
-                                          key={department.departmentId}
-                                          value={department.departmentId}
-                                        >
-                                          {department.departmentName}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </div>
-                                  <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                      Task Transfer to:
-                                    </label>
-                                    <select
-                                      value={taskTransferTo}
-                                      onChange={(e) =>
-                                        setTaskTransferTo(e.target.value)
-                                      }
-                                      className="w-full mt-1 px-3 py-2 rounded-md border border-active"
-                                    >
-                                      <option value="">
-                                        --Select Employee--
-                                      </option>
-                                      {employeeList.map((employee) => (
-                                        <option
-                                          key={employee.employeeId}
-                                          value={employee.employeeId}
-                                        >
-                                          {employee.firstName +
-                                            " " +
-                                            employee.lastName}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </div>
-
-                                  <div className="flex flex-col md:flex-row justify-end gap-4">
-                                    <button
-                                      type="button"
+                                onMouseLeave={closeMenu}
+                              >
+                                <ul className="py-2 text-sm text-gray-800 cursor-pointer dark:text-gray-200">
+                                  <li>
+                                    <span
                                       onClick={() =>
-                                        setTaskTransferIsPopupVisible(false)
+                                        handleTaskStartAndEndDate(item)
                                       }
-                                      className="px-7 py-2 bg-gray-300 text-black rounded border-active"
+                                      className="block px-4 py-2 hover:bg-gray-100 hover:no-underline dark:hover:bg-gray-600 dark:hover:text-white"
                                     >
-                                      Cancel
-                                    </button>
-                                    <button
-                                      onClick={handleTransferSubmit}
-                                      className="px-4 py-2 bg-blue-500 text-white rounded border-active"
+                                      Task Updates
+                                    </span>
+                                  </li>
+                                  <li>
+                                    <span
+                                      onClick={() => handleEyeClick(item)}
+                                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                     >
-                                      Submit
-                                    </button>
+                                      Daily Note
+                                    </span>
+                                  </li>
+                                  {item.taskAssignBy === userId && (
+                                    <li>
+                                      <span
+                                        onClick={() => handleTaskTransfer(item)}
+                                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                      >
+                                        Task Transfer
+                                      </span>
+                                    </li>
+                                  )}
+                                </ul>
+                                {startDateIsPopupVisible && (
+                                  <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
+                                    <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
+                                      <h2 className="text-xl font-semibold mb-4">
+                                        Task Updates
+                                      </h2>
+                                      <form>
+                                        <div className="mb-4">
+                                          <label className="block text-sm font-medium text-gray-700">
+                                            Task Actual Start Date
+                                          </label>
+                                          <input
+                                            type="date"
+                                            value={actualStartingDate}
+                                            onChange={(e) =>
+                                              handleStartDateChange(e)
+                                            }
+                                            className="w-full mt-1 px-3 py-2 border rounded-md border-active"
+                                          />
+                                        </div>
+
+                                        <div className="mb-4">
+                                          <label className="block text-sm font-medium text-gray-700">
+                                            Task End Date
+                                          </label>
+                                          <input
+                                            type="date"
+                                            value={taskCompletionDate}
+                                            onChange={(e) =>
+                                              handleCompletionDateChange(e)
+                                            }
+                                            className="w-full mt-1 px-3 py-2 border rounded-md border-active"
+                                          />
+                                        </div>
+
+                                        <div className="flex flex-col md:flex-row justify-end gap-4">
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              setStartDateIsPopupVisible(false)
+                                            }
+                                            className="px-7 py-2 bg-gray-300 text-black rounded border-active"
+                                          >
+                                            Cancel
+                                          </button>
+                                        </div>
+                                      </form>
+                                    </div>
                                   </div>
-                                </form>
+                                )}
                               </div>
-                            </div>
-                          )}
-                        </div>
+                            )}
+                            
+                            {taskTransferIsPopupVisible && (
+                              <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
+                                <div className="bg-white p-6 rounded-lg shadow-lg md:w-1/3 xl:w-1/3">
+                                  <h2 className="text-xl font-semibold mb-4">
+                                    Task Updates
+                                  </h2>
+                                  <form>
+                                    <div className="mb-4">
+                                      <label className="block text-sm font-medium text-gray-700">
+                                        Select Department
+                                      </label>
+                                      <select
+                                        value={departmentId}
+                                        onChange={(e) =>
+                                          setDepartmentId(e.target.value)
+                                        }
+                                        className="w-full mt-1 px-3 py-2 rounded-md border border-active"
+                                      >
+                                        <option value="">
+                                          --Select Department--
+                                        </option>
+                                        {departments.map((department) => (
+                                          <option
+                                            key={department.departmentId}
+                                            value={department.departmentId}
+                                          >
+                                            {department.departmentName}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </div>
+                                    <div className="mb-4">
+                                      <label className="block text-sm font-medium text-gray-700">
+                                        Task Transfer to:
+                                      </label>
+                                      <select
+                                        value={taskTransferTo}
+                                        onChange={(e) =>
+                                          setTaskTransferTo(e.target.value)
+                                        }
+                                        className="w-full mt-1 px-3 py-2 rounded-md border border-active"
+                                      >
+                                        <option value="">
+                                          --Select Employee--
+                                        </option>
+                                        {employeeList.map((employee) => (
+                                          <option
+                                            key={employee.employeeId}
+                                            value={employee.employeeId}
+                                          >
+                                            {employee.firstName +
+                                              " " +
+                                              employee.lastName}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </div>
+
+                                    <div className="flex flex-col md:flex-row justify-end gap-4">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          setTaskTransferIsPopupVisible(false)
+                                        }
+                                        className="px-7 py-2 bg-gray-300 text-black rounded border-active"
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        onClick={handleTransferSubmit}
+                                        className="px-4 py-2 bg-blue-500 text-white rounded border-active"
+                                      >
+                                        Submit
+                                      </button>
+                                    </div>
+                                  </form>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </td>
                     </motion.tr>
                     {/* </tr> */}
@@ -1116,6 +1132,7 @@ const AssignTaskList = () => {
                                           </span>
                                         </td>
                                         <td className="py-3 px-4">
+                                            
                                           <div className="flex gap-3">
                                             <motion.button
                                               whileHover={{ scale: 1.1 }}
@@ -1128,12 +1145,7 @@ const AssignTaskList = () => {
                                                 <FaEye size={24} />
                                               </Link>
                                             </motion.button>
-                                            {/* <Link
-                                              to={`/user/task/edit-subtask/${subTask.subTaskAllocationId}`}
-                                              className="relative text-blue-500 hover:text-blue-700 group"
-                                            >
-                                              <FaEdit size={24} />
-                                            </Link> */}
+                                            {subTask.taskAssignBy === userId && (
                                             <motion.button
                                               whileHover={{ scale: 1.1 }}
                                               whileTap={{ scale: 0.9 }}
@@ -1146,7 +1158,12 @@ const AssignTaskList = () => {
                                                 <IoTime size={24} />
                                               </Link>
                                             </motion.button>
-                                            <button
+                                            )} 
+
+                                            {subTask.taskAssignBy === userId && (
+                                            <motion.button
+                                              whileHover={{ scale: 1.1 }}
+                                              whileTap={{ scale: 0.9 }}
                                               onClick={(e) =>
                                                 handleSubTaskDeleteClick(
                                                   subTask.subTaskAllocationId,
@@ -1157,8 +1174,13 @@ const AssignTaskList = () => {
                                               className="text-red-500 hover:text-red-700"
                                             >
                                               <FaTrash size={22} />
-                                            </button>
-                                            <button
+                                            </motion.button>
+                                            )}
+
+                                            {subTask.taskAssignBy === userId && (
+                                            <motion.button
+                                              whileHover={{ scale: 1.1 }}
+                                              whileTap={{ scale: 0.9 }}
                                               onClick={() =>
                                                 toggleSubTaskDropdown(
                                                   subTask.subTaskAllocationId
@@ -1172,10 +1194,10 @@ const AssignTaskList = () => {
                                               }
                                             >
                                               <FaEllipsisV size={24} />
-                                            </button>
+                                            </motion.button>
+                                            )}
                                             {/* Render dropdown above or below based on space */}
-                                            {openSubDropdown ===
-                                              subTask.subTaskAllocationId && (
+                                            {openSubDropdown === subTask.subTaskAllocationId && (
                                               <div
                                                 className="absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
                                                 style={getDropdownPositionForSubTask(

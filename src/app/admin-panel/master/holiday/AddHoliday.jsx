@@ -71,7 +71,7 @@ const AddHoliday = () => {
         const response = await HolidayService.addHoliday(holidayData);
         if (response.status === 1) {
           navigate(-1);
-          toast.success("Holiday added successfully"); // Toast on success
+          toast.success("Holiday Added Successfully"); // Toast on success
           // navigate('/master/holiday-list');
           // console.log('Holiday added successfully:', response);
         }

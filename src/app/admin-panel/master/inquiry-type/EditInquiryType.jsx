@@ -53,8 +53,9 @@ const EditInquiryType = () => {
         const response = await InquiryTypeService.updateInquiryType(id, inquiryTypeData);
         if (response.status === 1) {
           navigate(-1);
-          toast.success(response.message); // Toast on success
+          toast.success("Inquiry Type Updated Successfully"); // Toast on success
           // navigate('/master/inquirytype-list');
+          // toast.success(response.message); // Toast on success
         }
         setInquiryTypeName('');
       } catch (error) {

@@ -92,7 +92,7 @@ const EditHoliday = () => {
         const response = await HolidayService.updateHoliday(id, holidayData);
         if (response.status === 1) {
           navigate(-1);
-          toast.success("Holiday update successfully"); // Toast on success
+          toast.success("Holiday Update Successfully"); // Toast on success
           // navigate('/master/holiday-list');
           // console.log('Holiday added successfully:', response);
         }

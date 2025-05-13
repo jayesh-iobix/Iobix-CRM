@@ -11,34 +11,6 @@ import CreatePartnerInqryList from "../../admin-panel/create-partner-inquiry/Cre
 const CreateInquiryList = () => {
 
   //#region State Variables
-  const [formData, setFormData] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    employeeCode: "",
-    email: "",
-    password: "",
-    departmentId: "",
-    designationId: "",
-    departmentName: "",
-    designationName: "",
-    gender: "",
-    mobileNumber: "",
-    emergencyMobileNumber: "",
-    birthDate: "",
-    dateOfJoining: "",
-    countryId: "",
-    stateId: "",
-    cityId: "",
-    countryName: "",
-    stateName: "",
-    cityName: "",
-    bloodGroup: "",
-    address: "",
-    keyResponsibility: "",
-    reportingTo: "" 
-  });
-
   const [activeTab, setActiveTab] = useState(1);
   const navigate = useNavigate();
   //#endregion

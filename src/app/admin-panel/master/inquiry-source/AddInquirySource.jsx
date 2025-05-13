@@ -51,8 +51,9 @@ const AddInquirySource = () => {
         );
         if (response.status === 1) {
           navigate(-1);
-          toast.success(response.message); // Toast on success
+          toast.success("Inquiry Source Added Successfully"); // Toast on success
           // navigate('/master/inquirysource-list');
+          // toast.success(response.message); // Toast on success
         }
         // Reset the form
         setInquirySourceName("");

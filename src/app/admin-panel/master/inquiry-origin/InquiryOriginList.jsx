@@ -97,7 +97,7 @@ const InquiryOriginList = () => {
   
         // Check the response from the API and display a success message
         if (updatedInquiryOrigin) {
-          toast.success("Inquiry Origin updated successfully.");
+          toast.success("Inquiry Origin Updated Successfully.");
         } else {
           throw new Error("Failed to update inquiry origin.");
         }

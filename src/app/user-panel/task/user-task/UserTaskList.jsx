@@ -736,7 +736,7 @@ const UserTaskList = () => {
                           </Link>
                           </motion.button>
                           </button>
-                          )}
+                      )}
 
                       {/* <FaEye
                         size={24}
@@ -987,13 +987,15 @@ const UserTaskList = () => {
                         onClick={() => handleEyeClick(item)}
                       /> */}
                       {subTask.taskAssignTo === userId && (
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
                         onClick={() => toggleSubTaskDropdown(subTask.subTaskAllocationId)}
                         className="text-gray-500 hover:text-gray-700"
                         ref={(el) => (buttonRefs.current[subTask.subTaskAllocationId] = el)}
                       >
                         <FaEllipsisV size={24} />
-                      </button>
+                      </motion.button>
                        )}
                       {/* Render dropdown above or below based on space */}
                       {openSubDropdown === subTask.subTaskAllocationId && (

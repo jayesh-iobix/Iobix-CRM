@@ -259,7 +259,7 @@ const UserTaskList = () => {
   return (
     <>
       {/* Header Section + Buttons */}
-      <div className="flex justify-between items-center my-3 flex-wrap">
+      <div className="flex flex-col sm:flex-row justify-between items-center my-3">
         <h1 className="font-semibold text-2xl">User Task List</h1>
 
         {/* Download Report Button */}

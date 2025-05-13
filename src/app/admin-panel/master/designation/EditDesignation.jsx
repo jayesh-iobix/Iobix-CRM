@@ -88,8 +88,9 @@ const EditDesignation = () => {
         );
         if (response.status === 1) {
           navigate(-1);
-          toast.success(response.message); // Toast on success
+          toast.success("Designation Updated Successfully"); // Toast on success
           // navigate("/master/designation-list");
+          // toast.success(response.message); // Toast on success
         }
       } catch (error) {
         console.error("Error editing designation:", error);

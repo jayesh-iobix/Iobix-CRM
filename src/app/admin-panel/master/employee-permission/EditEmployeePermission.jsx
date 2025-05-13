@@ -52,8 +52,9 @@ const EditEmployeePermission = () => {
       try {
         const response = await EmployeePermissionService.updateEmployeePermission(id, employeePermissionData);
         if (response.status === 1) {
-          navigate('/master/employeepermission-list');
-          toast.success(response.message); // Toast on success
+          navigate(-1);
+          toast.success("Employee Permission Updated Successfully"); // Toast on success
+          // toast.success(response.message); // Toast on success
         }
         setPermissionName('');
       } catch (error) {

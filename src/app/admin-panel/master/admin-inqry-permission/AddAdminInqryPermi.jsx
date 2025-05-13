@@ -86,14 +86,14 @@ const AddAdminInqryPermi = () => {
       inquiryTypeIds,
     };
 
-    console.log(inquiryPermissionData);
+    // console.log(inquiryPermissionData);
     setIsSubmitting(true);
     try {
       const response = await InquiryPermissionService.addInquiryPermission(inquiryPermissionData);
       if (response.status === 1) {
+        navigate(-1);}
         toast.success("Inquiry Permission Added Sucesfully"); // Toast on success
         // toast.success(response.message); // Toast on success
-        navigate(-1);}
     } catch (error) {
       console.error("Error adding inquiry permission:", error);
       toast.error("Failed to add inquiry permission.");
@@ -177,7 +177,7 @@ const AddAdminInqryPermi = () => {
                 }`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Add Inquiry Permission"}
+                {isSubmitting ? "Submitting..." : "Add"}
               </motion.button>
             </div>
           </div>

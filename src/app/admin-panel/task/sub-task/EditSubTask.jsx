@@ -6,6 +6,7 @@ import { EmployeeService } from "../../../service/EmployeeService";
 import { SubTaskService } from "../../../service/SubTaskService";
 import { DepartmentService } from "../../../service/DepartmentService";
 import { motion } from "framer-motion"; // Import framer-motion
+import { toast } from "react-toastify";
 //#endregion
 
 //#region Component: EditSubTask
@@ -113,21 +114,24 @@ const EditSubTask = () => {
     try {
       const response = await SubTaskService.updateSubTask(id, subTaskData);
       if (response.status === 1) {
-        alert(response.message);
-        navigate("/task/task-list");
+        navigate(-1);
+        toast.success("Sub Task Updated Successfully");
+        // navigate("/task/task-list");
+        // toast.success(response.message);
       }
     } catch (error) {
+      toast.error("Failed to update sub task")
       console.error("Error updating task:", error);
-      if (error.response) {
-        console.error("Error Response:", error.response);
-        alert(
-          `Failed to update task. Error: ${
-            error.response.data.message || error.message
-          }`
-        );
-      } else {
-        alert("Failed to update task due to network error.");
-      }
+      // if (error.response) {
+      //   console.error("Error Response:", error.response);
+      //   alert(
+      //     `Failed to update task. Error: ${
+      //       error.response.data.message || error.message
+      //     }`
+      //   );
+      // } else {
+      //   alert("Failed to update task due to network error.");
+      // }
     } finally {
       setIsSubmitting(false);
     }
@@ -304,7 +308,7 @@ const EditSubTask = () => {
                 }`}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Update Task"}
+                {isSubmitting ? "Submitting..." : "Update Sub Task"}
               </motion.button>
               {/* <button
                 type="submit"

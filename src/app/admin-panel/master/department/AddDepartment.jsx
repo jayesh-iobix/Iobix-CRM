@@ -50,9 +50,10 @@ const AddDepartment = () => {
         const response = await DepartmentService.addDepartment(departmentData);
         if (response.status === 1) {
           navigate(-1);
+          toast.success("Department Added Successfully"); // Toast on success
           // navigate('/master/department-list');
           // console.log('Department added successfully:', response);
-          toast.success(response.message); // Toast on success
+          // toast.success(response.message); // Toast on success
         }
         // Reset the form
         setDepartmentName('');
@@ -92,7 +93,7 @@ const AddDepartment = () => {
               </label>
               <input
                 type='text'
-                placeholder='Department'
+                placeholder='Department Name'
                 value={departmentName}
                 onChange={(e) => setDepartmentName(e.target.value)}
                 className='w-full mb-2 bg-transparent rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition'

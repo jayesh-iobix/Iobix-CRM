@@ -97,7 +97,7 @@ const CreateSubTask = () => {
       const response = await SubTaskService.addSubTask(subTaskData);
       if (response.status === 1) {
         navigate(-1); // Navigate back to previous page
-        toast.success(response.message); // Toast on success
+        toast.success("Sub Task Created Successfully"); // Toast on success
         setTaskName('');
         setTaskAssignTo('');
         setTaskPriority('');
@@ -108,6 +108,7 @@ const CreateSubTask = () => {
         setDepartmentId('');
         setNotifications([{ reminderDateTime: "" }]); // Clear notifications
         // navigate("/task/task-list");
+        // toast.success(response.message); 
       }
     } catch (error) {
       console.error("Error adding sub task:", error);

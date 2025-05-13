@@ -316,27 +316,30 @@ const InquiryChatCreated = () => {
                   <div className="text-black">{message.message}</div>
 
                   {/* File Preview */}
-                  {message.file && (
+                  {message.file || message.filePath ? (
                     <div className="mt-2">
-                      {message.file.type.includes("image") ? (
+                      {/* If the file is an image, display it */}
+                      {message.file && message.file.type.includes("image") ? (
                         <img
-                          src={URL.createObjectURL(message.file)}
+                          src={URL.createObjectURL(message.file)}  // Local file URL for uploaded image
                           alt="file-preview"
                           className="w-20 h-20 object-cover rounded-md"
                         />
                       ) : (
+                        // If message.filePath is present, use the file path received from the API
                         <div className="text-xs text-blue-500 mt-1">
                           <a
-                            href={URL.createObjectURL(message.filePath)}
+                            href={message.filePath || URL.createObjectURL(message.file)} // Fallback to the uploaded file URL if filePath is not available
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="cursor-pointer hover:underline"
                           >
-                            {message.file.name}
+                            {message.file ? message.file.name : message.filePath.split('/').pop()} {/* Display file name */}
                           </a>
                         </div>
                       )}
                     </div>
-                  )}
+                  ) : null}
 
                   <div className="text-xs text-gray-600 mt-2">{formatDate(message.sentDate)}</div>
                 </div>

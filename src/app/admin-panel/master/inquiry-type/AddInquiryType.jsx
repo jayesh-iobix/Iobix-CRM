@@ -50,8 +50,9 @@ const AddInquiryType = () => {
         );
         if (response.status === 1) {
           navigate(-1);
-          toast.success(response.message); // Toast on success
+          toast.success("Inquiry Type Added Successfully"); // Toast on success
           // navigate('/master/inquirytype-list');
+          // toast.success(response.message); // Toast on success
         }
         // Reset the form
         setInquiryTypeName("");

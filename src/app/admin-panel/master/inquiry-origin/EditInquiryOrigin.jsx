@@ -55,8 +55,8 @@ const EditInquiryOrigin = () => {
         if (response.status === 1) {
           navigate(-1);
           toast.success("Inquiry Origin Update Successfully"); // Toast on success
-          //   navigate('/master/inquiryorigin-list');
-        //   toast.success(response.message); // Toast on success
+          // navigate('/master/inquiryorigin-list');
+          // toast.success(response.message); // Toast on success
         }
         setInquiryOriginName('');
       } catch (error) {

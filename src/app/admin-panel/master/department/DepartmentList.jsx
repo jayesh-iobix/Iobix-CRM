@@ -44,7 +44,7 @@ const DepartmentList = () => {
       const response = await DepartmentService.deleteDepartments(deleteId);
       if (response.status === 1) {
         setDepartments((prevDepartment) =>
-            prevDepartment.filter((department) => department.departmentId !== deleteId)
+          prevDepartment.filter((department) => department.departmentId !== deleteId)
         );
         toast.error("Department Deleted Successfully"); // Toast on success
         setIsPopupOpen(false); // Close popup after deletion
@@ -52,7 +52,7 @@ const DepartmentList = () => {
       }
     } catch (error) {
       console.error("Error deleting department:", error);
-      alert("Failed to delete department");
+      // alert("Failed to delete department");
     }
   };
 
