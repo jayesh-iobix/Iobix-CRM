@@ -93,6 +93,28 @@ export const ReportService = {
     }
   },
 
+  // Method to attendance task report
+  downloadLeaveBalanceReport: async (employeeId) => {
+    // debugger;
+    try {
+      const response = await httpClient.get(`${api}/DownloadLeaveBalanceReport/${employeeId}`, {
+        responseType: 'blob', // Important
+      });
+
+      // Create a link element, use it to download the blob, and then remove it
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `LeaveBalance_Report.pdf`); // Specify the file name
+      // link.setAttribute('download', 'AttendanceReport.pdf'); // Specify the file name
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading the report:', error);
+    }
+  },
+
 };
 
 

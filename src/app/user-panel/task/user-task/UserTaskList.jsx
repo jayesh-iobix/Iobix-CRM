@@ -744,21 +744,21 @@ const UserTaskList = () => {
                         onClick={() => handleEyeClick(item)}
                       /> */}
 
-                          {/* Conditionally render the button if item.taskAssignTo matches userId */}
-                          {item.taskAssignTo === userId && (
-                            <button
-                              onClick={() => toggleDropdown(item.taskAllocationId)}
-                              className="text-gray-500 hover:text-gray-700"
-                              ref={(el) => (buttonRefs.current[item.taskAllocationId] = el)}
-                            >
-                              <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                              >
-                              <FaEllipsisV size={24} />
-                              </motion.button>
-                            </button>
-                          )}
+                      {/* Conditionally render the button if item.taskAssignTo matches userId */}
+                      {item.taskAssignTo === userId && (
+                        <button
+                          onClick={() => toggleDropdown(item.taskAllocationId)}
+                          className="text-gray-500 hover:text-gray-700"
+                          ref={(el) => (buttonRefs.current[item.taskAllocationId] = el)}
+                        >
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                          <FaEllipsisV size={24} />
+                          </motion.button>
+                        </button>
+                      )}
 
 
                       {/* Render dropdown above or below based on space */}

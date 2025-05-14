@@ -75,7 +75,7 @@ export default function Sidebar() {
         //   navigate("sign-in")
         // )
       } catch {
-        alert("Token is not decoded");
+        console.log("Token is not decoded");
       }
     }
   };
@@ -100,7 +100,7 @@ export default function Sidebar() {
         {(role === "admin" || role === "user") && (
           <div
             className={classNames(
-              "fixed inset-y-0 left-0 z-40 bg-[#031B29] w-62 p-3 flex flex-col h-screen lg:static lg:translate-x-0 overflow-x-auto sidebar-container",
+              "fixed inset-y-0 left-0 z-40 bg-[#031B29] w-62 p-3 flex flex-col h-screen lg:static lg:translate-x-0 overflow-x-auto sidebar-container transition-transform duration-300 ease-in-out",
               isSidebarOpen ? "translate-x-0" : "-translate-x-full"
             )}
           >
@@ -121,8 +121,8 @@ export default function Sidebar() {
             {/* Bottom Sidebar Links */}
             <div className="flex flex-col gap-0.5 pt-2 pb-4 border-t border-neutral-700">
               {/* {getDashboardSidebarBottomLinks(role).map((link) => (
-          <SidebarLink key={link.key} link={link} />
-        ))} */}
+                <SidebarLink key={link.key} link={link} />
+              ))} */}
               {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((link) => (
                 <SidebarLink key={link.key} link={link} />
               ))}
@@ -147,7 +147,7 @@ export default function Sidebar() {
         {role !== "admin" && role !== "user" && (
           <div
             className={classNames(
-              "fixed inset-y-0 left-0 z-40 bg-[#264443] w-62 p-3 flex flex-col h-screen lg:static lg:translate-x-0 overflow-x-auto sidebar-container",
+              "fixed inset-y-0 left-0 z-40 bg-[#031B29] w-62 p-3 flex flex-col h-screen lg:static lg:translate-x-0 overflow-x-auto sidebar-container transition-transform duration-300 ease-in-out", // Add transition
               isSidebarOpen ? "translate-x-0" : "-translate-x-full"
             )}
           >
@@ -166,17 +166,17 @@ export default function Sidebar() {
             </div>
 
             {/* Bottom Sidebar Links */}
-            {/* <div className="flex flex-col gap-0.5 pt-2 pb-4 border-t border-neutral-800">
-        <div
-          className={classNames(linkClass, "cursor-pointer text-red-500")}
-          onClick={handleLogout}
-        >
-          <span className="text-xl">
-            <HiOutlineLogout />
-          </span>
-          Logout
-        </div>
-      </div> */}
+            <div className="flex flex-col gap-0.5 pt-2 pb-4 border-t border-neutral-800">
+              <div
+                className={classNames(linkClass, "cursor-pointer text-red-500")}
+                onClick={handleLogout}
+              >
+                <span className="text-xl">
+                  <HiOutlineLogout />
+                </span>
+                Logout
+              </div>
+            </div>
           </div>
         )}
 

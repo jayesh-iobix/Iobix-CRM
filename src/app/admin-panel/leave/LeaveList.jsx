@@ -24,6 +24,7 @@ const LeaveList = () => {
   const [selectedMonth, setSelectedMonth] = useState(currentMonth); // Set the selected month to current month
   const [showModal, setShowModal] = useState(false); // Modal visibility
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isApplyLeaveSubmitting, setIsApplyLeaveSubmitting] = useState(false);
 
   const [totalBalance, setTotalBalance] = useState(''); // Total balance of different leave types
   const [leaveBalance, setLeaveBalance] = useState([]); // Leave types from backend
@@ -142,15 +143,33 @@ const LeaveList = () => {
   
   //#region Download Report
   // Function to handle report download
-  const handleDownloadReport = async () => {
+  const handleDownloadApplyLeaveReport = async () => {
       const month = months[selectedMonth]; // Get the month name using the selected index
-      setIsSubmitting(true);
+      setIsApplyLeaveSubmitting(true);
   
       try {
         // Wait for the report download to complete with the selected year and month
         const response = await ReportService.downloadApplyLeaveReport(id, month, year);
         if(response) {
-          toast.success("Report downloaded successfully!");
+          toast.success("Applye Leave Report Downloaded Successfully!");
+        }
+      } catch (error) {
+        console.error("Error downloading report:", error);
+        toast.error("Failed to download report.");
+      } finally {
+        setIsApplyLeaveSubmitting(false);
+      }
+  };
+
+  // Function to handle report download
+  const handleDownloadLeaveBalanceReport = async () => {
+      setIsSubmitting(true);
+  
+      try {
+        // Wait for the report download to complete with the selected year and month
+        const response = await ReportService.downloadLeaveBalanceReport(id);
+        if(response) {
+          toast.success("Leave Balance Report Downloaded Successfully!");
         }
       } catch (error) {
         console.error("Error downloading report:", error);
@@ -170,18 +189,34 @@ const LeaveList = () => {
           Leave Records for {year}
         </h1>
 
+        <div className="flex flex-col sm:flex-row">
+
         {/* Download Report Button */}
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           type="button" // Added this line to prevent form submission
-          onClick={handleDownloadReport}
-          className={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
+          onClick={handleDownloadLeaveBalanceReport}
+          className={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline sm:mb-0 mb-2 
             ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Downloading..." : "Download Report"}
+            disabled={isSubmitting}
+            >
+          {isSubmitting ? "Downloading..." : "Download Leave Balance Report"}
         </motion.button>
+
+        {/* Download Report Button */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          type="button" // Added this line to prevent form submission
+          onClick={handleDownloadApplyLeaveReport}
+          className={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
+            ${isApplyLeaveSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={isApplyLeaveSubmitting}
+            >
+          {isApplyLeaveSubmitting ? "Downloading..." : "Download Apply Leave Report"}
+        </motion.button>
+        </div>
       </div>
 
       {/* Card for Year and Month Dropdown */}
