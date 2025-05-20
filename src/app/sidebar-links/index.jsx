@@ -32,6 +32,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
       // { label: "Inquiry Origin", path: "/master/inquiryorigin-list" },
       // { label: "User Inquiry Permission", path: "/master/userinquirypermission-list" },
       { label: "Admin Inquiry Permissi", path: "/master/inquirypermission-list" },
+      { label: "Tax Details", path: "/master/tax-detail-list" },
     ],
   },  
   {

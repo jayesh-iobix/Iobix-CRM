@@ -11,6 +11,8 @@ import { PartnerService } from "../../service/PartnerService";
 import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { InquiryTaskService } from "../../service/InquiryTaskService";
 import { VendorService } from "../../service/VendorService";
+import AssignmentDropdown from './AssignmentDropdown'; // adjust path based on your file structure
+
 //#endregion
 
 //#region  Component: AddInquiryTask
@@ -27,7 +29,6 @@ const AddInquiryTask = () => {
   const [taskType, setTaskType] = useState("");
   const [taskStartingDate, setTaskStartingDate] = useState("");
   const [taskExpectedCompletionDate, setTaskExpectedCompletionDate] = useState("");
-  const [taskCompletionDate, settaskCompletionDate] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [employeeList, setEmployeeList] = useState([]);
@@ -92,17 +93,21 @@ const AddInquiryTask = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // debugger;
     if (!validateForm()) return;
 
     const inquiryTaskData = {
       inquiryRegistrationId: id,
       taskName,
       departmentId,
-      taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && vendorId === "" && employeeId !== "") ? employeeId : 
-      (partnerRegistrationId === "" && employeeId === "" && vendorId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
-      (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId === "" && vendorId !== "") ? vendorId : 
-      (clientRegistrationId === "" && employeeId === "" && vendorId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,
+      taskAssignTo: selection === "employee" ? employeeId
+        : selection === "partner" ? partnerRegistrationId
+        : selection === "client" ? clientRegistrationId
+        : selection === "vendor" ? vendorId
+        : null,
+      // taskAssignTo: (partnerRegistrationId === "" && clientRegistrationId === "" && vendorId === "" && employeeId !== "") ? employeeId : 
+      // (partnerRegistrationId === "" && employeeId === "" && vendorId === "" && clientRegistrationId !== "") ? clientRegistrationId : 
+      // (partnerRegistrationId === "" && employeeId === "" && clientRegistrationId === "" && vendorId !== "") ? vendorId : 
+      // (clientRegistrationId === "" && employeeId === "" && vendorId === "" && partnerRegistrationId !== "") ? partnerRegistrationId : null,
       taskPriority,
       taskType,
       taskStartingDate,
@@ -122,9 +127,10 @@ const AddInquiryTask = () => {
     const inquiryTaskDataToSend = new FormData();
     Object.keys(inquiryTaskData).forEach(key => {
       if (key === 'taskReminderVM' && inquiryTaskData[key] && Object.keys(inquiryTaskData[key]).length > 0) {
-        const taskReminderVMString = JSON.stringify(inquiryTaskData[key]);
+        // const taskReminderVMString = JSON.stringify(inquiryTaskData[key]);
+        const taskReminderVMString = JSON.stringify(inquiryTaskData[key] ?? {});
         inquiryTaskDataToSend.append("taskReminderJson", taskReminderVMString);
-        console.log(`Appended taskReminderJson: ${taskReminderVMString}`);
+        // console.log(`Appended taskReminderJson: ${taskReminderVMString}`);
       } else {
         inquiryTaskDataToSend.append(key, inquiryTaskData[key]);
       }
@@ -267,68 +273,28 @@ const AddInquiryTask = () => {
 
             {/* Partner Select */}
             {selection === "partner" && (
-              <div className="w-full mb-2 px-3 md:w-1/3">
-                <label className="block text-base font-medium">Partner</label>
-                <div className="relative z-20">
-                  <select
-                    value={partnerRegistrationId}
-                    onChange={(e) => setPartnerRegistrationId(e.target.value)}
-                    name="partnerRegistrationId"
-                    className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
-                  >
-                    <option value="" className="text-gray-400">
-                      --Select Partner--
-                    </option>
-                    {partnerList.length > 0 ? (
-                      partnerList.map((partnerItem) => (
-                        <option
-                          key={partnerItem.partnerRegistrationId}
-                          value={partnerItem.partnerRegistrationId}
-                        >
-                          {partnerItem.companyName}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>
-                        No Partner available
-                      </option>
-                    )}
-                  </select>
-                </div>
-              </div>
+              <AssignmentDropdown
+                label="Partner"
+                options={partnerList}
+                value={partnerRegistrationId}
+                onChange={setPartnerRegistrationId}
+                // displayField="companyName"
+                displayField={(opt) => opt.companyName}
+                valueField="partnerRegistrationId"
+              />
             )}
 
             {/* Client Company Select */}
             {selection === "client" && (
-              <div className="w-full mb-2 px-3 md:w-1/3">
-                <label className="block text-base font-medium">Client Company</label>
-                <div className="relative z-20">
-                  <select
-                    value={clientRegistrationId}
-                    onChange={(e) => setClientRegistrationId(e.target.value)}
-                    name="clientRegistrationId"
-                    className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
-                  >
-                    <option value="" className="text-gray-400">
-                      --Select Client Company--
-                    </option>
-                    {clientCompanyList.length > 0 ? (
-                      clientCompanyList.map((clientItem) => (
-                        <option
-                          key={clientItem.clientRegistrationId}
-                          value={clientItem.clientRegistrationId}
-                        >
-                          {clientItem.companyName}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>
-                        No Client Company available
-                      </option>
-                    )}
-                  </select>
-                </div>
-              </div>
+              <AssignmentDropdown
+                label="Client Company"
+                options={clientCompanyList}
+                value={clientRegistrationId}
+                onChange={setClientRegistrationId}
+                // displayField="companyName"
+                displayField={(opt) => opt.companyName}
+                valueField="clientRegistrationId"
+              />
             )}
 
             {/* Employee Select */}
@@ -366,7 +332,15 @@ const AddInquiryTask = () => {
                 </div>
 
                 {/* Employee Select */}
-                <div className="w-full mb-2 px-3 md:w-1/3">
+                 <AssignmentDropdown
+                   label="Employee"
+                   options={employeeList}
+                   value={employeeId}
+                   onChange={setEmployeeId}
+                   displayField={(opt) => `${opt.firstName} ${opt.lastName}`}
+                   valueField="employeeId"
+                 />
+                {/* <div className="w-full mb-2 px-3 md:w-1/3">
                   <label className="block text-base font-medium">Employee</label>
                   <select
                     value={employeeId}
@@ -381,41 +355,49 @@ const AddInquiryTask = () => {
                     ))}
                   </select>
                   {errors.taskAssignTo && <p className="text-red-500 text-xs">{errors.taskAssignTo}</p>}
-                </div>
+                </div> */}
               </>
             )}
 
             {/* Vendor Select */}
             {selection === "vendor" && (
-              <div className="w-full mb-2 px-3 md:w-1/3">
-                <label className="block text-base font-medium">Vendor</label>
-                <div className="relative z-20">
-                  <select
-                    value={vendorId}
-                    onChange={(e) => setVendorId(e.target.value)}
-                    name="vendorId"
-                    className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
-                  >
-                    <option value="" className="text-gray-400">
-                      --Select Vendor--
-                    </option>
-                    {vendorList.length > 0 ? (
-                      vendorList.map((vendorItem) => (
-                        <option
-                          key={vendorItem.vendorId}
-                          value={vendorItem.vendorId}
-                        >
-                          {vendorItem.companyName}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>
-                        No Vendor available
-                      </option>
-                    )}
-                  </select>
-                </div>
-              </div>
+              <AssignmentDropdown
+                label="Vendor"
+                options={vendorList}
+                value={vendorId}
+                onChange={setVendorId}
+                displayField={(opt) => opt.companyName}
+                valueField="vendorId"
+              />
+              // <div className="w-full mb-2 px-3 md:w-1/3">
+              //   <label className="block text-base font-medium">Vendor</label>
+              //   <div className="relative z-20">
+              //     <select
+              //       value={vendorId}
+              //       onChange={(e) => setVendorId(e.target.value)}
+              //       name="vendorId"
+              //       className="relative z-20 w-full mb-2 appearance-none rounded-lg border border-stroke bg-transparent py-[10px] px-4 text-dark-6 border-active transition disabled:cursor-default disabled:bg-gray-2"
+              //     >
+              //       <option value="" className="text-gray-400">
+              //         --Select Vendor--
+              //       </option>
+              //       {vendorList.length > 0 ? (
+              //         vendorList.map((vendorItem) => (
+              //           <option
+              //             key={vendorItem.vendorId}
+              //             value={vendorItem.vendorId}
+              //           >
+              //             {vendorItem.companyName}
+              //           </option>
+              //         ))
+              //       ) : (
+              //         <option value="" disabled>
+              //           No Vendor available
+              //         </option>
+              //       )}
+              //     </select>
+              //   </div>
+              // </div>
             )}
 
             {/* Task Type */}
@@ -424,7 +406,7 @@ const AddInquiryTask = () => {
               <select
                 value={taskType}
                 onChange={(e) => setTaskType(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                className="w-full rounded-md border p-2 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Type--
@@ -441,7 +423,7 @@ const AddInquiryTask = () => {
               <select
                 value={taskPriority}
                 onChange={(e) => setTaskPriority(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                className="w-full mb-2 rounded-md border p-2 border-active"
               >
                 <option value="" className="text-gray-400">
                   --Select Task Priority--
@@ -460,7 +442,7 @@ const AddInquiryTask = () => {
                 type="date"
                 value={taskStartingDate}
                 onChange={(e) => setTaskStartingDate(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                className="w-full mb-2 rounded-md border py-[9px] px-4 border-active"
               />
              {errors.taskStartingDate && <p className="text-red-500 text-xs">{errors.taskStartingDate}</p>}
             </div>
@@ -472,7 +454,7 @@ const AddInquiryTask = () => {
                 type="date"
                 value={taskExpectedCompletionDate}
                 onChange={(e) => setTaskExpectedCompletionDate(e.target.value)}
-                className="w-full mb-2 rounded-md border py-[10px] px-4 border-active"
+                className="w-full mb-2 rounded-md border py-[9px] px-4 border-active"
               />
               {errors.taskExpectedCompletionDate && <p className="text-red-500 text-xs">{errors.taskExpectedCompletionDate}</p>}
             </div>
@@ -483,9 +465,9 @@ const AddInquiryTask = () => {
               <input
                 type="file"
                 onChange={handleFileChange}  // Handle file selection
-                className="w-full mb-2 rounded-md border py-[10px] px-4"
+                className="w-full mb-2 rounded-md border p-2 border-active"
               />
-              {taskDocument && <p className="text-gray-500 text-xs">{taskDocument.name}</p>}
+              {taskDocument && <p className="text-gray-500 text-xs">Selected: {taskDocument.name}</p>}
             </div>
 
             {/* Task Description */}

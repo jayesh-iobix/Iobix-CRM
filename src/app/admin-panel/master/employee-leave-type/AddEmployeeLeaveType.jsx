@@ -125,6 +125,7 @@ const AddEmployeeLeaveType = () => {
       <section className="bg-white rounded-lg shadow-sm m-1 py-8 pt-">
         <form onSubmit={handleSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
+            
             {/* Leave Type */}
             <div className="w-full mb-2 px-3 md:w-1/2 lg:w-1/2">
               <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">Leave Type</label>

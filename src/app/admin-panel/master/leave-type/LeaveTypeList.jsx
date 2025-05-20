@@ -21,6 +21,7 @@ const LeaveTypeList = () => {
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
+  //#region Fetch Leave Type Data
   useEffect(() => {
     const fetchLeaveTypes = async () => {
       try {

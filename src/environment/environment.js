@@ -40,4 +40,5 @@ export const environment = {
   announcement: "https://localhost:7292/api/Announcement",
   helpSupport: "https://localhost:7292/api/HelpIssueTicket",
   helpAdmin: "https://localhost:7292/api/HelpAdminContact",
+  taxDetail: "https://localhost:7292/api/TaxDetail",
 }

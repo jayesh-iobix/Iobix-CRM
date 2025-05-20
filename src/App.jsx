@@ -156,6 +156,9 @@ import AddAnnouncement from './app/hr-panel/announcement/AddAnnouncement';
 import AnnouncementList from './app/hr-panel/announcement/AnnouncementList';
 import ViewAnnouncement from './app/hr-panel/announcement/ViewAnnouncement';
 import HelpSupport from './app/components/HelpSupport';
+import TaxDetailsList from './app/admin-panel/master/tax-details/TaxDetailsList';
+import AddTaxDetails from './app/admin-panel/master/tax-details/AddTaxDetails';
+import EditTaxDetails from './app/admin-panel/master/tax-details/EditTaxDetails';
 //#endregion
 
 function App() {
@@ -274,6 +277,9 @@ function App() {
       <Route path="master/inquirypermission-list" element={<AdminInqryPermiList />} />
       <Route path="master/inquirypermission-list/add-inquirypermission" element={<AddAdminInqryPermi />} />
       <Route path="master/inquirypermission-list/edit-inquirypermission/:id" element={<EditAdminInqryPermi />} />
+      <Route path="master/tax-detail-list" element={<TaxDetailsList />} />
+      <Route path="master/tax-detail-list/add-tax-detail" element={<AddTaxDetails />} />
+      <Route path="master/tax-detail-list/edit-tax-detail/:id" element={<EditTaxDetails />} />
       <Route path="employee-list" element={<EmployeeList />} />
       <Route path="employee-list/add-employee" element={<AddEmployee />} />
       <Route path="employee-list/edit-employee/:id" element={<EditEmployee />} />

@@ -80,7 +80,7 @@ export default function RecentOrders() {
     const fetchRecentEmployees = async () => {
       try {
         const response = await EmployeeService.getEmployees();
-		console.log(response.data);
+		    // console.log(response.data);
         setRecentEmployees(response.data);
       } catch (error) {
         console.error("Error fetching recent employees:", error);
