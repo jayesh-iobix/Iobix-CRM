@@ -139,7 +139,7 @@ const EditInquiry = () => {
       formDataToSend.append(key, formData[key]);
     });
 
-     // Make sure the file is also appended
+    // Make sure the file is also appended
     if (formData.inquiryDocuments) {
       formDataToSend.append('inquiryDocuments', formData.inquiryDocuments);
     }
