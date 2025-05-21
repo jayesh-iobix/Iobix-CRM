@@ -159,6 +159,11 @@ import HelpSupport from './app/components/HelpSupport';
 import TaxDetailsList from './app/admin-panel/master/tax-details/TaxDetailsList';
 import AddTaxDetails from './app/admin-panel/master/tax-details/AddTaxDetails';
 import EditTaxDetails from './app/admin-panel/master/tax-details/EditTaxDetails';
+import AddGtmServiceClient from './app/admin-panel/gtm-client/AddGtmServiceClient';
+import GtmServiceClient from './app/admin-panel/gtm-client/GtmServiceClient';
+import InvoiceDetailList from './app/admin-panel/master/invoice-details/InvoiceDetailList';
+import AddInvoiceDetail from './app/admin-panel/master/invoice-details/AddInvoiceDetail';
+import EditInvoiceDetail from './app/admin-panel/master/invoice-details/EditInvoiceDetail';
 //#endregion
 
 function App() {
@@ -166,7 +171,6 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true); // Loading state to prevent rendering before authentication check
   const [userRole, setUserRole] = useState(null); // State to store user role
-
 
   useEffect(() => {
     // This code runs only once when the component mounts.
@@ -280,6 +284,9 @@ function App() {
       <Route path="master/tax-detail-list" element={<TaxDetailsList />} />
       <Route path="master/tax-detail-list/add-tax-detail" element={<AddTaxDetails />} />
       <Route path="master/tax-detail-list/edit-tax-detail/:id" element={<EditTaxDetails />} />
+      <Route path="master/invoice-detail-list" element={<InvoiceDetailList />} />
+      <Route path="master/invoice-detail-list/add-invoice-detail" element={<AddInvoiceDetail />} />
+      <Route path="master/invoice-detail-list/edit-invoice-detail/:id" element={<EditInvoiceDetail />} />
       <Route path="employee-list" element={<EmployeeList />} />
       <Route path="employee-list/add-employee" element={<AddEmployee />} />
       <Route path="employee-list/edit-employee/:id" element={<EditEmployee />} />
@@ -339,6 +346,8 @@ function App() {
       <Route path="announcement-list/add-announcement" element={<AddAnnouncement />} />
       <Route path="announcement-list/view-announcement/:id" element={<ViewAnnouncement />} />
       <Route path="help-support" element={<HelpSupport />} />
+      <Route path="gtm-client" element={<GtmServiceClient />} />
+      <Route path="gtm-client/add-gtm-client" element={<AddGtmServiceClient />} />
       {/* <Route path="/profile" element={<Profile/>} /> */}
     </Route>
 

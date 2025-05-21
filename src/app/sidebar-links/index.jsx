@@ -1,6 +1,6 @@
 import { BiAbacus, BiBox, BiCalendar, BiGrid, BiGridSmall, BiGridVertical, BiListUl, BiMicrophone, BiSolidMicrophone, BiTask } from 'react-icons/bi'
 import { BsChat, BsFillGrid1X2Fill, BsFillGridFill, BsFillMegaphoneFill, BsHandThumbsUp, BsMegaphone, BsPeople, BsPersonRaisedHand } from 'react-icons/bs'
-import { FaBuilding, FaBusinessTime, FaCalendar, FaHandshake, FaHandshakeAltSlash, FaRegHandshake, FaVenusDouble } from 'react-icons/fa';
+import { FaBuilding, FaBusinessTime, FaCalendar, FaFileInvoice, FaHandshake, FaHandshakeAltSlash, FaRegHandshake, FaVenusDouble } from 'react-icons/fa';
 import {
 	HiOutlineViewGrid,
 	HiOutlineQuestionMarkCircle,
@@ -33,6 +33,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
       // { label: "User Inquiry Permission", path: "/master/userinquirypermission-list" },
       { label: "Admin Inquiry Permissi", path: "/master/inquirypermission-list" },
       { label: "Tax Details", path: "/master/tax-detail-list" },
+      { label: "Invoice Details", path: "/master/invoice-detail-list" },
     ],
   },  
   {
@@ -89,7 +90,12 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     path: "/vendor-list",
     icon: <FaVenusDouble />,
   },
-
+  {
+    key: "gmServiceClient",
+    label: "GTM Service Client",
+    path: "/gtm-client",
+    icon: <FaFileInvoice />,
+  },
 
 ];
 

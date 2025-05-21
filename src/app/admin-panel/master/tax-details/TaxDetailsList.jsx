@@ -171,10 +171,10 @@ const TaxDetailsList = () => {
                     transition={{ duration: 0.5, delay: item * 0.1 }}
                   >
                     <td className="py-3 pl-8 text-gray-700">
-                      {item.leaveTypeName}
+                      {item.taxName}
                     </td>
                     <td className="py-3 pl-8 text-gray-700">
-                      {item.leaveTypeName}
+                      {item.percentage}
                     </td>
                     <td className="py-3 pl-8 text-gray-700">
                       <label className="inline-flex ms-3 items-center cursor-pointer">
