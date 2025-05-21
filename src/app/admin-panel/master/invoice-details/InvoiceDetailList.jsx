@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import { TaxDetailService } from "../../../service/TaxDetailService";
+import { InvoiceDetailService } from "../../../service/InvoiceDetailService";
 //#endregion
 
 //#region Component: InvoiceDetailList
@@ -24,7 +25,7 @@ const InvoiceDetailList = () => {
    useEffect(() => {
      const fetchInvoiceDetails = async () => {
        try {
-         const result = await TaxDetailService.getTaxDetail();
+         const result = await InvoiceDetailService.getInvoiceDetail();
          setInvoiceDetailsList(result.data); // Set the 'data' array to the state
          setTotalItems(result.data.length); // Set total items for pagination
          setCurrentPage(1); // Reset to the first page when a new filter is applied
@@ -41,7 +42,7 @@ const InvoiceDetailList = () => {
    const deleteInvoiceDetails = async () => {
      if (!deleteId) return; // If there's no ID to delete, do nothing
      try {
-       const response = await TaxDetailService.deleteTaxDetail(deleteId);
+       const response = await InvoiceDetailService.deleteInvoiceDetail(deleteId);
        if (response.status === 1) {
          setInvoiceDetailsList((prevInvoiceDetails) =>
            prevInvoiceDetails.filter(

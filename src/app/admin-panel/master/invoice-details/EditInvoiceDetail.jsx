@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
 import { TaxDetailService } from '../../../service/TaxDetailService';
+import { InvoiceDetailService } from '../../../service/InvoiceDetailService';
 //#endregion
 
 
@@ -37,7 +38,7 @@ const EditInvoiceDetail = () => {
     //#region useEffect - Fetch Invoice Detail data
     useEffect(() => {
       const fetchData = async () => {
-        const result = await TaxDetailService.getByIdTaxDetail(id);
+        const result = await InvoiceDetailService.getByIdInvoiceDetail(id);
         setFormData(result.data);
         setIsActive(result.data.isActive); // Assuming the department object contains isActive
       };
@@ -64,21 +65,7 @@ const EditInvoiceDetail = () => {
     
           // Simulate API call or form submission logic
           setTimeout(() => {
-            setFormData({
-                companyLogo: "",
-                companyName: "",
-                companyAddress: "",
-                panNumber: "",
-                gstNumber: "",
-                lutNumber: "",
-                companyStamp: "",
-                bankName: "",
-                chequeName: "",
-                accountNumber: "",
-                branch: "",
-                ifscCode: "",
-                swiftCode: "",
-            })
+           
             setIsSubmitting(false);
           }, 1000); // Simulate a delay for submission
         }
@@ -90,7 +77,7 @@ const EditInvoiceDetail = () => {
     
         if (validateForm()) {
           try {
-            const response = await TaxDetailService.updateTaxDetail(id, invoiceDetailData);
+            const response = await InvoiceDetailService.updateInvoiceDetail(id, invoiceDetailData);
             if (response.status === 1) {
               navigate(-1);
               toast.success("Invoice Detail Updated successfully"); // Toast on success

@@ -4,7 +4,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from "framer-motion"; // Import framer-motion
-import { TaxDetailService } from '../../../service/TaxDetailService';
+import { InvoiceDetailService } from '../../../service/InvoiceDetailService';
 //#endregion
 
 //#region Component: AddInvoiceDetail
@@ -104,7 +104,7 @@ const AddInvoiceDetail = () => {
     //   if (validateForm()) {
 
         try {
-          const response = await TaxDetailService.addTaxDetail(formDataToSend);
+          const response = await InvoiceDetailService.addInvoiceDetail(formDataToSend);
           if (response.status === 1) {
             navigate(-1);
             toast.success("Invoice Detail Added Successfully"); // Toast on success
