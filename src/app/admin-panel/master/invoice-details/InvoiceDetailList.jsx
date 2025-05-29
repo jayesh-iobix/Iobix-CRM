@@ -79,32 +79,17 @@ const InvoiceDetailList = () => {
      );
  
      setInvoiceDetailsList(updatedInvoiceDetails); // Update the state immediately
+     
      try {
        // Prepare the data for the API call
-       const invoiceDetailData = {
-         companyLogo: item.companyLogo,
-         companyName: item.companyName,
-         companyAddress: item.companyAddress, 
-         panNumber: item.panNumber,
-         gstNumber: item.gstNumber,
-         lutNumber: item.lutNumber,
-         companyStamp: item.companyStamp,
-         bankName: item.bankName,
-         chequeName: item.chequeName,
-         accountNumber: item.accountNumber,
-         branch: item.branch,
-         ifscCode: item.ifscCode,
-         swiftCode: item.swiftCode,
-         isActive: checked, // Only update the isActive field
-       };
  
        // Call the update API to update the `isActive` field on the server
-       const updatedInvoiceDetails = await TaxDetailService.updateTaxDetail(
+       const updatedInvoiceDetails = await InvoiceDetailService.updateActiveStatusOfInvoiceDetail(
          invoiceDetailId,
-         invoiceDetailData
+         checked
        );
        // Check the response from the API and display a success message
-       if (updatedInvoiceDetails) {
+       if (updatedInvoiceDetails.status === 1) {
          toast.success("Invoice Detail Updated Successfully.");
        } else {
          throw new Error("Failed to update invoice detail.");

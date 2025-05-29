@@ -5,14 +5,14 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService";
-import { ClientCompanyService } from "../../service/ClientCompanyService";
+import { GtmClientService } from "../../service/GtmClientService";
 //#endregion
 
 //#region Component: ClientCompanyList
 const GtmServiceClient = () => {
   //#region State variables
-  const [clientCompanys, setClientCompanys] = useState([]);
-  const [filteredClientCompanys, setFilteredClientCompanys] = useState([]);
+  const [gtmServiceClients, setGtmServiceClients] = useState([]);
+  const [filteredGtmServiceClients, setFilteredGtmServiceClients] = useState([]);
   const [clientFilter, setClientFilter] = useState(""); // State for employee filter
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
@@ -23,25 +23,25 @@ const GtmServiceClient = () => {
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
-  //#region useEffect: Fetch ClientCompanys Data
+  //#region useEffect: Fetch GtmServiceClients Data
   useEffect(() => {
-    const fetchClientCompanys = async () => {
+    const fetchGtmServiceClients = async () => {
       try {
-        const result = await ClientCompanyService.getClientCompany();
-        setClientCompanys(result.data); // Set the 'data' array to the state
-        setFilteredClientCompanys(result.data); // Initially show all clientCompanys
+        const result = await GtmClientService.getGtmClient();
+        setGtmServiceClients(result.data); // Set the 'data' array to the state
+        setFilteredGtmServiceClients(result.data); // Initially show all GtmServiceClients
         setTotalItems(result.data.length); // Set total items for pagination
       } catch (error) {
-        console.error("Error fetching client company:", error);
-        setClientCompanys([]); // Fallback to an empty array in case of an error
-        setFilteredClientCompanys([]); // Fallback to an empty array in case of an error
+        console.error("Error fetching gtm service client:", error);
+        setGtmServiceClients([]); // Fallback to an empty array in case of an error
+        setFilteredGtmServiceClients([]); // Fallback to an empty array in case of an error
       }
     };
-    fetchClientCompanys();
+    fetchGtmServiceClients();
   }, []);
   //#endregion
 
-  //#region useEffect: Filter ClientCompanys
+  //#region useEffect: Filter GtmServiceClients
   // Function to filter tasks based on selected employee name
   const handleClientFilterChange = (event) => {
     setClientFilter(event.target.value);
@@ -49,28 +49,28 @@ const GtmServiceClient = () => {
 
   // Function to filter tasks based on selected department
   useEffect(() => {
-    // Apply filters to the clientCompanys array
-    let filtered = clientCompanys;
+    // Apply filters to the GtmServiceClients array
+    let filtered = gtmServiceClients;
       
     // Filter by client name
     if (clientFilter) {
-      filtered = filtered.filter((client) =>
-        client.companyName.toLowerCase().includes(clientFilter.toLowerCase())
+      filtered = filtered.filter((gtmClient) =>
+        gtmClient.companyName.toLowerCase().includes(clientFilter.toLowerCase())
       );
     }
 
-    setFilteredClientCompanys(filtered); // Update filtered clientCompanys based on all filters
+    setFilteredGtmServiceClients(filtered); // Update filtered GtmServiceClients based on all filters
 
     setTotalItems(filtered.length); // Update total items for pagination
     setCurrentPage(1); // Reset to the first page when a new filter is applied
 
-  }, [clientFilter, clientCompanys]);
+  }, [clientFilter, gtmServiceClients]);
   //#endregion
 
   //#region Delete CLick and Delete ClientCompany 
   // Function to handle delete button click
-  const handleDeleteClick = (clientRegistrationId) => {
-    setDeleteId(clientRegistrationId);
+  const handleDeleteClick = (gtmClientServiceId) => {
+    setDeleteId(gtmClientServiceId);
     setIsPopupOpen(true); // Open popup
   };
   
@@ -81,21 +81,21 @@ const GtmServiceClient = () => {
   };
 
   // Function to delete a clientCompany 
-  const deleteClientCompany = async () => {
+  const deleteGtmServiceClient = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
-      const response = await ClientCompanyService.deleteClientCompany(deleteId);
+      const response = await GtmClientService.deleteGtmClient(deleteId);
       if (response.status === 1) {
-        setFilteredClientCompanys((prevclientCompanys) =>
-          prevclientCompanys.filter((clientCompany) => clientCompany.clientRegistrationId !== deleteId)
+        setFilteredGtmServiceClients((prevGtmClient) =>
+          prevGtmClient.filter((gtmClient) => gtmClient.gtmClientServiceId !== deleteId)
         );
-        toast.error("Client Company Deleted Successfully"); // Toast on success
+        toast.error("GTM Service Client Deleted Successfully"); // Toast on success
         setIsPopupOpen(false); // Close popup after deletion
         setDeleteId(null); // Reset the ID
       }
     } catch (error) {
-      console.error("Error deleting client company:", error);
-      alert("Failed to delete client company");
+      console.error("Error deleting gtm service client:", error);
+      alert("Failed to delete gtm service client");
     }
   };
   //#endregion
@@ -120,7 +120,7 @@ const GtmServiceClient = () => {
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredClientCompanys.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredGtmServiceClients.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -176,11 +176,10 @@ const GtmServiceClient = () => {
             <tr>
               {[
                 "Company Name",
-                "Company Registration No.",
-                "Contact Person Name",
-                "Email",
-                "Contact Person Phone No.",
-                // "Designation",
+                "Point Of Contact",
+                "Full Name",
+                "Company Email",
+                "Phone No.",
                 "Actions",
               ].map((header) => (
                 <th
@@ -195,26 +194,22 @@ const GtmServiceClient = () => {
           {currentItems.length === 0 ? (
             <tr>
               <td colSpan="6" className="text-center py-3 px-4 text-gray-700">
-                No client companys found.
+                No gtm service clients found.
               </td>
             </tr>
           ) : (
             currentItems.map((item) => (
               <motion.tr
-                key={item.clientRegistrationId}
+                key={item.gtmClientServiceId}
                 className="border-b hover:bg-gray-50"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: item * 0.1 }}
               >
                 <td className="py-3 px-4 text-gray-700">{item.companyName}</td>
-                <td className="py-3 px-4 text-gray-700">
-                  {item.companyRegistrationNumber}
-                </td>
-                <td className="py-3 px-4 text-gray-700">
-                  {item.contactPersonName}
-                </td>
-                <td className="py-3 px-4 text-gray-700">{item.email}</td>
+                <td className="py-3 px-4 text-gray-700">{item.fullName}</td>
+                <td className="py-3 px-4 text-gray-700">{item.pointOfContact}</td>
+                <td className="py-3 px-4 text-gray-700">{item.companyEmail}</td>
                 <td className="py-3 px-4 text-gray-700">{item.phoneNumber}</td>
                 <td className="py-3 px-4">
                   <div className="flex gap-2">
@@ -224,7 +219,7 @@ const GtmServiceClient = () => {
                     >
                       <Link
                         className="text-green-500 hover:text-green-700"
-                        to={`/clientcompany-list/view-clientcompany/${item.clientRegistrationId}`}
+                        to={`/gtm-client/view-gtm-client/${item.gtmClientServiceId}`}
                       >
                         <FaEye size={24} />
                       </Link>
@@ -236,7 +231,7 @@ const GtmServiceClient = () => {
                     >
                       <Link
                         className="text-blue-500 hover:text-blue-700"
-                        to={/employee-list/edit-employee/${item.clientRegistrationId}}
+                        to={/employee-list/edit-employee/${item.gtmClientServiceId}}
                       >
                         <FaEdit size={24} />
                       </Link>
@@ -246,7 +241,7 @@ const GtmServiceClient = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() =>
-                        handleDeleteClick(item.clientRegistrationId)
+                        handleDeleteClick(item.gtmClientServiceId)
                       }
                       className="text-red-500 hover:text-red-700"
                     >
@@ -285,7 +280,7 @@ const GtmServiceClient = () => {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={deleteClientCompany}
+                onClick={deleteGtmServiceClient}
                 className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200 w-full sm:w-auto"
               >
                 Yes

@@ -46,7 +46,18 @@ export const InvoiceDetailService = {
       const response = await httpClient.put(`${api}/${invoiceDetailId}`,invoiceDetailData); 
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch invoice detail:', error);
+      console.error('Failed to update invoice detail:', error);
+      throw error;
+    }
+  },
+
+  // Method to update active status of invoice detail
+  updateActiveStatusOfInvoiceDetail: async (invoiceDetailId, IsActive) => {
+    try {
+      const response = await httpClient.put(`${api}/UpdateActiveStatus/${invoiceDetailId}?IsActive=${IsActive}`); 
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update invoice detail:', error);
       throw error;
     }
   },

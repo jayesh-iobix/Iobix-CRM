@@ -42,4 +42,9 @@ export const environment = {
   helpAdmin: "https://localhost:7292/api/HelpAdminContact",
   taxDetail: "https://localhost:7292/api/TaxDetail",
   invoiceDetail: "https://localhost:7292/api/InvoiceDetails",
+  gtmClient: "https://localhost:7292/api/GtmClientService",
+  agreement: "https://localhost:7292/api/GTMClientAgreement",
+  gtmConnection: "https://localhost:7292/api/GtmConnection",
+  invoice: "https://localhost:7292/api/InvoiceMaster",
+  invoicePayment: "https://localhost:7292/api/GtmClientPayment",
 }

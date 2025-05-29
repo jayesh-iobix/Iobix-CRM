@@ -164,6 +164,13 @@ import GtmServiceClient from './app/admin-panel/gtm-client/GtmServiceClient';
 import InvoiceDetailList from './app/admin-panel/master/invoice-details/InvoiceDetailList';
 import AddInvoiceDetail from './app/admin-panel/master/invoice-details/AddInvoiceDetail';
 import EditInvoiceDetail from './app/admin-panel/master/invoice-details/EditInvoiceDetail';
+import AddInvoice from './app/admin-panel/invoice/AddInvoice';
+import ViewGtmServiceClient from './app/admin-panel/gtm-client/ViewGtmServiceClient';
+import EditGtmServiceClient from './app/admin-panel/gtm-client/EditGtmServiceClient';
+import InvoiceHistory from './app/admin-panel/invoice/InvoiceHistory';
+import ViewInvoiceHistory from './app/admin-panel/invoice/ViewInvoiceHistory';
+import InvoicePayment from './app/admin-panel/invoice/InvoicePayment';
+import AddInvoicePayment from './app/admin-panel/invoice/AddInvoicePayment';
 //#endregion
 
 function App() {
@@ -348,6 +355,13 @@ function App() {
       <Route path="help-support" element={<HelpSupport />} />
       <Route path="gtm-client" element={<GtmServiceClient />} />
       <Route path="gtm-client/add-gtm-client" element={<AddGtmServiceClient />} />
+      <Route path="gtm-client/view-gtm-client/:id" element={<ViewGtmServiceClient />} />
+      <Route path="gtm-client/edit-gtm-client/:id" element={<EditGtmServiceClient />} />
+      <Route path="invoice/add-incoice" element={<AddInvoice />} />
+      <Route path="invoice/invoice-history" element={<InvoiceHistory />} />
+      <Route path="invoice/invoice-history/:id" element={<ViewInvoiceHistory />} />
+      <Route path="invoice/invoice-payment" element={<InvoicePayment />} />
+      <Route path="invoice/add-invoice-payment/:id" element={<AddInvoicePayment />} />
       {/* <Route path="/profile" element={<Profile/>} /> */}
     </Route>
 

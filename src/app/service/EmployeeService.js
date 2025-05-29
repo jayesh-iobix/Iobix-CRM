@@ -10,7 +10,6 @@ export const EmployeeService = {
   // Method to add a Employee
   addEmployee: async (employeeData) => {
     try {
-      debugger;
       const response = await httpClient.post(`${api}/Add`, employeeData);
       return response.data;
     } catch (error) {

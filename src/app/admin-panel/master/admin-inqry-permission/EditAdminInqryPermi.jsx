@@ -34,7 +34,7 @@ const EditAdminInqryPermi = () => {
         // Fetch Inquiry Permission
         const inquiryPermissionResult = await InquiryPermissionService.getByIdInquiryPermission(id);
         const inquiryPermissionData = inquiryPermissionResult.data;
-        // console.log(inquiryPermissionData);
+        console.log(inquiryPermissionData);
         setUserId(inquiryPermissionData.userId);
         setInquiryTypeIds(inquiryPermissionData.inquiryTypeIds);
 
@@ -155,8 +155,8 @@ const EditAdminInqryPermi = () => {
                 Inquiry Type
               </label>
               <Select
-                options={inquiryTypeOptions}
                 isMulti
+                options={inquiryTypeOptions}
                 value={inquiryTypeOptions.filter((option) =>
                   inquiryTypeIds.includes(option.value)
                 )}

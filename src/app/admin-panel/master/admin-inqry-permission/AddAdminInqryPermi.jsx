@@ -151,8 +151,8 @@ const AddAdminInqryPermi = () => {
                 Inquiry Type
               </label>
               <Select
-                options={inquiryTypeOptions}
                 isMulti
+                options={inquiryTypeOptions}
                 value={inquiryTypeOptions.filter((option) =>
                   inquiryTypeIds.includes(option.value)
                 )}

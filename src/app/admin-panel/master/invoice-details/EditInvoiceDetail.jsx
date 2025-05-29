@@ -40,6 +40,7 @@ const EditInvoiceDetail = () => {
     const fetchData = async () => {
       const result = await InvoiceDetailService.getByIdInvoiceDetail(id);
       setFormData(result.data);
+      console.log(result.data);
     //   setIsActive(result.data.isActive); // Assuming the department object contains isActive
     };
     fetchData();
@@ -72,22 +73,52 @@ const EditInvoiceDetail = () => {
       }, 1000); // Simulate a delay for submission
     }
 
+    debugger;
+
     const formDataToSend = new FormData();
 
-    // Append all form fields to the FormData object
-    Object.keys(formData).forEach((key) => {
-      // Append the field as normal if it's not a file
-      formDataToSend.append(key, formData[key]);
-    });
+    // Append the InvoiceDetails as a JSON string
+    // Flattened keys - send each field separately
+    formDataToSend.append('InvoiceDetails.CompanyName', formData.companyName);
+    formDataToSend.append('InvoiceDetails.CompanyAddress', formData.companyAddress);
+    formDataToSend.append('InvoiceDetails.PanNumber', formData.panNumber);
+    formDataToSend.append('InvoiceDetails.GstNumber', formData.gstNumber);
+    formDataToSend.append('InvoiceDetails.LutNumber', formData.lutNumber);
+    formDataToSend.append('InvoiceDetails.BankName', formData.bankName);
+    formDataToSend.append('InvoiceDetails.ChequeName', formData.chequeName);
+    formDataToSend.append('InvoiceDetails.AccountNumber', formData.accountNumber);
+    formDataToSend.append('InvoiceDetails.Branch', formData.branch);
+    formDataToSend.append('InvoiceDetails.IfscCode', formData.ifscCode);
+    formDataToSend.append('InvoiceDetails.SwiftCode', formData.swiftCode);
+    formDataToSend.append('InvoiceDetails.IsActive', formData.isActive);
 
-    // Make sure the file is also appended
-    if (formData.companyLogo) {
-      formDataToSend.append("companyLogo", formData.companyLogo);
+    // Fix here: send empty or actual file names for validation
+    // formDataToSend.append('InvoiceDetails.CompanyLogo', formData.companyLogo?.name || '');
+    if (formData.companyLogo instanceof File) {
+      formDataToSend.append("InvoiceDetails.CompanyLogo", formData.companyLogo?.name || '');
+    }
+    else{
+      formDataToSend.append("InvoiceDetails.CompanyLogo", formData.companyLogo);
+    }
+    if(formData.companyStamp instanceof File)
+    {
+     formDataToSend.append('InvoiceDetails.CompanyStamp', formData.companyStamp?.name || '');
+    }
+    else{
+      formDataToSend.append('InvoiceDetails.CompanyStamp', formData.companyStamp);
     }
 
-    // Make sure the file is also appended
+    // Append file fields correctly
+    if (formData.companyLogo) {
+      formDataToSend.append("companyLogoFile", formData.companyLogo);
+    }
+
     if (formData.companyStamp) {
-      formDataToSend.append("companyStamp", formData.companyStamp);
+      formDataToSend.append("companyStampFile", formData.companyStamp);
+    }
+
+    for (const [key, value] of formDataToSend.entries()) {
+      console.log(`${key}:`, value);
     }
 
     // // Logic for form submission goes here
@@ -98,31 +129,18 @@ const EditInvoiceDetail = () => {
 
     if (validateForm()) {
       try {
-        const response = await InvoiceDetailService.updateInvoiceDetail(
-          id,
-          formDataToSend
-        );
+        const response = await InvoiceDetailService.updateInvoiceDetail(id, formDataToSend);
+        console.log(response);
         if (response.status === 1) {
           navigate(-1);
           toast.success("Invoice Detail Updated successfully"); // Toast on success
           // navigate('/master/leave-type-list');
         }
+        if(response.status === 0)
+        {
+          toast.error(response.message); // Toast on success
+        }
         // Reset the form
-        setFormData({
-          companyLogo: "",
-          companyName: "",
-          companyAddress: "",
-          panNumber: "",
-          gstNumber: "",
-          lutNumber: "",
-          companyStamp: "",
-          bankName: "",
-          chequeName: "",
-          accountNumber: "",
-          branch: "",
-          ifscCode: "",
-          swiftCode: "",
-        });
       } catch (error) {
         console.error("Error adding invoice detail:", error);
         alert("Failed to add invoice detail.");
@@ -137,6 +155,13 @@ const EditInvoiceDetail = () => {
 
     // Update form data for all fields
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  //#endregion
+
+  //#region Handle FIle Change Function
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    setFormData(prev => ({ ...prev, [name]: files[0] }));  // Storing the first file
   };
   //#endregion
 
@@ -233,8 +258,8 @@ const EditInvoiceDetail = () => {
               <input
                 type="file"
                 placeholder="Company Logo"
-                value={formData.companyLogo}
-                onChange={handleChange}
+                // value={formData.companyLogo}
+                onChange={handleFileChange}
                 name="companyLogo"
                 className="w-full mb-2 bg-transparent rounded-md border border-red py-3 px-4 text-dark-6 border-active transition"
               />
@@ -251,8 +276,8 @@ const EditInvoiceDetail = () => {
               <input
                 type="file"
                 placeholder="Company Stamp"
-                value={formData.companyStamp}
-                onChange={handleChange}
+                // value={formData.companyStamp}
+                onChange={handleFileChange}
                 name="companyStamp"
                 className="w-full mb-2 bg-transparent rounded-md border border-red py-3 px-4 text-dark-6 border-active transition"
               />

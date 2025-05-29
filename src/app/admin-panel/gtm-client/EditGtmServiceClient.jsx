@@ -1,84 +1,170 @@
 //#region Imports
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft, FaCross, FaPlus, FaTimes } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { FaArrowLeft, FaPlus, FaTimes } from "react-icons/fa";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { CommonService } from "../../service/CommonService";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion"; // Import framer-motion
 import Stepper from "../../components/Stepper";
 import { GtmClientService } from "../../service/GtmClientService";
 import { AgreementService } from "../../service/AgreementService";
-import { TaxDetailService } from "../../service/TaxDetailService";
 import { InvoiceDetailService } from "../../service/InvoiceDetailService";
-import Select from 'react-select';  // Import react-select
+import { TaxDetailService } from "../../service/TaxDetailService";
 import { GtmConnectionService } from "../../service/GtmConnectionService";
+import Select from 'react-select';  // Import react-select
 //#endregion Imports
 
-//#region Component: AddGtmServiceClient
-const AddGtmServiceClient = () => {
-  //#region State Variables
-  const [formData, setFormData] = useState({
-    companyName: "",
-    companyGSTNumber : "",
-    fullName  : "",
-    panCardNumber: "",
-    companyLinkedin : "",
-    personalLinkedin : "",
-    companyWebsite : "",
-    pointOfContact : "",
-    phoneNumber : "",
-    companyEmail: "",
-    personalEmail: "",
-    address: "",
-    countryId: "",
-    stateId: "",
-    cityId: "",
-  });
-  const [isStepOneSubmitted, setIsStepOneSubmitted] = useState(false);
+//#region Component: EditGtmServiceClient
+const EditGtmServiceClient = () => {
 
-
-  const [secondFormData, setSecondFormData] = useState({
-    gtmClientServiceId: "",
-    startDate: "",
-    endDate : "",
-    renewDate : "",
-    amount : "",
-    agreementDocument : null,
-  });
-
-  const [thirdFormData, setThirdFormData] = useState({
-    gtmClientServiceId: "",
-    invoiceDetailId: "",
-    // description : "",
-    // quantity : "",
-    // unit : "",
-    selectedTaxes: [],  // Changed to an array
-    allProducts: [{ description: "", quantity: "", unit: "", unitPrice: "" }]  // Initialize with one empty item
-  });
-  
-  const [taxDetailsList, setTaxDetailsList] = useState([]);
-  const [gTMClientList, setGTMClientList] = useState([]);
-  const [invoiceDetailList, setInvoiceDetailList] = useState([]);
-  const [selectedTaxDetails, setSelectedTaxDetails] = useState([]);
-
-  const [countryList, setCountryList] = useState([]);
-  const [stateList, setStateList] = useState([]);
-  const [cityList, setCityList] = useState([]);
-
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
-
-  const [currentStep, setCurrentStep] = useState(1); // Stepper state
-  //#endregion
-  
+    //#region State Variables
+     const [formData, setFormData] = useState({
+       companyName: "",
+       companyGstNumber : "",
+       fullName  : "",
+       panCardNumber: "",
+       companyLinkedin : "",
+       personalLinkedin : "",
+       companyWebsite : "",
+       pointOfContact : "",
+       phoneNumber : "",
+       companyEmail: "",
+       personalEmail: "",
+       address: "",
+       countryId: "",
+       stateId: "",
+       cityId: "",
+     });
+     const [isStepOneSubmitted, setIsStepOneSubmitted] = useState(false);
+   
+    const [secondFormData, setSecondFormData] = useState({
+        gtmClientServiceId: "",
+        startDate: "",
+        endDate : "",
+        renewDate : "",
+        amount : "",
+        agreementDocument : null,
+      });
+   
+      const [thirdFormData, setThirdFormData] = useState({
+        gtmInvoiceConnectionId: "",
+        gtmClientServiceId: "",
+        invoiceDetailId: "",
+        // description : "",
+        // quantity : "",
+        // unit : "",
+        selectedTaxes: [],  // Changed to an array
+        allProducts: [{ description: "", quantity: "", unit: "", unitPrice: "" }]  // Initialize with one empty item
+      });
+        
+     const [taxDetailsList, setTaxDetailsList] = useState([]);
+     const [gTMClientList, setGTMClientList] = useState([]);
+     const [invoiceDetailList, setInvoiceDetailList] = useState([]);
+     const [selectedTaxDetails, setSelectedTaxDetails] = useState([]);
+      
+     const [countryList, setCountryList] = useState([]);
+     const [stateList, setStateList] = useState([]);
+     const [cityList, setCityList] = useState([]);
+   
+     const [errors, setErrors] = useState({});
+     const [isSubmitting, setIsSubmitting] = useState(false);
+     const navigate = useNavigate();
+     const {id} = useParams();
+   
+     const [currentStep, setCurrentStep] = useState(1); // Stepper state
+     //#endregion
+      
   //#region useEffect Hooks to fetch data  
-  useEffect(() => {
+    useEffect(() => {
     const fetchData = async () => {
+    
+      //Fetch GTMClient Data
+      const gtmClientResult = await GtmClientService.getByIdGtmClient(id);
+      setFormData(gtmClientResult.data);
+      // console.log(gtmClientResult.data)
+
+      //Fetch Agreement Data
+      const agreementResult = await AgreementService.getByIdAgreement(id);
+      const rawData = agreementResult?.data || {};
+      // console.log(rawData)
+      const agreementData = {
+        ...rawData,
+        startDate: rawData.startDate ? rawData.startDate.split("T")[0] : "",
+        endDate: rawData.endDate ? rawData.endDate.split("T")[0] : "",
+        renewDate: rawData.renewDate ? rawData.renewDate.split("T")[0] : "",
+      };
+      // const agreementData = {
+      //     ...agreementResult.data,
+      //     startDate: agreementResult.data.startDate
+      //       ? agreementResult.data.startDate.split("T")[0]
+      //       : "",
+      //     endDate: agreementResult.data.endDate
+      //       ? agreementResult.data.endDate.split("T")[0]
+      //       : "",
+      //     renewDate: agreementResult.data.renewDate
+      //       ? agreementResult.data.renewDate.split("T")[0]
+      //       : "",
+      //   };
+        // console.log(agreementData)
+
+      if (agreementData) {
+        setSecondFormData(agreementData || {});
+      } else {
+        setSecondFormData({
+        startDate: "",
+        endDate: "",
+        renewDate: "",
+        amount: "",
+        agreementDocument: null,
+      });
+      }
 
       //#region Fetch TaxDetails, GTM Client Details, Invoice Details
       const taxDetailResult = await TaxDetailService.getTaxDetail();
-      setTaxDetailsList(taxDetailResult.data);
+      const taxData = taxDetailResult?.data || {};
+      // console.log(taxData)
+      setTaxDetailsList(taxData);
+
+
+      // debugger
+      //Fetch Invoice Data
+      // const invoiceResult = await GtmConnectionService.getByIdGtmConnection(id);
+      // // console.log(invoiceResult.data)
+      // setThirdFormData(invoiceResult.data);
+
+      // Fetch Invoice Data
+      const invoiceResult = await GtmConnectionService.getByIdGtmConnection(id);
+      const invoiceData = invoiceResult.data || {};
+
+      setThirdFormData({
+        ...invoiceData,
+        allProducts:
+          invoiceData.allProducts && invoiceData.allProducts.length > 0
+            ? invoiceData.allProducts
+            : [{ description: "", quantity: "", unit: "", unitPrice: "" }],
+      });
+
+      // const invoiceData = invoiceResult.data
+
+      // setSelectedTaxDetails(
+      //   taxDetailsList.map(tax => ({
+      //     value: tax.taxDetailId,
+      //     label: tax.taxName
+      //   }))
+      // );
+
+      // debugger;
+  //     setSelectedTaxDetails(
+  //       invoiceData.selectedTaxes.map(selectedTax => {
+  //       const matchedTax = taxDetailsList.find(
+  //       tax => tax.taxDetailId === selectedTax
+  //     );
+  //     return {
+  //       value: selectedTax,
+  //       label: matchedTax ? matchedTax.taxName : "Unknown Tax"
+  //     };
+  //   })
+  // );
 
       const gTMClientResult = await GtmClientService.getGtmClient();
       setGTMClientList(gTMClientResult.data);
@@ -86,7 +172,7 @@ const AddGtmServiceClient = () => {
       const invoiceDetailResult = await InvoiceDetailService.getInvoiceDetail();
       setInvoiceDetailList(invoiceDetailResult.data);
       //#endregion
-
+      
       //#region Fetch Country, State, and City Source
       // Fetch countries
       const countryResult = await CommonService.getCountry();
@@ -95,7 +181,7 @@ const AddGtmServiceClient = () => {
       // Fetch states and cities if country and state are selected
       if (formData.countryId) {
         const stateResult = await CommonService.getState(formData.countryId);
-        setStateList(stateResult.data);
+        setStateList(stateResult.data);  
         if (formData.stateId) {
           const cityResult = await CommonService.getCity(formData.stateId);
           setCityList(cityResult.data);
@@ -104,15 +190,15 @@ const AddGtmServiceClient = () => {
       //#endregion Fetch Country, State, and City Source
     };
     fetchData();
-  }, [formData.countryId, formData.stateId])
+  }, [formData.countryId, formData.stateId, id])
   //#endregion
 
-  //#region Form Validation and Submission For GTM Service Client
-  // Validate form data before submission
-  const validateForm = () => {
+  //#region Form Validation and Submission
+    // Validate form data before submission
+    const validateForm = () => {
     const newErrors = {};
     if (!formData.companyName) newErrors.companyName = "Company Name is required";
-    if (!formData.companyGSTNumber) newErrors.companyGSTNumber = "Company GSt Number is required";
+    if (!formData.companyGstNumber) newErrors.companyGSTNumber = "Company GSt Number is required";
     if (!formData.fullName) newErrors.fullName = "Contact Person Name is required";
     if (!formData.companyLinkedin) newErrors.companyLinkedin = "Company Linkedin is required";
     if (!formData.pointOfContact) newErrors.pointOfContact = "Point Of Contact Person Name is required";
@@ -130,69 +216,68 @@ const AddGtmServiceClient = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      setIsSubmitting(true);
-      try {
-        // Call the API to add the employee
-        const companyData = {
-            ...formData,
-            stateId: formData.stateId === "" ? 0 : formData.stateId,
-            cityId: formData.cityId === "" ? 0 : formData.cityId,
-        }
-        const response = await GtmClientService.addGtmClient(companyData); // Call the service
-        
-        secondFormData.gtmClientServiceId = response.data
-        thirdFormData.gtmClientServiceId = response.data
-
-        if (response.status === 1) {
-          toast.success("Gtm Client Registration Successfully");
-          setIsStepOneSubmitted(true); // ✅ Enable next button
-          // toast.success(response.message);
-        }
-         if (response.status === 2) {
-          toast.error("This GST Number Is Already Registered, Please Enter Another Valid GST Number"); // Toast on error
-        }
-        if (response.status === 3) {
-          toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
-        }
-
-        // Reset the form after successful submission
-        // setFormData({
-        //   companyName: "",
-        //   companyRegistrationNumber : "",
-        //   companyGSTNumber : "",
-        //   companyLinkedin : "",
-        //   fullName : "",
-        //   pointOfContact : "",
-        //   phoneNumber : "",
-        //   companyEmail: "",
-        //   personalLinkedin : "",
-        //   address: "",
-        //   countryId: "",
-        //   stateId: "",
-        //   cityId: "",
-        //   whatsAppNumber: "",
-        //   companyWebsite : "",
-        //   relationalManagerId : "",
-        // });
-        setErrors({});
-      } catch (error) {
-        console.error("Error adding gtm client:", error);
-        toast.error("Failed to add gtm client. Please try again.");
-      } finally {
-        setIsSubmitting(false);
-      }
-    }
-  };
-  //#endregion 
-
+    // Handle form submission
+    const handleSubmit = async (e) => {
+        debugger;
+       e.preventDefault();
+   
+       console.log(formData);
+       if (validateForm()) {
+         setIsSubmitting(true);
+         try {
+           // Call the API to add the employee
+           const companyData = {
+               ...formData,
+               stateId: formData.stateId === "" ? 0 : formData.stateId,
+               cityId: formData.cityId === "" ? 0 : formData.cityId,
+           }
+           const response = await GtmClientService.updateGtmClient(id, companyData); // Call the service
+           
+           secondFormData.gtmClientServiceId = response.data
+   
+           if (response.status === 1) {
+             toast.success("Gtm Client Registration Successfully");
+             setIsStepOneSubmitted(true); // ✅ Enable next button
+             // toast.success(response.message);
+           }
+           if (response.status === 2) {
+             toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
+           }
+   
+           // Reset the form after successful submission
+           setFormData({
+             companyName: "",
+             companyRegistrationNumber : "",
+             companyGSTNumber : "",
+             companyLinkedin : "",
+             fullName : "",
+             pointOfContact : "",
+             phoneNumber : "",
+             companyEmail: "",
+             personalLinkedin : "",
+             address: "",
+             countryId: "",
+             stateId: "",
+             cityId: "",
+             whatsAppNumber: "",
+             companyWebsite : "",
+             relationalManagerId : "",
+           });
+           setErrors({});
+         } catch (error) {
+           console.error("Error adding gtm client:", error);
+           toast.error("Failed to add gtm client. Please try again.");
+         } finally {
+           setIsSubmitting(false);
+         }
+       }
+     };
+    //#endregion 
+  
   //#region Form Validation and Submission For Submit Agreement
-
-  const validate = () => {
+  
+  // Validation
+   const validate = () => {
     const newErrors = {};
     if (!secondFormData.startDate) newErrors.startDate = "Start Date is required";
     if (!secondFormData.endDate) newErrors.endDate = "End Date is required";
@@ -205,151 +290,172 @@ const AddGtmServiceClient = () => {
 
   // Handle form submission
   const handleAgreementSubmit = async (e) => {
-    e.preventDefault();
-    debugger;
-    if (validate()) {
-
-      setIsSubmitting(true);
-
-      console.log(secondFormData);
-
-      const formDataToSend = new FormData();
-
-      // Append all form fields to the FormData object
-      // Object.keys(secondFormData).forEach((key) => {
-      //   formDataToSend.append(key, secondFormData[key]);
-      // });
-
-      formDataToSend.append('GtmClientServiceId', secondFormData.gtmClientServiceId);
-      formDataToSend.append('StartDate', secondFormData.startDate);
-      formDataToSend.append('EndDate', secondFormData.endDate);
-      formDataToSend.append('RenewDate', secondFormData.renewDate);
-      formDataToSend.append('Amount', secondFormData.amount);
-      formDataToSend.append('AgreementDocument', secondFormData.agreementDocument?.name || '');
-
-      // Make sure the file is also appended
-      // Append the file only if it's available
-      if (secondFormData.agreementDocument) {
-        formDataToSend.append('agreementFile', secondFormData.agreementDocument);
-      } else {
-        toast.error("Agreement Document is required.");
-        return;
+     e.preventDefault();
+     if (validate()) {
+  
+       setIsSubmitting(true);
+  
+       console.log(secondFormData);
+  
+       const formDataToSend = new FormData();
+  
+       // Append all form fields to the FormData object
+       // Object.keys(secondFormData).forEach((key) => {
+       //   formDataToSend.append(key, secondFormData[key]);
+       // });
+      //  debugger;
+       if(secondFormData.gtmClientServiceId)
+      //  if(secondFormData.gtmClientServiceId === null || secondFormData.gtmClientServiceId === "" || secondFormData.gtmClientServiceId === "undefined")
+       {
+         formDataToSend.append('GtmClientServiceId', secondFormData.gtmClientServiceId);
+        }
+        else {
+         formDataToSend.append('GtmClientServiceId', id);
+       }
+       formDataToSend.append('StartDate', secondFormData.startDate);
+       formDataToSend.append('EndDate', secondFormData.endDate);
+       formDataToSend.append('RenewDate', secondFormData.renewDate);
+       formDataToSend.append('Amount', secondFormData.amount);
+      //  formDataToSend.append('AgreementDocument', secondFormData.agreementDocument?.name || '');
+  
+      if (secondFormData.agreementDocument instanceof File) {
+          formDataToSend.append('AgreementDocument', secondFormData.agreementDocument?.name || '');
+      }
+      else{
+        formDataToSend.append("AgreementDocument", secondFormData.agreementDocument);
       }
 
-      try {
-        //debugger;
-        // Call the API to add the employee
-        const response = await AgreementService.addAgreement(formDataToSend); // Call the service
+       // Make sure the file is also appended
+       // Append the file only if it's available
+       if (secondFormData.agreementDocument) {
+         formDataToSend.append('agreementFile', secondFormData.agreementDocument);
+       } else {
+         toast.error("Agreement Document is required.");
+         return;
+       }
 
-        if (response.status === 1) {
-          toast.success("Agreement Added Successfully");
-          // navigate(-1);
-        }
-        if (response.status === 2) {
-          toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
-        }
-
-        // Reset the form after successful submission
-        setSecondFormData({
-          startDate: "",
-          endDate: "",
-          renewDate: "",
-          amount: "",
-          agreementDocument: null,
-        });
-        setErrors({});
-      } catch (error) {
-        console.error("Error adding gtm client:", error);
-        toast.error("Failed to add agreement. Please try again.");
-      } finally {
-        setIsSubmitting(false);
-      }
-    }
+       
+  
+       try {
+         //debugger;
+         // Call the API to add the employee
+         const response = await AgreementService.addAgreement(formDataToSend); // Call the service
+  
+         if (response.status === 1) {
+           toast.success("Agreement Updated Successfully");
+           // navigate(-1);
+         }
+         if (response.status === 2) {
+           toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
+         }
+  
+         // Reset the form after successful submission
+         setSecondFormData({
+           startDate: "",
+           endDate: "",
+           renewDate: "",
+           amount: "",
+           agreementDocument: null,
+         });
+         setErrors({});
+       } catch (error) {
+         console.error("Error adding gtm client:", error);
+         toast.error("Failed to add agreement. Please try again.");
+       } finally {
+         setIsSubmitting(false);
+       }
+     }
   };
   //#endregion
-
+    
   //#region Form Validation and Submission For GTM COnnection (Invoice Details)
-  // Validation
-   const validateInvoiceForm = () => {
-    const newErrors = {};
-    if (!thirdFormData.gtmClientServiceId) newErrors.gtmClientServiceId = "GTM Service Company Name is required";
-    if (!thirdFormData.invoiceDetailId) newErrors.invoiceDetailId = "Issue By Company is required";
-    // if (!thirdFormData.selectedTaxes) newErrors.selectedTaxes = "Tax Type is required";
-    if (selectedTaxDetails.length === 0) newErrors.selectedTaxDetails = "At least one leave type must be selected";
-    // if (!thirdFormData.allProducts.description) newErrors.description = "Description is required";
-    // if (!thirdFormData.allProducts.quantity) newErrors.allProducts.quantity = "Quantity is required";
-    // if (!thirdFormData.allProducts.unit) newErrors.unit = "Unit is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Handle form submission
-  const handleInvoiceSubmit = async (e) => {
-    e.preventDefault();
-    debugger;
-
-    // if (validateInvoiceForm()) {
-
-      setIsSubmitting(true);
-
-      const gtmConnectionData = {
-        thirdFormData
-      };
+    // Validation
+     const validateInvoiceForm = () => {
+      const newErrors = {};
+      // if (!thirdFormData.gtmClientServiceId) newErrors.gtmClientServiceId = "GTM Service Company Name is required";
+      if (!thirdFormData.invoiceDetailId) newErrors.invoiceDetailId = "Issue By Company is required";
+      // if (!thirdFormData.selectedTaxes) newErrors.selectedTaxes = "Tax Type is required";
+      // if (!thirdFormData.description) newErrors.description = "Description is required";
+      // if (!thirdFormData.quantity) newErrors.quantity = "Quantity is required";
+      // if (!thirdFormData.unit) newErrors.unit = "Unit is required";
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    };
+  
+    // Handle form submission
+    const handleInvoiceSubmit = async (e) => {
+     e.preventDefault();
+     debugger;
+ 
+     if (validateInvoiceForm()) {
+ 
+       setIsSubmitting(true);
+ 
+      //  const gtmConnectionData = {
+      //    thirdFormData
+      //  };
+       
+      //  console.log(thirdFormData);
+ 
+       // const formDataToSend = new FormData();
+ 
+       // Append all form fields to the FormData object
+       // Object.keys(secondFormData).forEach((key) => {
+       //   // Append the field as normal if it's not a file
+       //   formDataToSend.append(key, secondFormData[key]);
+       // });
+ 
+       // Make sure the file is also appended
+       // if (secondFormData.agreementDocument) {
+       //   formDataToSend.append('agreementFile', secondFormData.agreementDocument);
+       // }
+ 
+       try {
+         debugger;
+         // Call the API to add the employee
+         if(thirdFormData.gtmInvoiceConnectionId)
+         {
+            const response = await GtmConnectionService.updateGtmConnection(thirdFormData.gtmInvoiceConnectionId, thirdFormData); // Call the service
+            if (response.status === 1) {
+            toast.success("Invoice Updated Successfully");
+            navigate(-1);
+            }
+          }
+          else{
+             const gtmConnectionData = {
+                ...thirdFormData,
+                gtmClientServiceId : id
+              };
       
-      console.log(gtmConnectionData);
-
-      // const formDataToSend = new FormData();
-
-      // Append all form fields to the FormData object
-      // Object.keys(secondFormData).forEach((key) => {
-      //   // Append the field as normal if it's not a file
-      //   formDataToSend.append(key, secondFormData[key]);
-      // });
-
-      // Make sure the file is also appended
-      // if (secondFormData.agreementDocument) {
-      //   formDataToSend.append('agreementFile', secondFormData.agreementDocument);
-      // }
-
-      try {
-        //debugger;
-        // Call the API to add the employee
-        const response = await GtmConnectionService.addGtmConnection(thirdFormData); // Call the service
-
-        if (response.status === 1) {
-          toast.success("Invoice Added Successfully");
-          navigate(-1);
-        }
-        if (response.status === 2) {
-          toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
-        }
-
-        // Reset the form after successful submission
-        // setSecondFormData({
-        //   startDate: "",
-        //   endDate: "",
-        //   renewDate: "",
-        //   amount: "",
-        //   agreementDocument: "",
-        // });
-        setErrors({});
-      } catch (error) {
-        console.error("Error adding invoice:", error);
-        toast.error("Failed to add invoice. Please try again.");
-      } finally {
-        setIsSubmitting(false);
-      }
-    // }
-  };
-  //#endregion
-
+             const response = await GtmConnectionService.addGtmConnection(gtmConnectionData); // Call the service
+             if (response.status === 1) {
+             toast.success("Invoice Updated Successfully");
+             navigate(-1);
+            }  
+          }
+ 
+        
+        //  if (response.status === 2) {
+        //    toast.error("This Email Is Already Registered, Please Enter Another Valid Email"); // Toast on error
+        //  }
+         setErrors({});
+       } catch (error) {
+         console.error("Error adding invoice:", error);
+         toast.error("Failed to add invoice. Please try again.");
+       } finally {
+         setIsSubmitting(false);
+       }
+     }
+   };
+   //#endregion
+  
   //#region Handle Change Function
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     // Regex for 10-digit number validation
     const phoneNumberRegex = /^[0-9]{10}$/;
     // If the field is either phoneNumber or whatsAppNumber, validate the input
-    if (name === "phoneNumber") {
+    if (name === "phoneNumber" || name === "whatsAppNumber") {
       if (value && !phoneNumberRegex.test(value)) {
         // Only allow 10 digits
         setErrors((prev) => ({
@@ -378,6 +484,14 @@ const AddGtmServiceClient = () => {
     setSecondFormData((prev) => ({ ...prev, [name]: value }));
     setThirdFormData((prev) => ({ ...prev, [name]: value }));
   };
+  //#endregion
+
+  //#region Prepare Select Options
+  // Prepare options for react-select
+  const taxDetailOptions = taxDetailsList.map(taxDetail => ({
+    value: taxDetail.taxDetailId,
+    label: taxDetail.taxName
+  }));
   //#endregion
 
   //#region Handle Daynamic Row Events
@@ -416,6 +530,24 @@ const AddGtmServiceClient = () => {
   //#endregion
 
   //#region Event Handlers
+  const handleTaxDetailChange = (selectedOptions) => {
+    setSelectedTaxDetails(selectedOptions);
+    // Reset the days of leave for newly selected leave types
+    const newTaxDetail = { ...thirdFormData.selectedTaxes };
+
+    selectedOptions.forEach(option => {
+      if (!newTaxDetail[option.value]) {
+        newTaxDetail[option.value] = 0; // Initialize with 0 days
+      }
+    });
+     // Now update the selectedTaxes in the thirdFormData state
+    setThirdFormData(prevState => ({
+      ...prevState,
+      selectedTaxes: selectedOptions.map(option => option.value), // or you can adjust as needed
+    }));
+  };
+  //#endregion
+
   const handleSelectChange = (selectedOptions, field) => {
     const selectedValues = selectedOptions ? selectedOptions.map((option) => option.value) : [];
     if (field === "taxDetailId") {
@@ -425,32 +557,7 @@ const AddGtmServiceClient = () => {
       }));
     }
   };
-  // const handleTaxDetailChange = (selectedOptions) => {
-  //   setSelectedTaxDetails(selectedOptions);
-  //   // Reset the days of leave for newly selected leave types
-  //   const newTaxDetail = { ...thirdFormData.selectedTaxes };
-
-  //   selectedOptions.forEach(option => {
-  //     if (!newTaxDetail[option.value]) {
-  //       newTaxDetail[option.value] = 0; // Initialize with 0 days
-  //     }
-  //   });
-  //    // Now update the selectedTaxes in the thirdFormData state
-  //   setThirdFormData(prevState => ({
-  //     ...prevState,
-  //     selectedTaxes: selectedOptions.map(option => option.value), // or you can adjust as needed
-  //   }));
-  // };
-  //#endregion
-
-  //#region Prepare Select Options
-  // Prepare options for react-select
-  const taxDetailOptions = taxDetailsList.map(taxDetail => ({
-    value: taxDetail.taxDetailId,
-    label: taxDetail.taxName
-  }));
-  //#endregion
-
+  
   //#region Steps Configuration
   const steps = [
     // GTM Service Client
@@ -459,7 +566,7 @@ const AddGtmServiceClient = () => {
       component: (
         <fieldset>
           <legend className="text-xl font-semibold text-gray-700 mb-4">
-            Step 1: Add GTM Client
+            Step 1: Edit GTM Client
           </legend>
 
           {/* GTM Client Fields */}
@@ -496,7 +603,7 @@ const AddGtmServiceClient = () => {
               },
               {
                 label: "Company GST Number",
-                name: "companyGSTNumber",
+                name: "companyGstNumber",
                 type: "text",
                 placeholder: "Enter Company GST Number",
               },
@@ -680,10 +787,10 @@ const AddGtmServiceClient = () => {
       component: (
         <fieldset>
           <legend className="text-xl font-semibold text-gray-700 mb-4">
-            Step 2: Add Agreement
+            Step 2: Edit Agreement
           </legend>
 
-          {/* GTM Client Fields */}
+          {/* Agreement Fields */}
           <form onSubmit={handleAgreementSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">     
 
@@ -729,7 +836,7 @@ const AddGtmServiceClient = () => {
                   type={type}
                   name={name}
                   placeholder={placeholder}
-                  value={secondFormData[name]}
+                  value={secondFormData?.[name] || ""}
                   onChange={handleChange}
                   className={
                     "w-full mb-2 rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
@@ -741,21 +848,21 @@ const AddGtmServiceClient = () => {
               </div>
             ))}
 
-            {/* Uplaod Document */}
-            <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
-              <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
-                Uplaod Document
-              </label>
-              <input
-                type="file"
-                name="agreementDocument"
-                onChange={handleChange}
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-3 px-4 text-dark-6 border-active transition"
-              ></input>
-              {errors.agreementDocument && (
-                <p className="text-red-500 text-xs">{errors.agreementDocument}</p>
-              )}
-            </div>
+              {/* Uplaod Document */}
+              <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
+                <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
+                  Uplaod Document
+                </label>
+                <input
+                  type="file"
+                  name="agreementDocument"
+                  onChange={handleChange}
+                  className="w-full mb-2 bg-transparent rounded-md border border-red py-3 px-4 text-dark-6 border-active transition"
+                ></input>
+                {errors.agreementDocument && (
+                  <p className="text-red-500 text-xs">{errors.agreementDocument}</p>
+                )}
+              </div>
             </div>
           </form>
         </fieldset>        
@@ -770,40 +877,9 @@ const AddGtmServiceClient = () => {
             Step 1: Add Invoice
           </legend>
 
-          {/* Invoice */}
+          {/* GTM Client Fields */}
           <form onSubmit={handleInvoiceSubmit} className="container">
           <div className="-mx-4 px-10 mt- flex flex-wrap">
-
-            {/* GTM Client Select */}
-            {/* <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
-              <label className="mb-2 block text-base font-medium">
-                GTM Client
-              </label>
-              <select
-                value={formData.gtmClientServiceId}
-                onChange={handleChange}
-                name="gtmClientServiceId"
-                className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
-              >
-                <option value="" className="text-gray-400">
-                  --Select Client--
-                </option>
-                {gTMClientList.length > 0 ? (
-                  gTMClientList.map((client) => (
-                    <option key={client.gtmClientServiceId} value={client.gtmClientServiceId}>
-                      {client.companyName}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    No Clients available
-                  </option>
-                )}
-              </select>
-              {errors.gtmClientServiceId && (
-                <p className="text-red-500 text-xs">{errors.gtmClientServiceId}</p>
-              )}
-            </div> */}
 
             {/* IssuedByCompany */}
             <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
@@ -811,7 +887,7 @@ const AddGtmServiceClient = () => {
                 IssuedByCompany
               </label>
               <select
-                value={thirdFormData.invoiceDetailId}
+                 value={thirdFormData?.invoiceDetailId || ""}
                 onChange={handleChange}
                 name="invoiceDetailId"
                 className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
@@ -842,14 +918,18 @@ const AddGtmServiceClient = () => {
               <div className="relative z-20">
                 <Select
                   isMulti
-                  name="selectedTaxes"
+                  // name="selectedTaxes"
                   options={taxDetailOptions}
                   value={taxDetailOptions.filter((option) =>
-                    thirdFormData.selectedTaxes.includes(option.value)
+                    thirdFormData?.selectedTaxes?.includes(option.value)
                   )}
+
+                  // value={taxDetailOptions.filter((option) =>
+                  //   thirdFormData.selectedTaxes.includes(option.value)
+                  // )}
                   onChange={(selectedOption) =>
-                    handleSelectChange(selectedOption, "taxDetailId")
-                  }
+                  handleSelectChange(selectedOption, "taxDetailId")
+                }
                   // value={selectedTaxDetails}
                   // onChange={handleTaxDetailChange}
                   className="mb-2"
@@ -859,80 +939,27 @@ const AddGtmServiceClient = () => {
               {errors.selectedTaxDetails && <p className="text-red-500 text-xs">{errors.selectedTaxDetails}</p>}
             </div>
 
-            {/* Description */}  
-            {/* <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
-                <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
-                  Description
-                </label>
-                <input
-                  type="text"
-                  placeholder="Desciption"
-                  name="description"
-                  value={thirdFormData.description}
-                  onChange={handleChange}
-                  className="w-full mb-2 bg-transparent rounded-md border border-red py-3 px-4 text-dark-6 border-active transition"
-                ></input>
-                {errors.description && (
-                  <p className="text-red-500 text-xs">{errors.description}</p>
-                )}
-            </div> */}
-
-             {/* Quantity  */}  
-            {/* <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
-                <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
-                  Quantity 
-                </label>
-                <input
-                  type="number"
-                  placeholder="Quantity"
-                  name="quantity"
-                  value={thirdFormData.quantity}
-                  onChange={handleChange}
-                  className="w-full mb-2 bg-transparent rounded-md border border-red py-3 px-4 text-dark-6 border-active transition"
-                ></input>
-                {errors.quantity && (
-                  <p className="text-red-500 text-xs">{errors.quantity}</p>
-                )}
-            </div> */}
-
-             {/* Unit  */}  
-            {/* <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
-                <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
-                  Unit  
-                </label>
-                <input
-                  type="number"
-                  placeholder="unit"
-                  name="unit"
-                  value={thirdFormData.unit}
-                  onChange={handleChange}
-                  className="w-full mb-2 bg-transparent rounded-md border border-red py-3 px-4 text-dark-6 border-active transition"
-                ></input>
-                {errors.unit && (
-                  <p className="text-red-500 text-xs">{errors.unit}</p>
-                )}
-            </div> */}
-
             {/* Item List */}
             <div className="w-full mb-2 px-3">
-                <div className="flex mb-[10px]">
-                  <label className="block text-base font-medium text-dark dark:text-white">
-                    Add Produts Details
-                  </label>
-                  <button
-                    type="button"
-                    onClick={addItem}
-                    className="text-blue-500 text-xl ml-2"
-                    title="Add Item"
-                  >
-                    <FaPlus />
-                  </button>
-                </div>
+                  <div className="flex mb-[10px]">
+                    <label className="block text-base font-medium text-dark dark:text-white">
+                      Add Produts Details
+                    </label>
+                    <button
+                      type="button"
+                      onClick={addItem}
+                      className="text-blue-500 text-xl ml-2"
+                      title="Add Item"
+                    >
+                      <FaPlus />
+                    </button>
+                  </div>
               {/* <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
                 Items
               </label> */}
-              {thirdFormData.allProducts.map((item, index) => (
+                {(thirdFormData?.allProducts?.length ? thirdFormData.allProducts : [{ description: "", quantity: "", unit: "", unitPrice: "" }]).map((item, index) => (
                 <div key={index} className="flex gap-3 mb-2">
+                 
                   <input
                     type="text"
                     name="description"
@@ -969,13 +996,12 @@ const AddGtmServiceClient = () => {
                     placeholder="Unit Price"
                     className="w-1/3 py-3 px-4 bg-transparent border rounded-md border-active"
                   />
-
-                  <FaTimes 
-                   size={30}
-                   type="button"
-                   onClick={() => removeItem(index)}
-                   className="text-red-500 m-2 cursor-pointer"
-                  />
+                   <FaTimes 
+                     size={30}
+                     type="button"
+                     onClick={() => removeItem(index)}
+                     className="text-red-500 m-2 cursor-pointer"
+                    />
                   {/* <button
                     type="button"
                     onClick={() => removeItem(index)}
@@ -997,7 +1023,9 @@ const AddGtmServiceClient = () => {
                 <p className="text-red-500 text-xs">{errors.items}</p>
               )}
             </div>
-            
+
+
+
           </div>
           </form>
         </fieldset>
@@ -1006,18 +1034,18 @@ const AddGtmServiceClient = () => {
   ];
 
   const handleNextClick = () => {
-    // if (validateForm(currentStep)) {
+    if (validateForm(currentStep)) {
       setCurrentStep(currentStep + 1);
-    // }
+    }
   };
   //#endregion
 
-  //#region Render
+   //#region Render
   return (
     <>
       {/* Header Section */}
       <div className="flex justify-between items-center my-3">
-        <h1 className="font-semibold text-2xl">Add GTM Service Client</h1>
+        <h1 className="font-semibold text-2xl">Edit GTM Service Client</h1>
         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Link
             onClick={() => navigate(-1)}
@@ -1036,51 +1064,45 @@ const AddGtmServiceClient = () => {
           <Stepper steps={steps} currentStep={currentStep} />
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-6">
-            {currentStep > 1 && (
-              <button
-                onClick={() => setCurrentStep(currentStep - 1)}
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
-              >
-                Previous
-              </button>
-            )}
-    
-            {currentStep < steps.length && (
-              <button
-                onClick={handleNextClick}
-                // onClick={() => setCurrentStep(currentStep + 1)}
-                className={`px-4 py-2 rounded-md text-white ${
-                  currentStep === 1 && !isStepOneSubmitted
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-500 hover:bg-blue-600"
-                }`}
-                // disabled={currentStep === 1 && !isStepOneSubmitted}
-                // className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-              >
-                Next
-              </button>
-            )}
-    
-            {currentStep && (
-              <button
-                type="submit"
-                onClick={
-                  currentStep === 1
-                  ? handleSubmit
-                  : currentStep === 2
-                  ? handleAgreementSubmit
-                  : handleInvoiceSubmit
-                }
-                // onClick={currentStep === 1 ? handleSubmit : handleAgreementSubmit}
-                // onClick={handleSubmit}
-                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-                // disabled={isSubmitDisabled}
-              >
-                Submit
-              </button>
-            )}
-          </div>
+          <div className="flex flex-wrap items-center mt-6 gap-x-2">
+  {/* Previous Button */}
+  {currentStep > 1 && (
+    <button
+      onClick={() => setCurrentStep(currentStep - 1)}
+      className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+    >
+      Previous
+    </button>
+  )}
+
+  {/* Next Button */}
+  {currentStep < steps.length && (
+    <button
+      onClick={handleNextClick}
+      className="px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600"
+    >
+      Next
+    </button>
+  )}
+
+  {/* Submit Button */}
+  {currentStep && (
+    <button
+      type="submit"
+      onClick={
+        currentStep === 1
+          ? handleSubmit
+          : currentStep === 2
+          ? handleAgreementSubmit
+          : handleInvoiceSubmit
+      }
+      className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+    >
+      Submit
+    </button>
+  )}
+</div>
+
         </div>
       </section>
     </>
@@ -1088,5 +1110,5 @@ const AddGtmServiceClient = () => {
   //#endregion
 };
 
-export default AddGtmServiceClient;
+export default EditGtmServiceClient
 //#endregion

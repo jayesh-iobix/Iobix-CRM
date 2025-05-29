@@ -1,6 +1,7 @@
 import { BiAbacus, BiBox, BiCalendar, BiGrid, BiGridSmall, BiGridVertical, BiListUl, BiMicrophone, BiSolidMicrophone, BiTask } from 'react-icons/bi'
 import { BsChat, BsFillGrid1X2Fill, BsFillGridFill, BsFillMegaphoneFill, BsHandThumbsUp, BsMegaphone, BsPeople, BsPersonRaisedHand } from 'react-icons/bs'
 import { FaBuilding, FaBusinessTime, FaCalendar, FaFileInvoice, FaHandshake, FaHandshakeAltSlash, FaRegHandshake, FaVenusDouble } from 'react-icons/fa';
+import { FaUserGear, FaUsersGear } from 'react-icons/fa6';
 import {
 	HiOutlineViewGrid,
 	HiOutlineQuestionMarkCircle,
@@ -94,9 +95,17 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     key: "gmServiceClient",
     label: "GTM Service Client",
     path: "/gtm-client",
-    icon: <FaFileInvoice />,
+    icon: <FaUsersGear />,
   },
-
+  {
+    key: "invoice",
+    label: "Invoice",
+    icon: <FaFileInvoice />,
+    submenu: [
+      { label: "Invoive History", path: "/invoice/invoice-history" },
+      // { label: "Invoive Payment", path: "/invoice/invoice-payment" },
+  ],
+  },
 ];
 
 //HR Dashboard Sidebar Links
