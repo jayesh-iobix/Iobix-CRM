@@ -106,9 +106,14 @@ export default function Sidebar() {
           >
             {/* Logo Section */}
             <div className="flex items-center gap-2 px-1 py-3">
-              <span className="text-neutral-200 text-lg cursor-pointer">
-                <img className="w-44" src={logo} alt="Logo" />
-              </span>
+              <a
+                href="/" // Replace with your actual sign-in URL
+                onClick={(e) => e.preventDefault()} // prevent normal clicks
+                draggable="true"
+                className="text-neutral-200 text-lg cursor-pointer"
+              >
+                <img className="w-44" src={logo} alt="Logo" draggable="true" />
+              </a>
             </div>
 
             {/* Sidebar Links */}

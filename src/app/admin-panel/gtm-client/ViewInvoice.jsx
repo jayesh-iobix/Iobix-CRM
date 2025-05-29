@@ -1,6 +1,7 @@
 //#region Imports
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { AgreementService } from "../../service/AgreementService";
 import { GtmConnectionService } from "../../service/GtmConnectionService";
 //#endregion 
 
@@ -107,7 +108,7 @@ const ViewInvoice = () => {
                   ))}
                 </div>
                 {/* Products List */}
-                <div className="mt-6 grid overflow-auto">
+                <div className="mt-6 grid overflow-auto p-2">
                   <p className="text-lg font-semibold mb-3 text-gray-700">Products</p>
                   <div className="overflow-x-auto">
                     <table className="min-w-full border border-gray-200 text-sm">

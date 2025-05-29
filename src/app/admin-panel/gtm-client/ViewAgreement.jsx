@@ -41,10 +41,10 @@ const ViewAgreement = () => {
   //#region Format the date in DD-MM-YYYY
   // Format the date in DD-MM-YYYY
   const formatDate = (dateString) => {
+    if (!dateString) return "N/A"; // handles null, undefined, and empty string
     const date = new Date(dateString);
     return date.toLocaleDateString("en-GB"); // 'en-GB' format is DD/MM/YYYY
   };
-
   //#endregion
 
   //#region Render

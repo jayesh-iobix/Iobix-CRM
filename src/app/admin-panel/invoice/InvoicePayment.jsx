@@ -73,6 +73,23 @@ const InvoicePayment = () => {
   };
   //#endregion
 
+  //#region Format Date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    
+    // Ensure the date is valid
+    if (isNaN(date)) {
+      return 'Invalid Date'; // Handle invalid date
+    }
+  
+    const day = String(date.getDate()).padStart(2, '0'); // Ensure 2 digits for day
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure 2 digits for month
+    const year = String(date.getFullYear()).slice(-2); // Get last 2 digits of the year
+  
+    return `${day}/${month}/${year}`;
+  };
+  //#endregion
+
   return (
     <div className="mt-4">
       {/* Header */}
@@ -175,7 +192,7 @@ const InvoicePayment = () => {
                 >
                   {/* <td className="py-3 px-4">{invoice.paidDate}</td> */}
                   <td className="py-3 px-4">
-                    {invoice.paidDate ? new Date(invoice.paidDate).toLocaleDateString() : "N/A"}
+                    {invoice.paidDate ? formatDate(invoice.paidDate) : "N/A"}
                   </td>
                   <td className="py-3 px-4">₹{invoice.paidAmount || "N/A"}</td>
                   <td className="py-3 px-4">₹{invoice.remainingAmount || "N/A"}</td>

@@ -1,3 +1,4 @@
+// #region Imports
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
@@ -5,8 +6,11 @@ import { InvoiceService } from "../../service/InvoiceService"; // Create this se
 import { FaDownload, FaEye } from "react-icons/fa";
 import { GtmClientService } from "../../service/GtmClientService";
 import { Link } from "react-router-dom";
+//#endregion
 
+// #region Component: InvoiceHistory
 const InvoiceHistory = () => {
+  //#region State Variables
   const [clients, setClients] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState("");
   const [year, setYear] = useState(new Date().getFullYear());
@@ -14,7 +18,27 @@ const InvoiceHistory = () => {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  //#endregion
 
+  //#region Fetch Clients
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await GtmClientService.getGtmClient(); // replace with your actual method
+        setClients(response.data);
+        // console.log(response.data);
+      } catch (err) {
+        toast.error("Failed to load clients.");
+        console.error(err);
+      }
+    };
+
+    fetchClients();
+  }, []);
+  //#endregion
+
+  //#region Months & Years
+  // Define the current month and year
   const months = [
     "January",
     "February",
@@ -29,27 +53,15 @@ const InvoiceHistory = () => {
     "November",
     "December",
   ];
-
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const response = await GtmClientService.getGtmClient(); // replace with your actual method
-        setClients(response.data);
-        console.log(response.data);
-      } catch (err) {
-        toast.error("Failed to load clients.");
-        console.error(err);
-      }
-    };
-
-    fetchClients();
-  }, []);
-
+  // Function to get the last 10 years including the current year
   const getYears = () => {
     const current = new Date().getFullYear();
     return Array.from({ length: 11 }, (_, i) => current - 5 + i);
   };
+  //#endregion
 
+  //#region Fetch Invoices
+  // Fetch invoices based on selected client, month, and year
   const fetchInvoices = async () => {
     if (!selectedClientId) return;
 
@@ -73,6 +85,7 @@ const InvoiceHistory = () => {
   useEffect(() => {
     if (selectedClientId) fetchInvoices();
   }, [selectedClientId, month, year]);
+  //#endregion
 
   //#region Download Report
   const handleDownloadReport = async (invoiceMasterId) => {
@@ -92,6 +105,24 @@ const InvoiceHistory = () => {
   };
   //#endregion
 
+  //#region Format Date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    
+    // Ensure the date is valid
+    if (isNaN(date)) {
+      return 'Invalid Date'; // Handle invalid date
+    }
+  
+    const day = String(date.getDate()).padStart(2, '0'); // Ensure 2 digits for day
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure 2 digits for month
+    const year = String(date.getFullYear()).slice(-2); // Get last 2 digits of the year
+  
+    return `${day}/${month}/${year}`;
+  };
+  //#endregion
+
+  //#region Render
   return (
     <div className="mt-4">
       {/* Header */}
@@ -207,9 +238,7 @@ const InvoiceHistory = () => {
                 >
                   <td className="py-3 px-4">{invoice.invoiceNumber}</td>
                   <td className="py-3 px-4">
-                    {invoice.invoiceDate
-                      ? new Date(invoice.invoiceDate).toLocaleDateString()
-                      : "N/A"}
+                    {formatDate(invoice.invoiceDate) ? formatDate(invoice.invoiceDate) : "N/A"}
                   </td>
                   <td className="py-3 px-4">
                     {invoice.issuedByCompanyName || "N/A"}
@@ -258,9 +287,11 @@ const InvoiceHistory = () => {
       </div>
     </div>
   );
+  //#endregion
 };
 
 export default InvoiceHistory;
+//#endregion
 
 
 

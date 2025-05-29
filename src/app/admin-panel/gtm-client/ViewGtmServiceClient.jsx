@@ -108,12 +108,13 @@ const ViewGtmServiceClient = () => {
 
    //#region Render
   return (
-    <> 
+    <>
       {/* Header Section + Button */}
       <div className="flex flex-wrap justify-between items-center my-3 flex-col md:flex-row ">
-        <h1 className="font-semibold text-xl sm:text-2xl">View GTM Service Client</h1>
+        <h1 className="font-semibold text-xl sm:text-2xl">
+          View GTM Service Client
+        </h1>
         <div className="flex flex-wrap space-x-2 mt-2 sm:mt-0">
-        
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -125,10 +126,7 @@ const ViewGtmServiceClient = () => {
             {isSubmitting ? "Generating..." : "Generate Invoice"}
           </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
+          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
               to={`/gtm-client/edit-gtm-client/${id}`}
               className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
@@ -174,7 +172,6 @@ const ViewGtmServiceClient = () => {
                         ? "bg-blue-600 text-white font-bold border-b-2 border-blue-600 dark:bg-blue-700 dark:border-blue-800 dark:text-white"
                         : "bg-blue-100 text-blue-600 border-transparent hover:bg-blue-200 dark:bg-neutral-700 dark:text-blue-300 dark:hover:bg-neutral-600"
                     } -mb-px py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium text-center border rounded-t-lg`}
-
                     onClick={() => handleTabClick(index + 1)}
                     role="tab"
                     aria-selected={activeTab === index + 1}
@@ -249,7 +246,7 @@ const ViewGtmServiceClient = () => {
                       {
                         label: "Person Linkedin",
                         name: "personalLinkedin",
-                        value: gtmClientformData.reasonForClosure,
+                        value: gtmClientformData.personalLinkedin,
                       },
                       {
                         label: "Country",
@@ -276,14 +273,33 @@ const ViewGtmServiceClient = () => {
                         <label className="font-semibold text-gray-700 me-2">
                           {field.label}:
                         </label>
-                        <span className="text-gray-600">{field.value}</span>
+                        {[
+                          "companyLinkedin",
+                          "personalLinkedin",
+                          "companyWebsite",
+                        ].includes(field.name) ? (
+                          <a
+                            href={
+                              field.value?.startsWith("http")
+                                ? field.value
+                                : `https://${field.value}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline break-words hover:text-blue-800"
+                          >
+                            {field.value}
+                          </a>
+                        ) : (
+                          <span className="text-gray-600">{field.value}</span>
+                        )}
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-             {activeTab === 2 && <ViewAgreement />}
+              {activeTab === 2 && <ViewAgreement />}
               {activeTab === 3 && <ViewInvoice />}
             </div>
           </div>

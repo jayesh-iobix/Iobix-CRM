@@ -404,6 +404,7 @@ const AddGtmServiceClient = () => {
   };
 
   const removeItem = (index) => {
+    if (index === 0) return; // Prevent removing the first row
     const updatedItems = [...thirdFormData.allProducts];
     updatedItems.splice(index, 1);
 
@@ -767,7 +768,7 @@ const AddGtmServiceClient = () => {
       component: (
         <fieldset>
           <legend className="text-xl font-semibold text-gray-700 mb-4">
-            Step 1: Add Invoice
+            Step 3: Add Invoice
           </legend>
 
           {/* Invoice */}
