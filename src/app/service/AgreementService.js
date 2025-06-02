@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { environment } from '../../environment/environment';
 import httpClient from './HttpClient';
 
@@ -6,7 +5,7 @@ import httpClient from './HttpClient';
 const api = environment.agreement;
 
 export const AgreementService = {
-  // Method to add a agreement
+  // Method to add agreement
   addAgreement: async (agreementData) => {
     try {
       const response = await httpClient.post(`${api}/Add`, agreementData);
@@ -24,6 +23,17 @@ export const AgreementService = {
       return response.data;
     } catch (error) {
       console.error('Failed to fetch agreement:', error);
+      throw error;
+    }
+  },
+
+  // Method to get agreement history 
+  getAgreementHistory: async (gtmClientServiceId) => {
+    try {
+      const response = await httpClient.get(`${api}/GetAgreementHistory/${gtmClientServiceId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch agreement history:', error);
       throw error;
     }
   },

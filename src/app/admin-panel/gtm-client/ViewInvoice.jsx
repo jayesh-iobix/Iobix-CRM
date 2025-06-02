@@ -82,21 +82,6 @@ const ViewInvoice = () => {
                       name: "taxName",
                       value: formData.taxName,
                     },
-                    // {
-                    //   label: "Description",
-                    //   name: "description",
-                    //   value: formData.description,
-                    // },
-                    // {
-                    //   label: "Quantity",
-                    //   name: "quantity",
-                    //   value: formData.quantity,
-                    // },
-                    // {
-                    //   label: "Unit",
-                    //   name: "unit",
-                    //   value: formData.unit,
-                    // },
 
                   ].map((field, idx) => (
                     <div key={idx} className="w-full px-2">

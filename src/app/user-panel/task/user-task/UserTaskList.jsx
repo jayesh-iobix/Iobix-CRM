@@ -63,7 +63,7 @@ const UserTaskList = () => {
 
   //#region Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
+  const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 itemks per page
   const [totalItems, setTotalItems] = useState(0);
   //#endregion
 
@@ -354,7 +354,7 @@ const UserTaskList = () => {
   };
   //#endregion
 
-   //#region Add Start And End Date of Task
+  //#region Add Start And End Date of Task
   // Handle the start date change
   const handleStartDateChange = async (e) => {
     const newStartingDate = e.target.value; // Get the new date value
@@ -440,7 +440,6 @@ const UserTaskList = () => {
   };
   //#endregion
  
-  
   //#region Task and Sub-task Transfer Handling
   const handleTaskTransfer = (task) => {
     setAllocationId(task.taskAllocationId); // Set the selected task data
@@ -607,7 +606,7 @@ const UserTaskList = () => {
         <select
           value={priorityFilter}
           onChange={handlePriorityFilterChange}
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         >
           <option value="">All Priorities</option>
           {uniquePriorities.map((priority) => (
@@ -619,7 +618,7 @@ const UserTaskList = () => {
         <select
           value={statusFilter}
           onChange={handleStatusFilterChange}
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         >
           <option value="">All Statuses</option>
           {uniqueStatuses.map((status) => (

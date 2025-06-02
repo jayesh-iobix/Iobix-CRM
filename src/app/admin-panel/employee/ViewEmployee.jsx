@@ -130,7 +130,7 @@ const ViewEmployee = () => {
                       activeTab === index + 1
                         ? "bg-blue-600 text-white font-bold border-b-2 border-blue-600 dark:bg-blue-700 dark:border-blue-800 dark:text-white"
                         : "bg-blue-100 text-blue-600 border-transparent hover:bg-blue-200 dark:bg-neutral-700 dark:text-blue-300 dark:hover:bg-neutral-600"
-                    } -mb-px py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium text-center border rounded-t-lg`}
+                    } -mb-px py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium text-center border rounded-t-lg border-active`}
                     onClick={() => handleTabClick(index + 1)}
                     role="tab"
                     aria-selected={activeTab === index + 1}

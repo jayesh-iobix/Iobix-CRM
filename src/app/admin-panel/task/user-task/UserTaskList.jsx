@@ -283,7 +283,7 @@ const UserTaskList = () => {
         <select
           value={priorityFilter}
           onChange={handlePriorityFilterChange}
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         >
           <option value="">All Priorities</option>
           {uniquePriorities.map((priority) => (
@@ -297,7 +297,7 @@ const UserTaskList = () => {
         <select
           value={statusFilter}
           onChange={handleStatusFilterChange}
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         >
           <option value="">All Statuses</option>
           {uniqueStatuses.map((status) => (
@@ -311,7 +311,7 @@ const UserTaskList = () => {
         <select
           value={yearFilter}
           onChange={(e) => setYearFilter(e.target.value)}
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         >
           <option value="">All Years</option>
           {uniqueYears.map((year) => (
@@ -325,7 +325,7 @@ const UserTaskList = () => {
         <select
           value={monthFilter}
           onChange={(e) => setMonthFilter(e.target.value)}
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         >
           <option value="">All Months</option>
           {uniqueMonths.map((month, index) => (

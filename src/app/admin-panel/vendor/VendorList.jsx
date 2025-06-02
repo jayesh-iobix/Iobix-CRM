@@ -169,7 +169,7 @@ const VendorList = () => {
           value={vendorFilter}
           onChange={handleVendorFilterChange}
           placeholder="Search Company Name"
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         />
       </div>
 

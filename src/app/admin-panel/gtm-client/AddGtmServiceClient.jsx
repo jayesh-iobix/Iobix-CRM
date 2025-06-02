@@ -806,10 +806,10 @@ const AddGtmServiceClient = () => {
               )}
             </div> */}
 
-            {/* IssuedByCompany */}
+            {/* IssuedBy Company */}
             <div className="w-full mb-2 px-3 md:w-1/3 lg:w-1/3">
               <label className="mb-[10px] block text-base font-medium text-dark dark:text-white">
-                IssuedByCompany
+                IssuedBy Company
               </label>
               <select
                 value={thirdFormData.invoiceDetailId}
@@ -818,7 +818,7 @@ const AddGtmServiceClient = () => {
                 className="w-full mb-2 bg-transparent rounded-md border border-red py-[8px] pl-5 pr-12 text-dark-6 border-active transition"
               >
                 <option value="" className="text-gray-400">
-                  --Select IssuedByCompany--
+                  --Select IssuedBy Company--
                 </option>
                 {invoiceDetailList.length > 0 ? (
                   invoiceDetailList.map((invoiceDetail) => (
@@ -914,7 +914,7 @@ const AddGtmServiceClient = () => {
                 )}
             </div> */}
 
-            {/* Item List */}
+            {/* Produts List */}
             <div className="w-full mb-2 px-3">
                 <div className="flex mb-[10px]">
                   <label className="block text-base font-medium text-dark dark:text-white">

@@ -49,7 +49,7 @@ export const ReportService = {
     }
   },
 
-  // Method to attendance task report
+  // Method to download attendance task report
   downloadAttendanceReport: async (employeeId, month, year ) => {
     // debugger;
     try {
@@ -71,7 +71,7 @@ export const ReportService = {
     }
   },
 
-  // Method to attendance task report
+  // Method to download apply leave report
   downloadApplyLeaveReport: async (employeeId, month, year) => {
     // debugger;
     try {
@@ -93,7 +93,7 @@ export const ReportService = {
     }
   },
 
-  // Method to attendance task report
+  // Method to download leave balance report
   downloadLeaveBalanceReport: async (employeeId) => {
     // debugger;
     try {
@@ -115,7 +115,7 @@ export const ReportService = {
     }
   },
 
-  // Method to attendance task report
+  // Method to download invoice report
   downloadInvoiceReport: async (gtmclientserviceId) => {
     // debugger;
     try {
@@ -136,25 +136,33 @@ export const ReportService = {
     }
   },
 
+  // Method to download manual invoice report
+  downloadManualInvoiceReport: async (gtmclientserviceId, invoiceData) => {
+    // debugger;
+    try {
+      // Convert invoiceData object to query parameters
+      // const params = new URLSearchParams(invoiceData).toString();
+      // const response = await httpClient.post(${api}/DownloadInvoiceReport/${gtmclientserviceId}?${params}, {
+      const response = await httpClient.post(
+        `${api}/ManualInvoiceReport/${gtmclientserviceId}`,
+        invoiceData, // This is the body
+        {
+          responseType: 'blob', // Needed to handle PDF download
+        }
+      );
+
+      // Create a link element, use it to download the blob, and then remove it
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Invoice_Report.pdf`); // Specify the file name
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      return response;
+    } catch (error) {
+      console.error('Error downloading the report:', error);
+    }
+  },
+
 };
-
-
-
- // downloadTaskReport: async (employeeId) => {
-  //   try {
-  //     const response = await httpClient.get(`${api}/DownloadTaskAssignReport/${employeeId}`, {
-  //       responseType: 'blob', // Important
-  //     });
-
-  //     // Create a link element, use it to download the blob, and then remove it
-  //     const url = window.URL.createObjectURL(new Blob([response.data]));
-  //     const link = document.createElement('a');
-  //     link.href = url;
-  //     link.setAttribute('download', 'TaskReport.pdf'); // Specify the file name
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     link.remove();
-  //   } catch (error) {
-  //     console.error('Error downloading the report:', error);
-  //   }
-  // },

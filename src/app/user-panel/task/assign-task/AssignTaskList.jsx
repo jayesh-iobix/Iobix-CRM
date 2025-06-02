@@ -681,12 +681,12 @@ const AssignTaskList = () => {
           value={employeeFilter}
           onChange={handleEmployeeFilterChange}
           placeholder="Search Employee"
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         />
         <select
           value={priorityFilter}
           onChange={handlePriorityFilterChange}
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         >
           <option value="">All Priorities</option>
           {uniquePriorities.map((priority) => (
@@ -698,7 +698,7 @@ const AssignTaskList = () => {
         <select
           value={statusFilter}
           onChange={handleStatusFilterChange}
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         >
           <option value="">All Statuses</option>
           {uniqueStatuses.map((status) => (
@@ -804,6 +804,8 @@ const AssignTaskList = () => {
                       </td>
 
                       <td className="py-3 px-4">
+                        {/* {item.taskAssignBy !== userId && ( */}
+                        {item.taskAssignBy !== userId ? (
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
@@ -815,7 +817,9 @@ const AssignTaskList = () => {
                             <FaEye size={24} />
                           </Link>
                         </motion.button>
-                        {item.taskAssignBy === userId && (
+                        // )}
+                        ) : (
+                        // {item.taskAssignBy === userId && (
                           <div className="flex gap-3">
                             <motion.button
                               whileHover={{ scale: 1.1 }}
@@ -1056,7 +1060,6 @@ const AssignTaskList = () => {
                         )}
                       </td>
                     </motion.tr>
-                    {/* </tr> */}
 
                     {/* Expanded Sub-Task Row */}
                     {expandedRows[item.taskAllocationId] &&

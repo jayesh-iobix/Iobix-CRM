@@ -103,6 +103,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     icon: <FaFileInvoice />,
     submenu: [
       { label: "Invoive History", path: "/invoice/invoice-history" },
+      // { label: "Create Invoive Maunally", path: "/invoice/add-invoice" },
       // { label: "Invoive Payment", path: "/invoice/invoice-payment" },
   ],
   },

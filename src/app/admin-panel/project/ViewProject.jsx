@@ -311,15 +311,11 @@ const ViewProject = () => {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              onClick = {() => navigate(`/create-inquiry-task/${id}`)}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded flex items-center gap-2 hover:no-underline border border-active"
             >
-              <Link
-                to={`/create-inquiry-task/${id}`}
-                // to={`/inquiry-task-list/create-inquiry-task/${id}`}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded flex items-center gap-2 hover:no-underline"
-              >
-                Add Inquiry Task
-                <FaPlus size={16} />
-              </Link>
+              Add Inquiry Task
+              <FaPlus size={16} />
             </motion.button>
           )} 
 
@@ -331,7 +327,7 @@ const ViewProject = () => {
           >
             <Link
               to={`/created-project-list/edit-project/${id}`}
-              className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+              className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline border-active"
             >
               Edit Inquiry
               <FaEdit size={16} />
@@ -359,7 +355,7 @@ const ViewProject = () => {
                 >
                   <button
                     onClick={() => setForwardPopupVisible(true)} // Show the popup
-                    className="bg-yellow-500 hover:bg-yellow-600 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+                    className="bg-yellow-500 hover:bg-yellow-600 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline border border-active"
                   >
                     Forward Project
                   </button>
@@ -373,7 +369,7 @@ const ViewProject = () => {
                   whileTap={{ scale: 0.9 }}
                   type="button"
                   onClick={() => setTransferPopupVisible(true)} // Show the popup
-                  className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
+                  className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline border border-active"
                 >
                   Transfer Project
                 </motion.button>
@@ -807,7 +803,7 @@ const ViewProject = () => {
                       activeTab === index + 1
                         ? "bg-blue-600 text-white font-bold border-b-2 border-blue-600 dark:bg-blue-700 dark:border-blue-800 dark:text-white"
                         : "bg-blue-100 text-blue-600 border-transparent hover:bg-blue-200 dark:bg-neutral-700 dark:text-blue-300 dark:hover:bg-neutral-600"
-                    } -mb-px py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium text-center border rounded-t-lg`}
+                    } -mb-px py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium text-center border border-active rounded-t-lg`}
                     // } -mb-px py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium text-center border rounded-t-lg ${
                     //   hideTab && index === 2 ? 'hidden' : '' // Add hidden class when it's "Approved By Client"
                     // }`}

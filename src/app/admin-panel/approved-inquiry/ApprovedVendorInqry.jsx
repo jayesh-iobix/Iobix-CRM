@@ -233,7 +233,7 @@ const ApprovedVendorInqry = () => {
                   <td className="px-4 py-2 border-b">
                     <div className="flex gap-2 justify-end">
                       
-                      <div>
+                      <div className="mt-2">
                       <span
                           className={`px-2 py-1 rounded-lg font-medium ${getStatusColor(
                             item.finalApproval

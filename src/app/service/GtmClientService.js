@@ -5,7 +5,7 @@ import httpClient from './HttpClient';
 const api = environment.gtmClient;
 
 export const GtmClientService = {
-  // Method to add a gtm client
+  // Method to add gtm client
   addGtmClient: async (gtmClientData) => {
     try {
       const response = await httpClient.post(`${api}/Add`, gtmClientData);

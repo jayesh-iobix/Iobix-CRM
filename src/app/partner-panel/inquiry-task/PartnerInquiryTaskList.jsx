@@ -701,12 +701,13 @@ const PartnerInquiryTaskList = () => {
           value={employeeFilter}
           onChange={handleEmployeeFilterChange}
           placeholder="Search Assign To"
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         />
+        
         <select
           value={priorityFilter}
           onChange={handlePriorityFilterChange}
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         >
           <option value="">All Priorities</option>
           {uniquePriorities.map((priority) => (
@@ -719,7 +720,7 @@ const PartnerInquiryTaskList = () => {
         <select
           value={statusFilter}
           onChange={handleStatusFilterChange}
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         >
           <option value="">All Statuses</option>
           {uniqueStatuses.map((status) => (

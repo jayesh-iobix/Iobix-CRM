@@ -175,10 +175,13 @@ import AddInvoicePayment from './app/admin-panel/invoice/AddInvoicePayment';
 
 function App() {
 
+  // #region State Variables
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true); // Loading state to prevent rendering before authentication check
   const [userRole, setUserRole] = useState(null); // State to store user role
+  // #endregion
 
+  // #region Function to check if the user is authenticated
   useEffect(() => {
     // This code runs only once when the component mounts.
     const token = sessionStorage.getItem('token');
@@ -221,7 +224,9 @@ function App() {
     }
     setTimeout(() => setLoading(false), 1500); // 1500ms delay
   }, []); // Empty dependency array ensures this effect runs only once, on mount
+  // #endregion
 
+  // #region loaading spinner
   if (loading) {
     // Optionally render a loading spinner or nothing while the auth state is being determined
     return (
@@ -232,7 +237,9 @@ function App() {
     </div>
     );
   }
+  // #endregion
 
+  // #region Render the routes based on authentication state
   return (
 
     <>
@@ -357,7 +364,7 @@ function App() {
       <Route path="gtm-client/add-gtm-client" element={<AddGtmServiceClient />} />
       <Route path="gtm-client/view-gtm-client/:id" element={<ViewGtmServiceClient />} />
       <Route path="gtm-client/edit-gtm-client/:id" element={<EditGtmServiceClient />} />
-      <Route path="invoice/add-incoice" element={<AddInvoice />} />
+      <Route path="invoice/add-invoice" element={<AddInvoice />} />
       <Route path="invoice/invoice-history" element={<InvoiceHistory />} />
       <Route path="invoice/invoice-history/:id" element={<ViewInvoiceHistory />} />
       <Route path="invoice/invoice-payment" element={<InvoicePayment />} />
@@ -497,6 +504,7 @@ function App() {
     </Routes>
   </>
   );
+  // #endregion
 }
 
 export default App;

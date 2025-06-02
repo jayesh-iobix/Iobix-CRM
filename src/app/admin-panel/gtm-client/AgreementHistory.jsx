@@ -1,144 +1,139 @@
 //#region Imports
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaEye, FaPlus, FaTrash, FaTrashAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { EmployeeService } from "../../service/EmployeeService";
+import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { toast } from "react-toastify";
 import { ReportService } from "../../service/ReportService";
+import { GtmClientService } from "../../service/GtmClientService";
+import { AgreementService } from "../../service/AgreementService";
 //#endregion
 
-//#region Component: EmployeeList
-const EmployeeList = () => {
+//#region Component: AgreementHistory
+const AgreementHistory = () => {
   //#region State variables
-  const [employees, setEmployees] = useState([]);
-  const [filteredEmployees, setFilteredEmployees] = useState([]);
-  const [employeeFilter, setEmployeeFilter] = useState(""); // State for employee filter
-  const [departmentFilter, setDepartmentFilter] = useState(""); // State for department filter
+  const [gtmClientAgreement, setGtmClientAgreement] = useState([]);
+  const [filteredGtmServiceAgreement, setFilteredGtmServiceAgreement] = useState([]);
+  const [clientFilter, setClientFilter] = useState(""); // State for employee filter
   const [deleteId, setDeleteId] = useState(null); // Store the eventTypeId to delete
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State for the popup
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(7); // Set to 7 items per page
   const [totalItems, setTotalItems] = useState(0);
+
+  const { id } = useParams();
   //#endregion
 
-  //#region useEffect: Fetch Employee Data
+  //#region useEffect: Fetch GtmServiceClients Data
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchAgreementHistory = async () => {
       try {
-        const result = await EmployeeService.getEmployees();
-        setEmployees(result.data); // Set the 'data' array to the state
-        setFilteredEmployees(result.data); // Initially show all employees
+        const result = await AgreementService.getAgreementHistory(id);
+        setGtmClientAgreement(result.data); // Set the 'data' array to the state
+        setFilteredGtmServiceAgreement(result.data); // Initially show all GtmServiceClients
         setTotalItems(result.data.length); // Set total items for pagination
       } catch (error) {
-        console.error("Error fetching employees:", error);
-        setEmployees([]); // Fallback to an empty array in case of an error
-        setFilteredEmployees([]); // Fallback to an empty array in case of an error
+        console.error("Error fetching gtm client agreement:", error);
+        setGtmClientAgreement([]); // Fallback to an empty array in case of an error
+        setFilteredGtmServiceAgreement([]); // Fallback to an empty array in case of an error
       }
     };
-    fetchEmployees();
-  }, []);
+    fetchAgreementHistory();
+  }, [id]);
   //#endregion
 
-  //#region Handlers: Filtering
+  //#region useEffect: Filter GtmServiceClients
   // Function to filter tasks based on selected employee name
-  const handleEmployeeFilterChange = (event) => {
-    setEmployeeFilter(event.target.value);
+  const handleClientFilterChange = (event) => {
+    setClientFilter(event.target.value);
   };
 
-  const uniqueDepartments = [
-    ...new Set(employees.map((employee) => employee.departmentName)),
-  ];
-
-  // Handle department filter change
-  const handleDepartmentChange = (event) => {
-    setDepartmentFilter(event.target.value);
-  };
-
- // Re-filter employees on name or department change
+  // Function to filter tasks based on selected department
   useEffect(() => {
-    // Apply filters to the employees array
-    let filtered = employees;
-
-    // Filter by employee name
-    if (employeeFilter) {
-      filtered = filtered.filter((employee) =>
-        employee.name.toLowerCase().includes(employeeFilter.toLowerCase())
-      );
-    }
-
-    // Filter by department
-    if (departmentFilter) {
-      filtered = filtered.filter((employee) =>
-        employee.departmentName.toLowerCase().includes(departmentFilter.toLowerCase()),
-      );
-    }
-    // if (departmentFilter) {
-    //   filtered = filtered.filter(
-    //     (employee) => employee.departmentName === departmentFilter
+    // Apply filters to the GtmServiceClients array
+    let filtered = gtmClientAgreement;
+      
+    // Filter by client name
+    // if (clientFilter) {
+    //   filtered = filtered.filter((gtmClient) =>
+    //     gtmClient.companyName.toLowerCase().includes(clientFilter.toLowerCase())
     //   );
     // }
 
-    setFilteredEmployees(filtered); // Update filtered employees based on all filters
-    setTotalItems(filtered.length); 
+    setFilteredGtmServiceAgreement(filtered); // Update filtered GtmServiceClients based on all filters
+
+    setTotalItems(filtered.length); // Update total items for pagination
     setCurrentPage(1); // Reset to the first page when a new filter is applied
-  }, [employeeFilter, departmentFilter, employees]);
+
+  }, [clientFilter, gtmClientAgreement]);
   //#endregion
 
-  //#region Delete Logic
-  const handleDeleteClick = (employeeId) => {
-    setDeleteId(employeeId);
+  //#region Delete CLick and Delete ClientCompany 
+  // Function to handle delete button click
+  const handleDeleteClick = (gtmClientServiceId) => {
+    setDeleteId(gtmClientServiceId);
     setIsPopupOpen(true); // Open popup
   };
-
+  
+  // Function to handle popup close without deleting
   const handlePopupClose = () => {
     setIsPopupOpen(false); // Close popup without deleting
     setDeleteId(null); // Reset the ID
   };
 
-  const deleteEmployee = async () => {
+  // Function to delete a clientCompany 
+  const deleteGtmServiceClient = async () => {
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
-      const response = await EmployeeService.deleteEmployee(deleteId);
+      const response = await GtmClientService.deleteGtmClient(deleteId);
       if (response.status === 1) {
-        setFilteredEmployees((prevEmployees) =>
-          prevEmployees.filter((employee) => employee.employeeId !== deleteId)
+        setFilteredGtmServiceAgreement((prevGtmClient) =>
+          prevGtmClient.filter((gtmClient) => gtmClient.gtmClientServiceId !== deleteId)
         );
-        toast.error("Employee Deleted Successfully"); // Toast on success
+        toast.error("GTM Client Agreement Deleted Successfully"); // Toast on success
         setIsPopupOpen(false); // Close popup after deletion
         setDeleteId(null); // Reset the ID
       }
     } catch (error) {
-      console.error("Error deleting deparemployeetment:", error);
-      alert("Failed to delete employee");
+      console.error("Error deleting gtm client agreement:", error);
+      alert("Failed to delete gtm client agreement");
     }
   };
   //#endregion
 
   //#region Download Report
-  const handleDownloadReport = async () => {
-    setIsSubmitting(true);
-    try {
-      // Wait for the report download to complete
-      await ReportService.downloadEmployeeReport();
-      // Optionally, add a success message or additional logic after the download
-      toast.success("Report downloaded successfully!");
-    } catch (error) {
-      console.error("Error downloading report:", error);
-      toast.error("Failed to download report.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+  // const handleDownloadReport = async () => {
+  //   setIsSubmitting(true);
+  //   try {
+  //     // Wait for the report download to complete
+  //     await ReportService.downloadEmployeeReport();
+  //     // Optionally, add a success message or additional logic after the download
+  //     toast.success("Report downloaded successfully!");
+  //   } catch (error) {
+  //     console.error("Error downloading report:", error);
+  //     toast.error("Failed to download report.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // }
   //#endregion
-  
+
+  //#region Format the date in DD-MM-YYYY
+  // Format the date in DD-MM-YYYY
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A"; // handles null, undefined, and empty string
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB"); // 'en-GB' format is DD/MM/YYYY
+  };
+
+  //#endregion
+
   //#region Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredGtmServiceAgreement.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -150,72 +145,55 @@ const EmployeeList = () => {
   //#region Render
   return (
     <>
-      {/* Header + Buttons */}
-      <div className="flex justify-between items-center my-3 flex-wrap">
-        <h1 className="font-semibold text-2xl">Employee List</h1>
-        <div className="flex flex-wrap gap-2 mt-2 md:mt-1 lg:mt-1 xl:mt-1">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleDownloadReport}
-            className={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
-            ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
-            disabled={isSubmitting}
+      {/* Header Section */}
+      <div className="flex justify-between items-center my-3 mt-5">
+        <h1 className="font-semibold text-xl">GTM Client Agreement History</h1>
+        <div className="flex">
+          {/* <motion.button 
+          whileHover={{ scale: 1.1 }} 
+          whileTap={{ scale: 0.9 }}
+          onClick={handleDownloadReport }
+          className ={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
+            ${isSubmitting ? "opacity-50 cursor-not-allowed" : "" }`}
+          disabled={isSubmitting}
           >
             {isSubmitting ? "Downloading..." : "Download Report"}
-          </motion.button>
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+        </motion.button> */}
+          {/* <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
-              to="/employee-list/add-employee"
+              to="/gtm-client/add-gtm-client"
               className="bg-blue-600 hover:bg-blue-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline"
             >
               Add
               <FaPlus className="mt-[3px]" size={14} />
             </Link>
-          </motion.button>
+          </motion.button> */}
         </div>
       </div>
 
       {/* Filters Section */}
-      <div className="flex flex-wrap gap-4 my-4">
+      {/* <div className="flex gap-4 my-4">
         <input
           type="text"
-          value={employeeFilter}
-          onChange={handleEmployeeFilterChange}
-          placeholder="Search Employee"
-          className="p-2 outline-none rounded border border-active"
+          value={clientFilter}
+          onChange={handleClientFilterChange}
+          placeholder="Search Company Name"
+          className="p-2 outline-none rounded border border-gray-300"
         />
+      </div> */}
 
-        {/* Department Filter Dropdown */}
-        <select
-          value={departmentFilter}
-          onChange={handleDepartmentChange}
-          className="border border-active rounded p-2"
-        >
-          <option value="">All Departments</option>
-          {uniqueDepartments.map((department) => (
-            <option key={department} value={department}>
-              {department}
-            </option>
-          ))}
-          {/* <option value="IT">IT</option>
-          <option value="BD">BD</option> */}
-        </select>
-      </div>
-
-      {/* Employee Table */}
+      {/* Client Company Table */}
       <div className="grid overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-900 border-b">
             <tr>
               {[
-                "Full Name",
-                "Employee Code",
-                "Email",
-                "Mobile Number",
-                "Department",
-                "Designation",
-                "Actions",
+                "Start Date",
+                "End Date",
+                "Renew Date",
+                "Amount",
+                "Agreement Document",
+                // "Actions",
               ].map((header) => (
                 <th
                   key={header}
@@ -229,29 +207,36 @@ const EmployeeList = () => {
           {currentItems.length === 0 ? (
             <tr>
               <td colSpan="6" className="text-center py-3 px-4 text-gray-700">
-                No employees found.
+                No gtm clients agreement found.
               </td>
             </tr>
           ) : (
             currentItems.map((item) => (
               <motion.tr
-                key={item.employeeId}
+                key={item.gTMClientAgreementId}
                 className="border-b hover:bg-gray-50"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: item * 0.1 }}
               >
-                <td className="py-3 px-4 text-gray-700">{item.name}</td>
-                <td className="py-3 px-4 text-gray-700">{item.employeeCode}</td>
-                <td className="py-3 px-4 text-gray-700">{item.email}</td>
-                <td className="py-3 px-4 text-gray-700">{item.mobileNumber}</td>
-                <td className="py-3 px-4 text-gray-700">
-                  {item.departmentName}
+                <td className="py-3 px-4 text-gray-700">{formatDate(item.startDate)}</td>
+                <td className="py-3 px-4 text-gray-700">{formatDate(item.endDate)}</td>
+                <td className="py-3 px-4 text-gray-700">{formatDate(item.renewDate)}</td>
+                <td className="py-3 px-4 text-gray-700">{item.amount}</td>
+                <td className="py-3 px-4 text-gray-700">  {item.agreementDocument ? (
+                      <a
+                        href={item.agreementDocument}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 underline"
+                      >
+                        Open Agreement Document
+                      </a>
+                    ) : (
+                      "No document available"
+                    )}
                 </td>
-                <td className="py-3 px-4 text-gray-700">
-                  {item.designationName}
-                </td>
-                <td className="py-3 px-4">
+                {/* <td className="py-3 px-4">
                   <div className="flex gap-2">
                     <motion.button
                       whileHover={{ scale: 1.1 }}
@@ -259,7 +244,7 @@ const EmployeeList = () => {
                     >
                       <Link
                         className="text-green-500 hover:text-green-700"
-                        to={`/employee-list/view-employee/${item.employeeId}`}
+                        to={/gtm-client/view-gtm-client/${item.gtmClientServiceId}}
                       >
                         <FaEye size={24} />
                       </Link>
@@ -268,21 +253,36 @@ const EmployeeList = () => {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => handleDeleteClick(item.employeeId)}
+                    >
+                      <Link
+                        className="text-blue-500 hover:text-blue-700"
+                        to={/employee-list/edit-employee/${item.gtmClientServiceId}}
+                      >
+                        <FaEdit size={24} />
+                      </Link>
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() =>
+                        handleDeleteClick(item.gtmClientServiceId)
+                      }
                       className="text-red-500 hover:text-red-700"
                     >
                       <FaTrash size={22} />
                     </motion.button>
                   </div>
-                </td>
+                </td> */}
               </motion.tr>
             ))
           )}
+          {/* </motion.tbody> */}
         </table>
       </div>
 
-      {/* Delete Confirmation Popup */}
-      {isPopupOpen && (
+      {/* Confirmation Popup */}
+      {/* {isPopupOpen && (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50 z-50">
           <div className="bg-white p-5 rounded-lg shadow-lg max-w-full sm:max-w-lg md:max-w-lg lg:max-w-md xl:max-w-lg w-11/12">
             <div className="flex justify-center mb-4">
@@ -305,7 +305,7 @@ const EmployeeList = () => {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={deleteEmployee}
+                onClick={deleteGtmServiceClient}
                 className="flex items-center gap-2 bg-red-600 font-semibold text-white px-8 py-3 rounded-lg hover:bg-red-700 active:bg-red-800 transition duration-200 w-full sm:w-auto"
               >
                 Yes
@@ -313,7 +313,7 @@ const EmployeeList = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Pagination Section */}
       <div
@@ -429,6 +429,5 @@ const EmployeeList = () => {
   //#endregion
 };
 
-export default EmployeeList;
+export default AgreementHistory;
 //#endregion
-

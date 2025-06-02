@@ -138,7 +138,7 @@ const PartnerList = () => {
           value={partnerFilter}
           onChange={handlePartnerFilterChange}
           placeholder="Search Company Name"
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         />
       </div>
 

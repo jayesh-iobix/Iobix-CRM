@@ -145,7 +145,7 @@ const GtmServiceClient = () => {
           disabled={isSubmitting}
           >
             {isSubmitting ? "Downloading..." : "Download Report"}
-        </motion.button> */}
+          </motion.button> */}
           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Link
               to="/gtm-client/add-gtm-client"
@@ -165,7 +165,7 @@ const GtmServiceClient = () => {
           value={clientFilter}
           onChange={handleClientFilterChange}
           placeholder="Search Company Name"
-          className="p-2 outline-none rounded border border-gray-300"
+          className="p-2 outline-none rounded border border-active"
         />
       </div>
 
@@ -225,18 +225,6 @@ const GtmServiceClient = () => {
                       </Link>
                     </motion.button>
 
-                    {/* <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <Link
-                        className="text-blue-500 hover:text-blue-700"
-                        to={/employee-list/edit-employee/${item.gtmClientServiceId}}
-                      >
-                        <FaEdit size={24} />
-                      </Link>
-                    </motion.button> */}
-
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
@@ -252,7 +240,6 @@ const GtmServiceClient = () => {
               </motion.tr>
             ))
           )}
-          {/* </motion.tbody> */}
         </table>
       </div>
 

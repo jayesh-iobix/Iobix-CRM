@@ -68,7 +68,7 @@ export const InvoiceDetailService = {
       const response = await httpClient.delete(`${api}/${invoiceDetailId}`); 
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch invoice detail:', error);
+      console.error('Failed to delete invoice detail:', error);
       throw error;
     }
   },

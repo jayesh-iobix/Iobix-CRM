@@ -163,7 +163,7 @@ const AttendanceList = () => {
           whileTap={{ scale: 0.9 }}
           type="button" // Added this line to prevent form submission
           onClick={handleDownloadReport}
-          className ={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded hover:no-underline 
+          className ={`me-3 bg-purple-600 hover:bg-purple-700 flex gap-2 text-center text-white font-medium py-2 px-4 rounded border-active hover:no-underline 
             ${isSubmitting ? "opacity-50 cursor-not-allowed" : "" }`}
           disabled={isSubmitting}
         >

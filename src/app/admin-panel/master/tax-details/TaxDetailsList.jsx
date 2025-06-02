@@ -39,6 +39,7 @@ const TaxDetailsList = () => {
 
   //#region Delete Logic
   const deleteTaxDetails = async () => {
+    // debugger;
     if (!deleteId) return; // If there's no ID to delete, do nothing
     try {
       const response = await TaxDetailService.deleteTaxDetail(deleteId);

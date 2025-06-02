@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { environment } from '../../environment/environment';
 import httpClient from './HttpClient';
 
@@ -58,16 +57,13 @@ export const InvoiceService = {
     }
   },
 
+  //Method to get Invoicess by client, month, and year
   getInvoicesByClientMonthYear: async (gtmclientserviceId, month, year) => {
   try {
-    // debugger;
     const response = await httpClient.get(`${api}/GetInvoiceHistory/${gtmclientserviceId}`, {
       params: {
         month: month,
         year: year     
-        // gtmclientserviceId,
-        // month,
-        // year,
       },
       
     });

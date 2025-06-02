@@ -647,7 +647,7 @@ const Schedule = () => {
                   <>
                     <button
                       type="button"
-                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex cursor-pointer hover:bg-gray-200 p-1 items-center"
+                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex cursor-pointer hover:bg-gray-200 p-1 items-center border-active"
                       onClick={() => navigateMonth(-1)}
                     >
                       <svg
@@ -667,11 +667,11 @@ const Schedule = () => {
                     <div className="border-r inline-flex h-6"></div>
                     <button
                       type="button"
-                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex items-center cursor-pointer hover:bg-gray-200 p-1"
+                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex items-center cursor-pointer hover:bg-gray-200 p-1 border-active"
                       onClick={() => navigateMonth(1)}
                     >
                       <svg
-                        className="h-6 w-6 text-gray-500 inline-flex leading-none"
+                        className="h-6 w-6 text-gray-500 inline-flex leading-none b"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -691,7 +691,7 @@ const Schedule = () => {
                   <>
                     <button
                       type="button"
-                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex cursor-pointer hover:bg-gray-200 p-1 items-center"
+                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex cursor-pointer hover:bg-gray-200 p-1 items-center border-active"
                       onClick={() => navigateWeek(-1)}
                     >
                       <svg
@@ -711,7 +711,7 @@ const Schedule = () => {
                     <div className="border-r inline-flex h-6"></div>
                     <button
                       type="button"
-                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex items-center cursor-pointer hover:bg-gray-200 p-1"
+                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex items-center cursor-pointer hover:bg-gray-200 p-1 border-active"
                       onClick={() => navigateWeek(1)}
                     >
                       <svg
@@ -735,7 +735,7 @@ const Schedule = () => {
                   <>
                     <button
                       type="button"
-                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex cursor-pointer hover:bg-gray-200 p-1 items-center"
+                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex cursor-pointer hover:bg-gray-200 p-1 items-center border-active"
                       onClick={() => navigateDay(-1)}
                     >
                       <svg
@@ -755,7 +755,7 @@ const Schedule = () => {
                     <div className="border-r inline-flex h-6"></div>
                     <button
                       type="button"
-                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex items-center cursor-pointer hover:bg-gray-200 p-1"
+                      className="leading-none rounded-lg transition ease-in-out duration-100 inline-flex items-center cursor-pointer hover:bg-gray-200 p-1 border-active"
                       onClick={() => navigateDay(1)}
                     >
                       <svg
@@ -1390,14 +1390,14 @@ const Schedule = () => {
               <div className="flex justify-end gap-2 mt-8">
                 {editingEvent && (
                   <button
-                    className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-700"
+                    className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-700 border-active"
                     onClick={deleteEvent}
                   >
                     Delete Event
                   </button>
                 )}
                 <button
-                  className={`bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 ${
+                  className={`bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 border-active ${
                     isSubmitting || meetingLinkError || !eventTitle ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                   disabled={isSubmitting || meetingLinkError || !eventTitle}
