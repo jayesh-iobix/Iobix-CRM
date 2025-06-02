@@ -13,9 +13,9 @@ import { ClientCompanyService } from "../../service/ClientCompanyService";
 import { PartnerService } from "../../service/PartnerService";
 import ApprovedClientInqry from "../approved-inquiry/ApprovedClientInqry";
 import ApprovedPartnerInqry from "../approved-inquiry/ApprovedPartnerInqry";
-import InquiryChat from "../inquiry/InquiryChat";
+import InquiryChat from "../inquiry-chat/InquiryChat";
 import InquiryTaskList from "../inquiry-task/InquiryTaskList";
-import InquiryChatCreated from "../inquiry/InquiryChatCreated";
+import InquiryChatCreated from "../inquiry-chat/InquiryChatCreated";
 import ApprovedVendorInqry from "../approved-inquiry/ApprovedVendorInqry";
 import { VendorService } from "../../service/VendorService";
 //#endregion

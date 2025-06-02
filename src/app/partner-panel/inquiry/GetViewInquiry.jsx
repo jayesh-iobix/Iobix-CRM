@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import { InquiryApproveRejectService } from "../../service/InquiryApproveRejectService";
 import Chat from "./Chat";
 import CompanyInquiryChat from "../../company-panel/inquiry-chat/CompanyInquiryChat";
-import PartnerInquiryList from "../../admin-panel/partner-inquiry/PartnerInquiryList";
 import PartnerInquiryTaskList from "../inquiry-task/PartnerInquiryTaskList";
 import CreateInquiryTaskList from "../inquiry-task/CreateInquiryTaskList";
 //#endregion

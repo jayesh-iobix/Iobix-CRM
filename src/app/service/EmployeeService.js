@@ -39,6 +39,17 @@ export const EmployeeService = {
      throw error;
    }
   },
+    
+  // Method to getRecentEmployee
+  getRecentEmployee: async () => {
+   try {
+     const response = await httpClient.get(`${api}/GetRecentEmployee`);
+     return response.data;
+   } catch (error) {
+     console.error('Failed to fetch employees:', error);
+     throw error;
+   }
+  },
 
    // Method to get Inquiry Transfer Employee
    getInquiryTransferEmployees: async (inquiryRegistrationId) => {

@@ -74,7 +74,7 @@ const Announcement = () => {
                   className="border-b hover:bg-gray-50"
                 >
                   <td className="py-3 px-4">{announcement.title}</td>
-                  <td className="py-3 px-4">{announcement.message}</td>
+                  <td className="py-3 px-4 truncate max-w-[300px]">{announcement.message}</td>
                   <td className="py-3 px-4">{formatDate(announcement.announcementDateTime)}</td>
                   {/* <td className="py-3 px-4">
                     <div className="flex gap-2 justify-center">

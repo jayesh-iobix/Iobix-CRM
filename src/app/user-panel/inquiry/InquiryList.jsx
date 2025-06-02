@@ -3,10 +3,7 @@ import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaEdit } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
-import UserTaskList from "../task/user-task/UserTaskList";
 import ForwardInquiryList from "./ForwardPartnerInqryList";
-import ClientInquiryList from "../../admin-panel/client-inquiry/ClientInquiryList";
-import PartnerInquiryList from "../../admin-panel/partner-inquiry/PartnerInquiryList";
 import ForwardClientInquiryList from "./ForwardClientInqryList";
 //#endregion
 

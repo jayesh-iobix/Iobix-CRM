@@ -217,7 +217,7 @@ const AttendanceList = () => {
       </div>
 
       {/* Display Days and Dates of Selected Month */}
-      <section className="bg-white rounded-lg shadow-lg m-1 p-4 sm:p-8">
+      <section className="bg-white rounded-lg m-1 p-4 sm:p-8">
         {selectedMonth !== null && (
           <div className="grid overflow-x-auto">
             <table className="min-w-full table-auto border-collapse">

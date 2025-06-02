@@ -80,8 +80,7 @@ import ClientCompDashboard from './app/company-panel/dashboard/ClientCompDashboa
 import PartnerDashboard from './app/partner-panel/dashboard/PartnerDashboard';
 import AddInquiry from './app/partner-panel/inquiry/AddInquiry';
 import InquiryList from './app/partner-panel/inquiry/InquiryList';
-import PartnerViewInquiry from './app/admin-panel/inquiry/ViewInquiry';
-import AddPartnerInquiry from './app/admin-panel/partner-inquiry/AddPartnerInquiry';
+import PartnerViewInquiry from './app/admin-panel/inquiry-chat/ViewInquiry';
 import InquiryOriginList from './app/admin-panel/master/inquiry-origin/InquiryOriginList';
 import AddInquiryOrigin from './app/admin-panel/master/inquiry-origin/AddInquiryOrigin';
 import EditInquiryOrigin from './app/admin-panel/master/inquiry-origin/EditInquiryOrigin';
@@ -93,23 +92,14 @@ import GetInquiryList from './app/partner-panel/inquiry/GetInquiryList';
 import AdminInqryPermiList from './app/admin-panel/master/admin-inqry-permission/AdminInqryPermiList';
 import AddAdminInqryPermi from './app/admin-panel/master/admin-inqry-permission/AddAdminInqryPermi';
 import EditAdminInqryPermi from './app/admin-panel/master/admin-inqry-permission/EditAdminInqryPermi';
-import PartnerInquiryList from './app/admin-panel/partner-inquiry/PartnerInquiryList';
-import ClientInquiryList from './app/admin-panel/client-inquiry/ClientInquiryList';
-import AddClientInquiry from './app/admin-panel/client-inquiry/AddClientInquiry';
-import ClientViewInquiry from './app/admin-panel/inquiry/ViewInquiry';
-import CreatePartnerInqryList from './app/admin-panel/create-partner-inquiry/CreatePartnerInqryList';
-import CreatePartnerInqry from './app/admin-panel/create-partner-inquiry/CreatePartnerInqry';
-import ViewCreatePartnerInqry from './app/admin-panel/inquiry/ViewInquiry';
-import CreateClientInqryList from './app/admin-panel/create-client-inquiry/CreateClientInqryList';
-import CreateClientInqry from './app/admin-panel/create-client-inquiry/CreateClientInqry';
-import ViewCreateClientInqry from './app/admin-panel/inquiry/ViewInquiry';
-import UserInquiryList from './app/user-panel/inquiry/InquiryList';
-import CreateInquiryList from './app/user-panel/inquiry/CreateInquiryList';
+import ClientViewInquiry from './app/admin-panel/inquiry-chat/ViewInquiry';
+import ViewCreatePartnerInqry from './app/admin-panel/inquiry-chat/ViewInquiry';
+import ViewCreateClientInqry from './app/admin-panel/inquiry-chat/ViewInquiry';
 import ForwardPartnerInqryList from './app/user-panel/inquiry/ForwardPartnerInqryList';
 import ForwardClientInqryList from './app/user-panel/inquiry/ForwardClientInqryList';
 import UserViewInquiry from './app/user-panel/inquiry/UserViewInquiry';
 import GetViewInquiry from './app/partner-panel/inquiry/GetViewInquiry';
-import ChatInquiry from './app/admin-panel/inquiry/ChatInquiry';
+import ChatInquiry from './app/admin-panel/inquiry-chat/ChatInquiry';
 import EditInquiry from './app/partner-panel/inquiry/EditInquiry';
 import AddInquiryTask from './app/admin-panel/inquiry-task/AddInquiryTask';
 import ProjectList from './app/admin-panel/project/recived-project/ProjectList';
@@ -171,6 +161,7 @@ import InvoiceHistory from './app/admin-panel/invoice/InvoiceHistory';
 import ViewInvoiceHistory from './app/admin-panel/invoice/ViewInvoiceHistory';
 import InvoicePayment from './app/admin-panel/invoice/InvoicePayment';
 import AddInvoicePayment from './app/admin-panel/invoice/AddInvoicePayment';
+import NoticeBoard from './app/user-panel/notice-board/NoticeBoard';
 //#endregion
 
 function App() {
@@ -179,6 +170,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true); // Loading state to prevent rendering before authentication check
   const [userRole, setUserRole] = useState(null); // State to store user role
+  // const [isDarkMode, setIsDarkMode] = useState(false);
   // #endregion
 
   // #region Function to check if the user is authenticated
@@ -226,6 +218,13 @@ function App() {
   }, []); // Empty dependency array ensures this effect runs only once, on mount
   // #endregion
 
+  // useEffect(() => {
+  //   if (isDarkMode) {
+  //     document.documentElement.classList.add('dark');
+  //   } else {
+  //     document.documentElement.classList.remove('dark');
+  //   }
+  // }, [isDarkMode]);
   // #region loaading spinner
   if (loading) {
     // Optionally render a loading spinner or nothing while the auth state is being determined
@@ -243,6 +242,7 @@ function App() {
   return (
 
     <>
+    {/* <div className={isDarkMode ? 'dark' : ''}> */}
     <Routes>
     {/* Redirect to SignIn by default if not authenticated */}
     <Route path="/" element={<Navigate to={isAuthenticated ? "/" : "/sign-in"} />} />
@@ -314,20 +314,10 @@ function App() {
       <Route path="task/edit-subtask/:id" element={<EditSubTask/>} />
       <Route path="task/view-subtask/:id" element={<ViewSubTask/>} />
       <Route path="task/tasknote-list/:id" element={<TaskNoteList/>} />
-      <Route path="partnerinquiry-list" element={<PartnerInquiryList />} />
-      <Route path="partnerinquiry-list/add-partnerinquiry" element={<AddPartnerInquiry />} />
-      <Route path="partnerinquiry-list/view-partnerinquiry/:id" element={<PartnerViewInquiry hideTab={true}/>} />
-      <Route path="clientinquiry-list" element={<ClientInquiryList />} />
-      <Route path="clientinquiry-list/add-clientinquiry" element={<AddClientInquiry />} />
+      <Route path="partnerinquiry-list/view-partnerinquiry/:id" element={<PartnerViewInquiry />} />
       <Route path="clientinquiry-list/view-clientinquiry/:id" element={<ClientViewInquiry/>} />
-      <Route path="create-partnerinquiry-list" element={<CreatePartnerInqryList />} />
-      <Route path="create-partnerinquiry-list/add-partnerinquiry" element={<CreatePartnerInqry />} />
       <Route path="create-partnerinquiry-list/view-partnerinquiry/:id" element={<ViewCreatePartnerInqry />} />
-      <Route path="create-clientinquiry-list" element={<CreateClientInqryList />} />
-      <Route path="create-clientinquiry-list/add-clientinquiry" element={<CreateClientInqry />} />
       <Route path="create-clientinquiry-list/view-clientinquiry/:id" element={<ViewCreateClientInqry />} />
-      {/* <Route path="inquiry-list/edit-inquiry/:id" element={<EditPartner />} /> */}
-      {/* <Route path="inquiry-list/view-inquiry/:id" element={<ViewPartner />} /> */}
       <Route path="partner-list" element={<PartnerList />} />
       <Route path="partner-list/add-partner" element={<AddPartner />} />
       <Route path="partner-list/edit-partner/:id" element={<EditPartner />} />
@@ -390,22 +380,12 @@ function App() {
     <Route path="/user/user-profile" element={<UserProfile/>} />
     <Route path="/user/attendance" element={<AttendanceList/>} />
     <Route path="/user/leave" element={<LeaveModule/>} />
-    {/* <Route path="/user/project-list" element={<UserInquiryList/>} /> */}
     <Route path="/user/forwarded-partnerinquiry-list" element={<ForwardPartnerInqryList/>} />
     <Route path="/user/forwarded-clientinquiry-list" element={<ForwardClientInqryList/>} />
-    <Route path="/user/clientinquiry-list" element={<ClientInquiryList />} />
-    <Route path="/user/partnerinquiry-list" element={<PartnerInquiryList />} />
-    <Route path="/user/create-inquiry-list" element={<CreateInquiryList />} />
     <Route path="/user/partneproject-list/view-partneproject/:id" element={<UserViewInquiry />} />
     <Route path="/user/clientproject-list/view-clientproject/:id" element={<UserViewInquiry />} />
-    <Route path="/user/create-partnerinquiry-list" element={<CreatePartnerInqryList />} />
-    <Route path="/user/create-partnerinquiry-list/add-partnerinquiry" element={<CreatePartnerInqry />} />
     <Route path="/user/create-partnerinquiry-list/view-partnerinquiry/:id" element={<UserViewInquiry />} />
-    {/* <Route path="/user/create-partnerinquiry-list/view-partnerinquiry/:id" element={<ViewCreatePartnerInqry />} /> */}
-    <Route path="/user/create-clientinquiry-list" element={<CreateClientInqryList />} />
-    <Route path="/user/create-clientinquiry-list/add-clientinquiry" element={<CreateClientInqry />} />
     <Route path="/user/create-partnerinquiry-list/view-partnerinquiry/:id" element={<UserViewInquiry />} />
-    {/* <Route path="/user/create-clientinquiry-list/view-clientinquiry/:id" element={<ViewCreateClientInqry />} /> */}
     <Route path="/user/project-list" element={<UserProjectList/>} />
     <Route path="/user/inquiry-task-list" element={<UserInquiryTaskList/>} />
     <Route path="/user/inquiry-tasknote-list/:id" element={<InquiryTaskNoteList />} />
@@ -427,6 +407,7 @@ function App() {
     <Route path="/user/announcement-list" element={<AnnouncementList />} />
     <Route path="/user/announcement-list/add-announcement" element={<AddAnnouncement />} />
     <Route path="/user/announcement-list/view-announcement/:id" element={<ViewAnnouncement />} />
+    <Route path="/user/notice-board" element={<NoticeBoard />} />
     {/* <Route path="/user/help-support" element={<HelpSupport />} /> */}
     </Route>
 
@@ -502,6 +483,7 @@ function App() {
     </Route>
   
     </Routes>
+    {/* </div> */}
   </>
   );
   // #endregion

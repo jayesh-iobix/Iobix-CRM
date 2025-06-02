@@ -25,6 +25,7 @@ const HolidayList = () => {
     const fetchHolidays = async () => {
       try {
         const result = await HolidayService.getHolidays();
+        console.log(result.data)
         setHolidays(result.data); // Set the 'data' array to the state
         setTotalItems(result.data.length); // Set total items for pagination
         setCurrentPage(1); // Reset to the first page when a new filter is applied

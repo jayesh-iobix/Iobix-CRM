@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion"; // Import framer-motion
 import { InquiryService } from "../../service/InquiryService";
 import Chat from "./Chat";
-import InquiryChat from "../../admin-panel/inquiry/InquiryChat";
+import InquiryChat from "../../admin-panel/inquiry-chat/InquiryChat";
 
 import PartnerInquiryTaskList from "../inquiry-task/PartnerInquiryTaskList";
 import CompanyInquiryChat from "../../company-panel/inquiry-chat/CompanyInquiryChat";

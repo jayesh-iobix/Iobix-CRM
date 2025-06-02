@@ -107,6 +107,16 @@ const AddGtmServiceClient = () => {
   }, [formData.countryId, formData.stateId])
   //#endregion
 
+  const isValidUrl = (url) => {
+  try {
+    const parsed = new URL(url);
+    return ["http:", "https:"].includes(parsed.protocol);
+  } catch (_) {
+    return false;
+  }
+};
+
+
   //#region Form Validation and Submission For GTM Service Client
   // Validate form data before submission
   const validateForm = () => {
@@ -114,7 +124,17 @@ const AddGtmServiceClient = () => {
     if (!formData.companyName) newErrors.companyName = "Company Name is required";
     if (!formData.companyGSTNumber) newErrors.companyGSTNumber = "Company GSt Number is required";
     if (!formData.fullName) newErrors.fullName = "Contact Person Name is required";
-    if (!formData.companyLinkedin) newErrors.companyLinkedin = "Company Linkedin is required";
+    if (!formData.companyLinkedin || !isValidUrl(formData.companyLinkedin)) {
+      newErrors.companyLinkedin = "Please enter a valid URL (e.g., https://...)";
+    }
+    if (formData.companyWebsite && !isValidUrl(formData.companyWebsite)) {
+      newErrors.companyWebsite = "Please enter a valid website URL";
+    }
+    if (formData.personalLinkedin && !isValidUrl(formData.personalLinkedin)) {
+      newErrors.personalLinkedin = "Please enter a valid LinkedIn URL";
+    }
+
+    // if (!formData.companyLinkedin) newErrors.companyLinkedin = "Company Linkedin is required";
     if (!formData.pointOfContact) newErrors.pointOfContact = "Point Of Contact Person Name is required";
     if (!formData.phoneNumber || !/^[0-9]{10}$/.test(formData.phoneNumber)) {
       newErrors.phoneNumber = "Please enter a valid 10-digit phone number";
@@ -286,7 +306,7 @@ const AddGtmServiceClient = () => {
   // Handle form submission
   const handleInvoiceSubmit = async (e) => {
     e.preventDefault();
-    debugger;
+    // debugger;
 
     // if (validateInvoiceForm()) {
 
@@ -505,7 +525,7 @@ const AddGtmServiceClient = () => {
                 label: "Company Linkedin",
                 name: "companyLinkedin",
                 type: "url",
-                placeholder: "Enter Company Linkedin",
+                placeholder: "Enter Company Linkedin ",
               },
               {
                 label: "Company Website",
@@ -548,6 +568,15 @@ const AddGtmServiceClient = () => {
                   placeholder={placeholder}
                   value={formData[name]}
                   onChange={handleChange}
+                  // onKeyDown={
+                  //   name === "companyLinkedin" || name === "companyWebsite" || name === "personalLinkedin"
+                  //     ? (e) => {
+                  //         if (!(e.ctrlKey && e.key === 'v') && !(e.metaKey && e.key === 'v')) {
+                  //           e.preventDefault();
+                  //         }
+                  //       }
+                  //     : undefined
+                  // }
                   className={
                     "w-full mb-2 rounded-md border border-red py-[10px] pl-5 pr-12 text-dark-6 border-active transition"
                   }

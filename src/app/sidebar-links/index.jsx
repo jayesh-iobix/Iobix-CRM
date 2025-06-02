@@ -1,4 +1,4 @@
-import { BiAbacus, BiBox, BiCalendar, BiGrid, BiGridSmall, BiGridVertical, BiListUl, BiMicrophone, BiSolidMicrophone, BiTask } from 'react-icons/bi'
+import { BiAbacus, BiBox, BiCalendar, BiGrid, BiGridSmall, BiGridVertical, BiInfoCircle, BiListUl, BiMicrophone, BiSolidMicrophone, BiTask } from 'react-icons/bi'
 import { BsChat, BsFillGrid1X2Fill, BsFillGridFill, BsFillMegaphoneFill, BsHandThumbsUp, BsMegaphone, BsPeople, BsPersonRaisedHand } from 'react-icons/bs'
 import { FaBuilding, FaBusinessTime, FaCalendar, FaFileInvoice, FaHandshake, FaHandshakeAltSlash, FaRegHandshake, FaVenusDouble } from 'react-icons/fa';
 import { FaUserGear, FaUsersGear } from 'react-icons/fa6';
@@ -118,6 +118,12 @@ export const HR_DASHBOARD_SIDEBAR_LINKS = [
     icon: <HiOutlineViewGrid />,
   },
   {
+    key: "noticeboard",
+    label: "Notice Board",
+    path: "/user/notice-board",
+    icon: <BiInfoCircle />,
+  },
+  {
     key: "master",
     label: "Master",
     icon: <BiBox />,
@@ -202,6 +208,12 @@ export const IT_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS = [
     icon: <HiOutlineViewGrid />,
   },
   {
+    key: "noticeboard",
+    label: "Notice Board",
+    path: "/user/notice-board",
+    icon: <BiInfoCircle />,
+  },
+  {
     key: "task",
     label: "Task",
     // path: '/user/task-list',
@@ -250,6 +262,12 @@ export const BD_EMPLOYEE_DASHBOARD_SIDEBAR_LINKS = [
     label: "Dashboard",
     path: "/user",
     icon: <HiOutlineViewGrid />,
+  },
+  {
+    key: "noticeboard",
+    label: "Notice Board",
+    path: "/user/notice-board",
+    icon: <BiInfoCircle />,
   },
   {
     key: "task",

@@ -79,8 +79,8 @@ export default function RecentOrders() {
     // Fetch Recent Employees
     const fetchRecentEmployees = async () => {
       try {
-        const response = await EmployeeService.getEmployees();
-		    // console.log(response.data);
+        const response = await EmployeeService.getRecentEmployee();
+		    console.log(response.data);
         setRecentEmployees(response.data);
       } catch (error) {
         console.error("Error fetching recent employees:", error);
@@ -93,14 +93,14 @@ export default function RecentOrders() {
   }, []);
 
    // Helper function to safely format date
-//    const formatDate = (date) => {
-//     const parsedDate = new Date(date);
-//     // Check if the date is valid
-//     if (parsedDate.toString() === 'Invalid Date') {
-//       return 'N/A'; // Return 'N/A' if the date is invalid
-//     }
-//     return format(parsedDate, 'dd MMM yyyy');
-//   };
+   const formatDate = (date) => {
+    const parsedDate = new Date(date);
+    // Check if the date is valid
+    if (parsedDate.toString() === 'Invalid Date') {
+      return 'N/A'; // Return 'N/A' if the date is invalid
+    }
+    return format(parsedDate, 'dd MMM yyyy');
+  };
 
   // Render loading indicator if data is still fetching
   if (loading) {
@@ -118,17 +118,55 @@ export default function RecentOrders() {
         <table className="w-full text-gray-700">
           <thead>
             <tr>
-              <th>ID</th>
+              {/* <th>ID</th> */}
               <th>Employee Code</th>
               <th>Employee Name</th>
               <th>Joining Date</th>
-              <th>Total Hours</th>
+              {/* <th>Total Hours</th> */}
               <th>Department</th>
-              <th>Status</th>
+              <th>Designation</th>
+              {/* <th>Status</th> */}
             </tr>
           </thead>
           <tbody>
-            {recentOrderData.map((order, index) => (
+             {recentEmployees.length > 0 ? (
+	          recentEmployees.map((employee, index) => (
+	            <motion.tr
+	          	key={employee.employeeId}
+	          	initial={{ opacity: 0, y: 20 }}
+	          	animate={{ opacity: 1, y: 0 }}
+	          	transition={{ duration: 0.5, delay: index * 0.1 }}
+	            >
+	          	{/* <td> */}
+	          	  {/* Use employee ID route */}
+	          	  {/* <Link to={`/employee/${employee.employeeId}`}> */}
+	          		{/* #{employee.employeeId} */}
+	          	  {/* </Link> */}
+	          	{/* </td> */}
+              <td>
+                  <Link to={`/employee-list/view-employee/${employee.employeeId}`}>
+                    #{employee.employeeCode}
+                  </Link>
+                </td>
+	          	<td>
+	          	  {/* Use employee profile route */}
+	          	  {/* <Link to={`/employee/profile/${employee.employeeId}`}> */}
+	          		{employee.firstName + " " +employee.lastName}
+	          	  {/* </Link> */}
+	          	</td>
+	          	<td>{formatDate(employee.dateOfJoining)}</td>
+	          	{/* <td>393</td> */}
+	          	<td>{employee.departmentName}</td>
+	          	<td>{employee.designationName}</td>
+	          	{/* <td>{getOrderStatus(employee.current_order_status)}</td> */}
+	            </motion.tr>
+	          ))
+            ) : (
+	          <tr>
+	            <td colSpan="6" className="text-center py-4">No employees found</td>
+	          </tr>
+            )}
+            {/* {recentEmployees.map((order, index) => (
               <motion.tr
                 key={order.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -153,7 +191,7 @@ export default function RecentOrders() {
                 <td>{order.shipment_address}</td>
                 <td>{getOrderStatus(order.current_order_status)}</td>
               </motion.tr>
-            ))}
+            ))} */}
           </tbody>
         </table>
       </div>

@@ -52,11 +52,11 @@ const AddInvoice = () => {
   //#region Validation Function & Form Submission
   const validateForm = () => {
     const newErrors = {};
+    if (!selectedGtmCompany) newErrors.selectedGtmCompany = "Select GTM Client Company";
     // if (!formData.invoiceDate) newErrors.invoiceDate = 'Invoice Date is required';
     if (formData.manualProducts.length === 0 || formData.manualProducts.some(item => !item.description || item.quantity <= 0 || item.unitPrice <= 0)) {
       newErrors.items = "Each item must have a description, quantity, and unit price greater than zero.";
     }
-    if (!selectedGtmCompany) newErrors.selectedGtmCompany = "Select GTM Client Company";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -66,10 +66,10 @@ const AddInvoice = () => {
     setIsSubmitting(true);
 
     // Validate form before submitting
-    // if (!validateForm()) {
-      // setIsSubmitting(false);
-      // return; // Prevent form submission if validation fails
-    // }
+    if (!validateForm()) {
+      setIsSubmitting(false);
+      return; // Prevent form submission if validation fails
+    }
 
     // Include the selected company in formData
     // const data = { ...formData, gtmClientServiceId: selectedGtmCompany };
@@ -194,8 +194,8 @@ const AddInvoice = () => {
                   </option>
                 ))}
               </select>
-              {errors.companyName && (
-                <p className="text-red-500 text-xs">{errors.companyName}</p>
+              {errors.selectedGtmCompany && (
+                <p className="text-red-500 text-xs">{errors.selectedGtmCompany}</p>
               )}
             </div>
 

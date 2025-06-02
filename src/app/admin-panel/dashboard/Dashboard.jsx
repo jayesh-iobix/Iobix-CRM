@@ -1,6 +1,7 @@
 import React from 'react'
 import DashboardStatsGrid from './DashboardStatsGrid'
 import RecentOrders from './RecentOrders'
+import Announcement from '../../user-panel/dashboard/Announcement';
 
 export default function Dashboard() {
   return (
@@ -8,7 +9,8 @@ export default function Dashboard() {
       <div className="flex flex-row gap-4 w-full">
         <DashboardStatsGrid />
       </div>
-      <div className="grid">
+      <div className="grid gap-6">
+        {/* <Announcement /> */}
         <RecentOrders />
       </div>
     </div>
