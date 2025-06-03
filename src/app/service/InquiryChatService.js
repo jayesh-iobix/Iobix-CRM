@@ -41,7 +41,7 @@ export const InquiryChatService = {
       console.error('Failed to fetch Chat In Admin:', error);
       throw error;
     }
-   },
+  },
 
   // Method to get all inquiryChat
   getClientChatInAdmin: async (inquiryRegistrationId, receiverId) => {
@@ -53,7 +53,32 @@ export const InquiryChatService = {
       console.error('Failed to fetch Chat In Admin:', error);
       throw error;
     }
-   },
+  },
+
+  // Method to get all inquiryChat
+  getEmployeeChatInAdmin: async (inquiryRegistrationId, receiverId) => {
+    try {
+      // debugger;
+      const response = await httpClient.get(`${api}/GetChatWithEmployeeInAdmin/${inquiryRegistrationId}/${receiverId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch Chat In Admin:', error);
+      throw error;
+    }
+  },
+
+  // Method to get all inquiryChat
+  getAdminChatInEmployee: async (inquiryRegistrationId, receiverId) => {
+    try {
+      // debugger;
+      const response = await httpClient.get(`${api}/GetChatWithAdminInEmployee/${inquiryRegistrationId}/${receiverId}`); // Update 'GetAll' with actual endpoint if different
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch Chat In Employee:', error);
+      throw error;
+    }
+  },
+
   
   // Method to get all inquiryChat
   getAdminChatInPartner: async (inquiryRegistrationId) => {
@@ -65,7 +90,7 @@ export const InquiryChatService = {
       console.error('Failed to fetch Chat In Admin:', error);
       throw error;
     }
-   },
+  },
 
   // Method to get all inquiryChat
   getAdminChatInClient: async (inquiryRegistrationId) => {
@@ -77,7 +102,7 @@ export const InquiryChatService = {
       console.error('Failed to fetch Chat In Admin:', error);
       throw error;
     }
-   },
+  },
   
   // Method to get all inquiryChat
   getPartnerClientEmployeeList: async (inquiryChatType, id) => {

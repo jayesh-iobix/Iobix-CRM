@@ -340,3 +340,15 @@ body {
   scrollbar-width: thin; /* Thin scrollbar */
   scrollbar-color: #DBEAFE white; /* Thumb blue-500, track blue-200 */
 }
+
+/* On small screens */
+@media (max-width: 640px) {
+  .react-calendar {
+    padding: 0.75rem;
+    font-size: 14px;
+  }
+
+  .react-calendar__tile {
+    padding: 0.4rem 0.2rem;
+  }
+}

@@ -1,11 +1,8 @@
 //#region Imports
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import '../../App.css'
+import "../../App.css";
 import { Menu, Popover, Transition } from "@headlessui/react";
-import {
-  HiOutlineBell,
-  HiOutlineChatAlt,
-} from "react-icons/hi";
+import { HiOutlineBell, HiOutlineChatAlt } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { BiUser } from "react-icons/bi";
 // import { jwtDecode } from "jwt-decode";
@@ -28,7 +25,7 @@ export default function Header() {
   //#region State Variables
   // State to handle modal visibility, task input, and button visibility
   const calendarRef = useRef(null);
-  const buttonRef = useRef(null);   // For toggle button ref
+  const buttonRef = useRef(null); // For toggle button ref
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [workNote, setWorkNote] = useState("");
   const [outDateTime, setOutDateTime] = useState(""); // Out DateTime
@@ -38,15 +35,16 @@ export default function Header() {
   const [holidays, setHolidays] = useState([]);
   const [showCalendar, setShowCalendar] = useState(false);
   const [holidayDates, setHolidayDates] = useState([]);
-  const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
-
-
+  const [tooltip, setTooltip] = useState({ show: false, text: "", x: 0, y: 0 });
 
   // State for managing notifications and unread count
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState([]); //normal
   const [notificationLength, setNotificationLength] = useState(0);
+
+  const [chatMessages, setChatMessages] = useState([]); // chat
+  const [chatMessageLength, setChatMessageLength] = useState(0);
   //#endregion
-  
+
   //#region Variables
   const navigate = useNavigate();
   const role = sessionStorage.getItem("role");
@@ -56,36 +54,63 @@ export default function Header() {
 
   //#region Effects
   useEffect(() => {
-    // debugger;
     onMessage(messaging, (payload) => {
-
-      const notificationSound = new Audio("/notification-sound.mp3"); // Sound file from public folder
-
-      // Check if the audio is supported in the current environment
-      // notificationSound.load();
-      // notificationSound.onerror = () => {
-      //   console.error("Failed to load audio file");
-      // };
-
-      // Listen for foreground messages
-      const notification = payload.notification;
-      // console.log(notification);
-
-      // Play the notification sound
+      const notificationSound = new Audio("/notification-sound.mp3");
       notificationSound.play();
 
-      // Ensure notifications is an array, and add the 'read' property
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        { ...notification, read: false } // Adding 'read' property to each notification
-      ]);
+      if (payload.data?.messageType === "ChatMessage") {
+        const chatMessage = {
+          title: payload.data.title,
+          body: payload.data.body,
+          read: false,
+        };
 
-      // Calculate the number of notifications (or length of notifications)
-      setNotificationLength(prevLength => prevLength + 1);
+        setChatMessages((prev) => [...prev, chatMessage]);
+        setChatMessageLength((prev) => prev + 1);
+      } else if (payload.notification) {
+        const notification = {
+          title: payload.notification.title,
+          body: payload.notification.body,
+          read: false,
+        };
 
-      // console.log('Notification Length:', notificationLength);
+        setNotifications((prev) => [...prev, notification]);
+        setNotificationLength((prev) => prev + 1);
+      }
     });
-  }, [notificationLength]); // Re-run effect when notificationLength changes
+  }, []);
+
+  // useEffect(() => {
+  //   // debugger;
+  //   onMessage(messaging, (payload) => {
+
+  //     const notificationSound = new Audio("/notification-sound.mp3"); // Sound file from public folder
+
+  //     // Check if the audio is supported in the current environment
+  //     // notificationSound.load();
+  //     // notificationSound.onerror = () => {
+  //     //   console.error("Failed to load audio file");
+  //     // };
+
+  //     // Listen for foreground messages
+  //     const notification = payload.notification;
+  //     // console.log(notification);
+
+  //     // Play the notification sound
+  //     notificationSound.play();
+
+  //     // Ensure notifications is an array, and add the 'read' property
+  //     setNotifications((prevNotifications) => [
+  //       ...prevNotifications,
+  //       { ...notification, read: false } // Adding 'read' property to each notification
+  //     ]);
+
+  //     // Calculate the number of notifications (or length of notifications)
+  //     setNotificationLength(prevLength => prevLength + 1);
+
+  //     // console.log('Notification Length:', notificationLength);
+  //   });
+  // }, [notificationLength]); // Re-run effect when notificationLength changes
 
   useEffect(() => {
     fetchIsOutTime();
@@ -109,31 +134,29 @@ export default function Header() {
   //#endregion
 
   useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (
-      calendarRef.current &&
-      !calendarRef.current.contains(event.target) &&
-      buttonRef.current &&
-      !buttonRef.current.contains(event.target)
-    ) {
-      setShowCalendar(false);
-    }
-  };
+    const handleClickOutside = (event) => {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setShowCalendar(false);
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-
-  // useEffect(() => {
   const fetchHolidayDates = async () => {
     try {
       const res = await HolidayService.getHolidays(); // Replace with your actual API call
       const holidays = res.data;
       // console.log(res.data)
-      setHolidays(res.data)
+      setHolidays(res.data);
 
       // Flatten date ranges into individual date strings
       const expandedDates = holidays.flatMap((holiday) => {
@@ -153,9 +176,6 @@ export default function Header() {
       console.error("Failed to load holidays:", error);
     }
   };
-
-  // fetchHolidayDates();
-  // }, []);
 
   const tileClassName = ({ date, view }) => {
     if (view === "month" && holidayDates.includes(date.toDateString())) {
@@ -184,40 +204,41 @@ export default function Header() {
   // }
   // return null;
   // };
-  
+
   const tileContent = ({ date, view }) => {
-  if (view === "month") {
-    const dateStr = date.toDateString();
-    const holiday = holidays.find((h) => {
-      const start = new Date(h.holidayStartDate).toDateString();
-      const end = new Date(h.holidayEndDate).toDateString();
-      const d = new Date(dateStr);
-      return d >= new Date(start) && d <= new Date(end);
-    });
+    if (view === "month") {
+      const dateStr = date.toDateString();
+      const holiday = holidays.find((h) => {
+        const start = new Date(h.holidayStartDate).toDateString();
+        const end = new Date(h.holidayEndDate).toDateString();
+        const d = new Date(dateStr);
+        return d >= new Date(start) && d <= new Date(end);
+      });
 
-    if (holiday) {
-      return (
-        <div
-          onMouseEnter={(e) => {
-            const rect = e.target.getBoundingClientRect();
-            setTooltip({
-              show: true,
-              text: holiday.holidayName,
-              x: rect.left + rect.width / 2,
-              y: rect.top - 8
-            });
-          }}
-          onMouseLeave={() => setTooltip({ show: false, text: '', x: 0, y: 0 })}
-          className="relative w-full h-full"
-        >
-          {/* You can render something simple here if needed */}
-        </div>
-      );
+      if (holiday) {
+        return (
+          <div
+            onMouseEnter={(e) => {
+              const rect = e.target.getBoundingClientRect();
+              setTooltip({
+                show: true,
+                text: holiday.holidayName,
+                x: rect.left + rect.width / 2,
+                y: rect.top - 8,
+              });
+            }}
+            onMouseLeave={() =>
+              setTooltip({ show: false, text: "", x: 0, y: 0 })
+            }
+            className="relative w-full h-full"
+          >
+            {/* You can render something simple here if needed */}
+          </div>
+        );
+      }
     }
-  }
-  return null;
+    return null;
   };
-
 
   //#region Helper Functions
 
@@ -225,13 +246,21 @@ export default function Header() {
   const fetchIsOutTime = async () => {
     try {
       const res = await AuthService.getBasicDetail();
-      setIsOutTimeButtomVisible(res.data.isOutTime)
+      setIsOutTimeButtomVisible(res.data.isOutTime);
       // console.log(res.data.isOutTime)
       // console.log(res.data);
     } catch (error) {
       console.error("Error fetching IsOutTime data:", error);
       alert("Error fetching IsOutTime, please try again.");
     }
+  };
+
+  // Mark a chat notification as read
+  const handleChatMarkAsRead = (index) => {
+    setChatMessages((prev) =>
+      prev.map((msg, i) => (i === index ? { ...msg, read: true } : msg))
+    );
+    setChatMessageLength((prev) => prev - 1);
   };
 
   // Mark a notification as read
@@ -242,9 +271,9 @@ export default function Header() {
       )
     );
     // Optionally, update notificationLength
-    setNotificationLength(prevLength => prevLength - 1);
+    setNotificationLength((prevLength) => prevLength - 1);
   };
-  
+
   // Logout Function
   const handleLogout = () => {
     const token = sessionStorage.getItem("token");
@@ -260,15 +289,13 @@ export default function Header() {
   };
 
   // OutTime Click
-  const handleOutTimeClick = async() => {
+  const handleOutTimeClick = async () => {
     // Show modal when clicking Out Time button
     setIsModalOpen(true);
-
   };
 
   // InTime Click
   const handleInTimeClick = async () => {
-
     try {
       const response = await AttendanceService.addAttendance();
       if (response.status === 1) {
@@ -297,8 +324,7 @@ export default function Header() {
   };
 
   // Submit Worknote
-  const handleSubmitWorkNote = async(e) => {
-
+  const handleSubmitWorkNote = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
 
     // Handle workNote submission logic
@@ -437,7 +463,7 @@ export default function Header() {
         )}
 
         {/* Chat Popover */}
-        {/* <Popover className="relative">
+        <Popover className="relative">
           {({ open }) => (
             <>
               <Popover.Button
@@ -446,7 +472,14 @@ export default function Header() {
                   "group inline-flex items-center rounded-sm p-1.5 text-gray-700 hover:text-opacity-100 focus:outline-none active:bg-gray-100"
                 )}
               >
-                <HiOutlineChatAlt fontSize={24} />
+                <div className="relative">
+                  <HiOutlineChatAlt fontSize={24} />
+                  {chatMessageLength > 0 && (
+                    <span className="absolute left-2 bottom-3 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-red-500 rounded-full">
+                      {chatMessageLength}
+                    </span>
+                  )}
+                </div>
               </Popover.Button>
               <Transition
                 as={Fragment}
@@ -462,18 +495,43 @@ export default function Header() {
                     <strong className="text-gray-700 font-medium text-sm sm:text-base">
                       Messages
                     </strong>
-                    <div className="mt-2 py-1 text-sm sm:text-base">
-                      This is messages panel.
+                    <div className="mt-2 py-1 text-sm sm:text-base max-h-96 overflow-y-auto">
+                      {chatMessages.length > 0 ? (
+                        chatMessages.map((message, index) => (
+                          <div
+                            key={index}
+                            className={classNames(
+                              "p-2 rounded-lg my-1 border",
+                              message.read ? "bg-gray-200" : "bg-white"
+                            )}
+                          >
+                            <span className="font-semibold">
+                              {message.title}
+                            </span>
+                            <p>{message.body}</p>
+                            {!message.read && (
+                              <button
+                                onClick={() => handleChatMarkAsRead(index)}
+                                className="ml-2 text-xs text-blue-500"
+                              >
+                                Mark as Read
+                              </button>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div>No new chat messages</div>
+                      )}
                     </div>
                   </div>
                 </Popover.Panel>
               </Transition>
             </>
           )}
-        </Popover> */}
+        </Popover>
 
         {/* 🗓️ Calendar Icon */}
-        <div className="relative">
+        <div className="relative inline-block text-left">
           <button
             ref={buttonRef}
             className="p-2 text-gray-600 hover:text-black focus:outline-none"
@@ -493,7 +551,7 @@ export default function Header() {
           >
             <div
               ref={calendarRef}
-              className="absolute z-50 right-0 mt-2 rounded-xl"
+              className="absolute sm:right-0 right-[-60px] mt-2 z-50 w-[70vw] sm:w-[350px] rounded-xl"
             >
               <Calendar
                 tileClassName={tileClassName}
@@ -501,7 +559,7 @@ export default function Header() {
               />
             </div>
           </Transition>
-          
+
           {/* Tooltip */}
           {tooltip.show && (
             <div
@@ -611,23 +669,27 @@ export default function Header() {
           >
             <Menu.Items className="origin-top-right z-10 absolute right-0 mt-2 w-48 rounded-sm shadow-md p-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
               <Menu.Item>
-                {({ active }) =>
-                  role === "admin" ? (
-                    <div
-                      className={classNames(
-                        active && "bg-gray-100",
-                        "active:bg-gray-200 rounded-sm px-4 py-2 text-gray-700 cursor-pointer focus:bg-gray-200"
-                      )}
-                    >
-                      Your Profile
-                    </div>
-                  ) : (
+                {
+                  ({ active }) => (
+                    // role === "admin" ? (
+                    //   <div
+                    //     className={classNames(
+                    //       active && "bg-gray-100",
+                    //       "active:bg-gray-200 rounded-sm px-4 py-2 text-gray-700 cursor-pointer focus:bg-gray-200"
+                    //     )}
+                    //   >
+                    //     Your Profile
+                    //   </div>
+                    // ) : (
                     <div
                       onClick={() => {
+                        debugger;
                         // Get the user's role (this can be from state, context, or props)
 
                         // Conditionally navigate based on the role
-                        if (role === "user") {
+                        if (role === "admin") {
+                          navigate("/admin-profile");
+                        } else if (role === "user") {
                           navigate("/user/user-profile");
                         } else if (role === "partner") {
                           navigate("/partner/partner-profile");
@@ -648,6 +710,7 @@ export default function Header() {
                       Your Profile
                     </div>
                   )
+                  // )
                 }
               </Menu.Item>
 
@@ -708,15 +771,6 @@ export default function Header() {
   );
 }
 
-
-
-
-
-
-
-
-
-
 // //#region Imports
 // import React, { Fragment, useEffect, useRef, useState } from "react";
 // import '../../App.css'
@@ -757,12 +811,11 @@ export default function Header() {
 //   const [showCalendar, setShowCalendar] = useState(false);
 //   const [holidayDates, setHolidayDates] = useState([]);
 
-
 //   // State for managing notifications and unread count
 //   const [notifications, setNotifications] = useState([]);
 //   const [notificationLength, setNotificationLength] = useState(0);
 //   //#endregion
-  
+
 //   //#region Variables
 //   const navigate = useNavigate();
 //   const role = sessionStorage.getItem("role");
@@ -881,7 +934,6 @@ export default function Header() {
 //   }
 //   return null;
 //   };
- 
 
 //   //#region Helper Functions
 
@@ -908,7 +960,7 @@ export default function Header() {
 //     // Optionally, update notificationLength
 //     setNotificationLength(prevLength => prevLength - 1);
 //   };
-  
+
 //   // Logout Function
 //   const handleLogout = () => {
 //     const token = sessionStorage.getItem("token");
@@ -1062,12 +1114,12 @@ export default function Header() {
 //               />
 
 //               {/* <label className="mb-[10px] mt-2 block text-base font-medium text-dark dark:text-white">
-//                 Are you forgot add out time? Then click this check box and add out time of that day 
-//                 <input 
-//                   type="checkbox" 
-//                   value={isForgot} 
-//                   onChange={setIsForgot(true)}  
-//                   className="w-4 items-center h-4" 
+//                 Are you forgot add out time? Then click this check box and add out time of that day
+//                 <input
+//                   type="checkbox"
+//                   value={isForgot}
+//                   onChange={setIsForgot(true)}
+//                   className="w-4 items-center h-4"
 //                   />
 //               </label> */}
 
@@ -1150,7 +1202,6 @@ export default function Header() {
 //             </div>
 //           )}
 //         </div> */}
-
 
 //  {/* 🗓️ Calendar Icon */}
 // <div className="relative">
@@ -1279,12 +1330,12 @@ export default function Header() {
 //                       )}
 //                     >
 //                       Your Profile
-//                     </div>  
+//                     </div>
 //                   ) : (
 //                     <div
 //                     onClick={() => {
 //                       // Get the user's role (this can be from state, context, or props)
-                    
+
 //                       // Conditionally navigate based on the role
 //                       if (role === 'user') {
 //                         navigate("/user/user-profile");
@@ -1299,7 +1350,7 @@ export default function Header() {
 //                         console.log("Unknown role");
 //                       }
 //                     }}
-                    
+
 //                       className={classNames(
 //                         active && "bg-gray-100",
 //                         "active:bg-gray-200 rounded-sm px-4 py-2 text-gray-700 cursor-pointer focus:bg-gray-200"

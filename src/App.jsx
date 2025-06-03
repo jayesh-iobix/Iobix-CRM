@@ -162,6 +162,7 @@ import ViewInvoiceHistory from './app/admin-panel/invoice/ViewInvoiceHistory';
 import InvoicePayment from './app/admin-panel/invoice/InvoicePayment';
 import AddInvoicePayment from './app/admin-panel/invoice/AddInvoicePayment';
 import NoticeBoard from './app/user-panel/notice-board/NoticeBoard';
+import AdminProfile from './app/admin-panel/profile/AdminProfile';
 //#endregion
 
 function App() {
@@ -359,6 +360,7 @@ function App() {
       <Route path="invoice/invoice-history/:id" element={<ViewInvoiceHistory />} />
       <Route path="invoice/invoice-payment" element={<InvoicePayment />} />
       <Route path="invoice/add-invoice-payment/:id" element={<AddInvoicePayment />} />
+      <Route path="admin-profile" element={<AdminProfile />} />
       {/* <Route path="/profile" element={<Profile/>} /> */}
     </Route>
 

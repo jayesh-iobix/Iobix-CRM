@@ -55,6 +55,19 @@ const InquiryChat = () => {
       });
       setMessages(updatedMessages); // Update the state with the modified messages
     }
+
+    if (chatPersonType === "employee" && selectedPersonId != null) {
+      const chatData = await InquiryChatService.getEmployeeChatInAdmin(id, selectedPersonId);
+
+      // Map through the chat data and set the senderName to "You" if senderId matches loginId
+      const updatedMessages = chatData.data.map((message) => {
+        if (message.senderId === loginId) {
+          return { ...message, senderName: "You" }; // Set senderName to "You" if senderId matches
+        }
+        return message; // Otherwise, return the message as is
+      });
+      setMessages(updatedMessages); // Update the state with the modified messages
+    }
   
   }, 300);
   
@@ -99,6 +112,16 @@ const InquiryChat = () => {
       // console.log(chatMessage);
     });
 
+    if(chatPersonType === 'employee')
+    {
+      newConnection.on("ReceiveUserMessage", (chatMessage) => {
+        if ((chatMessage.senderId === selectedPersonId) && (chatMessage.receiverId === loginId && chatMessage.transferToId === selectedPersonId) && chatMessage.inquiryRegistrationId === id) {
+        setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
+        console.log(messages);
+        }
+      });
+    }
+
     newConnection.on("ReceiveAdminMessage", (chatMessage) => {
       if (chatMessage.senderId === selectedPersonId && chatMessage.inquiryRegistrationId === id) {
         // Append the new message to the state
@@ -116,7 +139,7 @@ const InquiryChat = () => {
         newConnection.stop();
       }
     };
-  }, [selectedPersonId]);
+  }, [selectedPersonId, chatPersonType]);
   //#endregion
 
   //#region Chat Person Handling

@@ -54,6 +54,19 @@ const EmpInquiryChat = () => {
       });
       setMessages(updatedMessages); // Update the state with the modified messages
     }
+
+    if (chatPersonType === "admin" && selectedPersonId != null) {
+      const chatData = await InquiryChatService.getAdminChatInEmployee(id, selectedPersonId);
+
+      // Map through the chat data and set the senderName to "You" if senderId matches loginId
+      const updatedMessages = chatData.data.map((message) => {
+        if (message.senderId === loginId) {
+          return { ...message, senderName: "You" }; // Set senderName to "You" if senderId matches
+        }
+        return message; // Otherwise, return the message as is
+      });
+      setMessages(updatedMessages); // Update the state with the modified messages
+    }
   
   }, 300);
   
@@ -96,6 +109,16 @@ const EmpInquiryChat = () => {
       }
     });
 
+    if(chatPersonType === 'admin')
+    {
+      newConnection.on("ReceiveUserMessage", (chatMessage) => {
+        if ((chatMessage.senderId === selectedPersonId) && (chatMessage.receiverId === loginId && chatMessage.transferToId === loginId) && chatMessage.inquiryRegistrationId === id) {
+        setMessages((prevMessages) => [...prevMessages,chatMessage]); // Update the messages state with the new message
+        console.log(messages);
+        }
+      });
+    }
+
     newConnection.on("ReceiveAdminMessage", (chatMessage) => {
       if ((chatMessage.senderId === selectedPersonId) && (chatMessage.receiverId === loginId && chatMessage.transferToId === loginId) && chatMessage.inquiryRegistrationId === id) {
         // Append the new message to the state
@@ -112,7 +135,7 @@ const EmpInquiryChat = () => {
         newConnection.stop();
       }
     };
-  }, [selectedPersonId]);
+  }, [selectedPersonId, chatPersonType]);
   //#endregion
   
   //#region Handlers
@@ -255,7 +278,8 @@ const EmpInquiryChat = () => {
             <option value="">--Select Type--</option>
             <option value="partner">Partner</option>
             <option value="client">Client</option>
-            <option value="employee">Employee</option>
+            <option value="admin">Admin</option>
+            {/* <option value="employee">Employee</option> */}
           </select>
         </div>
 
@@ -411,15 +435,3 @@ const EmpInquiryChat = () => {
 
 export default EmpInquiryChat;
 //#endregion
-
-
-
-
-
-
-
-
-
-
-
-
